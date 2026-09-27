@@ -1,6 +1,6 @@
 # Seguridad
 
-**Para qué sirve:** reglas de seguridad que afectan a todas las áreas. **Requerimientos:** R-05 (acciones verificadas), R-07 (permisos en código), R-26 (reintentos), R-27 (autenticación y acceso), R-31 (datos aprobados), R-32 (mocks), R-34 (repo sin secretos), R-47 (LLM sin identificadores). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [arquitectura](../entender/arquitectura.md), [conversación](conversacion.md).
+**Para qué sirve:** reglas de seguridad que afectan a todas las áreas. **Requerimientos:** REQ-0005 (acciones verificadas), REQ-0007 (permisos en código), REQ-0026 (reintentos), REQ-0027 (autenticación y acceso), REQ-0031 (datos aprobados), REQ-0032 (mocks), REQ-0034 (repo sin secretos), REQ-0047 (LLM sin identificadores). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [arquitectura](../entender/arquitectura.md), [conversación](conversacion.md).
 
 ## Autenticación
 
@@ -54,4 +54,4 @@
 
 - [ ] Elegir mecanismo de autenticación de prueba
 - [ ] Definir política de retención
-- [ ] Proponer los casos de seguridad para el set adversarial (el dueño del set es [ML](areas/ml.md), R-21)
+- [ ] Proponer los casos de seguridad para el set adversarial (el dueño del set es [ML](areas/ml.md), REQ-0021)

@@ -1,6 +1,6 @@
 # Plan del equipo
 
-Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** · Se actualiza en cada reunión.
+Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** · Se actualiza a medida que decidimos.
 
 > Este plan lo vamos construyendo juntos. Lo que dice **tentativo** o **propuesta** está abierto a cambios; las decisiones que nos faltan están [al final](#decisiones-pendientes).
 

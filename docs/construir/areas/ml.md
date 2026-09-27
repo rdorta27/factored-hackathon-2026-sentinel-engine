@@ -1,7 +1,7 @@
 # Machine Learning
 
 **Criterio de evaluación:** selección, optimización, implementación y tracking de modelos. **Responsable:** por definir.
-**Requerimientos:** R-16 (componente vs línea base), R-17 (sin fuga), R-19 (tracking), R-20 (held-out), R-21 (pruebas de fallas), R-23 (LLM juez), R-48 (orden de decisión). Ver [requerimientos](../../requerimientos/requerimientos.md).
+**Requerimientos:** REQ-0016 (componente vs línea base), REQ-0017 (sin fuga), REQ-0019 (tracking), REQ-0020 (held-out), REQ-0021 (pruebas de fallas), REQ-0023 (LLM juez), REQ-0048 (orden de decisión). Ver [requerimientos](../../requerimientos/requerimientos.md).
 **Relacionados:** [dataset](../../entender/dataset.md) (etiquetas y columnas), [métricas](../metricas.md), [arquitectura](../../entender/arquitectura.md).
 
 ## Qué construye esta área

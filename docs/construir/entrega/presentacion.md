@@ -10,7 +10,7 @@
 | 2 | Arquitectura (principio central y capas) | [arquitectura](../../entender/arquitectura.md), [decisiones](../decisiones/) |
 | 3 | Seguridad y control: permisos, handoff, cuándo NO actuar | [seguridad](../seguridad.md), [conversación](../conversacion.md) |
 | 4 | Resultados: línea base vs sistema (métricas principales, por idioma) | [métricas](../metricas.md) |
-| 5 | Limitaciones y ruta a producción | [requerimientos](../../requerimientos/requerimientos.md) (R-30, lo que falta) |
+| 5 | Limitaciones y ruta a producción | [requerimientos](../../requerimientos/requerimientos.md) (REQ-0030, lo que falta) |
 
 ## Reglas
 

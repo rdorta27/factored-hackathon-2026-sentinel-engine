@@ -2,7 +2,7 @@
 
 Felix, Natalia y Rubén · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10**
 
-Este es nuestro punto de partida. Lo estamos armando entre todos: casi todo es una propuesta, así que cualquier idea o ajuste es bienvenido.
+Punto de partida del equipo. Casi todo es una propuesta y se va ajustando a medida que avanzamos.
 
 ## Qué vamos a construir
 
@@ -11,21 +11,33 @@ Un **asistente de atención al cliente para un banco** que opera en México, Col
 ## Para empezar (unos 15 minutos)
 
 1. **[El reto en una página](docs/entender/resumen.md):** qué hay que construir, cómo nos evalúan y qué se entrega.
-2. **[Plan del equipo](docs/plan.md):** un cronograma tentativo, una propuesta de cómo trabajar y las decisiones que tomaremos juntos.
+2. **[Plan del equipo](docs/plan.md):** cronograma tentativo, propuesta de cómo trabajar y decisiones pendientes.
 3. **[Arquitectura](docs/entender/arquitectura.md):** una primera idea de cómo encajan las piezas.
 
-Si te quedan ganas de más, el [índice de la documentación](docs/README.md) te ayuda a encontrar cada tema.
+El [índice de la documentación](docs/README.md) ayuda a encontrar el resto de los temas.
 
-## Cómo puedes sumarte
+## Tareas pendientes
 
-- Completar tu fila en la [tabla del equipo](docs/plan.md#equipo): en qué te sientes fuerte y tu disponibilidad.
-- Mirar las [decisiones pendientes](docs/plan.md#decisiones-pendientes) y traer tu opinión a la reunión del lunes 28/9.
-- Pensar qué flujo te gustaría trabajar ([opciones de flujo](docs/construir/flujos/opciones.md)).
-- Si tienes las credenciales de los datos, probar si funcionan.
+**Para el lunes 28/9 hay que decidir** el flujo, los responsables por área, la forma de trabajo y el stack. El detalle está en las [decisiones pendientes](docs/plan.md#decisiones-pendientes).
 
-## Dos cosas obligatorias
+| Tarea | Responsable | Para cuándo |
+|---|---|---|
+| Completar la [tabla del equipo](docs/plan.md#equipo): fortalezas y disponibilidad | Cada uno | Lun 28/9 |
+| Dar acceso de escritura al repositorio a Felix y Natalia | Rubén | Lun 28/9 |
+| Conseguir las credenciales de los datos y confirmar que funcionan para los 3 | Por asignar | Lun 28/9 |
+| Preguntar en `#technical-help`: acceso a los datos, términos de uso, el asterisco de "public\*", hora límite y duración del video | Por asignar | Lun 28/9 |
+| Definir quién pone la suscripción de Azure, con tope de gasto y alertas | Por asignar | Lun 28/9 |
+| Primer vistazo a los datos: inventario de tablas, perfil de los motivos de contacto y contraste con el diccionario | Por asignar | Lun 28/9 |
+| Tomar las decisiones pendientes del lunes | Equipo | Lun 28/9 |
 
-Las pide el hackathon, así que conviene tenerlas presentes desde el principio:
+## Decisiones tomadas
 
-- **No subir secretos ni datos al repositorio.** Las credenciales van en un archivo `.env`, que git ignora, y se comparten por mensaje directo.
-- **La entrega va en inglés.** Por ahora trabajamos en español; al final pasamos a inglés este README, la presentación y el video.
+| Decisión | Registro |
+|---|---|
+| Plataforma: Microsoft Azure | [001](docs/construir/decisiones/001-plataforma-azure.md) |
+| Especificaciones con OpenSpec | [002](docs/construir/decisiones/002-openspec.md) |
+
+## Requisitos del hackathon que aplican desde ya
+
+- **Sin secretos ni datos en el repositorio.** El repositorio se entrega público; las credenciales van en `.env` (excluido por `.gitignore`) y se comparten por mensaje directo.
+- **Entrega en inglés.** La documentación de trabajo está en español; para la entrega se pasan a inglés este README, la presentación y el video.
