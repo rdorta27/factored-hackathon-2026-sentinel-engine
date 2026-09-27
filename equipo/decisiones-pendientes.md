@@ -26,7 +26,7 @@ Estas bloquean el esqueleto del martes.
 | 10 | LLM | a) Azure OpenAI; qué modelo. b) propuesta de Natalia (canal, 27/9): Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués, handoff y evaluación, con un enrutador entre ambos | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 17 | Visibilidad del repositorio | Privado ahora y público al final, o público desde ya (hoy está público). Incluye si `equipo/` queda en la entrega o se borra antes | [Seguridad](../docs/construir/seguridad.md#repositorio-y-despliegue-públicos) | | | |
-| 12 | Almacenamiento y pipeline de datos | a) Local con DuckDB. b) propuesta de Natalia (canal, 27/9): Databricks con capas Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse. Define la arquitectura de datos | [Dataset](../docs/entender/dataset.md), [área de datos](../docs/construir/areas/datos.md) | | | |
+| 12 | Almacenamiento y pipeline de datos | a) Local con DuckDB. b) propuesta de Natalia (canal, 27/9): Databricks con capas Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse. c) Bronze, Silver y Gold con DuckDB local: el mismo patrón, sin montaje ni costo en la nube. Define la arquitectura de datos | [Dataset](../docs/entender/dataset.md), [área de datos](../docs/construir/areas/datos.md) | | | |
 | 18 | Idioma de las especificaciones de OpenSpec | Propuesta: inglés, porque se entregan | [Decisión 002](../docs/construir/decisiones/002-openspec.md) | | | |
 
 ## Más adelante
