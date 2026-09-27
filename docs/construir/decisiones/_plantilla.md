@@ -6,7 +6,7 @@
 
 ## Contexto
 
-Qué problema resolvemos y qué restricciones aplican (citar requerimientos `R-xx`).
+Qué problema resolvemos y qué restricciones aplican (citar requerimientos `REQ-####`).
 
 ## Opciones
 

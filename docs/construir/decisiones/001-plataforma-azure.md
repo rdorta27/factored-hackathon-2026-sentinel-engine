@@ -6,7 +6,7 @@
 
 ## Contexto
 
-El kickoff deja libertad de herramientas y sugiere Azure, Snowflake, AWS y Databricks como opcionales. Necesitamos dónde desplegar la herramienta (R-35, link desplegado), un LLM que cumpla los límites de datos (R-47, el LLM no recibe datos personales; R-31, datos aprobados) y dónde guardar los secretos.
+El kickoff deja libertad de herramientas y sugiere Azure, Snowflake, AWS y Databricks como opcionales. Necesitamos dónde desplegar la herramienta (REQ-0035, link desplegado), un LLM que cumpla los límites de datos (REQ-0047, el LLM no recibe datos personales; REQ-0031, datos aprobados) y dónde guardar los secretos.
 
 ## Opciones
 

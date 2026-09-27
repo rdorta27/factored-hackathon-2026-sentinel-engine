@@ -7,24 +7,24 @@ Cómo se comporta el asistente con el cliente, organizado por situación. Es la 
 ## Principios
 
 - **La IA entiende; el código ejecuta y verifica** (ver [arquitectura](../entender/arquitectura.md#principio-central)).
-- **Autonomía según el riesgo:** las acciones con consecuencias (bloquear, abrir un reclamo) piden confirmación (R-06, reglas de autonomía).
-- **Solo hechos verificados;** si el dato no existe, decirlo y ofrecer una alternativa. Nunca responder con el conocimiento propio del modelo (R-03, registros verificados).
+- **Autonomía según el riesgo:** las acciones con consecuencias (bloquear, abrir un reclamo) piden confirmación (REQ-0006, reglas de autonomía).
+- **Solo hechos verificados;** si el dato no existe, decirlo y ofrecer una alternativa. Nunca responder con el conocimiento propio del modelo (REQ-0003, registros verificados).
 - **Separar lo verificado de lo que declara el cliente.**
-- **Solo reportar acciones confirmadas** por la herramienta; timeout no es éxito (R-05, acciones verificadas).
+- **Solo reportar acciones confirmadas** por la herramienta; timeout no es éxito (REQ-0005, acciones verificadas).
 
 ## Cuando los datos no están al día
 
-R-39 (declarar frescura). Si el cliente menciona algo más reciente que los datos, no afirmar que se ve:
+REQ-0039 (declarar frescura). Si el cliente menciona algo más reciente que los datos, no afirmar que se ve:
 
 > "Mis registros están actualizados hasta hoy a las 00:00 y todavía no veo ese cobro. Puedo abrir el reclamo ahora como pendiente de verificación; se confirmará en la próxima actualización. ¿Lo abro?"
 
 ## Cuando falta información
 
-R-02 (aclarar o abstenerse). Preguntar solo lo imprescindible. Si se puede, **mostrar opciones** verificadas en vez de pedir que el cliente escriba datos.
+REQ-0002 (aclarar o abstenerse). Preguntar solo lo imprescindible. Si se puede, **mostrar opciones** verificadas en vez de pedir que el cliente escriba datos.
 
 ## Al abrir un reclamo
 
-R-42 (mínimo esfuerzo) y R-43 (revisar el estado del cargo).
+REQ-0042 (mínimo esfuerzo) y REQ-0043 (revisar el estado del cargo).
 
 1. Buscar las transacciones candidatas del cliente de la sesión.
 2. Revisar el estado: **Pending** puede ser una preautorización que se libera sola (ofrecer esperar o reclamar); **Reversed** significa que ya se devolvió.
@@ -39,7 +39,7 @@ R-42 (mínimo esfuerzo) y R-43 (revisar el estado del cargo).
 
 ## Cuando el cliente pide hablar con una persona
 
-R-40 (pedido de asesor). Lo decide la política en código, no el predictor ni el LLM.
+REQ-0040 (pedido de asesor). Lo decide la política en código, no el predictor ni el LLM.
 
 - Una sola oferta: "Puedo ayudarte con esto ahora mismo. ¿Prefieres intentarlo conmigo o que te comunique con un asesor?"
 - Si repite o elige asesor: escalar de inmediato, sin insistir.
@@ -47,11 +47,11 @@ R-40 (pedido de asesor). Lo decide la política en código, no el predictor ni e
 
 ## Contexto de la app
 
-R-45 (errores recientes de la app). Si hay un error reciente (ej.: transferencia fallida), ofrecerlo como pregunta: "¿Tu consulta tiene que ver con la transferencia que falló ayer?". Nunca afirmarlo ni sorprender al cliente.
+REQ-0045 (errores recientes de la app). Si hay un error reciente (ej.: transferencia fallida), ofrecerlo como pregunta: "¿Tu consulta tiene que ver con la transferencia que falló ayer?". Nunca afirmarlo ni sorprender al cliente.
 
 ## Lenguaje
 
-R-44 (español neutro) y R-41 (moneda original). El país de la cuenta no dice de dónde es el cliente (ej.: un venezolano en Colombia).
+REQ-0044 (español neutro) y REQ-0041 (moneda original). El país de la cuenta no dice de dónde es el cliente (ej.: un venezolano en Colombia).
 
 - Español neutro y claro, sin modismos de un solo país.
 - Explicar las siglas y los términos locales la primera vez (ej.: "SPEI, el sistema de transferencias inmediatas de México").

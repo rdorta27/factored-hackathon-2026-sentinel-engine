@@ -21,7 +21,7 @@ OpenSpec, en la carpeta `openspec/` del repositorio.
 ## Consecuencias
 
 - **Relación con `docs/`:** `docs/` explica el reto y las reglas de diseño; `openspec/` especifica lo que se construye.
-  - Cada especificación cita los requerimientos que cubre (ej.: R-08, handoff JSON).
+  - Cada especificación cita los requerimientos que cubre (ej.: REQ-0008, handoff JSON).
   - El contexto del proyecto de OpenSpec enlaza a [arquitectura](../../entender/arquitectura.md), [conversación](../conversacion.md) y [seguridad](../seguridad.md), en vez de copiarlos.
 - **Idioma:** por definir. Las especificaciones son parte de la entrega pública, por lo que conviene escribirlas en inglés.
 - **Flujo de trabajo:** propuesta de cambio → revisión en pull request → implementación → archivo del cambio. Los issues de GitHub enlazan a su propuesta.

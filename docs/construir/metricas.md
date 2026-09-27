@@ -2,7 +2,7 @@
 
 Catálogo de métricas del sistema.
 
-**Para qué sirve:** qué se mide y cómo se reporta. **Requerimientos:** R-16 (componente vs línea base), R-20 a R-24 (evaluación), R-50 (monitoreo por país). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
+**Para qué sirve:** qué se mide y cómo se reporta. **Requerimientos:** REQ-0016 (componente vs línea base), REQ-0020 a REQ-0024 (evaluación), REQ-0050 (monitoreo por país). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
 Los objetivos numéricos quedan por definir cuando elijamos el flujo y revisemos los datos.
 
 ## Reglas para todas las métricas

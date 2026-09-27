@@ -1,7 +1,7 @@
 # AI Engineering
 
 **Criterio de evaluación:** backend, frontend y despliegue. **Responsable:** por definir.
-**Requerimientos:** R-01 a R-12 (comportamiento y demo), R-25 a R-27 (operación y seguridad), R-35 (despliegue), R-38 a R-49 (frontend, conversación, diseño). Ver [requerimientos](../../requerimientos/requerimientos.md).
+**Requerimientos:** REQ-0001 a REQ-0012 (comportamiento y demo), REQ-0025 a REQ-0027 (operación y seguridad), REQ-0035 (despliegue), REQ-0038 a REQ-0049 (frontend, conversación, diseño). Ver [requerimientos](../../requerimientos/requerimientos.md).
 **Relacionados:** [arquitectura](../../entender/arquitectura.md), [conversación](../conversacion.md) (qué dice el asistente), [seguridad](../seguridad.md).
 
 ## Qué construye esta área

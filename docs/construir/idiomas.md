@@ -1,6 +1,6 @@
 # Idiomas
 
-**Para qué sirve:** estrategia de español y portugués. **Requerimientos:** R-12 (ES y PT robustos), R-13 (limitaciones de idiomas), R-24 (desglose por idioma), R-44 (español neutro). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [conversación](conversacion.md), [glosario](../entender/glosario.md).
+**Para qué sirve:** estrategia de español y portugués. **Requerimientos:** REQ-0012 (ES y PT robustos), REQ-0013 (limitaciones de idiomas), REQ-0024 (desglose por idioma), REQ-0044 (español neutro). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [conversación](conversacion.md), [glosario](../entender/glosario.md).
 
 ## Requerimiento
 

@@ -1,7 +1,7 @@
 # Data Analytics
 
 **Criterio de evaluación:** calidad de datos e insights relevantes de la solución. **Responsable:** por definir.
-**Requerimientos:** R-13 (limitaciones), R-14 (problema respaldado por datos), R-22 (métricas), R-24 (desgloses), R-30 (lo que falta), R-50 (monitoreo por país). Ver [requerimientos](../../requerimientos/requerimientos.md).
+**Requerimientos:** REQ-0013 (limitaciones), REQ-0014 (problema respaldado por datos), REQ-0022 (métricas), REQ-0024 (desgloses), REQ-0030 (lo que falta), REQ-0050 (monitoreo por país). Ver [requerimientos](../../requerimientos/requerimientos.md).
 **Relacionados:** [dataset](../../entender/dataset.md), [métricas](../metricas.md), [opciones de flujo](../flujos/opciones.md).
 
 ## Qué construye esta área
