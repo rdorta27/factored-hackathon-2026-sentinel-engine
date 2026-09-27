@@ -5,7 +5,7 @@
 ## Autenticación
 
 - Sesión de prueba confiable o servicio de identidad.
-- Una cédula o un número de cliente **no** prueba identidad.
+- Un documento de identidad (CURP, cédula, DNI) o un número de cliente **no** prueba identidad.
 - Sesión expirada: pedir reautenticación, no seguir respondiendo.
 
 ## Control de acceso

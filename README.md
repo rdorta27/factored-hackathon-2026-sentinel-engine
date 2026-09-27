@@ -1,6 +1,6 @@
 # Sentinel Engine
 
-Felix, Natalia y Rubén · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10**
+Felix, Natalia y Rubén · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** (hora por confirmar)
 
 Punto de partida del equipo. Casi todo es una propuesta y se va ajustando a medida que avanzamos.
 
@@ -25,7 +25,7 @@ El [índice de la documentación](docs/README.md) ayuda a encontrar el resto de 
 | Completar la [tabla del equipo](docs/plan.md#equipo): fortalezas y disponibilidad | Cada uno | Lun 28/9 |
 | Dar acceso de escritura al repositorio a Felix y Natalia | Rubén | Lun 28/9 |
 | Conseguir las credenciales de los datos y confirmar que funcionan para los 3 | Por asignar | Lun 28/9 |
-| Preguntar en `#technical-help`: acceso a los datos, términos de uso, el asterisco de "public\*", hora límite y duración del video | Por asignar | Lun 28/9 |
+| Preguntar en el canal de ayuda: acceso a los datos, términos de uso, el asterisco de "public\*", hora límite y duración del video | Por asignar | Lun 28/9 |
 | Definir quién pone la suscripción de Azure, con tope de gasto y alertas | Por asignar | Lun 28/9 |
 | Primer vistazo a los datos: inventario de tablas, perfil de los motivos de contacto y contraste con el diccionario | Por asignar | Lun 28/9 |
 | Tomar las decisiones pendientes del lunes | Equipo | Lun 28/9 |

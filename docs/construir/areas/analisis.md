@@ -1,7 +1,9 @@
 # Data Analytics
 
 **Criterio de evaluación:** calidad de datos e insights relevantes de la solución. **Responsable:** por definir.
+
 **Requerimientos:** REQ-0013 (limitaciones), REQ-0014 (problema respaldado por datos), REQ-0022 (métricas), REQ-0024 (desgloses), REQ-0030 (lo que falta), REQ-0050 (monitoreo por país). Ver [requerimientos](../../requerimientos/requerimientos.md).
+
 **Relacionados:** [dataset](../../entender/dataset.md), [métricas](../metricas.md), [opciones de flujo](../flujos/opciones.md).
 
 ## Qué construye esta área
@@ -10,7 +12,7 @@
 - **Línea base** y resultados esperados para cliente y negocio.
 - **Reportes de métricas** generados con scripts sobre los logs (ver [métricas](../metricas.md)).
 - **ROI del costo por resolución**, etiquetado como ahorro proyectado.
-- **Desglose por idioma y segmento**, con investigación de disparidades.
+- **Desglose por idioma, país y segmento**, con investigación de disparidades.
 
 ## Fuentes para justificar el flujo
 

@@ -30,8 +30,8 @@ REQ-0042 (mínimo esfuerzo) y REQ-0043 (revisar el estado del cargo).
 2. Revisar el estado: **Pending** puede ser una preautorización que se libera sola (ofrecer esperar o reclamar); **Reversed** significa que ya se devolvió.
 3. Mostrar las candidatas y que el cliente elija:
    > "Veo estas compras repetidas en los últimos 7 días:
-   > 1. Supermercado Éxito, 85.000 COP, 25/09, tarjeta débito •••4521
-   > 2. Rappi, 32.500 COP, 24/09, tarjeta crédito •••7788
+   > 1. Supermercado Éxito, 85.000 COP, 25/09, tarjeta de débito •••4521
+   > 2. Rappi, 32.500 COP, 24/09, tarjeta de crédito •••7788
    > ¿Cuál quieres reclamar?"
 4. Dos cargos iguales pueden ser legítimos: mostrar los hechos sin concluir que hubo un error.
 5. Si no aparece, pedir lo mínimo y abrir el reclamo como **pendiente de verificación**.
@@ -47,7 +47,7 @@ REQ-0040 (pedido de asesor). Lo decide la política en código, no el predictor 
 
 ## Contexto de la app
 
-REQ-0045 (errores recientes de la app). Si hay un error reciente (ej.: transferencia fallida), ofrecerlo como pregunta: "¿Tu consulta tiene que ver con la transferencia que falló ayer?". Nunca afirmarlo ni sorprender al cliente.
+REQ-0045 (errores recientes de la app, solo como contexto auxiliar: el diagnóstico de app no es un flujo del planteamiento). Si hay un error reciente (ej.: transferencia fallida), ofrecerlo como pregunta: "¿Tu consulta tiene que ver con la transferencia que falló ayer?". Nunca afirmarlo ni sorprender al cliente.
 
 ## Lenguaje
 

@@ -119,6 +119,7 @@ Las siglas de métricas (CSAT, NPS, CES, FCR) son iguales en todos los países.
 | Contrato de datos | — | Data contract | Esquema y reglas que un dato debe cumplir para entrar |
 | Frescura | Actualizado hasta | Freshness | Atraso entre que ocurre algo y que el sistema lo ve |
 | Idempotente | — | — | Repetir la operación deja el mismo resultado |
+| Registro huérfano | — | Orphaned record | Registro que apunta a otro que no existe (ej.: transacción de un cliente inexistente) |
 
 ## Evaluación
 
@@ -127,6 +128,5 @@ Las siglas de métricas (CSAT, NPS, CES, FCR) son iguales en todos los países.
 | Held-out | Casos de prueba reservados | Held-out | Casos que no se usan para ajustar el sistema; se miden una vez al final |
 | Línea base | Punto de comparación | Baseline | Versión simple contra la que se compara el sistema |
 | Fuga de datos | — | Leakage | Información de prueba que se filtra al entrenamiento e infla las métricas: por caso partido, por división que ve el futuro o por variables que usan información posterior |
-| Registro huérfano | — | Orphaned record | Registro que apunta a otro que no existe (ej.: transacción de un cliente inexistente) |
 | Set adversarial | Pruebas de ataque | — | Casos de injection, acceso no autorizado, fallas |
 | p50 / p95 | Tiempo típico / tiempo de los casos lentos | p50 / p95 latency | Percentiles de latencia |

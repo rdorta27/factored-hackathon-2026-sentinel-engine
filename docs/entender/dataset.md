@@ -23,7 +23,7 @@ Fuentes: *resumen del dataset*, *diccionario de datos*.
 |---|---|---|
 | Duplicados | ~2 % | Deduplicación documentada y medida |
 | Nulos | ~5 % | En campos no obligatorios; el contrato define cuáles pueden ser nulos |
-| Llegadas tardías | Sí | Procesamiento **incremental** y política de frescura reales, no solo un fixture |
+| Llegadas tardías | Sí | Procesamiento **incremental** y política de frescura. El planteamiento pide un fixture etiquetado solo si los datos son estáticos |
 | Evolución de esquema | Sí | Contratos versionados |
 
 Son una prueba de ingeniería de datos: se manejan, se documentan y se miden; no se borran en silencio.

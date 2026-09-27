@@ -1,6 +1,6 @@
 # Plan del equipo
 
-Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** · Se actualiza a medida que decidimos.
+Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** (hora por confirmar) · Se actualiza a medida que decidimos.
 
 > Este plan lo vamos construyendo juntos. Lo que dice **tentativo** o **propuesta** está abierto a cambios; las decisiones que nos faltan están [al final](#decisiones-pendientes).
 
@@ -34,12 +34,12 @@ Idea guía: **primero que funcione**. Si algo opcional pone en riesgo lo obligat
 
 | Qué | Propuesta |
 |---|---|
-| Comunicación | Slack del equipo. Dudas técnicas del reto: `#technical-help` del hackathon |
-| Seguimiento diario | 15 min o mensaje en Slack: qué hice, qué haré, qué me bloquea |
+| Comunicación | Canal del equipo. Dudas técnicas del reto: canal de ayuda del hackathon |
+| Seguimiento diario | 15 min o mensaje en el canal: qué hice, qué haré, qué me bloquea |
 | Tareas | GitHub Issues con etiquetas de prioridad (P0, P1, P2) y de área; tablero Por hacer, En curso, Hecho |
 | Especificaciones | OpenSpec: cada cambio se propone antes de implementarlo y cita sus requerimientos |
 | Código | Rama por tarea y pull request revisado por otra persona. `main` siempre funciona |
-| Decisiones | Una por archivo en [decisiones](construir/decisiones/), anunciada en Slack |
+| Decisiones | Una por archivo en [decisiones](construir/decisiones/), anunciada en el canal |
 | Avance | Al cerrar una tarea, actualizar su estado en la [matriz](requerimientos/matriz.md) |
 | Repositorio | Uno solo (`factored-hackathon-2026-sentinel-engine`), privado durante el trabajo y público al final |
 
@@ -51,7 +51,7 @@ Dos cosas son obligatorias porque las pide el hackathon: no subir secretos ni da
 - [x] Repositorio creado
 - [ ] Los 3 con acceso al repositorio
 - [ ] Acceso a los datos (credenciales) funcionando para los 3
-- [ ] Todos en el Slack del hackathon
+- [x] Equipo completo en el canal del hackathon
 
 ## Decisiones tomadas
 
@@ -71,7 +71,7 @@ Dos cosas son obligatorias porque las pide el hackathon: no subir secretos ni da
 | 3 | Alcance de la demo | Qué acciones hace el asistente (consultar, bloquear, abrir reclamo…) y cuáles no | Mar 29/9 |
 | **Equipo** | | | |
 | 4 | Responsables por área | Quién toma dos áreas | Lun 28/9 |
-| 5 | Seguimiento diario | Reunión de 15 min o mensaje en Slack; hora | Lun 28/9 |
+| 5 | Seguimiento diario | Reunión de 15 min o mensaje en el canal; hora | Lun 28/9 |
 | 6 | Herramienta de tareas | GitHub Issues y Projects, u otra | Lun 28/9 |
 | 7 | Flujo de código | Pull request obligatorio o push directo a `main`; quién revisa | Lun 28/9 |
 | 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | Lun 28/9 |
@@ -97,9 +97,9 @@ Necesitan información, no una decisión.
 | Pregunta | Quién la averigua | Cuándo |
 |---|---|---|
 | ¿Cómo se accede a los datos y qué formato tienen? | Quien tenga las credenciales | Dom 27/9 |
-| ¿Hay términos de uso de los datos publicados? (el planteamiento los menciona) | Preguntar en `#technical-help` | Dom 27/9 |
-| ¿Qué significa el asterisco de "public\*"? ¿El repo debe ser público desde el inicio? | Preguntar en `#technical-help` | Dom 27/9 |
-| Hora límite del lunes 5/10 y duración máxima del video | Preguntar en `#technical-help` | Lun 28/9 |
+| ¿Hay términos de uso de los datos publicados? (el planteamiento los menciona) | Canal de ayuda del hackathon | Dom 27/9 |
+| ¿Qué significa el asterisco de "public\*"? ¿El repo debe ser público desde el inicio? | Canal de ayuda del hackathon | Dom 27/9 |
+| Hora límite del lunes 5/10 y duración máxima del video | Canal de ayuda del hackathon | Lun 28/9 |
 | ¿Hay varias fotos mensuales? ¿Cómo se calculó `is_repeat_complainer`? | Área de datos | Al recibir los datos |
 | ¿Cómo construimos las etiquetas de referencia (qué casos requieren humano)? | Área de ML | Mar 29/9 |
 | ¿El modelo de Azure OpenAI que queremos está disponible en nuestra región? | Quien ponga la suscripción | Lun 28/9 |
