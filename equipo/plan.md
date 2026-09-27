@@ -19,16 +19,14 @@ Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** 
 | Día | Fecha | Meta | Hito |
 |---|---|---|---|
 | Dom | 27/9 | Preparar: acceso a los datos, repositorio, lecturas | Todos con acceso |
-| Lun | 28/9 | **Decidir** flujo, stack, responsables y forma de trabajo | Decisiones registradas |
-| Mar | 29/9 | Esqueleto: pipeline mínimo, 2-3 herramientas mock, chat simple | |
-| Mié | 30/9 | Caso normal de punta a punta; línea base del componente aprendido | **Un caso funciona completo** |
-| Jue | 1/10 | Casos ambiguo y humano, handoff, portugués, componente aprendido | **3 casos en ES y PT** |
-| Vie | 2/10 | Despliegue, evaluación held-out, set adversarial | **Link público y métricas v1** (fin de P0) |
-| Sáb | 3/10 | P1: incremental, tracking, observabilidad, desgloses. Congelar funcionalidades en la noche | **Sin cambios de código después** |
-| Dom | 4/10 | Presentación, video, README en inglés, limitaciones; revisar el repo sin secretos | Material listo |
-| Lun | 5/10 | Margen y envío temprano | **Entregado** |
+| Lun | 28/9 | **Decidir** flujo, stack, responsables y forma de trabajo. Primer vistazo a los datos | Decisiones registradas |
+| Mar | 29/9 | Esqueleto: 2-3 herramientas mock, orquestador, chat simple, pipeline mínimo. Análisis que respalda el flujo | **El esqueleto responde de punta a punta** |
+| Mié | 30/9 | Caso normal con datos reales, handoff JSON, componente aprendido vs línea base. Guion de presentación y video | **Un caso funciona completo** |
+| Jue | 1/10 | Casos ambiguo y humano, portugués, set adversarial, despliegue. P1 si alcanza | **3 casos en ES y PT, link público** |
+| Vie | 2/10 | Evaluación held-out y métricas. Presentación, video, README en inglés, limitaciones; revisar el repo sin secretos. Congelar el código en la noche | **Listo para enviar** |
+| Sáb a lun | 3/10 a 5/10 | Margen: solo correcciones. Envío temprano | **Entregado** |
 
-Idea guía: **primero que funcione**. Si algo opcional pone en riesgo lo obligatorio, lo dejamos para después. Prioridades en [requerimientos](../docs/requerimientos/requerimientos.md).
+Meta: **todo listo el viernes 2/10** y el fin de semana como margen. Idea guía: **primero que funcione**. Si algo opcional pone en riesgo lo obligatorio, lo dejamos para después. Prioridades en [requerimientos](../docs/requerimientos/requerimientos.md).
 
 ## Estrategia de mocks (propuesta)
 
@@ -36,9 +34,8 @@ Sirve para cualquier flujo: se arma rápido con mocks bien documentados y despu�
 
 - **Mar 29/9 (esqueleto):** 2-3 herramientas mock en memoria con contratos fijos: 1-2 de lectura (ej.: consultar datos del cliente o sus movimientos), 1 de acción (ej.: abrir un reclamo o bloquear una tarjeta) y el handoff. Chat simple y orquestador Entender → Decidir → Actuar → Verificar → Escalar. Política en código y handoff JSON desde el esqueleto; el LLM entiende, redacta y elige qué herramienta pedir, pero no decide permisos ni confirma acciones.
 - **Sustitución:** cada mock se reemplaza cuando el hito del cronograma lo necesita, sin cambiar el contrato:
-  - Mié 30/9, caso normal: las lecturas pasan al almacenamiento elegido (decisión 12; propuesta: DuckDB), con frescura declarada.
-  - Jue 1/10, casos ambiguo y humano: la acción, con confirmación explícita, reintentos acotados y acción idempotente.
-  - Vie 2/10, despliegue: pipeline con particiones, watermark y deduplicación.
+  - Mié 30/9, caso normal: las lecturas pasan al almacenamiento elegido (decisión 12; propuesta: DuckDB), con frescura declarada; la acción, con confirmación explícita.
+  - Jue 1/10, casos ambiguo y humano, y despliegue: reintentos acotados, acción idempotente y pipeline con particiones, watermark y deduplicación.
   - Lo que no llegue queda como mock y se declara en las limitaciones.
 - **Regla:** cada mock documenta su contrato y sus limitaciones, como pide el planteamiento (Data and execution boundaries) para aceptarlo: REQ-0004 (herramientas seguras), REQ-0007 (permisos en código), REQ-0032 (mocks documentados).
 - **Componente aprendido:** donde hoy hay una regla fija, la regla se conserva como línea base y se compara con el componente sobre el mismo held-out (REQ-0016, componente aprendido vs línea base).

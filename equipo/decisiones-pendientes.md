@@ -23,9 +23,10 @@ Estas bloquean el esqueleto del martes.
 | 7 | Flujo de código | Pull request obligatorio o push directo a `main`; quién revisa | | | | |
 | 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | [Cronograma](plan.md#cronograma-tentativo) | | | |
 | 9 | Lenguaje y framework del backend | Propuesta: Python con FastAPI | [Arquitectura](../docs/entender/arquitectura.md#stack) | | | |
-| 10 | LLM | Propuesta: Azure OpenAI; qué modelo | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
+| 10 | LLM | a) Azure OpenAI; qué modelo. b) propuesta de Natalia (canal, 27/9): Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués, handoff y evaluación, con un enrutador entre ambos | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 17 | Visibilidad del repositorio | Privado ahora y público al final, o público desde ya (hoy está público). Incluye si `equipo/` queda en la entrega o se borra antes | [Seguridad](../docs/construir/seguridad.md#repositorio-y-despliegue-públicos) | | | |
+| 12 | Almacenamiento y pipeline de datos | a) Local con DuckDB. b) propuesta de Natalia (canal, 27/9): Databricks con capas Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse. Define la arquitectura de datos | [Dataset](../docs/entender/dataset.md), [área de datos](../docs/construir/areas/datos.md) | | | |
 | 18 | Idioma de las especificaciones de OpenSpec | Propuesta: inglés, porque se entregan | [Decisión 002](../docs/construir/decisiones/002-openspec.md) | | | |
 
 ## Más adelante
@@ -34,9 +35,8 @@ Estas bloquean el esqueleto del martes.
 |---|---|---|---|
 | 3 | Alcance de la demo | Qué acciones hace el asistente (consultar, bloquear, abrir reclamo…) y cuáles no | Mar 29/9 |
 | 11 | Frontend | Chat simple: Streamlit, Gradio o web propia | Mar 29/9 |
-| 12 | Almacenamiento de datos | Local (DuckDB) o en Azure | Mar 29/9 |
-| 13 | Servicios de Azure | Despliegue (Container Apps o App Service), secretos (Key Vault) | Mar 29/9 |
+| 13 | Servicios de Azure | Despliegue (Container Apps o App Service), secretos (Key Vault). Con la opción b de la decisión 12: ADLS, Databricks y Unity Catalog | Mar 29/9 |
 | 15 | Casos de prueba en portugués | Traducidos, sintéticos o escritos por alguien que lea portugués | Mar 29/9 |
-| 14 | Tracking de experimentos | MLflow, Azure ML u otro | Mié 30/9 |
-| 20 | Quién hace la presentación y el video | | Vie 2/10 |
-| 19 | Idioma de `docs/` en la entrega | Dejarlos en español o traducir los principales | Sáb 3/10 |
+| 20 | Quién hace la presentación y el video | El guion empieza el miércoles | Mar 29/9 |
+| 14 | Tracking de experimentos | MLflow (incluido en Databricks si se elige la opción b de la decisión 12), Azure ML u otro | Mié 30/9 |
+| 19 | Idioma de `docs/` en la entrega | Dejarlos en español o traducir los principales | Jue 1/10 |
