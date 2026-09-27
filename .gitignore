@@ -1,16 +1,34 @@
-# Secretos
-.env
-.env.*
-*.pem
-*.key
-
-# Datos del hackathon (no se suben)
-data/
-
-# Python
+# ==========================================
+# Entornos Virtuales y Cache de Python
+# ==========================================
 __pycache__/
+*.py[cod]
+*$py.class
 .venv/
-*.pyc
+venv/
+ENV/
+.env
 
-# PDF generados (se comparten por Slack)
-*.pdf
+# ==========================================
+# Exclusión de Datos Locales (S3 Raw / Delta)
+# ==========================================
+# Ignorar absolutamente todo el contenido dentro de data/
+data/*
+
+# Excepciones: permitir archivos .gitkeep para conservar carpetas vacías en git
+!data/**/.gitkeep
+
+# Archivos de base de datos local y deltas temporales
+*.db
+*.sqlite
+*.duckdb
+*.parquet
+*.csv
+
+# ==========================================
+# IDEs y Logs de Ejecución
+# ==========================================
+.vscode/
+.idea/
+*.log
+.DS_Store
