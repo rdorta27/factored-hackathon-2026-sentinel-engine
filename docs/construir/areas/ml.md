@@ -2,7 +2,7 @@
 
 **Criterio de evaluación:** selección, optimización, implementación y tracking de modelos. **Responsable:** por definir.
 
-**Requerimientos:** REQ-0012 (ES y PT robustos), REQ-0016 (componente vs línea base), REQ-0017 (sin fuga), REQ-0019 (tracking), REQ-0020 (held-out), REQ-0021 (pruebas de fallas), REQ-0023 (LLM juez), REQ-0033 (separación en crédito, si aplica), REQ-0048 (orden de decisión). Ver [requerimientos](../../requerimientos/requerimientos.md).
+**Requerimientos:** los de área `ml` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 
 **Relacionados:** [dataset](../../entender/dataset.md) (etiquetas y columnas), [métricas](../metricas.md), [arquitectura](../../entender/arquitectura.md).
 
@@ -51,7 +51,7 @@ Descartado como componente aprendido: segmentación de clientes (sin etiquetas v
   3. **Por variables:** cada variable se calcula solo con información anterior a la fecha y hora del caso (ej.: "¿escaló antes?" cuenta solo escalaciones previas).
 - Una división aleatoria "ve el futuro" e infla la métrica (ej.: 94 % aleatoria frente a 81 % por tiempo). Es el mismo modelo: lo que cambia es la medición. Reportar la división por tiempo, junto a la línea base en la misma división. Más datos no corrigen una mala división.
 - **Held-out:** se mide una sola vez al final; mejorar el sistema con el set de desarrollo.
-- **Multilingüe:** el componente debe funcionar en PT sin datos de entrenamiento en PT (ver [idiomas](../idiomas.md)).
+- **Multilingüe:** el componente debe funcionar en PT sin datos de entrenamiento en PT (ver [idiomas](../conversacion.md#idiomas)).
 - **LLM juez:** rúbrica documentada y validada contra una muestra humana.
 
 ## Evidencia para la evaluación

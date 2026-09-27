@@ -2,7 +2,7 @@
 
 **Criterio de evaluación:** calidad de datos e insights relevantes de la solución. **Responsable:** por definir.
 
-**Requerimientos:** REQ-0013 (limitaciones), REQ-0014 (problema respaldado por datos), REQ-0022 (métricas), REQ-0024 (desgloses), REQ-0030 (lo que falta), REQ-0050 (monitoreo por país). Ver [requerimientos](../../requerimientos/requerimientos.md).
+**Requerimientos:** los de área `analisis` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 
 **Relacionados:** [dataset](../../entender/dataset.md), [métricas](../metricas.md), [opciones de flujo](../flujos/opciones.md).
 
@@ -28,7 +28,7 @@ Las campañas (`marketing_campaigns`, `campaign_sends`) pueden explicar picos de
 
 ## Monitoreo por país
 
-**Este es el documento dueño del tema.** Se referencia desde [métricas](../metricas.md) (desglose), [AI](ai.md) (observabilidad) y la [matriz](../../requerimientos/matriz.md).
+**Este es el documento dueño del tema.** Se referencia desde [métricas](../metricas.md) (desglose), [AI](ai.md) (observabilidad) y los [requerimientos](../../requerimientos/requerimientos.md) (REQ-0050, monitoreo por país).
 
 El banco opera en MX, CO y AR, con integraciones distintas por país. Desglosar latencia, fallas de herramientas, escalamientos y quejas por país permite detectar problemas de operación y sirve para el análisis de equidad. País y acento son atributos que ya vienen en los datos: no requieren un modelo.
 
