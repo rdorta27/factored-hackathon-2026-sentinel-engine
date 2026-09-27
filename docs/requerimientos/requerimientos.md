@@ -9,7 +9,7 @@ Qué debe cumplir el sistema. Cada requerimiento tiene un ID con formato `REQ-##
 | Columna | Valores |
 |---|---|
 | **Tipo** | **F** = funcional (qué hace) · **NF** = no funcional (cómo: seguridad, confiabilidad, operación) · **DML** = datos y ML · **E** = entrega |
-| **Prioridad** | **P0** = obligatorio, hasta el vie 2/10 · **P1** = suma puntos, sáb 3/10 · **P2** = si sobra tiempo |
+| **Prioridad** | **P0** = obligatorio, listo el vie 2/10 · **P1** = suma puntos, desde el jue 1/10 si el P0 va al día · **P2** = si sobra tiempo. El código se congela el vie 2/10 en la noche |
 | **Flujo** | "Todos", o el flujo del que depende (se define el lunes 28/9) |
 | **Criterio** | Criterio de evaluación del kickoff: Fundamento, AI Engineering, Data Engineering, Data Analytics, Machine Learning |
 | **Área** | Áreas que trabajan en el requerimiento; la primera es la dueña y las demás colaboran: [ai](../construir/areas/ai.md) · [ml](../construir/areas/ml.md) · [datos](../construir/areas/datos.md) · [analisis](../construir/areas/analisis.md) |
