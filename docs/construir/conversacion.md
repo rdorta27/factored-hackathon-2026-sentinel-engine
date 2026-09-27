@@ -1,8 +1,8 @@
 # Conversación
 
-Cómo se comporta el asistente con el cliente, organizado por situación. Es la base de la demo y del video.
+Cómo se comporta el asistente con el cliente, organizado por situación, y cómo maneja el español y el portugués. Es la base de la demo y del video.
 
-**Para qué sirve:** decidir qué dice y qué hace el asistente en cada situación. **Relacionados:** [arquitectura](../entender/arquitectura.md), [seguridad](seguridad.md), [idiomas](idiomas.md), [requerimientos](../requerimientos/requerimientos.md).
+**Para qué sirve:** decidir qué dice y qué hace el asistente en cada situación. **Relacionados:** [arquitectura](../entender/arquitectura.md), [seguridad](seguridad.md), [requerimientos](../requerimientos/requerimientos.md).
 
 ## Principios
 
@@ -56,5 +56,50 @@ REQ-0044 (español neutro) y REQ-0041 (moneda original). El país de la cuenta n
 - Español neutro y claro, sin modismos de un solo país.
 - Explicar las siglas y los términos locales la primera vez (ej.: "SPEI, el sistema de transferencias inmediatas de México").
 - Entender términos de otros países ("pago móvil", "Pix") y responder con lo que sí existe en su banco.
-- El idioma de la respuesta sigue al cliente; la moneda sigue a la cuenta.
-- Detalle de ES y PT en [idiomas](idiomas.md); equivalencias por país en el [glosario](../entender/glosario.md).
+- El idioma de la respuesta sigue al cliente; la moneda sigue a la cuenta (ver [idiomas](#idioma-país-y-moneda-son-independientes)).
+- Equivalencias por país en el [glosario](../entender/glosario.md).
+
+## Idiomas
+
+### Qué pide el reto
+
+- Interacciones **robustas** en español y portugués. El kickoff lo marca como obligatorio.
+- Reportar las limitaciones de datos y de cobertura de idiomas.
+- No se exige paridad exacta, pero sí medir por idioma e investigar las diferencias.
+
+### Riesgo principal
+
+**No nos dan datos en portugués para construir** (el dataset confirma: todo el texto está en español, con acentos de México, Colombia y Argentina; ningún país lusófono), pero los evaluadores probablemente sí prueben en PT, como un set de prueba oculto.
+
+### Estrategia
+
+- Preferir componentes **multilingües** (LLM, embeddings multilingües) sobre modelos entrenados solo en ES.
+- La lógica determinista **no depende del idioma**: nada de palabras clave solo en español.
+- Crear casos de prueba propios en PT (traducidos o sintéticos), **etiquetados como tales** y **reservados**: no se usan para ajustar el sistema.
+- Incluir PT en el set adversarial (injection, ambigüedad multilingüe).
+
+### Idioma, país y moneda son independientes
+
+Un cliente puede escribir en portugués y tener su cuenta en MX, CO o AR.
+
+- El **idioma de la respuesta** sigue al cliente.
+- La **moneda** sigue a la cuenta o transacción (MXN, COP, ARS o USD), nunca se convierte al idioma.
+- Las métricas se desglosan por idioma **y** por país, por separado.
+
+### Portugués de Brasil
+
+Lo más probable es que las pruebas en portugués sean de Brasil (pt-BR). El cliente puede usar términos propios del sistema brasileño (Pix, extrato, estorno, atendente, CPF) aunque su cuenta sea de MX, CO o AR. El asistente debe entenderlos, pero responder con los datos reales de la cuenta (por ejemplo, no hay Pix en el dataset). Equivalencias en el [glosario](../entender/glosario.md#equivalencias-por-país).
+
+### Variantes del español
+
+El dataset incluye campos de detección de acento (mexicano, colombiano, argentino y, en `customers`, neutral). Sirven como segmentos para medir equidad dentro del español.
+
+### Cómo se reporta
+
+- Métricas desglosadas por idioma, con n.
+- Si PT rinde peor: explicar la causa (ej.: sin datos de entrenamiento en PT), no ocultarlo.
+
+### Preguntas abiertas
+
+- ¿Cómo generamos y validamos los casos en PT? ¿Alguien del equipo lee portugués?
+- ¿Cuántos casos PT necesitamos para que la comparación tenga sentido?

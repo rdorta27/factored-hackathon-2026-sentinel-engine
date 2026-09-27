@@ -56,7 +56,7 @@ Enviar a hackathon.admin@factored.ai:
 
 ## Riesgos conocidos
 
-- **Portugués sin datos:** los evaluadores probablemente prueben en portugués de Brasil. Ver [idiomas](../construir/idiomas.md).
+- **Portugués sin datos:** los evaluadores probablemente prueben en portugués de Brasil. Ver [idiomas](../construir/conversacion.md#idiomas).
 - **Datos con problemas a propósito:** duplicados, nulos, llegadas tardías, esquema cambiante. Ver [dataset](dataset.md).
 - **Nadie del equipo trabaja en contact centers:** el [glosario](glosario.md) explica las siglas del negocio.
 

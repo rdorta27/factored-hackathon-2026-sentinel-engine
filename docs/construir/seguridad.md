@@ -1,6 +1,6 @@
 # Seguridad
 
-**Para qué sirve:** reglas de seguridad que afectan a todas las áreas. **Requerimientos:** REQ-0005 (acciones verificadas), REQ-0007 (permisos en código), REQ-0026 (reintentos), REQ-0027 (autenticación y acceso), REQ-0031 (datos aprobados), REQ-0032 (mocks), REQ-0034 (repo sin secretos), REQ-0047 (LLM sin identificadores). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [arquitectura](../entender/arquitectura.md), [conversación](conversacion.md).
+**Para qué sirve:** reglas de seguridad que afectan a todas las áreas. **Relacionados:** [arquitectura](../entender/arquitectura.md), [conversación](conversacion.md).
 
 ## Autenticación
 

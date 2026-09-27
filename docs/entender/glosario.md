@@ -42,40 +42,37 @@ El público del hackathon es técnico (software, datos). Estos términos de cont
 
 - **Dataset:** México, Colombia y Argentina.
 - **Brasil:** el reto exige atender en portugués, y lo más probable es que las pruebas sean en portugués de Brasil.
-- **Venezuela y Ecuador:** no aplican a la solución. Están para que el equipo entienda los términos desde su propia experiencia.
 
 Las siglas de métricas (CSAT, NPS, CES, FCR) son iguales en todos los países.
 
-**Verificar con el equipo:** los términos de Venezuela y Ecuador deben confirmarlos los miembros de esos países.
-
 ### Términos bancarios
 
-| Concepto | Dataset (MX / CO / AR) | Brasil (pt-BR) | Venezuela | Ecuador |
-|---|---|---|---|---|
-| Moneda | MXN / COP / ARS (+ USD) | BRL (real) | VES (bolívar) | USD (economía dolarizada) |
-| Documento de identidad | CURP / CC, CE / DNI | CPF (número de registro de persona) y RG (carnet de identidad) | Cédula de identidad (V- nacional, E- extranjero) | Cédula de identidad |
-| Cuenta corriente | Cuenta corriente / de cheques | Conta corrente | Cuenta corriente | Cuenta corriente |
-| Cuenta de ahorro | Cuenta de ahorro | Conta poupança | Cuenta de ahorro | Cuenta de ahorros |
-| Estado de cuenta | Estado de cuenta | Extrato | Estado de cuenta | Estado de cuenta |
-| Saldo | Saldo | Saldo | Saldo | Saldo |
-| Tarjeta de crédito / débito | Tarjeta de crédito / débito | Cartão de crédito / débito | Tarjeta de crédito / débito | Tarjeta de crédito / débito |
-| Bloquear la tarjeta | Bloquear la tarjeta | Bloquear o cartão | Bloquear la tarjeta | Bloquear la tarjeta |
-| Cargo no reconocido | Cargo no reconocido | Compra não reconhecida | Cargo no reconocido | Consumo no reconocido |
-| Contracargo / devolución | Contracargo | Contestação de compra, estorno (devolución) | Reverso | Reverso, contracargo |
-| Preautorización | Preautorización | Pré-autorização | Retención | Retención |
-| Mora | Mora, días de atraso | Inadimplência, dias de atraso | Mora | Mora |
-| Pago inmediato entre cuentas | Transferencia (SPEI en MX) | Pix | Pago móvil | Transferencia |
+| Concepto | Dataset (MX / CO / AR) | Brasil (pt-BR) |
+|---|---|---|
+| Moneda | MXN / COP / ARS (+ USD) | BRL (real) |
+| Documento de identidad | CURP / CC, CE / DNI | CPF (número de registro de persona) y RG (carnet de identidad) |
+| Cuenta corriente | Cuenta corriente / de cheques | Conta corrente |
+| Cuenta de ahorro | Cuenta de ahorro | Conta poupança |
+| Estado de cuenta | Estado de cuenta | Extrato |
+| Saldo | Saldo | Saldo |
+| Tarjeta de crédito / débito | Tarjeta de crédito / débito | Cartão de crédito / débito |
+| Bloquear la tarjeta | Bloquear la tarjeta | Bloquear o cartão |
+| Cargo no reconocido | Cargo no reconocido | Compra não reconhecida |
+| Contracargo / devolución | Contracargo | Contestação de compra, estorno (devolución) |
+| Preautorización | Preautorización | Pré-autorização |
+| Mora | Mora, días de atraso | Inadimplência, dias de atraso |
+| Pago inmediato entre cuentas | Transferencia (SPEI en MX) | Pix |
 
 ### Atención al cliente
 
-| Concepto | Dataset (MX / CO / AR) | Brasil (pt-BR) | Venezuela | Ecuador |
-|---|---|---|---|---|
-| Asesor del call center | Asesor, agente, ejecutivo | Atendente | Operador, asesor | Asesor |
-| Central de atención | Call center, centro de contacto | Central de atendimento, SAC (Serviço de Atendimento ao Consumidor) | Call center, centro de atención | Call center, centro de contacto |
-| Sistema de reclamos | PQR (CO), aclaraciones (MX), reclamos (AR) | SAC; si no se resuelve, Ouvidoria (defensoría interna del banco) | Reclamos | Reclamos |
-| Defensor del cliente | Defensor del consumidor financiero (CO) | Ouvidoria | Defensor del cliente | Defensor del cliente |
-| Regulador bancario | CNBV (MX), SFC (CO), BCRA (AR) | Banco Central do Brasil | SUDEBAN | Superintendencia de Bancos |
-| "Quiero hablar con una persona" | Quiero hablar con un asesor | Quero falar com um atendente | Quiero hablar con un operador | Quiero hablar con un asesor |
+| Concepto | Dataset (MX / CO / AR) | Brasil (pt-BR) |
+|---|---|---|
+| Asesor del call center | Asesor, agente, ejecutivo | Atendente |
+| Central de atención | Call center, centro de contacto | Central de atendimento, SAC (Serviço de Atendimento ao Consumidor) |
+| Sistema de reclamos | PQR (CO), aclaraciones (MX), reclamos (AR) | SAC; si no se resuelve, Ouvidoria (defensoría interna del banco) |
+| Defensor del cliente | Defensor del consumidor financiero (CO) | Ouvidoria |
+| Regulador bancario | CNBV (MX), SFC (CO), BCRA (AR) | Banco Central do Brasil |
+| "Quiero hablar con una persona" | Quiero hablar con un asesor | Quero falar com um atendente |
 
 ## Arquitectura
 
