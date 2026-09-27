@@ -37,7 +37,7 @@ Cliente ⇄ Frontend (chat)                      Archivos del dataset
 Orden de prioridad, de mayor a menor:
 
 1. **Política en código.** Permisos, confirmaciones y reglas fijas (ej.: si el cliente pide hablar con una persona, se escala).
-2. **Predictor de escalamiento** (componente aprendido). Decide si conviene escalar donde no hay regla.
+2. **Componente aprendido**, si participa en la decisión (ej.: un predictor de escalamiento). Decide si conviene escalar donde no hay regla.
 3. **LLM.** Entiende al cliente, redacta las respuestas y elige qué herramienta pedir; nunca elige de qué cliente leer.
 
 ## Qué ve el LLM
@@ -58,7 +58,7 @@ Orden de prioridad, de mayor a menor:
 
 ## Componente aprendido
 
-Candidato principal: **predictor de escalamiento**, entrenado con el historial del call center y comparado contra reglas simples. Detalle en [ML](../construir/areas/ml.md).
+Se decide junto con el flujo (lunes 28/9). Candidatos: predictor de escalamiento, clasificador de intención, detector de fraude. Cualquiera se compara contra una línea base. Detalle en [ML](../construir/areas/ml.md).
 
 ## Stack
 
@@ -68,6 +68,6 @@ Candidato principal: **predictor de escalamiento**, entrenado con el historial d
 | Especificaciones | **OpenSpec** ([decisión 002](../construir/decisiones/002-openspec.md)) |
 | LLM | Por decidir; propuesta: Azure OpenAI |
 | Despliegue | Por decidir; propuesta: Azure Container Apps o App Service |
-| Lenguaje, framework, almacenamiento | Por decidir. La propuesta inicial de [opciones de flujo](../construir/flujos/opciones.md) (DuckDB, FastAPI, embeddings multilingües) sigue siendo válida dentro de Azure |
+| Lenguaje, framework, almacenamiento | Por decidir. La propuesta inicial de [opciones de flujo](../construir/flujos/opciones.md) (DuckDB, FastAPI, embeddings multilingües, Azure OpenAI) sigue siendo válida dentro de Azure |
 
 Cada elección se registra en [decisiones](../construir/decisiones/).

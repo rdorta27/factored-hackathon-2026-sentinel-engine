@@ -6,7 +6,7 @@
 
 ## Contexto
 
-Somos 3 personas con 8 días y asistentes de IA para programar. Necesitamos que cada pieza tenga una especificación clara antes de implementarla, que el cambio sea revisable y que las especificaciones sirvan como documentación para la evaluación (criterio "fundamento y documentación").
+Somos 3 personas con plazo hasta el 5/10 y asistentes de IA para programar. Necesitamos que cada pieza tenga una especificación clara antes de implementarla, que el cambio sea revisable y que las especificaciones sirvan como documentación para la evaluación (criterio "fundamento y documentación").
 
 ## Opciones
 

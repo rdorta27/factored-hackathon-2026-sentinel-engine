@@ -6,9 +6,9 @@
 
 ## Qué hay que construir
 
-Un **asistente de atención al cliente para un banco** que opera en México, Colombia y Argentina. No un chatbot: un **sistema** que entiende al cliente, consulta datos reales, ejecuta acciones seguras, verifica que ocurrieron y pasa el caso a una persona cuando corresponde.
+Un **asistente de atención al cliente para un banco** que opera en México, Colombia y Argentina. No un chatbot: un **sistema** que entiende al cliente, consulta datos verificados, ejecuta acciones seguras, verifica que ocurrieron y pasa el caso a una persona cuando corresponde.
 
-- **Un solo flujo**, a elegir el lunes 28/9: consultas de cuenta o pagos, tarjetas, reclamos por cargos no reconocidos, o información y elegibilidad de crédito. Más flujos no suman puntos.
+- **Un solo flujo**, a elegir el lunes 28/9: consultas de cuenta o pagos, tarjetas, reclamos por cargos no reconocidos, o información y elegibilidad de crédito. Implementar más flujos no da bonificación automática: cuentan la profundidad y el criterio de ingeniería.
 - Debe funcionar en **español y portugués**. Los datos solo están en español.
 - **Primero que funcione de punta a punta**, después optimizar.
 
@@ -41,7 +41,9 @@ Resumen; el detalle está en [arquitectura](arquitectura.md) y [conversación](.
 
 Métricas principales: **resolución automatizada segura**, **resultados inseguros** y **costo**. Detalle en [métricas](../construir/metricas.md).
 
-## Entregables: lunes 5/10
+## Entregables: lunes 5/10 (hora por confirmar)
+
+El reto es un sprint de 10 días: lanzamiento el 25/9 y cierre de envíos el 5/10.
 
 Enviar a hackathon.admin@factored.ai:
 

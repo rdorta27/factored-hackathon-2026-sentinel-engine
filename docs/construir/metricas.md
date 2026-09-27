@@ -3,6 +3,7 @@
 Catálogo de métricas del sistema.
 
 **Para qué sirve:** qué se mide y cómo se reporta. **Requerimientos:** REQ-0016 (componente vs línea base), REQ-0020 a REQ-0024 (evaluación), REQ-0050 (monitoreo por país). Ver [requerimientos](../requerimientos/requerimientos.md). **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
+
 Los objetivos numéricos quedan por definir cuando elijamos el flujo y revisemos los datos.
 
 ## Reglas para todas las métricas
@@ -76,6 +77,8 @@ Al menos uno, siempre contra una línea base y sobre held-out. Depende de la arq
 | Componente posible | Métrica | Línea base posible |
 |---|---|---|
 | Clasificador de intención o motivo | accuracy, F1 por clase | Palabras clave o clase mayoritaria |
+| Predictor de escalamiento | AUC, transferencias omitidas e innecesarias al umbral elegido | Reglas simples por motivo |
+| Detección de fraude (tarjetas o reclamos) | AUC, precisión y recall a un umbral | `fraud_score` existente del banco |
 | Retrieval de políticas (RAG) | recall@k, MRR | BM25 |
 | Modelo de riesgo (si el flujo es crédito) | AUC, calibración | Regresión logística o regla fija |
 
@@ -86,7 +89,7 @@ AUC mide el **orden** (0,5 = azar), no la calibración ni el umbral; el umbral l
 | Métrica | Fórmula |
 |---|---|
 | Calidad de datos | % de registros que pasan los contratos (tipos, nulos, rangos) |
-| Frescura | tiempo desde la llegada del dato hasta que está disponible |
+| Frescura | tiempo desde que ocurre el hecho hasta que el sistema lo ve (ver [glosario](../entender/glosario.md#datos)) |
 | Prueba de actualización | el fixture de actualización pasa (sí / no) |
 
 ## Preguntas abiertas

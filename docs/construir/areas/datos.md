@@ -1,7 +1,9 @@
 # Data Engineering
 
 **Criterio de evaluación:** extracción y transformación de los datos. **Responsable:** por definir.
+
 **Requerimientos:** REQ-0015 (pipeline con contratos), REQ-0018 (incremental), REQ-0027 (aislamiento por cliente), REQ-0031 (datos etiquetados), REQ-0039 (frescura). Ver [requerimientos](../../requerimientos/requerimientos.md).
+
 **Relacionados:** [dataset](../../entender/dataset.md) (tablas y columnas), [arquitectura](../../entender/arquitectura.md).
 
 ## Qué construye esta área

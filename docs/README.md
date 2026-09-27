@@ -10,11 +10,11 @@ El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y
 
 Lee en este orden (unos 20 minutos):
 
-0. [Plan del equipo](plan.md): cronograma y cómo trabajamos
 1. [El reto en una página](entender/resumen.md)
-2. [Arquitectura](entender/arquitectura.md)
-3. [Requerimientos](requerimientos/requerimientos.md): solo la tabla de resumen y los P0
-4. El documento de tu área en [construir/areas/](construir/areas/)
+2. [Plan del equipo](plan.md): cronograma y cómo trabajamos
+3. [Arquitectura](entender/arquitectura.md)
+4. [Requerimientos](requerimientos/requerimientos.md): solo la tabla de resumen y los P0
+5. El documento de tu área en [construir/areas/](construir/areas/)
 
 ## ¿Qué buscas?
 
@@ -37,9 +37,9 @@ Lee en este orden (unos 20 minutos):
 
 ## Estructura
 
-| Carpeta (en orden de lectura) | Para qué |
+| Carpeta o archivo | Para qué |
 |---|---|
 | [plan.md](plan.md) | Equipo, cronograma, forma de trabajo, decisiones y preguntas abiertas |
-| 1. [entender/](entender/) | Entender el reto, el sistema y los datos sin leer todo |
-| 2. [requerimientos/](requerimientos/) | Qué debe cumplir el sistema, clasificado por tipo y prioridad |
-| 3. [construir/](construir/) | Áreas, reglas de diseño, decisiones y entrega |
+| [entender/](entender/) | Entender el reto, el sistema y los datos sin leer todo |
+| [requerimientos/](requerimientos/) | Qué debe cumplir el sistema, clasificado por tipo y prioridad |
+| [construir/](construir/) | Áreas, reglas de diseño, decisiones y entrega |

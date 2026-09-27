@@ -27,16 +27,16 @@ Une cada [requerimiento](requerimientos.md) con el criterio de evaluación, el �
 | REQ-0015 | Pipeline con contratos | P0 | Data Engineering | datos | Pipeline + reporte de calidad | Pendiente |
 | REQ-0016 | Componente aprendido vs línea base | P0 | Machine Learning | ml | Tabla de resultados | Pendiente |
 | REQ-0017 | Etiquetas válidas, sin fuga | P0 | Machine Learning | ml | Descripción de la división | Pendiente |
-| REQ-0018 | Incremental real o fixture | P1 | Data Engineering | datos | Fixture de actualización | Pendiente |
+| REQ-0018 | Incremental real (fixture si los datos son estáticos) | P1 | Data Engineering | datos | Fixture de actualización | Pendiente |
 | REQ-0019 | Tracking de experimentos | P1 | Machine Learning | ml | Registro de experimentos | Pendiente |
 | REQ-0020 | Held-out realista | P0 | Machine Learning | ml | Descripción de los sets | Pendiente |
-| REQ-0021 | Pruebas de fallas | P0 | Machine Learning | ml (dueño); ai aporta los casos de seguridad | Resultados del set adversarial | Pendiente |
+| REQ-0021 | Pruebas de fallas | P0 | Machine Learning | ml, ai | Resultados del set adversarial | Pendiente |
 | REQ-0022 | Métricas con n y versiones | P0 | Data Analytics | analisis | Reporte de métricas | Pendiente |
 | REQ-0023 | Validación del LLM juez | P2 | Machine Learning | ml | Rúbrica + muestra validada | Pendiente |
 | REQ-0024 | Desglose por idioma, país y segmento | P1 | Data Analytics | analisis | Reporte de métricas | Pendiente |
 | REQ-0025 | Observabilidad | P1 | AI Engineering | ai | Trazas y logs | Pendiente |
 | REQ-0026 | Reintentos, fallback, idempotencia | P1 | AI Engineering | ai | Prueba de falla de herramienta | Pendiente |
-| REQ-0027 | Autenticación, acceso, retención | P0 | AI Engineering | ai, datos | Sesión de prueba + política | Pendiente |
+| REQ-0027 | Autenticación, acceso, retención | P0 | AI Engineering / Data Engineering | ai, datos | Sesión de prueba + política | Pendiente |
 | REQ-0028 | Reproducibilidad | P0 | Fundamento | todos | README de instalación | Pendiente |
 | REQ-0029 | Explicaciones basadas en logs | P1 | AI Engineering | ai | Logs de auditoría | Pendiente |
 | REQ-0030 | Declarar lo que falta | P0 | Fundamento | todos | Sección de limitaciones | Pendiente |
@@ -48,7 +48,7 @@ Une cada [requerimiento](requerimientos.md) con el criterio de evaluación, el �
 | REQ-0036 | Presentación | P0 | Fundamento | todos | [Guion](../construir/entrega/presentacion.md) | Pendiente |
 | REQ-0037 | Video | P0 | Fundamento | todos | [Guion](../construir/entrega/video.md) | Pendiente |
 | REQ-0038 | Frontend simple | P0 | AI Engineering | ai | Demo | Pendiente |
-| REQ-0039 | Declarar frescura | P0 | AI Engineering | ai, datos | Demo + herramientas con "actualizado hasta" | Pendiente |
+| REQ-0039 | Declarar frescura | P0 | AI Engineering / Data Engineering | ai, datos | Demo + herramientas con "actualizado hasta" | Pendiente |
 | REQ-0040 | Pedido de hablar con una persona | P0 | AI Engineering | ai | Demo caso humano | Pendiente |
 | REQ-0041 | Moneda original; idioma según cliente | P0 | AI Engineering | ai | Demo PT | Pendiente |
 | REQ-0042 | Reclamo con transacciones candidatas | P1 | AI Engineering | ai | Demo | Pendiente |
@@ -57,7 +57,7 @@ Une cada [requerimiento](requerimientos.md) con el criterio de evaluación, el �
 | REQ-0045 | Contexto de errores de la app | P2 | AI Engineering | ai | Demo | Pendiente |
 | REQ-0046 | Enrutamiento del handoff | P2 | AI Engineering | ai | Ejemplo de handoff | Pendiente |
 | REQ-0047 | LLM sin identificadores | P0 | AI Engineering | ai | Código + prueba adversarial | Pendiente |
-| REQ-0048 | Orden de decisión | P0 | Fundamento | ai, ml | [Arquitectura](../entender/arquitectura.md) | Pendiente |
+| REQ-0048 | Orden de decisión | P0 | Fundamento / ML | ai, ml | [Arquitectura](../entender/arquitectura.md) | Pendiente |
 | REQ-0049 | País como configuración | P2 | Fundamento | ai | Archivo de configuración | Pendiente |
 | REQ-0050 | Monitoreo por país | P1 | Data Analytics | analisis | Reporte por país | Pendiente |
 

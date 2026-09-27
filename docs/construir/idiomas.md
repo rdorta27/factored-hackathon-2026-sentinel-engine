@@ -37,7 +37,7 @@ El país de la cuenta no indica el origen del cliente (ej.: un venezolano con cu
 
 ## Variantes del español
 
-El dataset incluye campos de detección de acento (MX, CO, AR). Sirven como segmentos para medir equidad dentro del español.
+El dataset incluye campos de detección de acento (mexicano, colombiano, argentino y, en `customers`, neutral). Sirven como segmentos para medir equidad dentro del español.
 
 ## Cómo se reporta
 
