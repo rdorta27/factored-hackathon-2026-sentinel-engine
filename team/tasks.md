@@ -42,7 +42,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Pick the learned component (decision 2) | Team | Pending |
 | JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
 | Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
-| Backend skeleton: orchestrator and 2-3 mock tools with fixed contracts | Unassigned | Pending |
+| Backend skeleton: orchestrator and 4 mock tools with fixed contracts (open dispute idempotent) | Unassigned | Pending |
 | Simple chat with login and session, connected to the backend | Unassigned | Pending |
 | Minimal pipeline: ingestion, deduplication and quality checks | Unassigned | Pending |
 | Analysis backing the flow: contact reasons, demand and data quality | Unassigned | Pending |

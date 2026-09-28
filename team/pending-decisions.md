@@ -36,7 +36,7 @@ These block Tuesday's skeleton. Most urgent: **16** (deployment is on Thursday) 
 | 10 | Hybrid LLM models | The router is already decided; missing which model goes on each route. Natalia's proposal: Llama 3 on Databricks for frequent queries and GPT-4o for ambiguous cases, Portuguese and evaluation | Tue 9/29 |
 | 12 | Data storage and pipeline | a) Local DuckDB · b) Databricks with Bronze, Silver and Gold in Delta Lake on ADLS; the API queries Gold via SQL Warehouse (Natalia's proposal) · c) Bronze, Silver and Gold with local DuckDB. Meanwhile, the pipeline starts local with the same pattern | Tue 9/29 |
 | 3 | Demo scope | Which actions the assistant performs (check, block, open a dispute…) and which it does not | Tue 9/29 |
-| 11 | Frontend | Simple chat: Streamlit, Gradio or own web (Python or Node; no .NET, we work on Linux) | Tue 9/29 |
+| 11 | Frontend | Simple chat: Streamlit, Gradio or own web (Python or Node; no .NET, it is outside the team's stack) | Tue 9/29 |
 | 13 | Azure services | Deployment (Container Apps or App Service), secrets (Key Vault). With option b of decision 12: ADLS, Databricks and Unity Catalog | Tue 9/29 |
 | 15 | Portuguese test cases | Translated, synthetic or written by someone who reads Portuguese. The dataset is Spanish-only: also define who reviews them | Tue 9/29 |
 | 20 | Who makes the presentation and video | The script starts on Wednesday | Tue 9/29 |
