@@ -15,7 +15,7 @@ flowchart LR
     subgraph service["SERVICE LAYER (real time)"]
         client["Client"] <--> frontend["Frontend (chat)"]
         frontend --> orch["Orchestrator (code + LLM)<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
-        orch --> tools["Tools (with session)<br/>· look up transactions<br/>· open claim · look up claim<br/>· handoff"]
+        orch --> tools["Tools (with session)<br/>· look up transactions<br/>· open dispute · look up dispute<br/>· handoff"]
         tools --> handoff["Handoff JSON → agent (simulated)"]
     end
     subgraph dataL["DATA LAYER (batch or incremental)"]
@@ -42,21 +42,21 @@ flowchart TB
     orch --> policy["Policy in code<br/>permissions and confirmation"]
     orch --> ml["Learned component<br/>vs baseline"]
     orch --> read["Look up<br/>transactions"] --> gold[("Transactions<br/>with cutoff date")]
-    orch --> open["Open claim<br/>idempotent"] --> claims[("Claims<br/>system")]
-    orch --> verify["Look up<br/>claim"] --> claims
+    orch --> open["Open dispute<br/>idempotent"] --> disputes[("Disputes<br/>store")]
+    orch --> verify["Look up<br/>dispute"] --> disputes
     orch --> handoff["Handoff JSON"] --> agents[("Agent<br/>queue")]
     orch -.-> traces[("Traces and<br/>audit log")]
     s3[("S3: dataset")] --> pipeline["Pipeline<br/>Bronze → Silver → Gold"] --> gold
 
     classDef mock fill:#fff4e5,stroke:#e8a33d,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
     classDef real fill:#eef0ff,stroke:#6c5ce7,stroke-width:2px,color:#1b1640
-    class auth,ml,read,open,verify,handoff,gold,claims,agents mock
+    class auth,ml,read,open,verify,handoff,gold,disputes,agents mock
     class client,chat,orch,pii,policy,llm,pipeline,traces,s3 real
 ```
 
 - **Session:** a trusted test session; every tool filters by its `customer_id`, never by an identifier typed in the chat.
 - **Learned component:** starts as a fixed rule, which stays as the baseline once the model arrives.
-- **Claims system:** an operational store separate from Gold, so a claim can be written and read back at once to verify it.
+- **Disputes store:** an operational store separate from Gold, so a dispute can be written and read back at once to verify it.
 
 ## Decision priority
 
@@ -84,7 +84,7 @@ flowchart TD
 - **Never:** identifiers, documents, income, credit score, or IP. The orchestrator knows who the customer is from the session.
 - Detail in [security](../build/security.md).
 
-## Walkthrough of a case (example: duplicate-charge claim)
+## Walkthrough of a case (example: duplicate-charge dispute)
 
 ```mermaid
 sequenceDiagram
@@ -96,7 +96,7 @@ sequenceDiagram
     participant A as Agent (simulated)
     C->>F: "me cobraron dos veces"<br/>("I was charged twice")
     F->>O: message + session
-    Note over O: Understand: intent = charge claim<br/>(personal data masked before the LLM)
+    Note over O: Understand: intent = charge dispute<br/>(personal data masked before the LLM)
     O->>T: Decide: search repeated purchases<br/>(session customer)
     T->>S: read transactions
     S-->>T: candidate charges + cutoff date
@@ -105,11 +105,11 @@ sequenceDiagram
     F->>C: candidates
     C->>F: picks one and confirms
     F->>O: confirmation
-    O->>T: Act: open claim (idempotency key)
-    T->>S: write claim
-    O->>T: Verify: look up claim
-    T->>S: read claim
-    S-->>T: claim exists
+    O->>T: Act: open dispute (idempotency key)
+    T->>S: write dispute
+    O->>T: Verify: look up dispute
+    T->>S: read dispute
+    S-->>T: dispute exists
     T-->>O: case number
     O->>F: case number and next step
     F->>C: case number
@@ -120,11 +120,11 @@ sequenceDiagram
 ```
 
 1. The customer writes: "me cobraron dos veces" ("I was charged twice").
-2. **Understand:** intent = charge claim.
+2. **Understand:** intent = charge dispute.
 3. **Decide:** data is missing, so the tool searches the session customer's repeated purchases.
 4. The assistant shows the candidate charges in their currency and with the data cutoff date. The customer picks one.
-5. **Act:** it asks for confirmation and the tool opens the claim with an idempotency key, so a retry does not duplicate it.
-6. **Verify:** a second tool reads the claim back; only when it exists do we give the case number to the customer.
+5. **Act:** it asks for confirmation and the tool opens the dispute with an idempotency key, so a retry does not duplicate it.
+6. **Verify:** a second tool reads the dispute back; only when it exists do we give the case number to the customer.
 7. **Escalate** if the predictor or a rule indicates it: JSON handoff with verified facts and open questions.
 
 ## Learned component

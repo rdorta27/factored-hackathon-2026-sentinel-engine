@@ -12,7 +12,7 @@ Sentinel Engine — architecture, PII lifecycle and action plan. Source: Natalia
 
 Sentinel Engine is an enterprise-grade AI banking assistant for processing transaction disputes across Latin America (Mexico, Colombia and Argentina).
 
-**Guiding principle: AI understands; code executes and verifies.** The LLM handles comprehension, intent extraction and multilingual dialogue. Financial decisions, identity authorization, dispute eligibility thresholds and claim creation are enforced by deterministic code and backend APIs. Same principle as [architecture](../understand/architecture.md#central-principle), which stays the canonical reference for layers and walkthroughs.
+**Guiding principle: AI understands; code executes and verifies.** The LLM handles comprehension, intent extraction and multilingual dialogue. Financial decisions, identity authorization, dispute eligibility thresholds and dispute creation are enforced by deterministic code and backend APIs. Same principle as [architecture](../understand/architecture.md#central-principle), which stays the canonical reference for layers and walkthroughs.
 
 ## PII lifecycle
 

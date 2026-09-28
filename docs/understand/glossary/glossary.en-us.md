@@ -21,7 +21,7 @@ The hackathon audience is technical (software, data). These contact-center and b
 | CLV | Customer Lifetime Value | Revenue from a customer over the whole relationship |
 | Churn | Churn | Customer attrition |
 | Days past due | Days past due | Loan-payment delay in days |
-| SLA | Service Level Agreement | Committed deadline (e.g. answer a claim in 15 days); missing it is "SLA breached" |
+| SLA | Service Level Agreement | Committed deadline (e.g. answer a dispute in 15 days); missing it is "SLA breached" |
 | UTM | Urchin Tracking Module | Campaign-link parameters showing which campaign and channel a visit came from |
 | Conversion | Conversion | The customer did what the campaign wanted (e.g. requested the card) |
 | Supervisor | Supervisor | Lead of a group of agents; receives cases an agent cannot resolve |
@@ -51,7 +51,7 @@ The hackathon audience is technical (software, data). These contact-center and b
 | Build | Functional | Official | Definition |
 |---|---|---|---|
 | Flow selection | — | Task selection | Which support job the assistant performs; the project (the assistant) is fixed |
-| Transaction-disputes flow | Unrecognized-charge claim / chargeback | Transaction disputes / transaction-dispute intake | The customer does not recognize a charge and asks to reverse it |
+| Transaction-disputes flow | Unrecognized-charge dispute / chargeback | Transaction disputes / transaction-dispute intake | The customer does not recognize a charge and asks to reverse it |
 | — | Complaint | Complaint | Dissatisfaction with the service; in the dataset, part of PQR |
 | — | PQR | Complaints (PQR) | Requests, complaints and claims |
 | Card flow | Card services | Card support | Block, replace, card questions |

@@ -12,7 +12,7 @@ The flow must simultaneously demonstrate: data analysis, tool-using conversation
 
 ## Options
 
-1. **Transaction disputes** (*transaction-dispute intake*): visible action (opening the claim), natural handoff (fraud, high amount, complex case), 80K complaints and 5M transactions with `is_fraud`. Against: we still do not know how many complaints are really charge-related or whether the labels work for ML.
+1. **Transaction disputes** (*transaction-dispute intake*): visible action (opening the dispute), natural handoff (fraud, high amount, complex case), 80K complaints and 5M transactions with `is_fraud`. Against: we still do not know how many complaints are really charge-related or whether the labels work for ML.
 2. **Accounts or payments:** the easiest and lowest-risk, but almost everything is read-only; action and handoff are weak.
 3. **Cards:** clear action (block, confirm, and verify), but less native data.
 4. **Credit:** high risk of crossing policy limits; harder demo to defend.
@@ -33,9 +33,10 @@ If volume or ML fails, the preferred alternative is **cards** (same structure: c
 
 ## Consequences
 
-- **Scope:** the assistant identifies the transaction, gathers the data, shows verified facts, confirms intent, opens the claim, verifies that it exists, and delivers the number and the next step. **It does not decide fraud or the claim outcome.** The typical case is the unrecognized-charge claim.
-- **PQR is not the scope:** the `complaints` table (PQR source — PQR, petitions, complaints, and claims) includes complaints, petitions, and suggestions; we use it for analysis and ML, but the flow only serves transaction disputes.
+- **Scope:** the assistant identifies the transaction, gathers the data, shows verified facts, confirms intent, opens the dispute, verifies that it exists, and delivers the number and the next step. **It does not decide fraud or the dispute outcome.** The typical case is an unrecognized charge. In the dataset, a dispute corresponds to a `complaints` row with `case_type = Claim`.
+- **PQR is not the scope:** the `complaints` table comes from the PQR system (*Peticiones, Quejas y Reclamos* — requests, complaints, and claims). Besides claims (`case_type = Claim`), it includes complaints, requests, and suggestions; we use it for analysis and ML, but the flow only serves transaction disputes.
 - **Handoff:** on suspected fraud (`is_fraud` / `fraud_score`), high amount, repeat customer, insufficient information, policy limit, or customer request. The package follows section 8 of the presentation: request, verified facts, transactions, actions taken, evidence, open questions, and reason.
-- **Late arrivals:** if the charge does not appear, we open the claim as *pending verification* ([conversation](../conversation.md)).
+- **Dispute window:** a charge can be disputed up to **90 days** after its `transaction_date`; older charges cannot be disputed: the assistant explains why and offers a handoff. Natalia's assumption, source still to confirm; it lives in configuration as a synthetic policy, so the value can change per country. With static data, "today" is the simulated demo date, not the real one.
+- **Late arrivals:** if the charge does not appear, we open the dispute as *pending verification* ([conversation](../conversation.md)).
 - **Portuguese:** the dataset is Spanish-only; we define the Portuguese test cases in decision 15, which should be brought forward.
 - **Pending:** set the numeric thresholds once we see the data; choose the learned component (decision 2) in the same review.

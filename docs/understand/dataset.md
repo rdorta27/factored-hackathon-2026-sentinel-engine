@@ -8,7 +8,7 @@ Sources: *dataset summary*, *data dictionary*.
 
 ## Contents
 
-- [The dataset](#the-dataset-official-summary) · [Tables](#tables) · [Customers and products](#dictionary-customers-and-products) · [Supporting dimensions](#dictionary-supporting-dimensions) · [Transactions](#dictionary-transactions) · [Customer contact](#dictionary-customer-contact) · [Claims](#dictionary-claims) · [Digital channels](#dictionary-digital-channels-and-campaigns) · [Relationships](#relationships-between-tables) · [Caveats](#general-caveats)
+- [The dataset](#the-dataset-official-summary) · [Tables](#tables) · [Customers and products](#dictionary-customers-and-products) · [Supporting dimensions](#dictionary-supporting-dimensions) · [Transactions](#dictionary-transactions) · [Customer contact](#dictionary-customer-contact) · [Complaints](#dictionary-complaints) · [Digital channels](#dictionary-digital-channels-and-campaigns) · [Relationships](#relationships-between-tables) · [Caveats](#general-caveats)
 
 ## The dataset (official summary)
 
@@ -37,7 +37,7 @@ They are a data-engineering test: we handle, document, and measure them; we do n
 | Dimension | branches | 350 | Branches |
 | Dimension | service_agents | 1,200 | Call-center agents |
 | Dimension | marketing_campaigns | 200 | Campaigns |
-| Facts | transactions | 5,000,000 | Movements; charge inquiries and claims |
+| Facts | transactions | 5,000,000 | Movements; charge inquiries and disputes |
 | Facts | call_center_interactions | 800,000 | Contact reasons, resolution, escalation |
 | Facts | call_transcripts | 200,000 | Text for intent (covers ~25% of interactions: check for bias) |
 | Facts | satisfaction_surveys | 250,000 | CSAT (Customer Satisfaction Score) and NPS (Net Promoter Score) |
@@ -90,7 +90,7 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 - Contact reasons and their category: the basis of the analysis that justifies the flow.
 - Surveys arrive after the interaction: they are outcome metrics, not features.
 
-## Dictionary: claims
+## Dictionary: complaints
 
 | Table | Partition | Key columns |
 |---|---|---|
@@ -98,8 +98,8 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 
 - **Opening fields** (completed by the assistant): case_type, category, affected_product_id, description, claimed_amount, currency, reception_channel, origin_interaction_id. **Lifecycle and outcome fields** (defined by the bank afterwards): status, assignment, dates, resolution, compensation, satisfaction.
 - As ML features, outcome fields are future information.
-- `is_repeat_complainer`: verify whether it was computed with the 90 days before each case; if it cannot be confirmed, recompute it with prior claims.
-- `origin_interaction_id` joins the claim to the call that originated it.
+- `is_repeat_complainer`: verify whether it was computed with the 90 days before each case; if it cannot be confirmed, recompute it with prior complaints.
+- `origin_interaction_id` joins the complaint to the call that originated it.
 
 ## Dictionary: digital channels and campaigns
 
@@ -108,7 +108,7 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 | digital_events | Daily | event_date, customer_id (**may be null**: pre-login events), session_id, **event_type** (PageView, Click, FormSubmit, Login, Logout, **Error**, Purchase), event_category, channel, platform, app_version, page_url, action, product_id, **ip_address**, **ip_country**, ip_city, UTM |
 | campaign_sends | Daily | send_date, campaign_id, customer_id, send_channel, send_status, was_delivered, was_opened, was_clicked, **had_conversion**, conversion_value, **send_cost** |
 
-- **App errors:** they often precede a call or claim. Join them by customer and date for demand analysis and to give context in the conversation.
+- **App errors:** they often precede a call or complaint. Join them by customer and date for demand analysis and to give context in the conversation.
 - **IP:** personal data. It does not go to the LLM, it is masked in logs, and it is used only in code.
 - **IP country different from the account country:** a risk signal, not a verdict (travel, family, VPN). Useful for the fraud component or for requesting extra verification in sensitive actions; never block or discriminate by origin.
 - 10-million-row table: sample it for exploration.

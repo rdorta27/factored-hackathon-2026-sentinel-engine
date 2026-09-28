@@ -16,7 +16,7 @@
 
 ## Sources for justifying the flow
 
-`call_center_interactions`, `call_transcripts`, `complaints`, and `satisfaction_surveys`: why customers contact us, how cases are resolved, and how satisfied they are. `transactions` gives context for charge and fraud claims.
+`call_center_interactions`, `call_transcripts`, `complaints`, and `satisfaction_surveys`: why customers contact us, how cases are resolved, and how satisfied they are. `transactions` gives context for charge disputes and fraud.
 
 ## App errors and demand
 
@@ -38,7 +38,7 @@ A learned segment (e.g., "premium") cannot change eligibility rules, which are d
 
 ## Reusable dataset use cases
 
-The overview proposes generic use cases; we use them only if they serve the flow. Examples: fraud detection (for cards or charge claims), intent classification, first-contact resolution, sentiment trends.
+The overview proposes generic use cases; we use them only if they serve the flow. Examples: fraud detection (for cards or charge disputes), intent classification, first-contact resolution, sentiment trends.
 
 ## Evidence for evaluation
 
