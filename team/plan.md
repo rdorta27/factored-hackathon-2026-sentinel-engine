@@ -26,7 +26,7 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 |---|---|---|
 | Team name: Sentinel Engine | Accepted | — |
 | Platform: Microsoft Azure | Accepted | [001](../docs/build/decisions/001-azure-platform.md) |
-| Specs with OpenSpec | Accepted | [002](../docs/build/decisions/002-openspec.md) |
+| Specs with OpenSpec, written in English (decision 18) | Accepted | [002](../docs/build/decisions/002-openspec.md) |
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
