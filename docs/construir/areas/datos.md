@@ -6,10 +6,10 @@
 
 **Relacionados:** [dataset](../../entender/dataset.md) (tablas y columnas), [arquitectura](../../entender/arquitectura.md).
 
-## Qué construye esta área
+## Alcance
 
 - **Pipeline ETL/ELT** repetible y determinista: misma entrada, misma salida.
-- **Contratos de esquema estrictos**: un dato inválido se rechaza o se aísla y se reporta; nunca entra en silencio.
+- **Contratos de esquema estrictos**: un dato inválido lo rechazamos o lo aislamos y lo reportamos; nunca entra en silencio.
 - **Controles de calidad**, **linaje** y **política de frescura**.
 - **Aislamiento de registros por cliente**, base del control de acceso.
 - Procesamiento batch, incremental o streaming según latencia y frescura. Archivos incrementales no obligan a streaming.
@@ -29,14 +29,14 @@ Las tablas grandes vienen particionadas por fecha, con llegadas tardías, duplic
 | Contratos versionados | Detecta columnas nuevas y decide si aceptarlas; nunca en silencio |
 | Política de frescura | Declara el atraso máximo aceptable (ej.: 24 h) |
 
-Streaming no es obligatorio: se justifica solo si el flujo necesita segundos de frescura.
+Streaming no es obligatorio: solo vale la pena si el flujo necesita segundos de frescura.
 
 ## Casos a cuidar en el pipeline
 
 - Formatos numéricos LATAM (ej.: "1.200,50"): el contrato define el formato esperado en lugar de adivinarlo.
 - Moneda obligatoria y validada en cada monto.
 - Nulo no es huérfano: el contrato los distingue (ver [dataset](../../entender/dataset.md#relaciones-entre-tablas)).
-- Particiones por fecha: leer solo las nuevas y las de la ventana de reproceso.
+- Particiones por fecha: leemos solo las nuevas y las de la ventana de reproceso.
 - Cada lectura de herramienta devuelve el dato y su marca de "actualizado hasta".
 
 ## Evidencia para la evaluación

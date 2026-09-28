@@ -1,22 +1,22 @@
 # Documentación del equipo
 
-Documentación del proyecto: el reto, los requerimientos y las reglas de diseño. La planificación del equipo está en [`team/`](../team/). Está en construcción: si algo no se entiende o falta, se ajusta.
+El reto, los requerimientos y las reglas de diseño. La planificación del equipo está en [`team/`](../team/). Todo está en construcción: si algo no se entiende o falta, lo ajustamos.
 
-Se trabaja en español. Lo que se entrega —README del repo, presentación y guion del video— se redacta en inglés desde el primer borrador; ver [idioma](construir/entrega.md#idioma).
+Trabajamos en español. Lo que entregamos —README del repo, presentación y guion del video— lo escribimos en inglés desde el primer borrador; ver [idioma](construir/entrega.md#idioma).
 
-El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y diccionario) no está en el repositorio; lo tiene cada integrante.
+El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y diccionario) no está en el repositorio; cada uno tiene su copia.
 
-## Si llegas nuevo
+## Orden de lectura
 
-Lee en este orden (unos 20 minutos):
+Si llegas nuevo, lee en este orden (unos 20 minutos):
 
 1. [El reto en una página](entender/resumen.md)
-2. [Plan del equipo](../team/plan.md): cronograma y cómo trabajamos
+2. [Plan del equipo](../team/plan.md): cronograma y forma de trabajo
 3. [Arquitectura](entender/arquitectura.md)
 4. [Requerimientos](requerimientos/requerimientos.md): solo la tabla de resumen y los P0
 5. El documento de tu área en [construir/areas/](construir/areas/)
 
-## ¿Qué buscas?
+## Índice por pregunta
 
 | Pregunta | Documento |
 |---|---|
@@ -26,10 +26,10 @@ Lee en este orden (unos 20 minutos):
 | ¿Qué tablas hay y qué columna sirve para qué? | [Dataset](entender/dataset.md) |
 | ¿Qué es obligatorio y qué criterio no tiene evidencia todavía? | [Requerimientos](requerimientos/requerimientos.md) |
 | ¿Qué dice el asistente en cada situación? | [Conversación](construir/conversacion.md) |
-| ¿Qué puede ver el LLM? ¿Cómo se evita el acceso indebido? | [Seguridad](construir/seguridad.md) |
+| ¿Qué puede ver el LLM? ¿Cómo evitamos el acceso indebido? | [Seguridad](construir/seguridad.md) |
 | ¿Cómo manejamos el portugués? | [Conversación: idiomas](construir/conversacion.md#idiomas) |
 | ¿Qué medimos y cómo dividimos los datos? | [Métricas](construir/metricas.md), [ML](construir/areas/ml.md#rigor) |
-| ¿Qué flujo elegimos? | [Opciones de flujo](construir/flujos/opciones.md) |
+| ¿Qué flujo elegimos? | [Decisión 003](construir/decisiones/003-flujo-disputas.md), [opciones de flujo](construir/flujos/opciones.md) |
 | ¿Por qué decidimos X? | [Decisiones](construir/decisiones/) |
 | ¿Qué va en la presentación y el video? | [Entrega](construir/entrega.md) |
 | ¿Quién hace qué, cuándo y cómo trabajamos? | [Plan](../team/plan.md), [tareas](../team/tareas.md), [decisiones pendientes](../team/decisiones-pendientes.md) |
@@ -38,6 +38,6 @@ Lee en este orden (unos 20 minutos):
 
 | Carpeta o archivo | Para qué |
 |---|---|
-| [entender/](entender/) | Entender el reto, el sistema y los datos sin leer todo |
-| [requerimientos/](requerimientos/) | Qué debe cumplir el sistema, con prioridad, área, evidencia y estado |
+| [entender/](entender/) | Entender el reto, el sistema y los datos sin leerlo todo |
+| [requerimientos/](requerimientos/) | Qué tiene que cumplir el sistema, con prioridad, área, evidencia y estado |
 | [construir/](construir/) | Áreas, reglas de diseño, decisiones y entrega |

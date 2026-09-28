@@ -1,27 +1,29 @@
 # Decisiones pendientes
 
-Lo que hay que decidir, con opciones y material de apoyo. Sirve con o sin reunión.
+Lo que nos falta decidir, con opciones y material de apoyo. Sirve con o sin reunión.
 
-## Cómo decidimos (propuesta)
+## Método
 
-1. Cada uno lee el material de apoyo de cada decisión y anota su preferencia en su columna (o la escribe en el canal), antes del **lunes 28/9**.
-2. Si hay acuerdo, la decisión queda tomada. Si no, se discute en el canal o en una llamada corta.
-3. Si al final del día sigue sin acuerdo: las decisiones de un área las toma su responsable; las demás, por mayoría.
-4. Al tomarse, cada decisión se registra: producto y técnicas en [decisiones](../docs/construir/decisiones/) (un archivo por decisión, con la [plantilla](../docs/construir/decisiones/_plantilla.md)); equipo en el [plan](plan.md). Después se borra de esta lista.
+Es una propuesta:
+
+1. Cada uno lee el material de apoyo y anota su preferencia en su columna (o en el canal) antes del **lunes 28/9**.
+2. Si estamos de acuerdo, queda decidido. Si no, lo hablamos en el canal o en una llamada corta.
+3. Si al final del día seguimos sin acuerdo, decide el responsable del área; lo demás, por mayoría.
+4. Registramos cada decisión: las de producto y técnicas en [decisiones](../docs/construir/decisiones/) (un archivo por decisión, con la [plantilla](../docs/construir/decisiones/_plantilla.md)); las del equipo en el [plan](plan.md). Después la borramos de esta lista.
 
 ## Lunes 28/9
 
-Estas bloquean el esqueleto del martes. Las más urgentes son **4** (sin responsables no arranca el cronograma), **10** (bloquea el trabajo de AI), **12** (el pipeline empieza hoy) y **16** (el despliegue está previsto para el jueves).
+Estas frenan el esqueleto del martes. Las más urgentes: **4** (sin responsables no arranca el cronograma), **10** (frena el trabajo de AI), **12** (el pipeline empieza hoy) y **16** (el despliegue es el jueves).
 
 | # | Decisión | Opciones o propuesta | Material de apoyo | Felix | Natalia | Rubén |
 |---|---|---|---|---|---|---|
-| 1 | Flujo | Propuesta: disputes (reclamos por cargos no reconocidos), provisional; se confirma o cambia el martes 29/9 con criterios medibles. Alternativa: tarjetas | [Decisión 003 (propuesta)](../docs/construir/decisiones/003-flujo-disputes.md), [opciones de flujo](../docs/construir/flujos/opciones.md) | | | |
-| 2 | Componente aprendido | Con disputes: clasificador de categoría del reclamo (`description` / `customer_text`) frente a palabras clave, o predictor de escalamiento (`was_escalated`) con variables de apertura. Se elige en la revisión del martes junto con la decisión 1 | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
-| 4 | Responsables por área | Quién toma dos de las 4 áreas | [Tabla del equipo](plan.md#equipo), [áreas](../docs/construir/areas/) | | | |
+| 1 | Flujo | Propuesta: disputas de transacciones, provisional; lo confirmamos o lo cambiamos el martes 29/9 con criterios medibles. Alternativa: tarjetas | [Decisión 003 (propuesta)](../docs/construir/decisiones/003-flujo-disputas.md), [opciones de flujo](../docs/construir/flujos/opciones.md) | | | |
+| 2 | Componente aprendido | Con el flujo de disputas: clasificador de categoría del reclamo (`description` / `customer_text`) frente a palabras clave, o predictor de escalamiento (`was_escalated`) con variables de apertura. Lo elegimos en la revisión del martes junto con la decisión 1 | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
+| 4 | Responsables por área | Áreas: AI (backend, frontend, despliegue), ML, Datos, Análisis. Somos 3, así que alguien toma dos | [Áreas](../docs/construir/areas/) | | | |
 | 5 | Seguimiento diario | Reunión de 15 min o mensaje en el canal; hora | | | | |
 | 6 | Herramienta de tareas | Propuesta: [tareas.md](tareas.md) en el repo | | | | |
 | 7 | Flujo de código | Pull request obligatorio o push directo a `main`; quién revisa | | | | |
-| 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | [Cronograma](plan.md#cronograma-tentativo) | | | |
+| 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | [Cronograma](plan.md#cronograma) | | | |
 | 9 | Lenguaje y framework del backend | Propuesta: Python con FastAPI | [Arquitectura](../docs/entender/arquitectura.md#stack) | | | |
 | 10 | LLM | a) Azure OpenAI; qué modelo. b) propuesta de Natalia (canal, 27/9): Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués, handoff y evaluación, con un enrutador entre ambos | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |

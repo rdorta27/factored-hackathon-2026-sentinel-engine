@@ -1,27 +1,26 @@
 # Tareas
 
-Quién hace qué y para cuándo, ordenado por día. Al tomar una tarea, poner el nombre; al terminarla, marcarla. Si la tarea cubre un requerimiento, citar su `REQ-####` y actualizar su estado en los [requerimientos](../docs/requerimientos/requerimientos.md).
+Quién hace qué y para cuándo, por día. Cuando tomes una tarea, pon tu nombre; cuando la termines, márcala. Si cubre un requerimiento, cita su `REQ-####` y actualiza su estado en los [requerimientos](../docs/requerimientos/requerimientos.md).
 
 **Estados:** Pendiente, En curso, Hecho.
 
 ## Resumen
 
-Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentativo). Flujo de trabajo: disputes, provisional hasta la revisión del martes ([decisión 003](../docs/construir/decisiones/003-flujo-disputes.md)).
+Las metas e hitos de cada día están en el [cronograma del plan](plan.md#cronograma). Trabajamos con el flujo de disputas de transacciones hasta la revisión del martes ([decisión 003](../docs/construir/decisiones/003-flujo-disputas.md)).
 
 | Día | Hito | Tareas |
 |---|---|---|
-| Lun 28/9 | Decisiones registradas; primeras mediciones de datos | [Ver](#lun-289-decidir-y-medir) |
-| Mar 29/9 | Flujo confirmado; el esqueleto responde de punta a punta | [Ver](#mar-299-confirmar-y-esqueleto) |
-| Mié 30/9 | Un caso funciona completo | [Ver](#mié-309-caso-normal) |
-| Jue 1/10 | 3 casos en ES y PT, link público | [Ver](#jue-110-casos-difíciles-y-despliegue) |
-| Vie 2/10 | Listo para enviar | [Ver](#vie-210-evaluación-y-entrega) |
-| Sáb 3/10 a lun 5/10 | Entregado | [Ver](#sáb-310-a-lun-510-margen) |
+| Lun 28/9 | Decisiones registradas; primeras mediciones de datos | [Ver](#lun-289) |
+| Mar 29/9 | Flujo confirmado; el esqueleto responde de punta a punta | [Ver](#mar-299) |
+| Mié 30/9 | Un caso funciona completo | [Ver](#mié-309) |
+| Jue 1/10 | 3 casos en ES y PT, link público | [Ver](#jue-110) |
+| Vie 2/10 | Listo para enviar | [Ver](#vie-210) |
+| Sáb 3/10 a lun 5/10 | Entregado | [Ver](#sáb-310-a-lun-510) |
 
-## Lun 28/9: decidir y medir
+## Lun 28/9
 
 | Tarea | Responsable | Estado |
 |---|---|---|
-| Completar la [tabla del equipo](plan.md#equipo): fortalezas y disponibilidad | Cada uno | Pendiente |
 | Anotar la preferencia en las [decisiones pendientes](decisiones-pendientes.md) | Cada uno | Pendiente |
 | Confirmar que las credenciales de S3 funcionan para los 3 (Natalia ya las probó) | Felix, Rubén | En curso |
 | Activar el hook de commits: `git config core.hooksPath .githooks` | Felix, Natalia | Pendiente |
@@ -35,11 +34,11 @@ Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentat
 | Baseline de palabras clave para la categoría del reclamo, con división temporal | Por asignar | Pendiente |
 | Listar los campos de apertura y de resultado de `complaints` para evitar fuga de datos | Por asignar | Pendiente |
 
-## Mar 29/9: confirmar y esqueleto
+## Mar 29/9
 
 | Tarea | Responsable | Estado |
 |---|---|---|
-| Revisión de la [decisión 003](../docs/construir/decisiones/003-flujo-disputes.md): confirmar disputes o cambiar a tarjetas, y fijar los umbrales | Equipo | Pendiente |
+| Revisión de la [decisión 003](../docs/construir/decisiones/003-flujo-disputas.md): confirmar el flujo de disputas o cambiar a tarjetas, y fijar los umbrales | Equipo | Pendiente |
 | Elegir el componente aprendido (decisión 2) | Equipo | Pendiente |
 | Esquema JSON del handoff (pedido, hechos verificados, transacciones, acciones, evidencia, preguntas abiertas, motivo) | Por asignar | Pendiente |
 | Definir el origen y quién revisa los casos de prueba en portugués (decisión 15) | Por asignar | Pendiente |
@@ -48,7 +47,7 @@ Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentat
 | Pipeline mínimo: ingesta, deduplicación y chequeos de calidad | Por asignar | Pendiente |
 | Análisis que respalda el flujo: motivos de contacto, demanda y calidad de datos | Por asignar | Pendiente |
 
-## Mié 30/9: caso normal
+## Mié 30/9
 
 | Tarea | Responsable | Estado |
 |---|---|---|
@@ -59,7 +58,7 @@ Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentat
 | Primeros casos de evaluación | Por asignar | Pendiente |
 | Empezar el guion de la presentación y el video | Por asignar | Pendiente |
 
-## Jue 1/10: casos difíciles y despliegue
+## Jue 1/10
 
 | Tarea | Responsable | Estado |
 |---|---|---|
@@ -69,7 +68,7 @@ Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentat
 | Set adversarial: inyección de prompts y acceso no autorizado | Por asignar | Pendiente |
 | Despliegue en Azure con link público | Por asignar | Pendiente |
 
-## Vie 2/10: evaluación y entrega
+## Vie 2/10
 
 | Tarea | Responsable | Estado |
 |---|---|---|
@@ -78,7 +77,7 @@ Metas e hitos de cada día en el [cronograma del plan](plan.md#cronograma-tentat
 | README en inglés, presentación y video | Por asignar | Pendiente |
 | Revisar el repo sin secretos ni datos; congelar el código | Por asignar | Pendiente |
 
-## Sáb 3/10 a lun 5/10: margen
+## Sáb 3/10 a lun 5/10
 
 | Tarea | Responsable | Estado |
 |---|---|---|
