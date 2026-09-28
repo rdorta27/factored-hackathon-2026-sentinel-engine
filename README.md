@@ -11,11 +11,20 @@ A **customer service assistant for a bank** operating in Mexico, Colombia and Ar
 ## Start here (about 15 minutes)
 
 1. **[The challenge in one page](docs/understand/overview.md):** what has to be built, how we are judged and what we submit.
-2. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
-3. **[Architecture](docs/understand/architecture.md):** a first idea of how the pieces fit together.
-4. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** PII lifecycle, 4-layer design, repos, timeline and costs (Natalia's proposal, reconciled with pending decisions).
+2. **[Architecture](docs/understand/architecture.md):** layers, decision priority and the guiding principle (AI understands; code executes and verifies), with diagrams.
+3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** PII lifecycle, 4-layer design, repository layout, timeline and costs, with pending decisions marked.
+4. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
 
 The [documentation index](docs/README.md) helps you find the rest of the topics.
+
+## Repository map
+
+| Path | What it holds |
+|---|---|
+| [`docs/understand/`](docs/understand/) | The challenge, the system and the data: [overview](docs/understand/overview.md), [architecture](docs/understand/architecture.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
+| [`docs/requirements/`](docs/requirements/requirements.md) | Requirements with priority, owner, evidence and status |
+| [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) and the [roadmap](docs/build/architecture-roadmap.md) |
+| [`team/`](team/) | Plan, tasks and pending decisions |
 
 ## Team workflow
 
