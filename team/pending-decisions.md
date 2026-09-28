@@ -1,44 +1,50 @@
-# Decisiones pendientes
+# Pending decisions
 
-Lo que nos falta decidir, con opciones y material de apoyo. Sirve con o sin reunión.
+What we still have to decide, with options and supporting material. Works with or without a meeting.
 
-## Método
+## Method
 
-Es una propuesta:
+Proposal:
 
-1. Cada uno lee el material de apoyo y anota su preferencia en su columna (o en el canal) antes del **lunes 28/9**.
-2. Si estamos de acuerdo, queda decidido. Si no, lo hablamos en el canal o en una llamada corta.
-3. Si al final del día seguimos sin acuerdo, decide el responsable del área; lo demás, por mayoría.
-4. Registramos cada decisión: las de producto y técnicas en [decisiones](../docs/construir/decisiones/) (un archivo por decisión, con la [plantilla](../docs/construir/decisiones/_plantilla.md)); las del equipo en el [plan](plan.md). Después la borramos de esta lista.
+1. Everyone reads the supporting material and records their preference in their column (or in the channel) before **Monday 9/28**.
+2. If we agree, it is decided. If not, we discuss it in the channel or on a short call.
+3. If by end of day we still disagree, the area owner decides; everything else by majority.
+4. We record each decision: product and technical ones in [decisions](../docs/build/decisions/) (one file per decision, using the [template](../docs/build/decisions/_template.md)); team ones in the [plan](plan.md). Then we remove it from this list.
 
-## Lunes 28/9
+## Monday 9/28
 
-Estas frenan el esqueleto del martes. Las más urgentes: **16** (el despliegue es el jueves) y **21** (define cómo se organiza el código desde el esqueleto).
+These block Tuesday's skeleton. Most urgent: **16** (deployment is on Thursday) and **21** (defines how code is organized from the skeleton on).
 
-| # | Decisión | Opciones o propuesta | Material de apoyo | Felix | Natalia | Rubén |
+| # | Decision | Options or proposal | Supporting material | Felix | Natalia | Rubén |
 |---|---|---|---|---|---|---|
-| 1 | Flujo | Propuesta: disputas de transacciones, provisional; lo confirmamos o lo cambiamos el martes 29/9 con criterios medibles. Alternativa: tarjetas | [Decisión 003 (propuesta)](../docs/construir/decisiones/003-flujo-disputas.md), [opciones de flujo](../docs/construir/flujos/opciones.md) | | | |
-| 2 | Componente aprendido | Con el flujo de disputas: clasificador de categoría del reclamo (`description` / `customer_text`) frente a palabras clave, o predictor de escalamiento (`was_escalated`) con variables de apertura. Lo elegimos en la revisión del martes junto con la decisión 1 | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
-| 5 | Seguimiento diario | Reunión de 15 min o mensaje en el canal; hora | | | | |
-| 6 | Herramienta de tareas | Propuesta: [tareas.md](tareas.md) en el repo | | | | |
-| 7 | Flujo de código | Pull request obligatorio o push directo a `main`; quién revisa | | | | |
-| 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | [Cronograma](plan.md#cronograma) | | | |
-| 9 | Lenguaje y framework del backend | Propuesta: Python con FastAPI | [Arquitectura](../docs/entender/arquitectura.md#stack) | | | |
-| 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas. Supuesto de costo: USD 20-58, dentro de los USD 200 de crédito de prueba (estimación de Natalia) | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
-| 17 | Visibilidad del repositorio | Privado ahora y público al final, o público desde ya (hoy está público). Incluye si `team/` queda en la entrega o se borra antes | [Seguridad](../docs/construir/seguridad.md#repositorio-y-despliegue-públicos) | | | |
-| 21 | Repositorios | Propuesta de Natalia: separar por dominio (datos, IA, web e infraestructura). Opciones: a) un solo repo con carpetas por dominio y dependencias separadas · b) varios repos para desarrollar y uno para entregar · c) submódulos. La entrega pide un solo repo público | Propuesta de Natalia (canal, 28/9) | | | |
-| 18 | Idioma de las especificaciones de OpenSpec | Propuesta: inglés, porque se entregan | [Decisión 002](../docs/construir/decisiones/002-openspec.md) | | | |
+| 1 | Flow | Proposal: transaction disputes, provisional; we confirm or change it on Tuesday 9/29 with measurable criteria. Alternative: cards | [Decision 003 (proposal)](../docs/build/decisions/003-disputes-flow.md), [flow options](../docs/build/flows/options.md) | | | |
+| 2 | Learned component | With the disputes flow: claim-category classifier (`description` / `customer_text`) vs keywords, or escalation predictor (`was_escalated`) with opening-time features. We pick it in the Tuesday review together with decision 1 | [ML](../docs/build/areas/ml.md), [metrics](../docs/build/metrics.md) | | | |
+| 5 | Daily sync | 15-min meeting or channel message; time | | | | |
+| 6 | Task tool | Proposal: [tasks.md](tasks.md) in the repo | | | | |
+| 7 | Code flow | Mandatory pull request or direct push to `main`; who reviews | | | | |
+| 8 | Milestone meetings | When we review together (e.g. Wednesday, Friday and Sunday) | [Schedule](plan.md#schedule) | | | |
+| 9 | Backend language and framework | Proposal: Python with FastAPI | [Architecture](../docs/understand/architecture.md#stack) | | | |
+| 16 | Azure subscription or credits | Who provides it; spend cap and alerts. Cost assumption: USD 20-58, within the USD 200 trial credit (Natalia's estimate) | [Decision 001](../docs/build/decisions/001-azure-platform.md) | | | |
+| 17 | Repository visibility | Private now and public at the end, or public from now (today it is public). Includes whether `team/` stays in the submission or is removed beforehand | [Security](../docs/build/security.md#public-repository-and-deployment) | | | |
+| 21 | Repositories | Natalia's proposal: split by domain (data, AI, web and infrastructure). Options: a) single repo with per-domain folders and separate dependencies · b) several repos for development and one for submission · c) submodules. The submission asks for a single public repo | Natalia's proposal (channel, 9/28) | | | |
+| 18 | OpenSpec spec language | Proposal: English, because specs are submitted | [Decision 002](../docs/build/decisions/002-openspec.md) | | | |
 
-## Más adelante
+## Later
 
-| # | Decisión | Opciones o propuesta | Para cuándo |
+| # | Decision | Options or proposal | By when |
 |---|---|---|---|
-| 10 | Modelos del LLM híbrido | El enrutador ya está decidido; falta qué modelo va en cada ruta. Propuesta de Natalia: Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués y evaluación | Mar 29/9 |
-| 12 | Almacenamiento y pipeline de datos | a) DuckDB local · b) Databricks con Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse (propuesta de Natalia) · c) Bronze, Silver y Gold con DuckDB local. Mientras tanto, el pipeline arranca local con el mismo patrón | Mar 29/9 |
-| 3 | Alcance de la demo | Qué acciones hace el asistente (consultar, bloquear, abrir reclamo…) y cuáles no | Mar 29/9 |
-| 11 | Frontend | Chat simple: Streamlit, Gradio o web propia (Python o Node; sin .NET, trabajamos en Linux) | Mar 29/9 |
-| 13 | Servicios de Azure | Despliegue (Container Apps o App Service), secretos (Key Vault). Con la opción b de la decisión 12: ADLS, Databricks y Unity Catalog | Mar 29/9 |
-| 15 | Casos de prueba en portugués | Traducidos, sintéticos o escritos por alguien que lea portugués. El dataset está solo en español: definir también quién los revisa | Mar 29/9 |
-| 20 | Quién hace la presentación y el video | El guion empieza el miércoles | Mar 29/9 |
-| 14 | Tracking de experimentos | MLflow (incluido en Databricks si se elige la opción b de la decisión 12), Azure ML u otro | Mié 30/9 |
-| 19 | Idioma de `docs/` en la entrega | Dejarlos en español o traducir los principales | Jue 1/10 |
+| 10 | Hybrid LLM models | The router is already decided; missing which model goes on each route. Natalia's proposal: Llama 3 on Databricks for frequent queries and GPT-4o for ambiguous cases, Portuguese and evaluation | Tue 9/29 |
+| 12 | Data storage and pipeline | a) Local DuckDB · b) Databricks with Bronze, Silver and Gold in Delta Lake on ADLS; the API queries Gold via SQL Warehouse (Natalia's proposal) · c) Bronze, Silver and Gold with local DuckDB. Meanwhile, the pipeline starts local with the same pattern | Tue 9/29 |
+| 3 | Demo scope | Which actions the assistant performs (check, block, open a claim…) and which it does not | Tue 9/29 |
+| 11 | Frontend | Simple chat: Streamlit, Gradio or own web (Python or Node; no .NET, we work on Linux) | Tue 9/29 |
+| 13 | Azure services | Deployment (Container Apps or App Service), secrets (Key Vault). With option b of decision 12: ADLS, Databricks and Unity Catalog | Tue 9/29 |
+| 15 | Portuguese test cases | Translated, synthetic or written by someone who reads Portuguese. The dataset is Spanish-only: also define who reviews them | Tue 9/29 |
+| 20 | Who makes the presentation and video | The script starts on Wednesday | Tue 9/29 |
+| 14 | Experiment tracking | MLflow (included in Databricks if option b of decision 12 is picked), Azure ML or other | Wed 9/30 |
+| 19 | Language of `docs/` in the submission | Decided 9/28: translate everything to English (this change). Recorded in [plan](plan.md); REQ-0051 updated to English-only | Done |
+
+## Decided
+
+| # | Decision | Outcome | Date |
+|---|---|---|---|
+| 19 | Language of `docs/` and `team/` | Translate everything to English, including folder and file names; close the old Spanish-working-copy rule | 9/28 |

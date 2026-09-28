@@ -1,114 +1,114 @@
-# Tareas
+# Tasks
 
-Quién hace qué y para cuándo, por día. Cuando tomes una tarea, pon tu nombre; cuando la termines, márcala. Si cubre un requerimiento, cita su `REQ-####` y actualiza su estado en los [requerimientos](../docs/requerimientos/requerimientos.md).
+Who does what and by when, per day. When you pick a task, add your name; when you finish it, mark it. If it covers a requirement, cite its `REQ-####` and update its status in the [requirements](../docs/requirements/requirements.md).
 
-**Estados:** Pendiente, En curso, Hecho.
+**States:** Pending, In progress, Done.
 
-## Resumen
+## Summary
 
-Las metas e hitos de cada día están en el [cronograma del plan](plan.md#cronograma). Trabajamos con el flujo de disputas de transacciones hasta la revisión del martes ([decisión 003](../docs/construir/decisiones/003-flujo-disputas.md)).
+Daily goals and milestones live in the [plan schedule](plan.md#schedule). We work with the transaction-disputes flow until the Tuesday review ([decision 003](../docs/build/decisions/003-disputes-flow.md)).
 
-| Día | Hito | Tareas |
+| Day | Milestone | Tasks |
 |---|---|---|
-| Lun 28/9 | Decisiones registradas; primeras mediciones de datos | [Ver](#lun-289) |
-| Mar 29/9 | Flujo confirmado; el esqueleto responde de punta a punta | [Ver](#mar-299) |
-| Mié 30/9 | Un caso funciona completo | [Ver](#mié-309) |
-| Jue 1/10 | 3 casos en ES y PT, link público | [Ver](#jue-110) |
-| Vie 2/10 | Listo para enviar | [Ver](#vie-210) |
-| Sáb 3/10 a lun 5/10 | Entregado | [Ver](#sáb-310-a-lun-510) |
+| Mon 9/28 | Decisions recorded; first data measurements | [See](#mon-928) |
+| Tue 9/29 | Flow confirmed; the skeleton answers end to end | [See](#tue-929) |
+| Wed 9/30 | One case works fully | [See](#wed-930) |
+| Thu 10/1 | 3 cases in ES and PT, public link | [See](#thu-101) |
+| Fri 10/2 | Ready to submit | [See](#fri-102) |
+| Sat 10/3 to Mon 10/5 | Submitted | [See](#sat-103-to-mon-105) |
 
-## Lun 28/9
+## Mon 9/28
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Anotar la preferencia en las [decisiones pendientes](decisiones-pendientes.md) | Cada uno | Pendiente |
-| Confirmar que las credenciales de S3 funcionan para los 3 (Natalia ya las probó) | Felix, Rubén | En curso |
-| Activar el hook de commits: `git config core.hooksPath .githooks` | Felix, Natalia | Pendiente |
-| Subir al repo el script de ingesta (`scripts/ingest_s3_data.py`), sin credenciales: se leen de `.env` | Natalia | Pendiente |
-| Documentar la fuente, el formato y las particiones de los datos en el [dataset](../docs/entender/dataset.md) | Natalia | Pendiente |
-| Definir quién pone la suscripción de Azure, con tope de gasto y alertas | Por asignar | Pendiente |
-| Primer vistazo a los datos: inventario de tablas y contraste con el diccionario | Por asignar | Pendiente |
-| Medir el volumen de reclamos por cargos no reconocidos (`case_type = Claim` + categoría) y su peso en `contact_reason` | Por asignar | Pendiente |
-| Medir qué % de reclamos tiene `origin_interaction_id` válido y qué % de esas interacciones tiene transcripción | Por asignar | Pendiente |
-| Perfilar las etiquetas candidatas: `category` / `subcategory` y `was_escalated` (balance, consistencia, si parecen de plantilla) | Por asignar | Pendiente |
-| Baseline de palabras clave para la categoría del reclamo, con división temporal | Por asignar | Pendiente |
-| Listar los campos de apertura y de resultado de `complaints` para evitar fuga de datos | Por asignar | Pendiente |
+| Record your preference in [pending decisions](pending-decisions.md) | Everyone | Pending |
+| Confirm S3 credentials work for all 3 (Natalia already tested them) | Felix, Rubén | In progress |
+| Enable the commit hook: `git config core.hooksPath .githooks` | Felix, Natalia | Pending |
+| Push the ingestion script (`scripts/ingest_s3_data.py`) to the repo, no credentials: read from `.env` | Natalia | Pending |
+| Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
+| Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
+| First look at the data: table inventory vs the dictionary | Unassigned | Pending |
+| Measure claim volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Unassigned | Pending |
+| Measure what % of claims has a valid `origin_interaction_id` and what % of those interactions has a transcript | Unassigned | Pending |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Unassigned | Pending |
+| Keyword baseline for claim category, with a time-based split | Unassigned | Pending |
+| List `complaints` opening vs outcome fields to avoid data leakage | Unassigned | Pending |
 
-## Mar 29/9
+## Tue 9/29
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Revisión de la [decisión 003](../docs/construir/decisiones/003-flujo-disputas.md): confirmar el flujo de disputas o cambiar a tarjetas, y fijar los umbrales | Equipo | Pendiente |
-| Elegir el componente aprendido (decisión 2) | Equipo | Pendiente |
-| Esquema JSON del handoff (pedido, hechos verificados, transacciones, acciones, evidencia, preguntas abiertas, motivo) | Por asignar | Pendiente |
-| Definir el origen y quién revisa los casos de prueba en portugués (decisión 15) | Por asignar | Pendiente |
-| Esqueleto del backend: orquestador y 2-3 herramientas mock con contratos fijos | Por asignar | Pendiente |
-| Chat simple con login y sesión, conectado al backend | Por asignar | Pendiente |
-| Pipeline mínimo: ingesta, deduplicación y chequeos de calidad | Por asignar | Pendiente |
-| Análisis que respalda el flujo: motivos de contacto, demanda y calidad de datos | Por asignar | Pendiente |
+| Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Pending |
+| Pick the learned component (decision 2) | Team | Pending |
+| JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
+| Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
+| Backend skeleton: orchestrator and 2-3 mock tools with fixed contracts | Unassigned | Pending |
+| Simple chat with login and session, connected to the backend | Unassigned | Pending |
+| Minimal pipeline: ingestion, deduplication and quality checks | Unassigned | Pending |
+| Analysis backing the flow: contact reasons, demand and data quality | Unassigned | Pending |
 
-## Mié 30/9
+## Wed 9/30
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Caso normal de punta a punta con datos reales | Por asignar | Pendiente |
-| Verificación de la acción: el reclamo existe después de crearlo | Por asignar | Pendiente |
-| Handoff integrado al flujo | Por asignar | Pendiente |
-| Componente aprendido frente al baseline | Por asignar | Pendiente |
-| Primeros casos de evaluación | Por asignar | Pendiente |
-| Empezar el guion de la presentación y el video | Por asignar | Pendiente |
+| Normal case end to end with real data | Unassigned | Pending |
+| Action verification: the claim exists after creation | Unassigned | Pending |
+| Handoff integrated into the flow | Unassigned | Pending |
+| Learned component vs baseline | Unassigned | Pending |
+| First evaluation cases | Unassigned | Pending |
+| Start the presentation and video script | Unassigned | Pending |
 
-## Jue 1/10
+## Thu 10/1
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Casos ambiguo y humano | Por asignar | Pendiente |
-| Portugués | Por asignar | Pendiente |
-| Manejo de fallos: herramientas caídas, sesión expirada, reintentos acotados | Por asignar | Pendiente |
-| Set adversarial: inyección de prompts y acceso no autorizado | Por asignar | Pendiente |
-| Despliegue en Azure con link público | Por asignar | Pendiente |
+| Ambiguous and human cases | Unassigned | Pending |
+| Portuguese | Unassigned | Pending |
+| Failure handling: down tools, expired session, bounded retries | Unassigned | Pending |
+| Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
+| Azure deployment with public link | Unassigned | Pending |
 
-## Vie 2/10
+## Fri 10/2
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Evaluación held-out y métricas (éxito, resultados inseguros, handoff, latencia, costo) | Por asignar | Pendiente |
-| Análisis de fallos y limitaciones | Por asignar | Pendiente |
-| README en inglés, presentación y video | Por asignar | Pendiente |
-| Revisar el repo sin secretos ni datos; congelar el código | Por asignar | Pendiente |
+| Held-out evaluation and metrics (success, unsafe outcomes, handoff, latency, cost) | Unassigned | Pending |
+| Failure analysis and limitations | Unassigned | Pending |
+| README in English, presentation and video | Unassigned | Pending |
+| Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 
-## Sáb 3/10 a lun 5/10
+## Sat 10/3 to Mon 10/5
 
-| Tarea | Responsable | Estado |
+| Task | Owner | Status |
 |---|---|---|
-| Solo correcciones críticas | Equipo | Pendiente |
-| Envío | Por asignar | Pendiente |
+| Critical fixes only | Team | Pending |
+| Submission | Unassigned | Pending |
 
-## Por averiguar
+## To find out
 
-Necesitan información, no una decisión. Ordenado por fecha.
+Need information, not a decision. Ordered by date.
 
-| Pregunta | Quién la averigua | Para cuándo | Estado |
+| Question | Who finds out | By when | Status |
 |---|---|---|---|
-| ¿Qué formato y qué particiones tienen los datos en S3? | Natalia | Dom 27/9 | En curso |
-| ¿Hay términos de uso de los datos publicados? (el planteamiento los menciona) | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
-| ¿Qué significa el asterisco de "public\*"? ¿El repo debe ser público desde el inicio? | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
-| ¿Los términos de uso permiten copiar los datos de S3 a Azure (ADLS)? | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
-| ¿Cuánto cuesta tener Databricks (SQL Warehouse y, si se usa, el endpoint de Llama) encendido del 1/10 al 5/10? | Natalia | Lun 28/9 | Hecho: USD 20-58 en total, dentro del crédito de prueba |
-| Hora límite del lunes 5/10 y duración máxima del video | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
-| ¿El modelo de Azure OpenAI que queremos está disponible en nuestra región? | Quien ponga la suscripción | Lun 28/9 | Pendiente |
-| ¿Hay varias fotos mensuales? ¿Cómo se calculó `is_repeat_complainer`? | Área de datos | Con la muestra de datos | Pendiente |
-| ¿Cuántas llegadas tardías hay (diferencia entre `process_date` y `transaction_date`)? | Área de datos | Con la muestra de datos | Pendiente |
-| ¿Cómo construimos las etiquetas de referencia (qué casos requieren humano)? | Área de ML | Mar 29/9 | Pendiente |
-| Supuestos de costo (precio del LLM, costo de un asesor) | Área de análisis | Jue 1/10 | Pendiente |
+| What format and partitions does the S3 data have? | Natalia | Sun 9/27 | In progress |
+| Are there published data terms of use? (the brief mentions them) | Hackathon help channel | Mon 9/28 | Pending |
+| What does the "public\*" asterisk mean? Must the repo be public from the start? | Hackathon help channel | Mon 9/28 | Pending |
+| Do the terms of use allow copying S3 data to Azure (ADLS)? | Hackathon help channel | Mon 9/28 | Pending |
+| How much does Databricks cost (SQL Warehouse and, if used, the Llama endpoint) running 10/1 to 10/5? | Natalia | Mon 9/28 | Done: USD 20-58 total, within the trial credit |
+| Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Pending |
+| Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
+| Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | Pending |
+| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Pending |
+| How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Pending |
+| Cost assumptions (LLM price, agent cost) | Analysis area | Thu 10/1 | Pending |
 
-## Hecho
+## Done
 
-| Tarea | Responsable | Fecha |
+| Task | Owner | Date |
 |---|---|---|
-| Acceso a los datos en S3 probado | Natalia | Dom 27/9 |
-| Acceso de escritura al repositorio para Felix y Natalia | Rubén | Dom 27/9 |
-| Equipo completo en el canal del hackathon | Equipo | Dom 27/9 |
-| Repositorio creado | Rubén | Dom 27/9 |
-| Nombre del equipo: Sentinel Engine | Equipo | Dom 27/9 |
-| Análisis de los documentos del reto (kickoff del datathon y planteamiento del hackathon); commit el domingo | Rubén | Sáb 26/9 |
+| S3 data access tested | Natalia | Sun 9/27 |
+| Write access to the repository for Felix and Natalia | Rubén | Sun 9/27 |
+| Full team in the hackathon channel | Team | Sun 9/27 |
+| Repository created | Rubén | Sun 9/27 |
+| Team name: Sentinel Engine | Team | Sun 9/27 |
+| Analysis of the challenge documents (datathon kickoff and hackathon brief); commit on Sunday | Rubén | Sat 9/26 |

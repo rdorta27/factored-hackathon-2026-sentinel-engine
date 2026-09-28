@@ -10,9 +10,9 @@ A **customer service assistant for a bank** operating in Mexico, Colombia and Ar
 
 ## Start here (about 15 minutes)
 
-1. **[The challenge in one page](docs/entender/resumen.md):** what has to be built, how we are judged and what we submit.
+1. **[The challenge in one page](docs/understand/overview.md):** what has to be built, how we are judged and what we submit.
 2. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
-3. **[Architecture](docs/entender/arquitectura.md):** a first idea of how the pieces fit together.
+3. **[Architecture](docs/understand/architecture.md):** a first idea of how the pieces fit together.
 
 The [documentation index](docs/README.md) helps you find the rest of the topics.
 
@@ -20,14 +20,14 @@ The [documentation index](docs/README.md) helps you find the rest of the topics.
 
 Planning lives in [`team/`](team/), separate from the project documentation:
 
-- **[Pending decisions](team/decisiones-pendientes.md):** on Monday 28/9 we decide the flow, the owners per area, the working method and the stack. Everyone records their preference there.
-- **[Tasks](team/tareas.md):** who does what, and by when.
+- **[Pending decisions](team/pending-decisions.md):** on Monday 28/9 we decide the flow, the owners per area, the working method and the stack. Everyone records their preference there.
+- **[Tasks](team/tasks.md):** who does what, and by when.
 - **[Plan](team/plan.md):** team, schedule, mock strategy, working method and decisions taken.
 
 ## Hackathon rules that already apply
 
 - **No secrets and no data in the repository.** The repository is delivered public; credentials go in `.env` (excluded by `.gitignore`) and are shared by direct message.
-- **Submission in English.** Working documents are written in Spanish; the deliverables — this README, the slides and the video script — are drafted in English as they are created.
+- **Submission in English.** Everything in this repository is written in English, including working documents; the system itself answers in Spanish and Portuguese.
 
 ## For agents
 

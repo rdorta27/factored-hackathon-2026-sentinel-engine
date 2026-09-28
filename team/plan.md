@@ -1,62 +1,63 @@
-# Plan del equipo
+# Team plan
 
-Sentinel Engine · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** (hora por confirmar)
+Sentinel Engine · Factored AI & Data Hackathon 2026 · Submission: **Monday 10/5** (time to be confirmed)
 
-> Arrancamos el lunes 28/9. Las tareas del día están en [tareas](tareas.md) y lo que nos falta decidir, en [decisiones pendientes](decisiones-pendientes.md).
+> We start on Monday 9/28. Day tasks live in [tasks](tasks.md) and open choices in [pending decisions](pending-decisions.md).
 
-## Cronograma
+## Schedule
 
-Es tentativo: lo ajustamos si algo se atrasa.
+Tentative: we adjust it if anything slips.
 
-| Día | Fecha | Meta | Hito |
+| Day | Date | Goal | Milestone |
 |---|---|---|---|
-| Dom | 27/9 | Preparar: acceso a los datos, repositorio, lecturas | Todos con acceso |
-| Lun | 28/9 | **Decidir** flujo, stack, responsables y forma de trabajo. Primer vistazo a los datos | Decisiones registradas |
-| Mar | 29/9 | Esqueleto: 2-3 herramientas mock, orquestador, chat simple, pipeline mínimo. Análisis que respalda el flujo | **El esqueleto responde de punta a punta** |
-| Mié | 30/9 | Caso normal con datos reales, handoff JSON, componente aprendido vs baseline. Guion de presentación y video | **Un caso funciona completo** |
-| Jue | 1/10 | Casos ambiguo y humano, portugués, set adversarial, despliegue. P1 si alcanza | **3 casos en ES y PT, link público** |
-| Vie | 2/10 | Evaluación held-out y métricas. Presentación, video, README en inglés, limitaciones; revisar el repo sin secretos. Congelar el código en la noche | **Listo para enviar** |
-| Sáb a lun | 3/10 a 5/10 | Margen: solo correcciones. Envío temprano | **Entregado** |
+| Sun | 9/27 | Prepare: data access, repository, readings | Everyone has access |
+| Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
+| Tue | 9/29 | Skeleton: 2-3 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
+| Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline. Presentation and video script | **One case works fully** |
+| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. P1 if time allows | **3 cases in ES and PT, public link** |
+| Fri | 10/2 | Held-out evaluation and metrics. Presentation, video, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
+| Sat to Mon | 10/3 to 10/5 | Buffer: corrections only. Early submission | **Submitted** |
 
-Queremos tener **todo listo el viernes 2/10** y usar el fin de semana de margen. Primero que funcione: si algo opcional estorba a lo obligatorio, va para después. Las prioridades están en los [requerimientos](../docs/requerimientos/requerimientos.md).
+We want **everything ready by Friday 10/2** and keep the weekend as buffer. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
 
-## Decisiones tomadas
+## Decisions made
 
-| Decisión | Estado | Registro |
+| Decision | Status | Record |
 |---|---|---|
-| Nombre del equipo: Sentinel Engine | Aceptada | — |
-| Plataforma: Microsoft Azure | Aceptada | [001](../docs/construir/decisiones/001-plataforma-azure.md) |
-| Especificaciones con OpenSpec | Aceptada | [002](../docs/construir/decisiones/002-openspec.md) |
-| Responsables: Natalia, datos y análisis de datos · Rubén, IA, arquitectura y ML · Felix, full-stack | Aceptada | — |
-| LLM híbrido con enrutador entre modelos (los modelos se eligen el martes) | Aceptada | — |
-| Presupuesto de infraestructura: la estimación de Natalia (USD 20-58, dentro de los USD 200 de crédito de prueba de Azure) como supuesto | Aceptada | — |
-| Flujo inicial: disputas de transacciones, hasta la revisión del martes 29/9 | Propuesta | [003](../docs/construir/decisiones/003-flujo-disputas.md) |
+| Team name: Sentinel Engine | Accepted | — |
+| Platform: Microsoft Azure | Accepted | [001](../docs/build/decisions/001-azure-platform.md) |
+| Specs with OpenSpec | Accepted | [002](../docs/build/decisions/002-openspec.md) |
+| Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
+| Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
+| Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
+| Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
+| Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
 
-Las de producto y técnicas van en [decisiones](../docs/construir/decisiones/), un archivo por decisión. Las del equipo (forma de trabajo, responsables) las anotamos aquí.
+Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
-## Forma de trabajo
+## Working method
 
-| Tema | Cómo lo hacemos |
+| Topic | How we work |
 |---|---|
-| Comunicación | Todo por el canal del equipo. Las dudas del reto, al canal de ayuda del hackathon |
-| Seguimiento diario | 15 min o un mensaje en el canal: qué hice, qué haré, qué me bloquea. Formato y hora: decisión 5 |
-| Tareas | En [tareas](tareas.md), con responsable, fecha y estado |
-| Especificaciones | Con OpenSpec: proponemos cada cambio antes de implementarlo y citamos sus requerimientos |
-| Código | Propuesta: rama por tarea y PR que revisa otro; `main` siempre funciona. Falta la decisión 7 |
-| Decisiones | Las de producto y técnicas, en [decisiones](../docs/construir/decisiones/); las del equipo, aquí. Todas las avisamos en el canal |
-| Avance | Al cerrar una tarea, actualizamos su estado en los [requerimientos](../docs/requerimientos/requerimientos.md) |
-| Repositorio | Uno solo (`factored-hackathon-2026-sentinel-engine`), privado mientras trabajamos y público al final |
+| Communication | Everything in the team channel. Challenge questions go to the hackathon help channel |
+| Daily sync | 15 min or a channel message: what I did, what I will do, what blocks me. Format and time: decision 5 |
+| Tasks | In [tasks](tasks.md), with owner, date and status |
+| Specs | With OpenSpec: we propose each change before implementing and cite its requirements |
+| Code | Proposal: branch per task and PR reviewed by someone else; `main` always works. Decision 7 pending |
+| Decisions | Product and technical ones in [decisions](../docs/build/decisions/); team ones here. We announce all of them in the channel |
+| Progress | When a task closes, we update its status in the [requirements](../docs/requirements/requirements.md) |
+| Repository | Single repo (`factored-hackathon-2026-sentinel-engine`), private while we work and public at the end |
 
-Dos reglas del hackathon que no se negocian: nada de secretos ni datos en el repo (las credenciales van en `.env` y las pasamos por mensaje directo), y la entrega va en inglés.
+Two hackathon rules are non-negotiable: no secrets or data in the repo (credentials go in `.env` and are shared by direct message), and the submission is in English.
 
 ## Mocks
 
-Arrancamos con mocks bien documentados y los cambiamos por lo real uno a uno, sin tocar sus contratos. Sirve para cualquier flujo.
+We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Works for any flow.
 
-- **Mar 29/9, esqueleto:** 2-3 herramientas mock en memoria con contratos fijos: 1-2 de lectura (por ejemplo, datos del cliente o sus movimientos), 1 de acción (abrir un reclamo o bloquear una tarjeta) y el handoff. Chat simple y orquestador Entender → Decidir → Actuar → Verificar → Escalar. La política vive en código y el handoff JSON está desde el esqueleto: el LLM entiende, redacta y elige qué herramienta pedir, pero no decide permisos ni confirma acciones.
-- **Cuándo cambiamos cada mock:** cuando el hito del cronograma lo pide, sin cambiar el contrato.
-  - Mié 30/9, caso normal: las lecturas pasan al almacenamiento que elijamos (decisión 12; propuesta: DuckDB), con la frescura declarada. La acción pide confirmación explícita.
-  - Jue 1/10, casos ambiguo y humano, y despliegue: reintentos acotados, acción idempotente y pipeline con particiones, watermark y deduplicación.
-  - Lo que no alcancemos queda como mock y lo contamos en las limitaciones.
-- **Regla:** cada mock documenta su contrato y sus limitaciones, porque así lo pide el planteamiento (Data and execution boundaries): REQ-0004 (herramientas seguras), REQ-0007 (permisos en código), REQ-0032 (mocks documentados).
-- **Componente aprendido:** donde hoy hay una regla fija, la dejamos como baseline y la comparamos con el componente en el mismo held-out (REQ-0016).
+- **Tue 9/29, skeleton:** 2-3 in-memory mock tools with fixed contracts: 1-2 read tools (e.g. customer data or their transactions), 1 action tool (open a claim or block a card) and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
+- **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
+  - Wed 9/30, normal case: reads move to the chosen storage (decision 12; proposal: DuckDB), with declared freshness. The action asks for explicit confirmation.
+  - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries, idempotent action and pipeline with partitions, watermark and deduplication.
+  - Whatever we do not reach stays a mock and we report it under limitations.
+- **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
+- **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).
