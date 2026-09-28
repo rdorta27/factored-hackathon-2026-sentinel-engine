@@ -13,6 +13,7 @@ A **customer service assistant for a bank** operating in Mexico, Colombia and Ar
 1. **[The challenge in one page](docs/understand/overview.md):** what has to be built, how we are judged and what we submit.
 2. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
 3. **[Architecture](docs/understand/architecture.md):** a first idea of how the pieces fit together.
+4. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** PII lifecycle, 4-layer design, repos, timeline and costs (Natalia's proposal, reconciled with pending decisions).
 
 The [documentation index](docs/README.md) helps you find the rest of the topics.
 

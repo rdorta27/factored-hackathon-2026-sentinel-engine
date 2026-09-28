@@ -2,7 +2,7 @@
 
 System overview for the transaction-disputes flow ([decision 003](../build/decisions/003-disputes-flow.md)). Platform: Azure; the open parts of the stack are listed under [stack](#stack).
 
-**Purpose:** understand how the pieces fit together before reading the areas. **Related:** [conversation](../build/conversation.md), [security](../build/security.md), [areas](../build/areas/), [glossary](glossary/).
+**Purpose:** understand how the pieces fit together before reading the areas. **Related:** [conversation](../build/conversation.md), [security](../build/security.md), [areas](../build/areas/), [glossary](glossary/), [architecture and roadmap](../build/architecture-roadmap.md).
 
 ## Central principle
 
