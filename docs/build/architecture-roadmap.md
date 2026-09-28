@@ -1,6 +1,6 @@
 # Architecture and roadmap
 
-Architecture, personal-data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number.
+Architecture, personal-data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
 > Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
@@ -22,9 +22,17 @@ PII management spans data engineering, AI/agent engineering and full-stack, acro
 
 ```mermaid
 flowchart LR
-    raw["S3 raw data"] --> bronze["Bronze layer"]
-    bronze --> silver["Silver layer:<br/>static PII redaction & hashing<br/>· hash customer DNIs<br/>· restrict access to credit scores (kept as ML features)<br/>· mask card numbers (**** **** **** 1234)<br/>· schema contracts & compliance audit"]
-    silver --> gold["Gold layer"]
+    raw[("S3 raw data")] --> bronze["Bronze<br/>as received"] --> silver["Silver<br/>static PII redaction"] --> gold[("Gold<br/>ready for tools and ML")]
+    silver --- rules["· hash document numbers<br/>· mask card numbers (**** 1234)<br/>· restrict access to credit score and income<br/>(kept as ML features)<br/>· schema contracts and audit"]
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class raw,gold store
+    class bronze,silver proposed
+    class rules ext
 ```
 
 > [!NOTE]
@@ -34,14 +42,23 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    msg["User chat message<br/>(e.g. 'My DNI is 1098234')"] --> mask["Layer 1: real-time PII masking engine<br/>(Regex + NER)"]
-    mask -- "replace PII with session token<br/>(e.g. 'My DNI is [TOKEN_ID_1]')" --> llm["Layer 2: hybrid LLM router<br/>(models undecided, decision 10)"]
-    mask -- "store encrypted map<br/>{[TOKEN_ID_1]: '1098234'}" --> vault["Session vault (ephemeral)"]
-    llm -- "anonymized prompt only<br/>(zero PII leakage)" --> llm
-    llm -- "tool intent + token parameters" --> tools["Layer 3: deterministic tool calling<br/>& re-hydration"]
-    vault -- "re-hydrate token" --> tools
-    tools -- "parameterized SQL by session customer_id<br/>(no raw PII in prompts or logs)" --> db[("Gold store")]
-    tools --> ui["Client UI: renders secure response"]
+    msg(["Customer message<br/>'My DNI is 1098234'"]) --> mask["Layer 1 · masking engine<br/>Regex + NER"]
+    mask -- "store encrypted map<br/>TOKEN_ID_1 → 1098234" --> vault[("Session vault<br/>ephemeral")]
+    mask -- "anonymized prompt only<br/>'My DNI is [TOKEN_ID_1]'" --> llm["Layer 2 · hybrid LLM router<br/>models: decision 10"]
+    llm -- "tool intent + token parameters" --> tools["Layer 3 · deterministic tools<br/>and re-hydration"]
+    vault -- "re-hydrate token<br/>(compare only, never a lookup key)" --> tools
+    session[("Session<br/>customer_id")] -- "lookup key" --> tools
+    tools -- "parameterized SQL<br/>WHERE customer_id = session" --> db[("Gold")]
+    tools --> ui(["Client UI<br/>response without raw PII"])
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class msg,ui ext
+    class mask,llm,tools proposed
+    class vault,session,db store
 ```
 
 > [!NOTE]
@@ -57,11 +74,22 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    ui["Customer chat / web UI<br/>(Spanish & Portuguese)"] --> l1["LAYER 1: security, PII guardrails<br/>& session isolation<br/>· dynamic PII masking engine<br/>· ephemeral session vault<br/>· session injection (authenticated customer_id)"]
-    l1 -- "anonymized prompt" --> l2["LAYER 2: orchestrator & hybrid LLM router<br/>· frequent routine queries → local model route<br/>· ambiguous cases, pt-BR, evaluator → flagship model route<br/>(models undecided, decision 10)"]
-    l2 -- "tool intent & token parameters" --> l3["LAYER 3: deterministic policy engine<br/>& tool re-hydration<br/>· token re-hydration for queries<br/>· parameterized SQL execution<br/>· financial eligibility logic (thresholds to validate, decision 003)<br/>· human handoff dossier generator (structured JSON)"]
-    l3 --> l4a["LAYER 4: immutable audit log<br/>· append-only logs<br/>· anonymized traceability (MX, CO, AR)"]
-    l3 --> l4b["Delta lake (Gold)<br/>· storage backend open — question for Natalia (decision 12)"]
+    ui(["Customer chat · web UI<br/>Spanish and Portuguese"]) --> l1
+    l1["Layer 1 · security and session isolation<br/>PII masking · session vault<br/>authenticated customer_id"] -- "anonymized prompt" --> l2
+    l2["Layer 2 · orchestrator and hybrid LLM router<br/>routine queries → light model<br/>ambiguous, pt-BR, evaluation → strong model<br/>(models: decision 10)"] -- "tool intent + token parameters" --> l3
+    l3["Layer 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff dossier (JSON)"]
+    l3 --> l4[("Layer 4 · audit log<br/>append-only, anonymized<br/>MX · CO · AR")]
+    l3 -- "read" --> gold[("Gold<br/>backend: decision 12")]
+    l3 -- "write · read back" --> disputes[("Disputes store<br/>SQLite · Postgres")]
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class ui ext
+    class l1,l2,l3 real
+    class l4,gold,disputes store
 ```
 
 > [!NOTE]
@@ -71,9 +99,21 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    d["sentinel-data-engine<br/>(Natalia)<br/>Medallion pipelines, static PII masking,<br/>quality checks, schema contracts<br/>PySpark, Delta Lake, SDK"] --> infra["sentinel-devops-infra (shared)<br/>IaC (Terraform/Bicep), CI/CD<br/>(GitHub Actions)"]
-    a["sentinel-ai-core<br/>(Rubén)<br/>dynamic PII masking, LLM router,<br/>deterministic financial rules<br/>Python, FastAPI, Pydantic"] --> infra
-    w["sentinel-web-interface<br/>(Felix)<br/>chat UI, handoff dashboard,<br/>session management, REST client"] --> infra
+    d["sentinel-data-engine · Natalia<br/>Medallion pipelines, static PII masking,<br/>quality checks, schema contracts<br/>PySpark · Delta Lake"]
+    a["sentinel-ai-core · Rubén<br/>PII masking, LLM router,<br/>deterministic rules<br/>Python · FastAPI · Pydantic"]
+    w["sentinel-web-interface · Felix<br/>chat UI, handoff view,<br/>session management"]
+    infra["sentinel-devops-infra · shared<br/>IaC (Terraform or Bicep) · CI/CD (GitHub Actions)"]
+    delivery[("Public submission repo<br/>factored-hackathon-2026-sentinel-engine<br/>who assembles it: decision 21")]
+    d & a & w -. "merged into" .-> delivery
+    infra -- "builds and deploys" --> delivery
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class d,a,w,infra proposed
+    class delivery store
 ```
 
 > [!WARNING]
@@ -87,7 +127,9 @@ Per-person view of the [plan schedule](../../team/plan.md#schedule): same dates 
 gantt
     title Sentinel Engine — action plan
     dateFormat YYYY-MM-DD
-    axisFormat %m/%d
+    axisFormat %a %d/%m
+    tickInterval 1day
+    todayMarker off
     section Milestones
     Decisions recorded                     :milestone, m1, 2026-09-28, 0d
     Skeleton answers end to end            :milestone, m2, 2026-09-29, 0d

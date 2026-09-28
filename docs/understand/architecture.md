@@ -12,20 +12,30 @@ How Sentinel Engine is put together for the transaction-disputes flow ([decision
 
 ```mermaid
 flowchart LR
-    subgraph service["SERVICE LAYER (real time)"]
-        client["Customer"] <--> frontend["Frontend (chat)"]
-        frontend --> orch["Orchestrator (code + LLM)<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
-        orch --> tools["Tools (bound to the session)<br/>· look up transactions<br/>· open dispute · look up dispute<br/>· handoff"]
-        tools --> handoff["Handoff JSON → agent (simulated)"]
-        tools -- "write / read back" --> disputes[("Disputes store<br/>SQLite locally, Postgres on Azure")]
+    subgraph service["Service layer · real time"]
+        direction TB
+        client(["Customer"]) <--> frontend["Frontend<br/>chat"]
+        frontend --> orch["Orchestrator · code + LLM<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
+        orch --> tools["Tools bound to the session<br/>look up transactions · open dispute<br/>look up dispute · handoff"]
+        tools --> agent(["Agent<br/>simulated"])
+        tools -- "write · read back" --> disputes[("Disputes store<br/>SQLite locally · Postgres on Azure")]
     end
-    subgraph dataL["DATA LAYER (batch or incremental)"]
-        files["Dataset files<br/>(date partitions, late<br/>arrivals, duplicates, changing<br/>schema)"]
-        files --> pipe["Pipeline Bronze → Silver → Gold:<br/>contracts, deduplication,<br/>upsert, quality"]
-        pipe --> gold[("Gold<br/>transactions per customer,<br/>with cutoff date")]
-        pipe --> anstore["Analytical data<br/>(analysis, training, baseline)"]
+    subgraph dataL["Data layer · batch or incremental"]
+        direction TB
+        files[("Dataset files<br/>partitions, late arrivals,<br/>duplicates, schema changes")] --> pipe["Pipeline Bronze → Silver → Gold<br/>contracts, dedup, upsert, quality"]
+        pipe --> gold[("Gold<br/>transactions per customer<br/>with cutoff date")]
+        pipe --> anstore[("Analytical data<br/>analysis, training, baseline")]
     end
     tools -- "read" --> gold
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class client,agent ext
+    class frontend,orch,tools,pipe real
+    class files,gold,anstore,disputes store
 ```
 
 - **Service layer:** what matters is latency, verified actions, bounded retries and idempotency.
@@ -34,26 +44,48 @@ flowchart LR
 
 ## Components and mocks
 
-We start with mocks that have fixed contracts and replace them one at a time without changing the contract (see the [plan](../../team/plan.md#mocks)). Dashed orange: mock to implement. Blue: real component.
+We start with mocks that have fixed contracts and replace them one at a time without changing the contract (see the [plan](../../team/plan.md#mocks)). Dashed orange: mock to implement. Blue: real component. Green: store that is real from the start.
 
 ```mermaid
 flowchart TB
-    client([Customer]) --> chat["Web chat<br/>login and confirmation"] --> auth["Authenticated session<br/>customer_id"] --> orch["Orchestrator<br/>Understand → Decide<br/>→ Act → Verify<br/>→ Escalate"]
+    client(["Customer"]) --> chat["Web chat<br/>login and confirmation"] --> auth["Authenticated session<br/>customer_id"] --> orch["Orchestrator<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
 
-    orch --> pii["Personal-data<br/>masking"] --> llm["Hybrid LLM<br/>with router"]
-    orch --> policy["Policy in code<br/>permissions and confirmation"]
-    orch --> ml["Learned component<br/>vs baseline"]
-    orch --> read["Look up<br/>transactions"] --> gold[("Transactions<br/>with cutoff date")]
-    orch --> open["Open dispute<br/>idempotent"] --> disputes[("Disputes<br/>store")]
-    orch --> verify["Look up<br/>dispute"] --> disputes
-    orch --> handoff["Handoff JSON"] --> agents[("Agent<br/>queue")]
-    orch -.-> traces[("Traces and<br/>audit log")]
-    s3[("S3: dataset")] --> pipeline["Pipeline<br/>Bronze → Silver → Gold"] --> gold
+    subgraph brain["Reasoning and control"]
+        pii["Personal-data<br/>masking"] --> llm["Hybrid LLM<br/>with router"]
+        policy["Policy in code<br/>permissions, confirmation"]
+        ml["Learned component<br/>vs baseline"]
+    end
+    subgraph toolset["Tools"]
+        read["Look up<br/>transactions"]
+        open["Open dispute<br/>idempotent"]
+        verify["Look up<br/>dispute"]
+        handoff["Handoff JSON"]
+    end
+    subgraph stores["Stores"]
+        gold[("Transactions<br/>with cutoff date")]
+        disputes[("Disputes<br/>store")]
+        agents[("Agent<br/>queue")]
+        traces[("Traces and<br/>audit log")]
+    end
 
-    classDef mock fill:#fff4e5,stroke:#e8a33d,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
-    classDef real fill:#eef0ff,stroke:#6c5ce7,stroke-width:2px,color:#1b1640
+    orch --> pii & policy & ml
+    orch --> read & open & verify & handoff
+    read --> gold
+    open --> disputes
+    verify --> disputes
+    handoff --> agents
+    orch -.-> traces
+    s3[("S3 dataset")] --> pipeline["Pipeline<br/>Bronze → Silver → Gold"] --> gold
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class client ext
+    class chat,orch,pii,policy,llm,pipeline real
     class auth,ml,read,open,verify,handoff,gold,disputes,agents mock
-    class client,chat,orch,pii,policy,llm,pipeline,traces,s3 real
+    class traces,s3 store
 ```
 
 - **Session:** a trusted test session. Every tool filters by its `customer_id`, never by an identifier typed in the chat.
@@ -66,14 +98,22 @@ When several parts could decide, the higher one wins:
 
 ```mermaid
 flowchart TD
-    req["Decision request"] --> policy{"Policy in code?"}
-    policy -- "rule matches" --> apply["Apply rule<br/>(permissions, confirmations,<br/>fixed escalations)"]
-    policy -- "no rule" --> learned{"Learned component<br/>weighs in?"}
-    learned -- yes --> predict["Predictor decides<br/>(e.g. escalation score)"]
-    learned -- no --> llm["LLM drafts and picks<br/>a tool to call"]
+    req(["Decision request"]) --> policy{"Does a policy<br/>rule apply?"}
+    policy -- "yes" --> apply["Apply the rule<br/>permissions, confirmations,<br/>fixed escalations"]
+    policy -- "no" --> learned{"Does the learned<br/>component weigh in?"}
+    learned -- "yes" --> predict["Predictor decides<br/>e.g. escalation score"]
+    learned -- "no" --> llm["LLM drafts the reply<br/>and picks a tool"]
     predict --> llm
     apply --> done(["Outcome"])
     llm --> done
+
+    classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
+    classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class req,done ext
+    class apply,predict,llm real
 ```
 
 1. **Policy in code.** Permissions, confirmations and fixed rules. Example: if the customer asks for a person, we escalate.
@@ -90,32 +130,38 @@ flowchart TD
 
 ```mermaid
 sequenceDiagram
-    participant C as Customer
+    autonumber
+    actor C as Customer
     participant F as Frontend (chat)
     participant O as Orchestrator<br/>(code + LLM)
-    participant T as Tools<br/>(with session)
+    participant T as Tools<br/>(session-bound)
     participant S as Stores
     participant A as Agent (simulated)
+
     C->>F: "me cobraron dos veces"<br/>("I was charged twice")
     F->>O: message + session
+    rect rgba(91, 79, 214, 0.08)
     Note over O: Understand: intent = charge dispute<br/>(personal data masked before the LLM)
     O->>T: Decide: search repeated purchases<br/>(session customer)
-    T->>S: read transactions
+    T->>S: read transactions (Gold)
     S-->>T: candidate charges + cutoff date
     T-->>O: candidates
     O->>F: show candidates in their currency
     F->>C: candidates
     C->>F: picks one and confirms
     F->>O: confirmation
+    end
+    rect rgba(199, 125, 18, 0.10)
     O->>T: Act: open dispute (idempotency key)
-    T->>S: write dispute
+    T->>S: write dispute (disputes store)
     O->>T: Verify: look up dispute
     T->>S: read dispute
     S-->>T: dispute exists
     T-->>O: case number
+    end
     O->>F: case number and next step
     F->>C: case number
-    opt a rule or the predictor says so
+    opt a rule or the predictor calls for it
         O->>T: Escalate: handoff
         T->>A: JSON handoff (verified facts,<br/>open questions)
     end
