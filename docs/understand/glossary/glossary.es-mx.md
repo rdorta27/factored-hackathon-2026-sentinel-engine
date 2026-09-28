@@ -24,8 +24,8 @@ Overlay de México sobre el [glosario canónico en inglés](glossary.en-us.md). 
 
 | Concept | Mexican term (ES-MX) | English |
 |---|---|---|
-| Call-center agent | Asesor, agente, ejecutivo | Agent |
+| Call-center advisor | Asesor, agente, ejecutivo | Advisor |
 | Support center | Call center, centro de contacto | Contact center |
 | Complaints system | Aclaraciones (claims/disputes filed with the bank) | Dispute / clarification request |
 | Banking regulator | CNBV (*Comisión Nacional Bancaria y de Valores*) | National banking and securities commission |
-| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an agent |
+| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an advisor |

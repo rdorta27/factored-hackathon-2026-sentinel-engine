@@ -52,7 +52,7 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 
 | Table | Partition | Key columns | Caveat |
 |---|---|---|---|
-| customers | Monthly snapshot | customer_id, country, detected_accent (includes "neutral"), **segment** (Premium, Plus, Basic, Student), credit_score, estimated_monthly_income, customer_status, last_updated | Personal data (document, name, email, phone, address): never to the LLM |
+| customers | Monthly snapshot | customer_id, country, detected_accent (includes "neutral"), **segment** (Premium, Plus, Basic, Student), credit_score, estimated_monthly_income, customer_status, last_updated | Personal data (PII: document, name, email, phone, address): never to the LLM |
 | products | Monthly snapshot | product_id, customer_id, product_type, currency, **current_balance**, credit_limit, product_status (Active, Blocked, Closed, Suspended), days_past_due, last_transaction_date | The balance is from the latest snapshot: compute it with later transactions or report the cutoff date |
 
 - For ML features, use the **latest snapshot before the case date** (never the most recent one).
@@ -66,7 +66,7 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 | marketing_campaigns | Full snapshot | campaign_type, campaign_objective, promoted_product, target_segment, target_country, start_date / end_date | Explain demand spikes by date and country |
 
 - `avg_csat` and `total_monthly_interactions` are from the latest month and include that month's cases: as features, use the snapshot from the **month before** the case.
-- Agent personal data (name, email, phone): never exposed to the customer or the LLM.
+- Advisor PII (name, email, phone): never exposed to the customer or the LLM.
 
 ## Dictionary: transactions
 
@@ -109,7 +109,7 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 | campaign_sends | Daily | send_date, campaign_id, customer_id, send_channel, send_status, was_delivered, was_opened, was_clicked, **had_conversion**, conversion_value, **send_cost** |
 
 - **App errors:** they often precede a call or complaint. Join them by customer and date for demand analysis and to give context in the conversation.
-- **IP:** personal data. It does not go to the LLM, it is masked in logs, and it is used only in code.
+- **IP:** PII. It does not go to the LLM, it is masked in logs, and it is used only in code.
 - **IP country different from the account country:** a risk signal, not a verdict (travel, family, VPN). Useful for the fraud component or for requesting extra verification in sensitive actions; never block or discriminate by origin.
 - 10-million-row table: sample it for exploration.
 

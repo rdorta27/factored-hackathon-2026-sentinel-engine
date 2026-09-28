@@ -24,9 +24,9 @@ Overlay de Colombia sobre el [glosario canónico en inglés](glossary.en-us.md).
 
 | Concept | Colombian term (ES-CO) | English |
 |---|---|---|
-| Call-center agent | Asesor, agente | Agent |
+| Call-center advisor | Asesor, agente | Advisor |
 | Support center | Call center, centro de contacto | Contact center |
 | Complaints system | PQR (*Peticiones, Quejas y Reclamos*) | Requests, complaints and claims system |
 | Customer advocate | Defensor del consumidor financiero | Financial consumer advocate |
 | Banking regulator | SFC (*Superintendencia Financiera de Colombia*) | Financial superintendence |
-| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an agent |
+| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an advisor |

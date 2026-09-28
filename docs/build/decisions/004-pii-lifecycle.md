@@ -1,4 +1,4 @@
-# 004 · PII masking and unmasking lifecycle
+# 004 · Personal data (PII) masking and unmasking lifecycle
 
 **Date:** 2026-09-28
 **Status:** Proposed
@@ -6,7 +6,7 @@
 
 ## Context
 
-Personal data must never reach the LLM or the browser (REQ-0047, no identifiers in the LLM; REQ-0031, approved data only; REQ-0027, access control and retention). PII appears in two planes: at rest in the lakehouse and in flight in live chat. Each plane needs its own masking mechanism, with a clear owner per plane. Proposed by Natalia (9/28); the static half is already noted in [security](../security.md#data).
+PII must never reach the LLM or the browser (REQ-0047, no identifiers in the LLM; REQ-0031, approved data only; REQ-0027, access control and retention). PII appears in two planes: at rest in the lakehouse and in flight in live chat. Each plane needs its own masking mechanism, with a clear owner per plane. Proposed by Natalia (9/28); the static half is already noted in [security](../security.md#data).
 
 ## Options
 

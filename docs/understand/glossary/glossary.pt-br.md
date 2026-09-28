@@ -24,9 +24,9 @@ Brazil overlay on the [canonical English glossary](glossary.en-us.md). The local
 
 | Concept | Brazilian term (PT-BR) | English |
 |---|---|---|
-| Call-center agent | Atendente | Agent |
+| Call-center advisor | Atendente | Advisor |
 | Support center | Central de atendimento, SAC (*Serviço de Atendimento ao Consumidor*) | Support center, consumer support service |
 | Complaints system | SAC; if unresolved, Ouvidoria (the bank's internal ombudsman) | Support service, then internal ombudsman |
 | Customer advocate | Ouvidoria | Internal ombudsman |
 | Banking regulator | Banco Central do Brasil | Central Bank of Brazil |
-| "I want to talk to a person" | Quero falar com um atendente | I want to talk to an agent |
+| "I want to talk to a person" | Quero falar com um atendente | I want to talk to an advisor |

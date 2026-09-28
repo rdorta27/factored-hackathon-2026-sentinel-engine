@@ -24,17 +24,19 @@ The hackathon audience is technical (software, data). These contact-center and b
 | SLA | Service Level Agreement | Committed deadline (e.g. answer a dispute in 15 days); missing it is "SLA breached" |
 | UTM | Urchin Tracking Module | Campaign-link parameters showing which campaign and channel a visit came from |
 | Conversion | Conversion | The customer did what the campaign wanted (e.g. requested the card) |
-| Supervisor | Supervisor | Lead of a group of agents; receives cases an agent cannot resolve |
+| Supervisor | Supervisor | Lead of a group of advisors; receives cases an advisor cannot resolve |
 
 ## Architecture
 
 | Build | Functional | Official | Definition |
 |---|---|---|---|
-| Support layer | Real-time support | — | Conversation, orchestrator, tools and actions. Answers the customer instantly |
-| Data layer | Data processing | Pipeline | Prepares the data the support layer reads: contracts, deduplication, upsert, stores |
-| Orchestrator | Assistant | Agent | Component that understands, decides, acts, verifies and escalates |
+| Service layer | Real-time support | — | Conversation, orchestrator, tools and actions. Answers the customer instantly |
+| Data layer | Data processing | Pipeline | Prepares the data the service layer reads: contracts, deduplication, upsert, stores |
+| Orchestrator | Assistant | Agent | Component that understands, decides, acts, verifies and escalates. In this repo, "agent" only means this AI component; the human who takes a handoff is the **advisor** |
+| Advisor | Advisor | Agent (call center) | Human who receives the handoff; *asesor* in Spanish, *atendente* in Portuguese |
 | Tool | Query or operation | Tool | Function the orchestrator calls to read data or run actions, with access control |
-| Operational store | (Simulated) banking core | — | Per-customer data queried by tools |
+| Gold | (Simulated) banking core | — | Per-customer transactions the tools read, with their cutoff date; filled by the pipeline |
+| Disputes store | Dispute registry | — | Operational store where tools write disputes and read them back to verify; SQLite locally, Postgres on Azure |
 | Analytical store | — | — | Data for analysis, baseline and training |
 | Mask / unmask | — | — | **Mask:** replace a personal value (document, card number) with a token before it reaches the LLM or the logs. **Unmask:** code swaps the token back for the real value, only inside a tool, and never uses it as a lookup key. See [decision 004](../../build/decisions/004-pii-lifecycle.md) |
 | Token vault | — | — | Per-session, encrypted map from tokens to the masked values; discarded when the session ends |
@@ -43,9 +45,9 @@ The hackathon audience is technical (software, data). These contact-center and b
 
 | Build | Functional | Official | Definition |
 |---|---|---|---|
-| Handoff | Escalation to an agent | Handoff / escalation | Passing the case to a person with a structured summary |
+| Handoff | Escalation to an advisor | Handoff / escalation | Passing the case to a person with a structured summary |
 | Containment | Cases without escalation | Containment | Cases ending without a person; not the same as resolved |
-| Safe automated resolution | Resolution without an agent | Safe automated resolution | Case resolved correctly and within policy, with no human |
+| Safe automated resolution | Resolution without an advisor | Safe automated resolution | Case resolved correctly and within policy, with no human |
 | Abstention | Unserved request | Abstention | The system decides not to act and explains why |
 
 ## Use cases

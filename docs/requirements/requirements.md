@@ -60,7 +60,7 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0043 | Check the charge status (Pending, Reversed) before opening a dispute | P1 | Disputes, accounts | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-dispute) | Demo | Pending |
 | REQ-0044 | Neutral Spanish, with local acronyms and terms explained; understand terms from other countries | P1 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#language) | Demo | Pending |
 | REQ-0045 | Offer recent app-error context as a question (auxiliary context, not its own flow) | P2 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#app-context) | Demo | Pending |
-| REQ-0046 | Route the handoff to an agent with the right language and specialty (simulated) | P2 | All | AI Engineering | ai | Own: [AI](../build/areas/ai.md#simulated-routing) | Handoff example | Pending |
+| REQ-0046 | Route the handoff to an advisor with the right language and specialty (simulated) | P2 | All | AI Engineering | ai | Own: [AI](../build/areas/ai.md#simulated-routing) | Handoff example | Pending |
 
 ## Non-functional (NF)
 
@@ -71,7 +71,7 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0021 | Failure tests: bad or missing data, expired session, unauthorized access, prompt injection, tool failure, multilingual ambiguity | P0 | All | Machine Learning | ml, ai | Problem statement: What your solution should demonstrate 5 · Kickoff p. 13 | Adversarial-set results | Pending |
 | REQ-0027 | Authentication with test session, per-customer access control, retention policy | P0 | All | AI Engineering / Data Engineering | ai, data | Problem statement: What your solution should demonstrate 6; Data and execution boundaries · Kickoff p. 15 | Test session + policy | Pending |
 | REQ-0028 | Reproducibility: setup, versioning, repeatable evaluation | P0 | All | Rationale | all | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Setup README | Pending |
-| REQ-0047 | The LLM receives no identifiers or personal data; tools filter by the session customer | P0 | All | AI Engineering | ai | Own: [security](../build/security.md#llm-visibility) | Code + adversarial test | Pending |
+| REQ-0047 | The LLM receives no identifiers or personal data (PII); tools filter by the session customer | P0 | All | AI Engineering | ai | Own: [security](../build/security.md#llm-visibility) | Code + adversarial test | Pending |
 | REQ-0048 | Decision order: policy in code > predictor > LLM | P0 | All | Rationale / ML | ai, ml | Own: [architecture](../understand/architecture.md#decision-priority) | [Architecture](../understand/architecture.md) | Pending |
 | REQ-0025 | Observability: execution traces and logs, with country and language | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Traces and logs | Pending |
 | REQ-0026 | Bounded retries, safe fallback; idempotent actions | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Tool-failure test | Pending |

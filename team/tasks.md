@@ -101,7 +101,7 @@ Need information, not a decision. Ordered by date.
 | How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Pending |
 | Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
 | How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Pending |
-| Cost assumptions (LLM price, agent cost) | Analysis area | Thu 10/1 | Pending |
+| Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | Pending |
 
 ## Done
 

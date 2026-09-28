@@ -44,10 +44,10 @@ REQ-0042 (minimum effort) and REQ-0043 (check the charge status).
 
 ## When the customer asks to speak to a person
 
-REQ-0040 (agent request). The policy in code decides, not the predictor or the LLM.
+REQ-0040 (advisor request). The policy in code decides, not the predictor or the LLM.
 
-- A single offer: "Puedo ayudarte con esto ahora mismo. ¿Prefieres intentarlo conmigo o que te comunique con un asesor?" ("I can help you with this right now. Would you prefer to try it with me or that I connect you with an agent?")
-- If they repeat or choose the agent: escalate immediately, without insisting.
+- A single offer: "Puedo ayudarte con esto ahora mismo. ¿Prefieres intentarlo conmigo o que te comunique con un asesor?" ("I can help you with this right now. Would you prefer to try it with me or that I connect you with an advisor?")
+- If they repeat or choose the advisor: escalate immediately, without insisting.
 - Log each request: many requests at the same step signal a flow problem.
 
 ## App context
@@ -93,7 +93,7 @@ A customer may write in Portuguese and hold their account in MX, CO, or AR.
 
 ### Brazilian Portuguese
 
-Portuguese tests are most likely to be from Brazil (pt-BR). The customer may use terms from the Brazilian system (Pix, extrato — statement; estorno — refund/chargeback; atendente — agent; CPF, Cadastro de Pessoas Físicas, the Brazilian individual taxpayer ID) even if their account is in MX, CO, or AR. The assistant must understand them but respond with the account's real data (for example, there is no Pix in the dataset). Equivalences in the [glossary](../understand/glossary/glossary.pt-br.md).
+Portuguese tests are most likely to be from Brazil (pt-BR). The customer may use terms from the Brazilian system (Pix, extrato — statement; estorno — refund/chargeback; atendente — advisor; CPF, Cadastro de Pessoas Físicas, the Brazilian individual taxpayer ID) even if their account is in MX, CO, or AR. The assistant must understand them but respond with the account's real data (for example, there is no Pix in the dataset). Equivalences in the [glossary](../understand/glossary/glossary.pt-br.md).
 
 ### Spanish variants
 
