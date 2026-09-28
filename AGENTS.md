@@ -39,6 +39,9 @@ For agents:
 | [`docs/requirements/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
+| [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
+| [`openspec/`](openspec/) | OpenSpec config, specs and changes |
+| `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).
 
@@ -55,6 +58,9 @@ Accepted decisions that code must follow:
   [006](docs/build/decisions/006-frontend.md).
 - **Platform:** Azure; locally it runs on Linux. See
   [001](docs/build/decisions/001-azure-platform.md).
+- **Proposed flow** (decided at the 9/29 review): a dispute starts as an account
+  inquiry; the learned component is a prompted LLM against a keyword baseline.
+  See [flow data evidence](docs/build/flows/data-evidence.md).
 - Which model serves each route is still open (pending decision 10).
 
 ## Rules
@@ -70,5 +76,15 @@ Accepted decisions that code must follow:
   use the template); team decisions go to [`team/plan.md`](team/plan.md).
   Requirements cited by a decision are listed in
   [`docs/requirements/requirements.md`](docs/requirements/requirements.md).
+- **Evidence runs are write-once.** A new run goes in a new folder under
+  `evidence/flows/` (e.g. `2024Q4-v3/`); never edit a committed run. Cite
+  `summary.json` fields, never hand-copied numbers. Scripts read the bucket
+  name from `.env` and data from the gitignored `data/`; never write the
+  bucket name, account IDs or dataset rows in the repo.
+- **Specs and changes** use OpenSpec (`/opsx:propose`, `/opsx:apply`, …) with
+  the rules in [`openspec/config.yaml`](openspec/config.yaml): English only,
+  every capability traced to a `REQ-####`.
+- **No `Co-Authored-By` trailers**: the commit hook rejects them; credit people
+  in the message body instead.
 - **PDFs** are generated with `python3 estilos/build.py` from outside the
   repository; PDFs are gitignored.
