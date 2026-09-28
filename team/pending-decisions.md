@@ -24,7 +24,6 @@ These block Tuesday's skeleton. Most urgent: **16**, because deployment is on Th
 | 9 | Backend language and framework | Proposal: Python with FastAPI | [Architecture](../docs/understand/architecture.md#stack) | | | |
 | 16 | Azure subscription or credits | Who provides it, with a spend cap and alerts. Cost assumption: USD 20–58, within the USD 200 trial credit (Natalia's estimate) | [Decision 001](../docs/build/decisions/001-azure-platform.md) | | | |
 | 17 | `team/` in the submission | The repo stays public (decided). Open: keep `team/` in the submission or remove it before submitting | [Security](../docs/build/security.md#public-repository-and-deployment) | | | |
-| 18 | OpenSpec spec language | Proposal: English, since specs are submitted | [Decision 002](../docs/build/decisions/002-openspec.md) | | | |
 | 21 | Repositories | Natalia proposes splitting by domain (data, AI, web, infrastructure). Options: a) one repo with a folder per domain and separate dependencies · b) several repos to develop in, one to submit · c) submodules. The submission requires a single public repo | [Architecture and roadmap](../docs/build/architecture-roadmap.md#repository-layout) | | | |
 
 ## Due Tuesday 9/29 (flow review)
@@ -53,4 +52,5 @@ These block Tuesday's skeleton. Most urgent: **16**, because deployment is on Th
 |---|---|---|---|
 | 4 | Owners per area | Natalia: data and data analysis · Rubén: AI, architecture and ML · Felix: full-stack | 9/28 |
 | 17 | Repository visibility | Public from the start, and it stays public | 9/28 |
+| 18 | OpenSpec spec language | English, since specs are submitted | 9/28 |
 | 19 | Language of `docs/` and `team/` | Everything in English, including folder and file names | 9/28 |

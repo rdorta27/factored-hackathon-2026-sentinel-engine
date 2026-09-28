@@ -23,6 +23,6 @@ OpenSpec, in the repository's `openspec/` folder.
 - **Relationship with `docs/`:** `docs/` explains the challenge and the design rules; `openspec/` specifies what gets built.
   - Each specification cites the requirements it covers (e.g., REQ-0008, JSON handoff).
   - The OpenSpec project context links to [architecture](../../understand/architecture.md), [conversation](../conversation.md), and [security](../security.md), instead of copying them.
-- **Language:** to be defined. The specifications are part of the public deliverable, so writing them in English is preferable.
+- **Language:** English (decision 18, closed 9/28), since the specifications are part of the public deliverable.
 - **Workflow:** change proposal → pull-request review → implementation → change archival. GitHub issues link to their proposal.
 - Pending: install OpenSpec and initialize the folder with the Tuesday 9/29 skeleton, once the flow is confirmed.
