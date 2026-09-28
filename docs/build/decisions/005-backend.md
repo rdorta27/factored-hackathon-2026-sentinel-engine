@@ -1,4 +1,4 @@
-# 005 · Backend: Python, FastAPI, LangGraph
+# 005 · Backend: Python, FastAPI (LangGraph deferred)
 
 **Date:** 2026-09-28
 **Status:** Accepted
@@ -18,10 +18,11 @@ The Tuesday skeleton needs an HTTP API and an orchestrator. The team stack is Py
 
 ## Decision
 
-Python with FastAPI. LangGraph runs in the same process and only owns the loop. It calls the four tools through a fixed protocol. Policy, the authenticated session and idempotency stay in code, outside the graph. The graph does not see `customer_id`.
+Python with FastAPI. Decided now: language and framework. Deferred: whether the loop uses LangGraph or plain Python; the Tuesday skeleton starts with the thinnest loop that meets the contracts. Policy, the authenticated session and idempotency stay in code either way, and no orchestrator ever sees `customer_id`.
 
 ## Consequences
 
-- The orchestrator can swap a mock tool for a real store without changing the graph.
+- The orchestrator can swap a mock tool for a real store without changing its protocol.
+- LangGraph stays an option for the loop (in-process only); we decide once the skeleton shows whether plain Python is enough.
 - Which model serves each route stays open (decision 10, due Tue 9/29).
 - Frontend is a separate decision ([006](006-frontend.md)).

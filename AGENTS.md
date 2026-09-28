@@ -46,10 +46,9 @@ The reading order for someone arriving new is in [`docs/README.md`](docs/README.
 
 Accepted decisions that code must follow:
 
-- **Backend:** Python + FastAPI. LangGraph runs in the same process and owns
-  only the loop (Understand → Decide → Act → Verify → Escalate). Policy, the
-  authenticated session and idempotency stay in code, outside the graph; the
-  graph never sees `customer_id`. See
+- **Backend:** Python + FastAPI (decided). Loop tool (LangGraph or plain
+  Python) deferred. Policy, the authenticated session and idempotency stay
+  in code; no orchestrator ever sees `customer_id`. See
   [005](docs/build/decisions/005-backend.md).
 - **Frontend:** a one-page chat (HTML and a little JavaScript) served by the
   same FastAPI process, talking to `POST /chat`. See
