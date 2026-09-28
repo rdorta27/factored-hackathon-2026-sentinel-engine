@@ -43,10 +43,10 @@ flowchart LR
 ```mermaid
 flowchart TD
     msg(["Customer message<br/>'My DNI is 1098234'"]) --> mask["Layer 1 · masking engine<br/>Regex + NER"]
-    mask -- "store encrypted map<br/>TOKEN_ID_1 → 1098234" --> vault[("Session vault<br/>ephemeral")]
+    mask -- "store encrypted map<br/>TOKEN_ID_1 → 1098234" --> vault[("Token vault<br/>per session, ephemeral")]
     mask -- "anonymized prompt only<br/>'My DNI is [TOKEN_ID_1]'" --> llm["Layer 2 · hybrid LLM router<br/>models: decision 10"]
-    llm -- "tool intent + token parameters" --> tools["Layer 3 · deterministic tools<br/>and re-hydration"]
-    vault -- "re-hydrate token<br/>(compare only, never a lookup key)" --> tools
+    llm -- "tool intent + token parameters" --> tools["Layer 3 · deterministic tools<br/>unmask inside the tool"]
+    vault -- "unmask token<br/>(compare only, never a lookup key)" --> tools
     session[("Session<br/>customer_id")] -- "lookup key" --> tools
     tools -- "parameterized SQL<br/>WHERE customer_id = session" --> db[("Gold")]
     tools --> ui(["Client UI<br/>response without raw PII"])
@@ -62,12 +62,12 @@ flowchart TD
 ```
 
 > [!NOTE]
-> Proposal without implementation yet — no code, tooling undecided (Presidio vs Regex/SpaCy), retention policy pending. Re-hydrated values are only compared against the session customer's data, never used as lookup keys. Tracked in [decision 004](decisions/004-pii-lifecycle.md).
+> Proposal without implementation yet — no code, tooling undecided (Presidio vs Regex/SpaCy), retention policy pending. Unmasked values are only compared against the session customer's data, never used as lookup keys. Tracked in [decision 004](decisions/004-pii-lifecycle.md).
 
 | Domain | Responsibility | Owner | Tools |
 |---|---|---|---|
 | Data engineering (at rest) | Static masking and hashing in the Silver layer, so analysts and batch ML never see raw credentials | Natalia Restrepo | PySpark, Delta Lake column masking, hash functions |
-| AI / agent engineering (in flight) | Dynamic prompt masking and unmasking: tokenize before LLM calls, keep the ephemeral map, re-hydrate for tool calls | Rubén Dorta | Python, Presidio / Regex / SpaCy NER, session token vault |
+| AI / agent engineering (in flight) | Dynamic prompt masking and unmasking: mask before LLM calls, keep the per-session token vault, unmask inside tool calls | Rubén Dorta | Python, Presidio / Regex / SpaCy NER, session token vault |
 | Full-stack / backend (session security) | Secure transport and UI rendering: `customer_id` via headers/JWT, no PII in browser logs or client storage | Felix Uchubanda | FastAPI, JWT, HTTPS/TLS |
 
 ## System architecture (4 layers)
@@ -75,9 +75,9 @@ flowchart TD
 ```mermaid
 flowchart TD
     ui(["Customer chat · web UI<br/>Spanish and Portuguese"]) --> l1
-    l1["Layer 1 · security and session isolation<br/>PII masking · session vault<br/>authenticated customer_id"] -- "anonymized prompt" --> l2
+    l1["Layer 1 · security and session isolation<br/>PII masking · token vault<br/>authenticated customer_id"] -- "anonymized prompt" --> l2
     l2["Layer 2 · orchestrator and hybrid LLM router<br/>routine queries → light model<br/>ambiguous, pt-BR, evaluation → strong model<br/>(models: decision 10)"] -- "tool intent + token parameters" --> l3
-    l3["Layer 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff dossier (JSON)"]
+    l3["Layer 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff package (JSON)"]
     l3 --> l4[("Layer 4 · audit log<br/>append-only, anonymized<br/>MX · CO · AR")]
     l3 -- "read" --> gold[("Gold<br/>backend: decision 12")]
     l3 -- "write · read back" --> disputes[("Disputes store<br/>SQLite · Postgres")]
@@ -117,7 +117,7 @@ flowchart TD
 ```
 
 > [!WARNING]
-> Pending (decision 21): separate-by-domain repos vs a single repo. The submission requires a single public repository, so if development splits across repos, the delivery repo and who assembles it must be defined before go-live. The current repository is a single repo.
+> Pending (decision 21): separate-by-domain repos vs a single repo. The submission requires a single public repository, so if development splits across repos, the delivery repo and who assembles it must be defined before submission. The current repository is a single repo.
 
 ## Action plan (deadline Monday 10/5, time TBD)
 
@@ -190,7 +190,7 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | 2 | Guiding principle | Accepted, canonical in [architecture](../understand/architecture.md#central-principle) |
 | 3 | Domain owners Natalia / Rubén / Felix | Accepted ([plan](../../team/plan.md)) |
 | 4 | Static masking in Silver | Proposed by Natalia (9/28), recorded in [security](security.md#data), not implemented |
-| 5 | Dynamic masking: token vault + re-hydration | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
+| 5 | Dynamic masking: token vault, mask and unmask | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
 | 6 | Hybrid router model choice | Undecided (decision 10, due Tue 9/29) |
 | 7 | Storage backend | Open question for Natalia (decision 12) |
 | 8 | Multi-repo development layout | Pending (decision 21); conflicts with the single-public-repo submission requirement |
@@ -198,5 +198,5 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; submission time/channel unconfirmed |
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |
 | 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Proposals under pending decisions 1, 11, 13 |
-| 13 | JSON handoff dossier | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |
+| 13 | JSON handoff package | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |
 | 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, script from Wed 9/30, held-out on Fri 10/2, weekend as buffer. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |
