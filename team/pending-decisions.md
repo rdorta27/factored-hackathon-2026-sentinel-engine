@@ -49,7 +49,7 @@ These block Tuesday's skeleton. Most urgent: **16**, because deployment is on Th
 |---|---|---|---|
 | 4 | Owners per area | Natalia: data and data analysis · Rubén: AI, architecture and ML · Felix: full-stack | 9/28 |
 | 5 | Daily sync | No meeting. Slack is enough if we talk every day. A status, if needed, goes in the channel at the end of the day | 9/28 |
-| 9 | Backend | Python + FastAPI. LangGraph in the same process, loop only. Policy, session and idempotency stay in code | 9/28 |
+| 9 | Backend | Python + FastAPI decided; loop tool (LangGraph or plain Python) deferred. Policy, session and idempotency stay in code | 9/28 |
 | 11 | Frontend | One-page chat served by FastAPI. Streamlit and Gradio are out. Node only if Felix asks for the video | 9/28 |
 | 20 | Video | Rubén. Script starts Thursday 10/1. Slides still open | 9/28 |
 | 17 | Repository visibility | Public from the start, and it stays public | 9/28 |

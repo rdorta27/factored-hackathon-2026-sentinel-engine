@@ -35,7 +35,7 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 | Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
 | No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
-| Backend: Python + FastAPI; LangGraph in-process for the loop only (decision 9) | Accepted | [005](../docs/build/decisions/005-backend.md) |
+| Backend: Python + FastAPI (decision 9); loop tool (LangGraph or plain Python) deferred | Accepted | [005](../docs/build/decisions/005-backend.md) |
 | Frontend: one-page chat served by FastAPI; no Streamlit or Gradio (decision 11) | Accepted | [006](../docs/build/decisions/006-frontend.md) |
 | Video: Rubén; script starts Thursday 10/1 (decision 20, slides still open) | Accepted | [delivery](../docs/build/delivery.md) |
 
