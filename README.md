@@ -10,6 +10,10 @@ An assistant, not just a chatbot. It understands the customer, answers only with
 
 The guiding principle: **AI understands; code executes and verifies.**
 
+## Requirements coverage
+
+**0% covered (0 of 57 requirements Done)**: P0 0/41 · P1 0/12 · P2 0/4. All requirements are still Pending; see the [requirements](docs/requirements/requirements.md) for status.
+
 ## Start here (about 15 minutes)
 
 1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
