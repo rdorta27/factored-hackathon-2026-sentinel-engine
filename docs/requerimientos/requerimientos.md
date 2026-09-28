@@ -22,7 +22,7 @@ Los documentos oficiales (planteamiento, kickoff, resumen del dataset y dicciona
 
 | Prioridad | Cantidad | Qué incluye |
 |---|---|---|
-| P0 | 35 | Los 3 casos de la demo, ES y PT, verificación, permisos en código, handoff, componente aprendido vs línea base, pipeline con contratos, pruebas de fallas, entregables |
+| P0 | 36 | Los 3 casos de la demo, ES y PT, verificación, permisos en código, handoff, componente aprendido vs línea base, pipeline con contratos, pruebas de fallas, entregables, idioma de entrega |
 | P1 | 11 | Tracking, incremental real, observabilidad, reintentos, desglose por idioma y país, reglas de conversación finas |
 | P2 | 4 | País como configuración, contexto de errores de la app, enrutamiento del handoff, LLM juez |
 
@@ -93,6 +93,7 @@ Los documentos oficiales (planteamiento, kickoff, resumen del dataset y dicciona
 | REQ-0035 | Link a la herramienta desplegada, con límites de uso y gasto | P0 | Todos | AI Engineering | ai | Kickoff p. 18 | Link | Pendiente |
 | REQ-0036 | Presentación de 4 a 6 diapositivas | P0 | Todos | Fundamento | todos | Kickoff p. 18 | [Guion](../construir/entrega.md#presentación) | Pendiente |
 | REQ-0037 | Video pitch corto: demo y decisiones de arquitectura | P0 | Todos | Fundamento | todos | Kickoff p. 18 | [Guion](../construir/entrega.md#video-pitch) | Pendiente |
+| REQ-0051 | README del repo, presentación (4 a 6 diapositivas) y guion del video en inglés; `docs/` y `team/` se quedan en español | P0 | Todos | Fundamento | todos | Propio: [idioma](../construir/entrega.md#idioma) | [Revisión antes de enviar](../construir/entrega.md#idioma) | Pendiente |
 | REQ-0013 | Reportar las limitaciones de datos y de cobertura de idiomas | P0 | Todos | Fundamento | analisis | Planteamiento: Scope · Kickoff p. 15 | Sección de limitaciones | Pendiente |
 | REQ-0030 | Declarar lo que falta: capacidad, datos, idiomas, despliegue, riesgos | P0 | Todos | Fundamento | todos | Planteamiento: Scope; What your solution should demonstrate 6 · Kickoff p. 15 | Sección de limitaciones | Pendiente |
 

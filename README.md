@@ -1,30 +1,34 @@
 # Sentinel Engine
 
-Felix, Natalia y Rubén · Factored AI & Data Hackathon 2026 · Entrega: **lunes 5/10** (hora por confirmar)
+Felix, Natalia and Rubén · Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5** (time to be confirmed)
 
-Punto de partida del equipo. Casi todo es una propuesta y se va ajustando a medida que avanzamos.
+Our starting point. Almost everything here is a proposal and gets adjusted as we go.
 
-## Qué vamos a construir
+## What we are building
 
-Un **asistente de atención al cliente para un banco** que opera en México, Colombia y Argentina. La idea es que no sea solo un chatbot: que entienda al cliente, responda con datos verificados, haga acciones seguras, confirme que ocurrieron y pase el caso a una persona cuando haga falta. Tiene que funcionar en **español y portugués**.
+A **customer service assistant for a bank** operating in Mexico, Colombia and Argentina. The idea is not just another chatbot: it should understand the customer, answer with verified data, perform safe actions, confirm that they happened, and hand the case over to a person when needed. It has to work in **Spanish and Portuguese**.
 
-## Para empezar (unos 15 minutos)
+## Start here (about 15 minutes)
 
-1. **[El reto en una página](docs/entender/resumen.md):** qué hay que construir, cómo nos evalúan y qué se entrega.
-2. **[Plan del equipo](equipo/plan.md):** cronograma tentativo y propuesta de cómo trabajar.
-3. **[Arquitectura](docs/entender/arquitectura.md):** una primera idea de cómo encajan las piezas.
+1. **[The challenge in one page](docs/entender/resumen.md):** what has to be built, how we are judged and what we submit.
+2. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
+3. **[Architecture](docs/entender/arquitectura.md):** a first idea of how the pieces fit together.
 
-El [índice de la documentación](docs/README.md) ayuda a encontrar el resto de los temas.
+The [documentation index](docs/README.md) helps you find the rest of the topics.
 
-## Trabajo del equipo
+## Team workflow
 
-La planificación está en [`equipo/`](equipo/), separada de la documentación del proyecto:
+Planning lives in [`team/`](team/), separate from the project documentation:
 
-- **[Decisiones pendientes](equipo/decisiones-pendientes.md):** el lunes 28/9 se decide el flujo, los responsables por área, la forma de trabajo y el stack. Cada uno anota su preferencia ahí.
-- **[Tareas](equipo/tareas.md):** quién hace qué y para cuándo.
-- **[Plan](equipo/plan.md):** equipo, cronograma, estrategia de mocks, forma de trabajo y decisiones tomadas.
+- **[Pending decisions](team/decisiones-pendientes.md):** on Monday 28/9 we decide the flow, the owners per area, the working method and the stack. Everyone records their preference there.
+- **[Tasks](team/tareas.md):** who does what, and by when.
+- **[Plan](team/plan.md):** team, schedule, mock strategy, working method and decisions taken.
 
-## Requisitos del hackathon que aplican desde ya
+## Hackathon rules that already apply
 
-- **Sin secretos ni datos en el repositorio.** El repositorio se entrega público; las credenciales van en `.env` (excluido por `.gitignore`) y se comparten por mensaje directo.
-- **Entrega en inglés.** La documentación de trabajo está en español; para la entrega se pasan a inglés este README, la presentación y el video.
+- **No secrets and no data in the repository.** The repository is delivered public; credentials go in `.env` (excluded by `.gitignore`) and are shared by direct message.
+- **Submission in English.** Working documents are written in Spanish; the deliverables — this README, the slides and the video script — are drafted in English as they are created.
+
+## For agents
+
+[`AGENTS.md`](AGENTS.md) explains the layout, the language rule and what must never be committed.
