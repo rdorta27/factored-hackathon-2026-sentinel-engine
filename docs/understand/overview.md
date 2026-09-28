@@ -41,7 +41,9 @@ This is the summary; the detail lives in [architecture](architecture.md) and [co
 
 Main metrics: **safe automated resolution**, **unsafe outcomes**, and **cost**. Detail in [metrics](../build/metrics.md).
 
-## Deliverables: Mon 10/5 (time to be confirmed)
+## Deliverables
+
+Deadline: **Monday 10/5, 11:59 pm (UTC-5)**, confirmed by the organizers on 9/28.
 
 The challenge is a 10-day sprint: it starts 9/25 and submissions close 10/5.
 
@@ -50,7 +52,7 @@ We send to hackathon.admin@factored.ai:
 1. Public repository `factored-hackathon-2026-[team]`
 2. Link to the deployed tool
 3. 4-to-6-slide presentation
-4. Short video: demo and architecture decisions
+4. Video of **3 minutes at most**: demo and architecture decisions
 
 "Submit your tool no matter what": we deliver on time, with limitations declared.
 

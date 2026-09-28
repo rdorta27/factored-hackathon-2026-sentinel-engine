@@ -4,7 +4,7 @@ Architecture, personal data (PII) lifecycle and action plan. Source: the data ar
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
 > Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
-> Submission: Monday, October 5 (time to be confirmed)
+> Submission: Monday, October 5, 11:59 pm (UTC-5)
 > Internal goal: everything ready Friday, October 2; the weekend is buffer
 > Areas: data and data analysis · AI, architecture and ML · full-stack (owners in the [plan](../../team/plan.md#decisions-made))
 
@@ -119,7 +119,7 @@ flowchart TD
 > [!WARNING]
 > Pending (decision 21): separate-by-domain repos vs a single repo. The submission requires a single public repository, so if development splits across repos, the delivery repo and who assembles it must be defined before submission. The current repository is a single repo.
 
-## Action plan (deadline Monday 10/5, time TBD)
+## Action plan (deadline Monday 10/5, 11:59 pm UTC-5)
 
 Per-person view of the [plan schedule](../../team/plan.md#schedule): same dates and milestones, split by owner. If they ever differ, the plan wins.
 
@@ -166,7 +166,7 @@ Notes:
 - The script starts on Wednesday 9/30; deck and video are finished on Friday 10/2, once the held-out results exist. Who makes them is decision 20.
 - The weekend is buffer for corrections only, with early submission.
 - Portuguese test cases: source and reviewer still to define (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
-- Submission time and channel are unconfirmed (asked in the hackathon help channel); until confirmed, assume Monday 10/5, end of day.
+- Submission deadline confirmed by the organizers: Monday 10/5, 11:59 pm (UTC-5). The video lasts 3 minutes at most.
 
 ## Cost matrix (MVP budget)
 
@@ -195,7 +195,7 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | 7 | Storage backend | Open question for the data area (decision 12) |
 | 8 | Multi-repo development layout | Pending (decision 21); conflicts with the single-public-repo submission requirement |
 | 9 | MVP cost USD 20–58 | Working assumption, pending Azure validation (decision 16) |
-| 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; submission time/channel unconfirmed |
+| 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; deadline confirmed: Mon 10/5, 11:59 pm (UTC-5) |
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |
 | 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Proposals under pending decisions 1, 11, 13 |
 | 13 | JSON handoff package | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |

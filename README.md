@@ -1,6 +1,6 @@
 # Sentinel Engine
 
-Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5** (time to be confirmed)
+Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Work in progress: decisions are recorded as they are made, and open ones are marked as such.
 
