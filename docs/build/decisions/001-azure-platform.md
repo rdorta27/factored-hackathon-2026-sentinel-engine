@@ -1,30 +1,30 @@
-# 001 · Plataforma: Microsoft Azure
+# 001 · Platform: Microsoft Azure
 
-**Fecha:** 2026-09-27
-**Estado:** Aceptada
-**Participantes:** Equipo
+**Date:** 2026-09-27
+**Status:** Accepted
+**Participants:** Team
 
-## Contexto
+## Context
 
-El kickoff deja libertad de herramientas y sugiere Azure, Snowflake, AWS y Databricks como opcionales. Necesitamos dónde desplegar la herramienta (REQ-0035, link desplegado), un LLM que cumpla los límites de datos (REQ-0047, el LLM no recibe datos personales; REQ-0031, datos aprobados) y dónde guardar los secretos.
+The kickoff leaves tooling open and suggests Azure, Snowflake, AWS, and Databricks as optional. We need somewhere to deploy the tool (REQ-0035, deployed link), an LLM that meets the data limits (REQ-0047, the LLM receives no personal data; REQ-0031, approved data), and somewhere to store secrets.
 
-## Opciones
+## Options
 
-1. **Azure:** un solo proveedor para LLM, despliegue, almacenamiento y secretos. Sugerido en el kickoff.
-2. **AWS:** equivalente en servicios; también sugerido.
-3. **Servicios gratuitos sueltos** (Hugging Face Spaces, Render, APIs gratuitas de LLM): sin costo, pero menos control sobre los datos y más piezas que integrar.
+1. **Azure:** a single provider for LLM, deployment, storage, and secrets. Suggested at the kickoff.
+2. **AWS:** equivalent in services; also suggested.
+3. **Loose free services** (Hugging Face Spaces, Render, free LLM APIs): no cost, but less control over data and more pieces to integrate.
 
-## Decisión
+## Decision
 
 Azure.
 
-## Consecuencias
+## Consequences
 
-- Servicios a definir (propuesta, pendiente de confirmar):
-  - **LLM:** Azure OpenAI (Azure AI Foundry). Verificar que no retiene los datos ni los usa para entrenar.
-  - **Despliegue:** Azure Container Apps o App Service.
-  - **Secretos:** Azure Key Vault o variables de entorno del servicio; nunca en el repositorio.
-  - **Datos:** donde lleguen los datos del hackathon (almacenamiento de Azure o local).
-- Pendiente: quién tiene la suscripción o los créditos, y fijar un **tope de gasto** y alertas de presupuesto desde el primer día.
-- El despliegue público necesita límites de uso para evitar abuso (ver [seguridad](../seguridad.md#repositorio-y-despliegue-públicos)).
-- La presentación debe justificar la elección: reproducibilidad, control de datos y despliegue.
+- Services to define (proposal, pending confirmation):
+  - **LLM:** Azure OpenAI (Azure AI Foundry). Verify that it neither retains data nor uses it for training.
+  - **Deployment:** Azure Container Apps or App Service.
+  - **Secrets:** Azure Key Vault or the service's environment variables; never in the repository.
+  - **Data:** wherever the hackathon data lands (Azure storage or local).
+- Pending: who holds the subscription or credits, and setting a **spending cap** and budget alerts from day one.
+- The public deployment needs usage limits to prevent abuse (see [security](../security.md#public-repository-and-deployment)).
+- The presentation must justify the choice: reproducibility, data control, and deployment.

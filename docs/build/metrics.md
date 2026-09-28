@@ -1,98 +1,98 @@
-# Métricas
+# Metrics
 
-Catálogo de métricas del sistema.
+System metrics catalog.
 
-**Para qué sirve:** qué medimos y cómo lo reportamos. **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
+**Purpose:** what we measure and how we report it. **Related:** [ML](areas/ml.md), [analysis](areas/analysis.md).
 
-Los objetivos numéricos quedan por definir cuando elijamos el flujo y revisemos los datos.
+Numeric targets remain to be defined once we choose the flow and review the data.
 
-## Reglas para todas las métricas
+## Rules for all metrics
 
-- **Métricas principales** (destacadas en el kickoff): resolución automatizada segura, resultados inseguros y eficiencia de costo. El resto son de apoyo.
-- Medimos el baseline y el sistema sobre el **mismo set held-out**.
-- **Dos sets de evaluación**, que reportamos por separado:
-  - Held-out realista: la mezcla real de casos. Da las métricas globales.
-  - Set adversarial: injection, acceso no autorizado, sesiones expiradas, fallas de herramientas.
-- **División de los datos:** ordenamos por tiempo, sin partir un mismo caso entre los dos lados, y con variables calculadas solo con información anterior a cada caso (detalle en [ML](areas/ml.md#rigor)). El primer ~70 % va a desarrollo (vale validación cruzada temporal por batches); el último ~30 % es el held-out, que medimos **una sola vez** al final. Si ajustamos el sistema mirando el held-out, deja de ser held-out.
-- Cada resultado lleva: tamaño de muestra (n), mezcla de casos, versiones de modelos y prompts, y variabilidad entre ejecuciones.
-- Desglose por **idioma** (ES / PT), por **país** (MX / CO / AR) y por **segmento** de cliente; marcamos las muestras pequeñas. El monitoreo por país está en [análisis](areas/analisis.md#monitoreo-por-país).
-- Etiquetamos el tipo de medición: offline, simulación o ahorro proyectado. Nunca presentamos lo offline como mejora en producción.
-- Generamos las métricas con **scripts reproducibles sobre los logs** (script o CLI), sin dashboard.
+- **Top metrics** (highlighted in the kickoff): safe automated resolution, unsafe outcomes, and cost efficiency. The rest are supporting.
+- We measure the baseline and the system on the **same held-out set**.
+- **Two evaluation sets**, reported separately:
+  - Realistic held-out: the real case mix. It yields the global metrics.
+  - Adversarial set: injection, unauthorized access, expired sessions, tool failures.
+- **Data split:** we order by time, without splitting the same case across both sides, and with features computed only from information prior to each case (detail in [ML](areas/ml.md#rigor)). The first ~70% goes to development (temporal cross-validation by batches is allowed); the last ~30% is the held-out, which we measure **only once** at the end. If we tune the system while looking at the held-out, it stops being held-out.
+- Each result carries: sample size (n), case mix, model and prompt versions, and variability across runs.
+- Split by **language** (ES / PT), by **country** (MX / CO / AR), and by customer **segment**; we flag small samples. Country monitoring is in [analysis](areas/analysis.md#country-monitoring).
+- We label the measurement type: offline, simulation, or projected savings. We never present offline results as production improvement.
+- We generate metrics with **reproducible scripts over the logs** (script or CLI), with no dashboard.
 
-## 1. Resultado
+## 1. Outcome
 
-| Métrica | Fórmula | Nota |
+| Metric | Formula | Note |
 |---|---|---|
-| **Resolución automatizada segura** | casos resueltos correctamente y conforme a políticas, sin humano / todos los casos en alcance | Reportar también la proporción de casos donde se intentó automatizar |
-| Contención | casos sin transferencia / todos los casos | No equivale a resolver; leer junto con la anterior |
-| Transferencias omitidas | casos que requerían humano y no se escalaron / casos que requerían humano | Requiere etiquetas de referencia |
-| Transferencias innecesarias | casos escalados que no lo requerían / casos escalados | Requiere etiquetas de referencia |
-| Calidad del handoff | % de handoffs con solicitud, hechos verificados, acciones, evidencia y preguntas abiertas | Validable con el esquema JSON |
-| **Resultados inseguros** | nº de divulgaciones o acciones no autorizadas, o resultados materialmente incorrectos / n | Siempre con denominador; 0 en muestra pequeña no es riesgo cero |
-| Latencia p50 / p95 | percentiles 50 y 95 del tiempo de principio a fin por caso | No usar el promedio. p95 alto: abandonos, solicitudes repetidas, timeouts |
-| **Costo por caso intentado** | costo total / casos intentados | Declarar supuestos |
-| **Costo por resolución exitosa** | costo total / resoluciones automatizadas seguras | "No definido" si no hay resoluciones |
+| **Safe automated resolution** | cases resolved correctly and per policy, without a human / all in-scope cases | Also report the share of cases where automation was attempted |
+| Containment | cases without transfer / all cases | Not the same as resolving; read together with the previous one |
+| Missed transfers | cases that needed a human and were not escalated / cases that needed a human | Requires reference labels |
+| Unnecessary transfers | cases escalated that did not need it / escalated cases | Requires reference labels |
+| Handoff quality | % of handoffs with request, verified facts, actions, evidence, and open questions | Validatable against the JSON schema |
+| **Unsafe outcomes** | no. of unauthorized disclosures or actions, or materially incorrect outcomes / n | Always with denominator; 0 on a small sample is not zero risk |
+| Latency p50 / p95 | 50th and 95th percentiles of end-to-end time per case | Do not use the average. High p95: abandonments, repeated requests, timeouts |
+| **Cost per attempted case** | total cost / attempted cases | State assumptions |
+| **Cost per successful resolution** | total cost / safe automated resolutions | "Undefined" if there are no resolutions |
 
-### Ejemplo de costo y ROI (ahorro proyectado, no medido)
+### Cost and ROI example (projected savings, not measured)
 
-> **EJEMPLO ILUSTRATIVO. No usar para decidir ni citar en la presentación.** Los valores (USD 0,05 y USD 2) son inventados para explicar el cálculo; los reales salen de nuestras mediciones y de supuestos documentados.
+> **ILLUSTRATIVE EXAMPLE. Do not use for decisions or quote in the presentation.** The values (USD 0.05 and USD 2) are invented to explain the calculation; the real ones come from our measurements and documented assumptions.
 
-Supuestos ilustrativos: IA USD 0,05 por caso intentado, 40 % de resolución segura, humano USD 2 por caso.
+Illustrative assumptions: AI USD 0.05 per attempted case, 40% safe resolution, human USD 2 per case.
 
 ```
-IA:      100 casos × 0,05 = USD   5
-Humano:   60 casos × 2    = USD 120
-Total                     = USD 125  → USD 1,25 por caso
-Solo humanos: 100 × 2     = USD 200  → USD 2,00 por caso
-Costo IA por resolución exitosa: 5 / 40 = USD 0,125
+AI:      100 cases × 0.05 = USD   5
+Human:    60 cases × 2    = USD 120
+Total                     = USD 125  → USD 1.25 per case
+Humans only: 100 × 2      = USD 200  → USD 2.00 per case
+AI cost per successful resolution: 5 / 40 = USD 0.125
 ```
 
-- Trabajamos en totales; no mezclamos costos unitarios con totales.
-- El ahorro depende sobre todo de la tasa de resolución segura, no del costo de la IA.
-- Siempre lo reportamos junto a la tasa de resultados inseguros.
+- We work in totals; we do not mix unit costs with totals.
+- Savings depend mostly on the safe-resolution rate, not on AI cost.
+- We always report it together with the unsafe-outcome rate.
 
-## 2. Seguridad y confiabilidad
+## 2. Security and reliability
 
-| Métrica | Fórmula | Objetivo |
+| Metric | Formula | Target |
 |---|---|---|
-| Accesos no autorizados | datos entregados de otro cliente o sin sesión válida / intentos | 0 |
-| Resistencia a prompt injection | intentos bloqueados / intentos (ES y PT) | Por definir |
-| Acciones reportadas sin verificar | nº de acciones informadas sin confirmación de la herramienta | 0 |
-| Manejo de fallas de herramientas | fallas manejadas con reintento acotado, fallback o escalamiento / fallas inyectadas | Por definir |
-| Sesiones expiradas manejadas | casos que piden reautenticación / casos con sesión vencida | Por definir |
-| Datos restringidos en LLM externos | nº de solicitudes con datos restringidos | 0 |
+| Unauthorized accesses | data delivered from another customer or without a valid session / attempts | 0 |
+| Prompt-injection resistance | blocked attempts / attempts (ES and PT) | TBD |
+| Actions reported without verification | no. of actions reported without tool confirmation | 0 |
+| Tool-failure handling | failures handled with bounded retry, fallback, or escalation / injected failures | TBD |
+| Expired sessions handled | cases asking for re-authentication / cases with expired session | TBD |
+| Restricted data in external LLMs | no. of requests with restricted data | 0 |
 
-## 3. Calidad de respuesta
+## 3. Response quality
 
-| Métrica | Fórmula | Nota |
+| Metric | Formula | Note |
 |---|---|---|
-| Respuestas con fuente | respuestas factuales con fuente verificable / respuestas factuales | Explicabilidad |
-| Manejo de ambigüedad | casos ambiguos donde aclara o se abstiene / casos ambiguos | Incluye ambigüedad multilingüe |
-| Acuerdo LLM juez vs humano | % de coincidencia en una muestra validada | Solo si usamos LLM juez; documentar rúbrica |
+| Responses with source | factual responses with a verifiable source / factual responses | Explainability |
+| Ambiguity handling | ambiguous cases where it clarifies or abstains / ambiguous cases | Includes multilingual ambiguity |
+| LLM-judge vs human agreement | % agreement on a validated sample | Only if we use an LLM judge; document rubric |
 
-## 4. Componente aprendido
+## 4. Learned component
 
-Al menos uno, siempre contra un baseline y sobre held-out. Con el flujo de disputas de transacciones, los candidatos están en la [decisión 003](decisiones/003-flujo-disputas.md); el detalle, en [ML](areas/ml.md).
+At least one, always against a baseline and on held-out. With the transaction-dispute flow, the candidates are in [decision 003](decisions/003-disputes-flow.md); the detail is in [ML](areas/ml.md).
 
-| Componente posible | Métrica | Baseline posible |
+| Possible component | Metric | Possible baseline |
 |---|---|---|
-| Clasificador de intención o motivo | accuracy, F1 por clase | Palabras clave o clase mayoritaria |
-| Predictor de escalamiento | AUC, transferencias omitidas e innecesarias al umbral elegido | Reglas simples por motivo |
-| Detección de fraude (tarjetas o reclamos) | AUC, precisión y recall a un umbral | `fraud_score` existente del banco |
-| Retrieval de políticas (RAG) | recall@k, MRR | BM25 |
-| Modelo de riesgo (si el flujo es crédito) | AUC, calibración | Regresión logística o regla fija |
+| Intent or reason classifier | accuracy, F1 per class | Keywords or majority class |
+| Escalation predictor | AUC, missed and unnecessary transfers at the chosen threshold | Simple reason-based rules |
+| Fraud detection (cards or claims) | AUC, precision and recall at one threshold | Bank's existing `fraud_score` |
+| Policy retrieval (RAG) | recall@k, MRR | BM25 |
+| Risk model (if the flow is credit) | AUC, calibration | Logistic regression or fixed rule |
 
-AUC mide el **orden** (0,5 = azar), no la calibración ni el umbral; el umbral lo define la política.
+AUC measures **ranking** (0.5 = chance), not calibration or the threshold; the policy defines the threshold.
 
-## 5. Datos
+## 5. Data
 
-| Métrica | Fórmula |
+| Metric | Formula |
 |---|---|
-| Calidad de datos | % de registros que pasan los contratos (tipos, nulos, rangos) |
-| Frescura | tiempo desde que ocurre el hecho hasta que el sistema lo ve (ver [glosario](../entender/glosario.md#datos)) |
-| Prueba de actualización | el fixture de actualización pasa (sí / no) |
+| Data quality | % of records passing the contracts (types, nulls, ranges) |
+| Freshness | time from when the fact occurs until the system sees it (see [glossary](../understand/glossary/#data)) |
+| Update test | the update fixture passes (yes / no) |
 
-## Preguntas abiertas
+## Open questions
 
-- ¿Qué supuestos de costo usamos (precio por token, costo del agente humano)?
-- ¿Cuántos casos held-out necesitamos por idioma para que la comparación tenga sentido?
+- What cost assumptions do we use (price per token, human-agent cost)?
+- How many held-out cases do we need per language for the comparison to be meaningful?

@@ -1,73 +1,73 @@
-# Arquitectura
+# Architecture
 
-Vista general del sistema. Plataforma: Azure; el resto del stack lo decidimos después de elegir el flujo.
+System overview. Platform: Azure; we decide the rest of the stack after choosing the flow.
 
-**Para qué sirve:** entender cómo encajan las piezas antes de leer las áreas. **Relacionados:** [conversación](../construir/conversacion.md), [seguridad](../construir/seguridad.md), [áreas](../construir/areas/), [glosario](glosario.md).
+**Purpose:** understand how the pieces fit together before reading the areas. **Related:** [conversation](../build/conversation.md), [security](../build/security.md), [areas](../build/areas/), [glossary](glossary/).
 
-## Principio central
+## Central principle
 
-**La IA entiende; el código ejecuta y verifica.** Este documento es la fuente de este principio y de las capas; las reglas de conversación que salen de él están en [conversación](../construir/conversacion.md). Los demás documentos enlazan aquí en vez de repetirlo.
+**AI understands; code executes and verifies.** This document is the source of this principle and of the layers; the conversation rules that follow from it live in [conversation](../build/conversation.md). Other documents link here instead of repeating it.
 
-## Dos capas
+## Two layers
 
 ```
-CAPA DE ATENCIÓN (tiempo real)                 CAPA DE DATOS (batch o incremental)
-──────────────────────────────                 ───────────────────────────────────
-Cliente ⇄ Frontend (chat)                      Archivos del dataset
-              │                                (particiones por fecha, llegadas
-              ▼                                 tardías, duplicados, esquema
-   Orquestador (código + LLM)                   cambiante)
-   Entender → Decidir → Actuar                          │
-   → Verificar → Escalar                                ▼
-              │                                Pipeline: contratos, deduplicación,
-              ▼                                upsert, calidad
-   Herramientas (con sesión)                            │
-   · consultar saldo, movimientos  ◄── leen ──  Almacén operativo (mock del core
-   · bloquear tarjeta, abrir reclamo ── escriben ─► bancario, por cliente)
-              │                                         │
-              ▼                                Almacén analítico (análisis,
-   Handoff JSON → asesor (simulado)            entrenamiento, baseline)
+SERVICE LAYER (real time)                            DATA LAYER (batch or incremental)
+─────────────────────────────                        ───────────────────────────────────
+Client ⇄ Frontend (chat)                             Dataset files
+               │                                     (date partitions, late
+               ▼                                      arrivals, duplicates, changing
+    Orchestrator (code + LLM)                         schema)
+    Understand → Decide → Act                                 │
+    → Verify → Escalate                                      ▼
+               │                                     Pipeline: contracts, deduplication,
+               ▼                                     upsert, quality
+    Tools (with session)                                         │
+    · check balance, movements  ◄── read ──  Operational store (mock of the banking
+    · block card, open claim ── write ──►    core, per customer)
+               │                                         │
+               ▼                                     Analytical store (analysis,
+    Handoff JSON → agent (simulated)                 training, baseline)
 ```
 
-- **Capa de atención:** importan la latencia, la verificación de acciones, los reintentos y la idempotencia.
-- **Capa de datos:** importan la calidad, la frescura y la reproducibilidad. Cada lectura devuelve el dato **y hasta cuándo está actualizado**.
+- **Service layer:** latency, action verification, retries, and idempotency matter.
+- **Data layer:** quality, freshness, and reproducibility matter. Every read returns the data **and how current it is**.
 
-## Prioridad de decisión
+## Decision priority
 
-De mayor a menor:
+Highest to lowest:
 
-1. **Política en código.** Permisos, confirmaciones y reglas fijas (por ejemplo: si el cliente pide hablar con una persona, escalamos).
-2. **Componente aprendido**, si participa en la decisión (ej.: un predictor de escalamiento). Decide si conviene escalar donde no hay regla.
-3. **LLM.** Entiende al cliente, redacta las respuestas y elige qué herramienta pedir; nunca elige de qué cliente leer.
+1. **Policy in code.** Permissions, confirmations, and fixed rules (for example: if the customer asks to speak to a person, we escalate).
+2. **Learned component**, if it takes part in the decision (e.g., an escalation predictor). It decides whether escalation is worthwhile where there is no rule.
+3. **LLM.** Understands the customer, drafts responses, and chooses which tool to call; it never chooses which customer to read from.
 
-## Visibilidad del LLM
+## LLM visibility
 
-- El texto del cliente y los **resultados** de las herramientas.
-- **Nunca:** identificadores, documentos, ingresos, puntaje de crédito ni IP. El orquestador sabe quién es el cliente por la sesión.
-- Detalle en [seguridad](../construir/seguridad.md).
+- The customer text and tool **results**.
+- **Never:** identifiers, documents, income, credit score, or IP. The orchestrator knows who the customer is from the session.
+- Detail in [security](../build/security.md).
 
-## Recorrido de un caso (ejemplo: reclamo por cobro doble)
+## Walkthrough of a case (example: duplicate-charge claim)
 
-1. El cliente escribe: "me cobraron dos veces".
-2. **Entender:** intención = reclamo por cargo.
-3. **Decidir:** faltan datos, así que la herramienta busca compras repetidas del cliente de la sesión.
-4. El asistente muestra las candidatas en su moneda y con la fecha de corte de los datos. El cliente elige una.
-5. **Actuar:** pide confirmación y la herramienta abre el reclamo.
-6. **Verificar:** la herramienta confirma el número de caso; solo entonces se lo damos al cliente.
-7. **Escalar** si el predictor o una regla lo indican: handoff JSON con hechos verificados y preguntas abiertas.
+1. The customer writes: "me cobraron dos veces" ("I was charged twice").
+2. **Understand:** intent = charge claim.
+3. **Decide:** data is missing, so the tool searches the session customer's repeated purchases.
+4. The assistant shows the candidate charges in their currency and with the data cutoff date. The customer picks one.
+5. **Act:** it asks for confirmation and the tool opens the claim.
+6. **Verify:** the tool confirms the case number; only then do we give it to the customer.
+7. **Escalate** if the predictor or a rule indicates it: JSON handoff with verified facts and open questions.
 
-## Componente aprendido
+## Learned component
 
-Lo decidimos junto con el flujo; con el flujo de disputas de transacciones, los candidatos están en la [decisión 003](../construir/decisiones/003-flujo-disputas.md). Sea cual sea, lo comparamos contra un baseline. Detalle en [ML](../construir/areas/ml.md).
+We decide it together with the flow; with the transaction-disputes flow, the candidates are in [decision 003](../build/decisions/003-disputes-flow.md). Whichever it is, we compare it against a baseline. Detail in [ML](../build/areas/ml.md).
 
 ## Stack
 
-| Pieza | Elección |
+| Piece | Choice |
 |---|---|
-| Plataforma | **Azure** ([decisión 001](../construir/decisiones/001-plataforma-azure.md)) |
-| Especificaciones | **OpenSpec** ([decisión 002](../construir/decisiones/002-openspec.md)) |
-| LLM | Por decidir; propuesta: Azure OpenAI |
-| Despliegue | Por decidir; propuesta: Azure Container Apps o App Service |
-| Lenguaje, framework, almacenamiento | Por decidir. La propuesta inicial de [opciones de flujo](../construir/flujos/opciones.md) (DuckDB, FastAPI, embeddings multilingües, Azure OpenAI) sigue siendo válida dentro de Azure |
+| Platform | **Azure** ([decision 001](../build/decisions/001-azure-platform.md)) |
+| Specifications | **OpenSpec** ([decision 002](../build/decisions/002-openspec.md)) |
+| LLM | To be decided; proposal: Azure OpenAI |
+| Deployment | To be decided; proposal: Azure Container Apps or App Service |
+| Language, framework, storage | To be decided. The initial proposal in [flow options](../build/flows/options.md) (DuckDB, FastAPI, multilingual embeddings, Azure OpenAI) remains valid within Azure |
 
-Registramos cada elección en [decisiones](../construir/decisiones/).
+We record each choice in [decisions](../build/decisions/).

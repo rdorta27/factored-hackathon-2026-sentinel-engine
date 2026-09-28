@@ -1,41 +1,41 @@
-# 003 · Flujo inicial: disputas de transacciones
+# 003 · Initial flow: transaction disputes
 
-**Fecha:** 2026-09-28
-**Estado:** Propuesta (provisional hasta la revisión del martes 29/9)
-**Participantes:** Equipo
+**Date:** 2026-09-28
+**Status:** Proposed (provisional until the Tuesday 9/29 review)
+**Participants:** Team
 
-## Contexto
+## Context
 
-Hay que elegir un flujo para empezar a construir el martes, antes de haber perfilado los datos. La presentación del 28/9 (*decisiones-2*) propone las disputas de transacciones como punto de partida y deja abierto el cambio si el análisis de datos no lo respalda. Opciones y comparación en [opciones de flujo](../flujos/opciones.md).
+We must choose a flow to start building on Tuesday, before having profiled the data. The 9/28 presentation (*decisiones-2*) proposes transaction disputes as the starting point and leaves the door open to change if the data analysis does not support it. Options and comparison in [flow options](../flows/options.md).
 
-El flujo tiene que servir para demostrar a la vez: análisis de datos, conversación con herramientas, acción confirmada y verificada, handoff con evidencia y un componente aprendido frente a un baseline.
+The flow must simultaneously demonstrate: data analysis, tool-using conversation, confirmed and verified action, evidence-backed handoff, and a learned component against a baseline.
 
-## Opciones
+## Options
 
-1. **Disputas de transacciones** (*transaction-dispute intake*; en la traducción oficial, "recepción de disputas de transacciones"): acción visible (abrir el reclamo), handoff natural (fraude, monto alto, caso complejo), 80K reclamos y 5M transacciones con `is_fraud`. En contra: todavía no sabemos cuántos reclamos son realmente por cargos ni si las etiquetas sirven para ML.
-2. **Cuentas o pagos:** el más fácil y de menor riesgo, pero casi todo es lectura; la acción y el handoff son débiles.
-3. **Tarjetas:** acción clara (bloquear, confirmar y verificar), pero menos datos propios.
-4. **Crédito:** riesgo alto de cruzar límites de política; demo más difícil de defender.
+1. **Transaction disputes** (*transaction-dispute intake*): visible action (opening the claim), natural handoff (fraud, high amount, complex case), 80K complaints and 5M transactions with `is_fraud`. Against: we still do not know how many complaints are really charge-related or whether the labels work for ML.
+2. **Accounts or payments:** the easiest and lowest-risk, but almost everything is read-only; action and handoff are weak.
+3. **Cards:** clear action (block, confirm, and verify), but less native data.
+4. **Credit:** high risk of crossing policy limits; harder demo to defend.
 
-## Decisión
+## Decision
 
-Empezamos con el **flujo de disputas de transacciones** como hipótesis de trabajo. Lo confirmamos o lo cambiamos el martes 29/9 según los criterios siguientes, medidos sobre los datos reales.
+We start with the **transaction-dispute flow** as our working hypothesis. We confirm or change it on Tuesday 9/29 according to the following criteria, measured on the real data.
 
-| Criterio | Cómo se mide | Seguimos con disputas si… |
+| Criterion | How it is measured | We stay with disputes if… |
 |---|---|---|
-| Volumen relevante | Reclamos con `case_type = Claim` y categoría de cargo no reconocido; su peso en `contact_reason` de `call_center_interactions` | Hay volumen suficiente para entrenar y evaluar (umbral a fijar al ver la distribución) |
-| Relación entre fuentes | % de reclamos con `origin_interaction_id` válido; % de esas interacciones con transcripción | La cadena llamada → transcripción → reclamo cubre una parte útil de los casos |
-| Etiquetas | Calidad y balance de `category` / `subcategory` y de `was_escalated` | Al menos una etiqueta es consistente y no es trivial |
-| ML defendible | Baseline de palabras clave frente a un modelo simple, con división temporal | El modelo mejora al baseline y el baseline no está cerca del 100 % (señal de etiquetas generadas por plantilla) |
-| Fuga de datos | Revisión de variables | Solo se usan campos de apertura; los de resultado (`status`, `resolution`, `sla_breached`, etc.) quedan fuera |
+| Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) |
+| Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases |
+| Labels | Quality and balance of `category` / `subcategory` and of `was_escalated` | At least one label is consistent and non-trivial |
+| Defensible ML | Keyword baseline vs. a simple model, with a temporal split | The model beats the baseline and the baseline is nowhere near 100% (a sign of template-generated labels) |
+| Data leakage | Feature review | Only opening-time fields are used; outcome fields (`status`, `resolution`, `sla_breached`, etc.) stay out |
 
-Si falla el volumen o el ML, la alternativa preferida es **tarjetas** (misma estructura: confirmar, actuar, verificar y handoff por fraude).
+If volume or ML fails, the preferred alternative is **cards** (same structure: confirm, act, verify, and handoff on fraud).
 
-## Consecuencias
+## Consequences
 
-- **Alcance:** el asistente identifica la transacción, reúne los datos, muestra hechos verificados, confirma la intención, abre el reclamo, verifica que existe y entrega el número y el siguiente paso. **No decide el fraude ni el resultado del reclamo.** El caso típico es el reclamo por cargo no reconocido.
-- **PQR no es el alcance:** la tabla `complaints` (fuente PQR) incluye quejas, peticiones y sugerencias; la usamos para análisis y ML, pero el flujo solo atiende disputas de transacciones.
-- **Handoff:** por sospecha de fraude (`is_fraud` / `fraud_score`), monto alto, cliente reincidente, información insuficiente, límite de política o pedido del cliente. El paquete sigue la sección 8 de la presentación: pedido, hechos verificados, transacciones, acciones hechas, evidencia, preguntas abiertas y motivo.
-- **Llegadas tardías:** si el cargo no aparece, abrimos el reclamo como *pendiente de verificación* ([conversación](../conversacion.md)).
-- **Portugués:** el dataset está solo en español; los casos de prueba en portugués los definimos en la decisión 15, que conviene adelantar.
-- **Pendiente:** fijar los umbrales numéricos al ver los datos; elegir el componente aprendido (decisión 2) en la misma revisión.
+- **Scope:** the assistant identifies the transaction, gathers the data, shows verified facts, confirms intent, opens the claim, verifies that it exists, and delivers the number and the next step. **It does not decide fraud or the claim outcome.** The typical case is the unrecognized-charge claim.
+- **PQR is not the scope:** the `complaints` table (PQR source — PQR, petitions, complaints, and claims) includes complaints, petitions, and suggestions; we use it for analysis and ML, but the flow only serves transaction disputes.
+- **Handoff:** on suspected fraud (`is_fraud` / `fraud_score`), high amount, repeat customer, insufficient information, policy limit, or customer request. The package follows section 8 of the presentation: request, verified facts, transactions, actions taken, evidence, open questions, and reason.
+- **Late arrivals:** if the charge does not appear, we open the claim as *pending verification* ([conversation](../conversation.md)).
+- **Portuguese:** the dataset is Spanish-only; we define the Portuguese test cases in decision 15, which should be brought forward.
+- **Pending:** set the numeric thresholds once we see the data; choose the learned component (decision 2) in the same review.

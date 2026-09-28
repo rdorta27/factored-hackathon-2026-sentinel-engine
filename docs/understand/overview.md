@@ -1,65 +1,65 @@
-# El reto en una página
+# The challenge in one page
 
-**Para qué sirve:** entender el hackathon sin leer los PDF. **Relacionados:** [arquitectura](arquitectura.md), [dataset](dataset.md), [requerimientos](../requerimientos/requerimientos.md), [glosario](glosario.md).
+**Purpose:** understand the hackathon without reading the PDFs. **Related:** [architecture](architecture.md), [dataset](dataset.md), [requirements](../requirements/requirements.md), [glossary](glossary/).
 
 > "Build something that works, prove that it works, and know when it should not act. And show us what it would take to make it real."
 
-## Objetivo
+## Objective
 
-Un **asistente de atención al cliente para un banco** que opera en México, Colombia y Argentina. No un chatbot: un **sistema** que entiende al cliente, consulta datos verificados, ejecuta acciones seguras, verifica que ocurrieron y le pasa el caso a una persona cuando toca.
+A **customer-support assistant for a bank** operating in Mexico, Colombia, and Argentina. Not a chatbot: a **system** that understands the customer, queries verified data, executes safe actions, verifies that they happened, and hands the case to a person when appropriate.
 
-- **Un solo flujo**, que elegimos el lunes 28/9: consultas de cuenta o pagos, tarjetas, disputas de transacciones, o información y elegibilidad de crédito. Hacer más flujos no suma puntos por sí solo: cuentan la profundidad y el criterio de ingeniería.
-- Tiene que funcionar en **español y portugués**. Los datos solo están en español.
-- **Primero que funcione de punta a punta**; después optimizamos.
+- **A single flow**, chosen on Mon 9/28: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count.
+- It must work in **Spanish and Portuguese**. The data is only in Spanish.
+- **End-to-end working first**; then we optimize.
 
-## Casos de la demo
+## Demo cases
 
-| Caso | Qué hace el asistente |
+| Case | What the assistant does |
 |---|---|
-| Normal | Lo resuelve solo, según las políticas del banco |
-| Ambiguo o no soportado | Pregunta lo que falta o dice que no puede |
-| Requiere una persona | Escala con un resumen estructurado para el asesor |
+| Normal | Resolves it alone, following bank policies |
+| Ambiguous or unsupported | Asks for what is missing or says it cannot help |
+| Requires a person | Escalates with a structured summary for the agent |
 
-## Reglas de oro
+## Golden rules
 
-Esto es el resumen; el detalle está en [arquitectura](arquitectura.md) y [conversación](../construir/conversacion.md).
+This is the summary; the detail lives in [architecture](architecture.md) and [conversation](../build/conversation.md).
 
-1. **La IA entiende; el código ejecuta y verifica.** Los permisos van en el código, no en el prompt.
-2. **Solo hechos verificados.** Si el dato no está o no está al día, lo decimos.
-3. **La autonomía depende del riesgo.** Las acciones con consecuencias piden confirmación.
-4. **Honestidad.** Contamos las fallas, las limitaciones y lo que falta para producción.
+1. **AI understands; code executes and verifies.** Permissions live in code, not in the prompt.
+2. **Only verified facts.** If the data is missing or not current, we say so.
+3. **Autonomy depends on risk.** Actions with consequences require confirmation.
+4. **Honesty.** We report failures, limitations, and what is missing for production.
 
-## Evaluación
+## Evaluation
 
-| Criterio | Qué miran |
+| Criterion | What they look at |
 |---|---|
-| Fundamento y documentación | Por qué elegimos el flujo, decisiones escritas, limitaciones |
-| AI Engineering | Backend, frontend y despliegue |
-| Data Analytics | Calidad de datos e insights |
-| Data Engineering | Pipeline de extracción y transformación |
-| Machine Learning | Selección, evaluación contra un baseline y tracking de modelos |
+| Rationale and documentation | Why we chose the flow, written decisions, limitations |
+| AI Engineering | Backend, frontend, and deployment |
+| Data Analytics | Data quality and insights |
+| Data Engineering | Extraction and transformation pipeline |
+| Machine Learning | Selection, evaluation against a baseline, and model tracking |
 
-Métricas principales: **resolución automatizada segura**, **resultados inseguros** y **costo**. El detalle está en [métricas](../construir/metricas.md).
+Main metrics: **safe automated resolution**, **unsafe outcomes**, and **cost**. Detail in [metrics](../build/metrics.md).
 
-## Entregables: lunes 5/10 (hora por confirmar)
+## Deliverables: Mon 10/5 (time to be confirmed)
 
-El reto es un sprint de 10 días: arranca el 25/9 y los envíos cierran el 5/10.
+The challenge is a 10-day sprint: it starts 9/25 and submissions close 10/5.
 
-Enviamos a hackathon.admin@factored.ai:
+We send to hackathon.admin@factored.ai:
 
-1. Repositorio público `factored-hackathon-2026-[equipo]`
-2. Link a la herramienta desplegada
-3. Presentación de 4 a 6 diapositivas
-4. Video corto: demo y decisiones de arquitectura
+1. Public repository `factored-hackathon-2026-[team]`
+2. Link to the deployed tool
+3. 4-to-6-slide presentation
+4. Short video: demo and architecture decisions
 
-"Submit your tool no matter what": entregamos a tiempo, con las limitaciones declaradas.
+"Submit your tool no matter what": we deliver on time, with limitations declared.
 
-## Riesgos conocidos
+## Known risks
 
-- **Portugués sin datos:** lo más probable es que los evaluadores prueben en portugués de Brasil. Ver [idiomas](../construir/conversacion.md#idiomas).
-- **Datos con problemas a propósito:** duplicados, nulos, llegadas tardías, esquema cambiante. Ver [dataset](dataset.md).
-- **Nadie del equipo viene de contact centers:** el [glosario](glosario.md) explica las siglas del negocio.
+- **Portuguese without data:** evaluators will most likely test in Brazilian Portuguese. See [languages](../build/conversation.md#languages).
+- **Data with intentional issues:** duplicates, nulls, late arrivals, changing schema. See [dataset](dataset.md).
+- **Nobody on the team comes from contact centers:** the [glossary](glossary/) explains the business acronyms.
 
-## Material oficial
+## Official material
 
-*Planteamiento* · *Kickoff* · *Resumen del dataset* · *Diccionario de datos*
+*Problem statement* · *Kickoff* · *Dataset summary* · *Data dictionary*

@@ -32,9 +32,9 @@ For agents:
 
 | Path | What it holds |
 |---|---|
-| [`docs/entender/`](docs/understand/) | The challenge, the system and the data in one read |
-| [`docs/requerimientos/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
-| [`docs/construir/`](docs/build/) | Areas, design rules, decisions and delivery |
+| [`docs/understand/`](docs/understand/) | The challenge, the system and the data in one read |
+| [`docs/requirements/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
+| [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).
@@ -48,9 +48,9 @@ The reading order for someone arriving new is in [`docs/README.md`](docs/README.
   body, enforced by [`.githooks/commit-msg`](.githooks/commit-msg). Activate
   once per clone: `git config core.hooksPath .githooks`.
 - **Registrations:** product and technique decisions go to
-  [`docs/construir/decisiones/`](docs/build/decisions/) (one file each,
+  [`docs/build/decisions/`](docs/build/decisions/) (one file each,
   use the template); team decisions go to [`team/plan.md`](team/plan.md).
   Requirements cited by a decision are listed in
-  [`docs/requerimientos/requerimientos.md`](docs/requirements/requirements.md).
+  [`docs/requirements/requirements.md`](docs/requirements/requirements.md).
 - **PDFs** are generated with `python3 estilos/build.py` from outside the
   repository; PDFs are gitignored.
