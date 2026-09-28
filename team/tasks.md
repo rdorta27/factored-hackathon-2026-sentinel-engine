@@ -95,7 +95,7 @@ Need information, not a decision. Ordered by date.
 | What does the "public\*" asterisk mean? Must the repo be public from the start? | Hackathon help channel | Mon 9/28 | Pending |
 | Do the terms of use allow copying S3 data to Azure (ADLS)? | Hackathon help channel | Mon 9/28 | Pending |
 | How much does Databricks cost (SQL Warehouse and, if used, the Llama endpoint) running 10/1 to 10/5? | Natalia | Mon 9/28 | Done: USD 20-58 total, within the trial credit |
-| Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Pending |
+| Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Done: 11:59 pm (UTC-5); video 3 minutes at most |
 | Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
 | Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | Pending |
 | How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Pending |

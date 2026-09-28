@@ -1,6 +1,6 @@
 # Delivery
 
-Monday 10/5 (time TBD). We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables-mon-105-time-to-be-confirmed).
+Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables).
 
 ## Language
 
@@ -35,7 +35,7 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 
 ## Video pitch
 
-Mandatory and short. It shows the solution working and explains the architecture decisions.
+Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions.
 
 1. The problem, in one sentence and with one data point.
 2. Demo of the **normal case** (es-419).
@@ -47,5 +47,5 @@ Mandatory and short. It shows the solution working and explains the architecture
 
 ## Pending
 
-- [ ] Maximum video length (confirm with the organizers)
+- [x] Maximum video length: 3 minutes (confirmed 9/28)
 - [ ] Recording tool

@@ -1,6 +1,6 @@
 # Team plan
 
-Sentinel Engine · Factored AI & Data Hackathon 2026 · Submission: **Monday 10/5** (time to be confirmed)
+Sentinel Engine · Factored AI & Data Hackathon 2026 · Submission: **Monday 10/5, 11:59 pm (UTC-5)**
 
 > We start on Monday 9/28. Day tasks live in [tasks](tasks.md) and open choices in [pending decisions](pending-decisions.md).
 
