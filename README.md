@@ -1,6 +1,6 @@
 # Sentinel Engine
 
-Felix, Natalia and Rubén · Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5** (time to be confirmed)
+Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5** (time to be confirmed)
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Work in progress: decisions are recorded as they are made, and open ones are marked as such.
 
@@ -14,7 +14,7 @@ The guiding principle: **AI understands; code executes and verifies.**
 
 1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
 2. **[Architecture](docs/understand/architecture.md):** layers, components and mocks, decision priority and a case walkthrough, with diagrams.
-3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** Natalia's proposal reconciled with the repository: personal data (PII) lifecycle, four-stage design, repository layout, timeline and costs.
+3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** the 9/28 architecture proposal reconciled with the repository: personal data (PII) lifecycle, four-stage design, repository layout, timeline and costs.
 4. **[Team plan](team/plan.md):** schedule, decisions made, working method and mocks.
 
 The [documentation index](docs/README.md) covers everything else.

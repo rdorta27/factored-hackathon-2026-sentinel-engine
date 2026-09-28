@@ -191,7 +191,7 @@ Chosen at the Tuesday 9/29 review, together with the flow; the candidates are in
 | Backend | Open (decision 9); proposal: Python with FastAPI |
 | Frontend | Open (decision 11): Streamlit, Gradio or our own web app (Python or Node) |
 | Deployment | Open (decision 13); proposal: Azure Container Apps or App Service |
-| Repositories | Open (decision 21): one repository or one per domain (Natalia's proposal). The submission requires a single public repository |
+| Repositories | Open (decision 21): one repository or one per domain (proposed on 9/28). The submission requires a single public repository |
 
 **Target:** the system runs on Azure and, locally, on Linux. .NET is out because it is not part of the team's stack (Python, FastAPI).
 
