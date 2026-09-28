@@ -1,0 +1,36 @@
+schema: spec-driven
+
+# Project context (shown to AI when creating artifacts)
+context: |
+  Sentinel Engine — Factored AI & Data Hackathon 2026 (submission Oct 5, 11:59pm UTC-5).
+  Transaction-dispute assistant for MX/CO/AR, answers in Spanish and Portuguese.
+  Stack: Python + FastAPI serving one-page chat (HTML+JS) on POST /chat; Azure; local Linux.
+  Policy, authenticated session, idempotency in code; no orchestrator ever sees customer_id.
+  All docs/code in English from first draft. Banking terms in ES/PT kept original with English explanation on first use.
+  Locales BCP 47 only: es-MX, es-CO, es-AR, es-419, pt-BR. Never ES/PT alone.
+  No secrets/data in repo (.env and data/ gitignored). Conventional Commits with mandatory two-block body.
+
+# Per-artifact rules (strict hackathon, English-only)
+rules:
+  proposal:
+    - English only; ES/PT banking terms with English explanation on first use
+    - Max 500 words, must include Non-goals section
+    - Never include secrets, credentials, or dataset rows
+    - Cite REQ-XXXX IDs and docs/build/decisions/ files
+  tasks:
+    - Max 2-hour chunks, each with owner + evidence path
+    - Each task references docs/build/areas/ or a decision file
+    - No task Done without evidence (file, test, or doc link)
+  specs:
+    - Every capability traces to docs/requirements/requirements.md with priority + status
+    - "Deltas only: never rewrite full spec to change one requirement"
+
+# Per-operation guidance
+operations:
+  apply:
+    guidance:
+      - Keep test summaries concise; run only checks that exist in repo
+      - One commit per task, Conventional Commits two-block body
+  archive:
+    guidance:
+      - Update requirements status table and summarize outcome before finishing
