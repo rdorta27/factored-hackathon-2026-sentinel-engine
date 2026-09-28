@@ -31,6 +31,47 @@ Numbers come from the frozen runs in [`evidence/flows/`](../../../evidence/flows
 - **Leak audit for complaints.** Closing fields (`resolution*`, `closing_date`, `compensation_granted`, `resolution_satisfaction`) are 0% filled while open: banned as features. `assigned_agent_id`, `assignment_date` and `first_response_date` fill after opening (50–57% while open): also banned for open-time prediction. `sla_breached` is always filled: no signal.
 - **Regulator channel is tiny:** 46 complaints (0.82%), 10 of them unrecognized charges. Too few to model.
 
+## Suggested flow
+
+"I don't recognize this charge" starts as an account inquiry and becomes a dispute only when it has to. The dashed box is what we build; the bank starts as mocks.
+
+```mermaid
+flowchart LR
+    customer(["Customer<br/>'I don't recognize this charge'"])
+    subgraph system["Sentinel Engine (what we build)"]
+        direction LR
+        understand["1 · Understand<br/><b>LLM</b>: intent, language,<br/>missing details"]
+        lookup["2 · Look up<br/><b>Code</b>: customer's<br/>transactions and status"]
+        decide{"3 · Decide<br/><b>Policy</b> first,<br/>then <b>ML</b>"}
+        act["4 · Act<br/><b>Code</b>: confirm, open<br/>and verify the dispute"]
+        respond["5 · Respond<br/><b>LLM</b>: case number<br/>and next step"]
+        handoff["JSON handoff<br/>facts, evidence,<br/>open questions"]
+    end
+    bank[("Bank<br/>transactions and disputes<br/>(mocks, then real data)")]
+    advisor(["Human advisor"])
+    reply(["Customer gets<br/>the answer"])
+
+    customer --> understand --> lookup --> decide
+    lookup <--> bank
+    decide -- "Pending or Reversed:<br/>explain, no dispute" --> respond
+    decide -- "dispute applies" --> act --> respond
+    act <--> bank
+    decide -- "fraud, high amount,<br/>asks for a person,<br/>missing info" --> handoff --> advisor
+    respond --> reply
+
+    classDef ai fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
+    classDef code fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
+    classDef dec fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,color:#3a2a00
+    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    class understand,respond ai
+    class lookup,act,handoff code
+    class decide dec
+    class customer,advisor,bank,reply ext
+    style system fill:#f7f7fb,stroke:#5b4fd6,stroke-width:3px,stroke-dasharray:8 4
+```
+
+**Why this shape:** demand sits in inquiries (35% of calls), not in disputes (~3 a day); checking the status first avoids needless disputes (3% of transactions are Pending or Reversed); and opening, verifying and escalating with evidence is what the evaluation weighs most.
+
 ## Recommendation for the 9/29 review
 
 1. **Keep transaction disputes** (decision 003), entered through an account or payment inquiry: "I don't recognize this charge" → look up transactions → check Pending or Reversed → open the dispute. One coherent flow; the 35% transactional call share backs the entry point, and the value is controlled action, verification and handoff.

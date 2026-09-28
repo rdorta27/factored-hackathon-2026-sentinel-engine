@@ -117,7 +117,7 @@ flowchart TD
 ```
 
 1. **Policy in code.** Permissions, confirmations and fixed rules. Example: if the customer asks for a person, we escalate.
-2. **Learned component**, when it takes part (e.g. an escalation predictor). It decides whether to escalate where no rule applies.
+2. **Learned component**, when it takes part (proposed: a prompted LLM that flags when to escalate). It decides whether to escalate where no rule applies.
 3. **LLM.** Understands the customer, drafts the reply and picks which tool to call. It never picks which customer to read.
 
 ## LLM visibility
@@ -126,58 +126,63 @@ flowchart TD
 - It **never** sees identifiers, documents, income, credit score or IP. The orchestrator knows the customer from the session.
 - Details in [security](../build/security.md) and [decision 004](../build/decisions/004-pii-lifecycle.md).
 
-## Walkthrough of a case (example: duplicate-charge dispute)
+## Walkthrough of a case (example: unrecognized charge)
+
+The suggested flow starts as an account inquiry and becomes a dispute only when it has to ([flow data evidence](../build/flows/data-evidence.md#suggested-flow)).
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor C as Customer
     participant F as Frontend (chat)
-    participant O as Orchestrator<br/>(code + LLM)
-    participant T as Tools<br/>(session-bound)
+    participant O as Orchestrator (code)
+    participant L as LLM / learned component
+    participant T as Tools (session-bound)
     participant S as Stores
     participant A as Advisor (simulated)
 
-    C->>F: "me cobraron dos veces"<br/>("I was charged twice")
+    C->>F: "no reconozco este cargo"<br/>("I don't recognize this charge")
     F->>O: message + session
     rect rgba(91, 79, 214, 0.08)
-    Note over O: Understand: intent = charge dispute<br/>(PII masked before the LLM)
-    O->>T: Decide: search repeated purchases<br/>(session customer)
+    Note over O,L: 1 · Understand (PII masked before the LLM)
+    O->>L: customer text
+    L-->>O: intent + missing details
+    end
+    rect rgba(47, 138, 85, 0.08)
+    Note over O,S: 2 · Look up
+    O->>T: session customer's transactions
     T->>S: read transactions (Gold)
-    S-->>T: candidate charges + cutoff date
-    T-->>O: candidates
-    O->>F: show candidates in their currency
-    F->>C: candidates
-    C->>F: picks one and confirms
-    F->>O: confirmation
+    S-->>O: candidates + status + cutoff date
     end
     rect rgba(199, 125, 18, 0.10)
-    O->>T: Act: open dispute (idempotency key)
-    T->>S: write dispute (disputes store)
-    O->>T: Verify: look up dispute
-    T->>S: read dispute
-    S-->>T: dispute exists
-    T-->>O: case number
+    Note over O,L: 3 · Decide: policy first, then the learned component
+    alt Pending or already Reversed
+        O->>C: explains the status, no dispute
+    else fraud, high amount or asks for a person
+        O->>A: JSON handoff (verified facts, evidence, open questions)
+        O->>C: an advisor takes over
+    else the dispute applies
+        O->>C: shows candidates in their currency, asks to confirm
+        C->>O: picks one and confirms
+        Note over O,S: 4 · Act and verify
+        O->>T: open dispute (idempotency key)
+        T->>S: write dispute
+        O->>T: look up dispute
+        S-->>O: dispute exists
+        O->>C: 5 · case number and next step
     end
-    O->>F: case number and next step
-    F->>C: case number
-    opt a rule or the predictor calls for it
-        O->>T: Escalate: handoff
-        T->>A: JSON handoff (verified facts,<br/>open questions)
     end
 ```
 
-1. The customer writes "me cobraron dos veces" ("I was charged twice").
-2. **Understand:** the intent is a charge dispute.
-3. **Decide:** details are missing, so a tool searches the session customer's repeated purchases.
-4. The assistant shows the candidates in their original currency, with the data cutoff date. The customer picks one.
-5. **Act:** after the customer confirms, a tool opens the dispute with an idempotency key.
-6. **Verify:** a second tool reads the dispute back. Only when it exists does the customer get the case number.
-7. **Escalate** when a rule or the predictor calls for it: a JSON handoff with verified facts and open questions.
+1. **Understand:** the LLM reads the masked text and returns the intent and what is missing.
+2. **Look up:** a session-bound tool returns the customer's candidate charges, their status and the data cutoff date.
+3. **Decide:** policy rules first, then the learned component. A Pending charge may clear on its own and a Reversed one is already refunded, so neither opens a dispute. Fraud, a high amount or a request for a person escalate with a JSON handoff.
+4. **Act and verify:** after the customer confirms, the dispute is opened with an idempotency key and read back.
+5. **Respond:** the customer gets the case number only when the dispute exists.
 
 ## Learned component
 
-Chosen at the Tuesday 9/29 review, together with the flow; the candidates are in [decision 003](../build/decisions/003-disputes-flow.md). Whatever we pick is measured against a baseline. Details in [ML](../build/areas/ml.md).
+Proposed for the Tuesday 9/29 review: a **prompted LLM** that classifies intent and flags when to escalate, measured against a keyword baseline on the same held-out cases (REQ-0016; the mentors confirmed on 9/28 that a prompted LLM counts). The dataset has no learnable tabular label and no real customer language, so evaluation uses team-generated es-419 and pt-BR text, declared as such ([flow data evidence](../build/flows/data-evidence.md)). Details in [ML](../build/areas/ml.md).
 
 ## Path to production
 
