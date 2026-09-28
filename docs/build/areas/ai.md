@@ -51,6 +51,5 @@ With `service_agents` we pick an active advisor who speaks the customer's langua
 
 ## Pending decisions
 
-- Backend and frontend framework
-- Hybrid LLM models (the router is already decided)
+- Hybrid LLM models (the router is already decided; backend and frontend are [005](../decisions/005-backend.md) and [006](../decisions/006-frontend.md))
 - Deployment service on Azure

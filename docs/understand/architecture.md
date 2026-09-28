@@ -202,8 +202,8 @@ REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a cr
 | LLM | **Hybrid, with a router** between models. Which model serves each route: Tue 9/29 (decision 10) |
 | Disputes store | **SQLite locally, Postgres on Azure**, separate from Gold |
 | Data storage | Tue 9/29 (decision 12): local DuckDB or Databricks, both with Bronze/Silver/Gold. Meanwhile the pipeline starts locally |
-| Backend | Open (decision 9); proposal: Python with FastAPI |
-| Frontend | Open (decision 11): Streamlit, Gradio or our own web app (Python or Node) |
+| Backend | **Python + FastAPI.** LangGraph in the same process, loop only ([decision 005](../build/decisions/005-backend.md)) |
+| Frontend | **One-page chat served by FastAPI.** No Streamlit or Gradio ([decision 006](../build/decisions/006-frontend.md)) |
 | Deployment | Open (decision 13); proposal: Azure Container Apps or App Service |
 | Repositories | Open (decision 21): one repository or one per domain (proposed on 9/28). The submission requires a single public repository |
 

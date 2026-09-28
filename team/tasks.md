@@ -22,7 +22,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Task | Owner | Status |
 |---|---|---|
 | Record your preference in [pending decisions](pending-decisions.md) | Everyone | Pending |
-| Confirm S3 credentials work for all 3 (Natalia already tested them) | Felix, Rubén | In progress |
+| Confirm S3 credentials work for all 3 (Natalia already tested them; Rubén verified 9/28: bucket listing OK) | Felix, Rubén | Done |
 | Enable the commit hook: `git config core.hooksPath .githooks` | Felix, Natalia | Pending |
 | Push the ingestion script (`scripts/ingest_s3_data.py`) to the repo, no credentials: read from `.env` | Natalia | Pending |
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
@@ -58,13 +58,14 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Handoff integrated into the flow | Unassigned | Pending |
 | Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
 | First evaluation cases | Unassigned | Pending |
-| Start the presentation and video script | Unassigned | Pending |
+| Start the presentation (4 to 6 slides) | Unassigned | Pending |
 
 ## Thu 10/1
 
 | Task | Owner | Status |
 |---|---|---|
 | Ambiguous and human cases | Unassigned | Pending |
+| Start the video script | Rubén | Pending |
 | Portuguese | Unassigned | Pending |
 | Failure handling: down tools, expired session, bounded retries | Unassigned | Pending |
 | Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
@@ -78,7 +79,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
 | Path to production write-up (REQ-0052) | Rubén | Pending |
-| README in English, presentation and video | Unassigned | Pending |
+| README in English and presentation | Unassigned | Pending |
+| Record the video | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 
 ## Sat 10/3 to Mon 10/5
