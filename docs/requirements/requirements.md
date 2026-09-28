@@ -6,7 +6,7 @@ What the system must do to meet the hackathon brief. Each requirement has an ID 
 
 ## Hackathon material
 
-Requirements come from four official documents. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+Requirements come from four official documents, plus clarifications from the mentors in the help channel. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|
@@ -14,6 +14,7 @@ Requirements come from four official documents. They are not in the repository; 
 | Kickoff deck (*Datathon 2026 kickoff*) | Kickoff p. *N* | Evaluation criteria, workflows, multilingual support, headline metrics | 30 |
 | Dataset summary (*LATAM Bank*) | Dataset summary | Tables, volumes and the intentional quality problems (duplicates, nulls, late arrivals, schema changes) | — |
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | — |
+| Mentor answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
 A requirement with no official source is marked **Own**: a team design decision, linked to where it is explained (13 requirements). The dataset documents shape the data requirements through [dataset](../understand/dataset.md), but no row cites them directly yet; adding those citations is pending.
 
@@ -33,8 +34,8 @@ A requirement with no official source is marked **Own**: a team design decision,
 
 | Priority | Count | What it includes |
 |---|---|---|
-| P0 | 36 | The 3 demo cases, es-419 and pt-BR, verification, permissions in code, handoff, learned component vs baseline, pipeline with contracts, failure tests, deliverables, delivery language |
-| P1 | 11 | Tracking, real incremental processing, observability, retries, breakdown by language and country, fine-grained conversation rules |
+| P0 | 38 | The 3 demo cases, es-419 and pt-BR, verification, permissions in code, handoff, learned component vs baseline, pipeline with contracts, failure tests, deliverables, delivery language, path to production, sizing |
+| P1 | 12 | Tracking, real incremental processing, observability, retries, breakdown by language and country, fine-grained conversation rules |
 | P2 | 4 | Country as configuration, app-error context, handoff routing, LLM judge |
 
 ## Functional (F)
@@ -85,10 +86,12 @@ A requirement with no official source is marked **Own**: a team design decision,
 |---|---|---|---|---|---|---|---|---|
 | REQ-0014 | Data-backed problem, with reproducible analysis justifying the flow | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 1 · Kickoff p. 13 | Reproducible analysis | Pending |
 | REQ-0015 | Repeatable pipeline with strict contracts, quality, lineage, and freshness | P0 | All | Data Engineering | data | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Pipeline + quality report | Pending |
-| REQ-0016 | At least one learned component compared against a baseline on held-out | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Results table | Pending |
+| REQ-0016 | At least one learned component compared against a baseline on held-out; a prompted or fine-tuned LLM counts if defined, evaluated and justified | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28) | Results table | Pending |
 | REQ-0017 | Valid labels with no data leakage; justify metrics, thresholds, and splits | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Split description | Pending |
 | REQ-0020 | Baseline and system on the same held-out, with realistic distribution | P0 | All | Machine Learning | ml | Problem statement: Evaluation evidence · Kickoff p. 12 | Set descriptions | Pending |
 | REQ-0022 | Metrics with n, case mix, versions, and variability; include failures | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 5; Evaluation evidence | Metrics report | Pending |
+| REQ-0053 | Sizing and its limits: disputes per day in the data, capacity the prototype is designed for, and what changes at real volume | P0 | All | Data Analytics | analysis | Help channel (9/28) | Sizing section | Pending |
+| REQ-0054 | External data only if justified: source, license, why it is needed, no PII, labeled as external | P1 | All | Data Engineering | data, ml | Help channel (9/28) | Source inventory | Pending |
 | REQ-0031 | Only approved data; label each source (real, synthetic, team-generated) | P0 | All | Data Engineering | data | Problem statement: Data and execution boundaries | Source inventory | Pending |
 | REQ-0018 | Real incremental processing (late arrivals, duplicates, changing schema) or, if data is static, labeled fixture | P1 | All | Data Engineering | data | Problem statement: Architecture freedom | Update fixture | Pending |
 | REQ-0019 | Experiment tracking: model and prompt versions, parameters, metrics | P1 | All | Machine Learning | ml | Kickoff p. 20 | Experiment log | Pending |
@@ -101,12 +104,13 @@ A requirement with no official source is marked **Own**: a team design decision,
 | ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|
 | REQ-0034 | Public repository `factored-hackathon-2026-[team]`, without secrets or restricted data | P0 | All | Rationale | all | Kickoff p. 18 | Repo link | Pending |
-| REQ-0035 | Link to the deployed tool, with usage and spending limits | P0 | All | AI Engineering | ai | Kickoff p. 18 | Link | Pending |
+| REQ-0035 | Link to the deployed tool, with usage and spending limits; a minimal deployment is enough, cloud is not mandatory | P0 | All | AI Engineering | ai | Kickoff p. 18 · Help channel (9/28) | Link | Pending |
 | REQ-0036 | 4-to-6-slide presentation | P0 | All | Rationale | all | Kickoff p. 18 | [Script](../build/delivery.md#presentation) | Pending |
 | REQ-0037 | Short video pitch: demo and architecture decisions | P0 | All | Rationale | all | Kickoff p. 18 | [Script](../build/delivery.md#video-pitch) | Pending |
 | REQ-0051 | Repo README, presentation (4 to 6 slides), video script, AND `docs/` and `team/` all in English | P0 | All | Rationale | all | Own: [language](../build/delivery.md#language) | [Pre-submission check](../build/delivery.md#language) | Pending |
 | REQ-0013 | Report data and language-coverage limitations | P0 | All | Rationale | analysis | Problem statement: Scope · Kickoff p. 15 | Limitations section | Pending |
-| REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 | Limitations section | Pending |
+| REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28) | Limitations section | Pending |
+| REQ-0052 | Credible path to production: how it deploys, scales, is monitored and secured, and what changes from the prototype | P0 | All | AI Engineering / Rationale | ai, all | Help channel (9/28) · Kickoff p. 15 | [Path to production](../understand/architecture.md#path-to-production) | Pending |
 
 ## Future work (not requirements)
 

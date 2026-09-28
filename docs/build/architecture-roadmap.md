@@ -170,7 +170,7 @@ Notes:
 
 ## Cost matrix (MVP budget)
 
-Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**.
+Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**. The mentors confirmed (9/28) that cloud deployment is not mandatory: the prototype can run locally (DuckDB, local model route) and this matrix becomes the production scenario, see [path to production](../understand/architecture.md#path-to-production).
 
 | Component | Open source / free tier | Paid cloud (Azure / Databricks) | Estimated MVP cost |
 |---|---|---|---|

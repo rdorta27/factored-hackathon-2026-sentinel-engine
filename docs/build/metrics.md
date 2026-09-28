@@ -76,6 +76,7 @@ At least one, always against a baseline and on held-out. With the transaction-di
 
 | Possible component | Metric | Possible baseline |
 |---|---|---|
+| Dispute-category classifier, few-shot LLM | accuracy, F1 per class, by locale; cost and latency per case | Keywords or TF-IDF; the same LLM zero-shot |
 | Intent or reason classifier | accuracy, F1 per class | Keywords or majority class |
 | Escalation predictor | AUC, missed and unnecessary transfers at the chosen threshold | Simple reason-based rules |
 | Fraud detection (cards or disputes) | AUC, precision and recall at one threshold | Bank's existing `fraud_score` |

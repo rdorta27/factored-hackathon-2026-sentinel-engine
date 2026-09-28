@@ -26,6 +26,10 @@ We cross `Error` events from `digital_events` with interactions and complaints (
 
 Campaigns (`marketing_campaigns`, `campaign_sends`) may explain spikes in contacts or complaints by date, country, and product. We use them in the analysis that justifies the flow.
 
+## Sizing
+
+REQ-0053. The dataset has about 730–900 call-center interactions a day (800K over three years). We estimate how many of them are disputes per day, state the volume the prototype is designed for, and what would change at real volume. The mentors (9/28) value recognizing sizing limits as business judgment; a prototype is not expected to handle the full volume.
+
 ## Country monitoring
 
 **This document owns this topic.** It is linked from [metrics](../metrics.md) (breakdown), [AI](ai.md) (observability), and the [requirements](../../requirements/requirements.md) (REQ-0050, country monitoring).
