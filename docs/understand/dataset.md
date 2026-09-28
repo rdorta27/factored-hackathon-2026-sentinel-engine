@@ -28,6 +28,21 @@ Sources: *dataset summary*, *data dictionary*.
 
 They are a data-engineering test: we handle, document, and measure them; we do not silently delete them.
 
+### Measured issues (Q4-2024)
+
+From the [flow data evidence](../build/flows/data-evidence.md):
+
+| Issue | Measured | Implication |
+|---|---|---|
+| Partition vs event date | ~25% of rows carry an event date one day after their `process_date` partition | Windows are defined on event dates, never partitions |
+| Future `last_updated` in snapshots | products and customers have rows updated in 2026 and 2027 | Filtering by `last_updated` drops rows; it does not rebuild a past state |
+| Duplicates in complaints | 0 extra rows in Q4-2024 (the summary declares ~2%) | Keep the dedup check; report the gap |
+| Complaint → call linkage | `origin_interaction_id` is 0% filled | Complaints cannot be joined to calls or transcripts |
+| Transcript text | 2 distinct 60-character prefixes over 14,023 transcripts | Templates: no real customer language |
+| `description` vs `category` | `description` contains `category` in 100% of complaints | Label leak |
+| `closing_date` vs `resolution_date` | 15.8% vs 90.3% filled on closed complaints | Inconsistent closing fields |
+| `reason_category` | Mirrors `contact_reason` | No call subcategory |
+
 ## Tables
 
 | Type | Table | Rows | Likely use |

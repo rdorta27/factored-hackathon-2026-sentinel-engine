@@ -27,12 +27,12 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Push the ingestion script (`scripts/ingest_s3_data.py`) to the repo, no credentials: read from `.env` | Natalia | Pending |
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
-| First look at the data: table inventory vs the dictionary | Unassigned | Pending |
-| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Unassigned | Pending |
-| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Unassigned | Pending |
-| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Unassigned | Pending |
+| First look at the data: table inventory vs the dictionary | Rubén | In progress |
+| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
 | Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
-| List `complaints` opening vs outcome fields to avoid data leakage | Unassigned | Pending |
+| List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
 
 ## Tue 9/29
 
@@ -103,8 +103,8 @@ Need information, not a decision. Ordered by date.
 | How much does Databricks cost (SQL Warehouse and, if used, the Llama endpoint) running 10/1 to 10/5? | Natalia | Mon 9/28 | Done: USD 20-58 total, within the trial credit |
 | Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Done: 11:59 pm (UTC-5); video 3 minutes at most |
 | Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
-| Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | Pending |
-| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Pending |
+| Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | In progress: one snapshot, `last_updated` up to 2027; `is_repeat_complainer` still open |
+| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/understand/dataset.md#measured-issues-q4-2024)) |
 | Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
 | How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Pending |
 | Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | Pending |
