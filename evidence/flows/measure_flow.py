@@ -339,7 +339,7 @@ def summary():
         "cards": RESULTS["cards"],
         "credit": RESULTS["credit"],
     }
-    with open("summary.json", "w", encoding="utf-8") as fh:
+    with open(os.path.join(BASE, "summary.json"), "w", encoding="utf-8") as fh:
         json.dump(out, fh, indent=2, sort_keys=True)
     print("[summary] wrote summary.json "
           f"(script {SCRIPT_VERSION}, window {WINDOW})")
