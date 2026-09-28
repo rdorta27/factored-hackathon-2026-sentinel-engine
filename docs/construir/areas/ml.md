@@ -1,6 +1,6 @@
 # Machine Learning
 
-**Criterio de evaluación:** selección, optimización, implementación y tracking de modelos. **Responsable:** por definir.
+**Criterio de evaluación:** selección, optimización, implementación y tracking de modelos. **Responsable:** Rubén.
 
 **Requerimientos:** los de área `ml` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 

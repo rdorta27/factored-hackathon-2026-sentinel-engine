@@ -35,6 +35,7 @@
 
 ## Datos
 
+- **Datos personales en reposo:** en la capa Silver los enmascaramos o les aplicamos hash (documentos, números de tarjeta, puntaje de crédito), para que el análisis y el ML nunca trabajen con los valores originales. Propuesta de Natalia (28/9).
 - Solo datos aprobados; etiquetar el origen de cada insumo.
 - Nada restringido (registros privados, credenciales) en solicitudes a LLM externos ni en logs sin enmascarar.
 - **Retención:** política explícita de qué se guarda, cuánto tiempo y con qué enmascaramiento; equilibra auditoría y privacidad.

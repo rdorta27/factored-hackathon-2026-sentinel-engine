@@ -94,7 +94,7 @@ Necesitan información, no una decisión. Ordenado por fecha.
 | ¿Hay términos de uso de los datos publicados? (el planteamiento los menciona) | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
 | ¿Qué significa el asterisco de "public\*"? ¿El repo debe ser público desde el inicio? | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
 | ¿Los términos de uso permiten copiar los datos de S3 a Azure (ADLS)? | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
-| ¿Cuánto cuesta tener Databricks (SQL Warehouse y, si se usa, el endpoint de Llama) encendido del 1/10 al 5/10? | Natalia | Dom 27/9 | Pendiente |
+| ¿Cuánto cuesta tener Databricks (SQL Warehouse y, si se usa, el endpoint de Llama) encendido del 1/10 al 5/10? | Natalia | Lun 28/9 | Hecho: USD 20-58 en total, dentro del crédito de prueba |
 | Hora límite del lunes 5/10 y duración máxima del video | Canal de ayuda del hackathon | Lun 28/9 | Pendiente |
 | ¿El modelo de Azure OpenAI que queremos está disponible en nuestra región? | Quien ponga la suscripción | Lun 28/9 | Pendiente |
 | ¿Hay varias fotos mensuales? ¿Cómo se calculó `is_repeat_complainer`? | Área de datos | Con la muestra de datos | Pendiente |

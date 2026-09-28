@@ -1,6 +1,6 @@
 # Data Engineering
 
-**Criterio de evaluación:** extracción y transformación de los datos. **Responsable:** por definir.
+**Criterio de evaluación:** extracción y transformación de los datos. **Responsable:** Natalia.
 
 **Requerimientos:** los de área `datos` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 

@@ -1,6 +1,6 @@
 # AI Engineering
 
-**Criterio de evaluación:** backend, frontend y despliegue. **Responsable:** por definir.
+**Criterio de evaluación:** backend, frontend y despliegue. **Responsable:** Rubén (IA y arquitectura); Felix (backend, frontend y despliegue).
 
 **Requerimientos:** los de área `ai` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 
@@ -52,5 +52,5 @@ Con `service_agents` elegimos un asesor activo que hable el idioma del cliente y
 ## Decisiones pendientes
 
 - Framework del backend y del frontend
-- LLM a usar (propuesta: Azure OpenAI)
+- Modelos del LLM híbrido (el enrutador ya está decidido)
 - Servicio de despliegue en Azure

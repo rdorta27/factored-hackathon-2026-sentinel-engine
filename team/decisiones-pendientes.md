@@ -13,30 +13,30 @@ Es una propuesta:
 
 ## Lunes 28/9
 
-Estas frenan el esqueleto del martes. Las más urgentes: **4** (sin responsables no arranca el cronograma), **10** (frena el trabajo de AI), **12** (el pipeline empieza hoy) y **16** (el despliegue es el jueves).
+Estas frenan el esqueleto del martes. Las más urgentes: **16** (el despliegue es el jueves) y **21** (define cómo se organiza el código desde el esqueleto).
 
 | # | Decisión | Opciones o propuesta | Material de apoyo | Felix | Natalia | Rubén |
 |---|---|---|---|---|---|---|
 | 1 | Flujo | Propuesta: disputas de transacciones, provisional; lo confirmamos o lo cambiamos el martes 29/9 con criterios medibles. Alternativa: tarjetas | [Decisión 003 (propuesta)](../docs/construir/decisiones/003-flujo-disputas.md), [opciones de flujo](../docs/construir/flujos/opciones.md) | | | |
 | 2 | Componente aprendido | Con el flujo de disputas: clasificador de categoría del reclamo (`description` / `customer_text`) frente a palabras clave, o predictor de escalamiento (`was_escalated`) con variables de apertura. Lo elegimos en la revisión del martes junto con la decisión 1 | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
-| 4 | Responsables por área | Áreas: AI (backend, frontend, despliegue), ML, Datos, Análisis. Somos 3, así que alguien toma dos | [Áreas](../docs/construir/areas/) | | | |
 | 5 | Seguimiento diario | Reunión de 15 min o mensaje en el canal; hora | | | | |
 | 6 | Herramienta de tareas | Propuesta: [tareas.md](tareas.md) en el repo | | | | |
 | 7 | Flujo de código | Pull request obligatorio o push directo a `main`; quién revisa | | | | |
 | 8 | Reuniones de hito | Cuándo revisamos juntos (ej.: miércoles, viernes y domingo) | [Cronograma](plan.md#cronograma) | | | |
 | 9 | Lenguaje y framework del backend | Propuesta: Python con FastAPI | [Arquitectura](../docs/entender/arquitectura.md#stack) | | | |
-| 10 | LLM | a) Azure OpenAI; qué modelo. b) propuesta de Natalia (canal, 27/9): Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués, handoff y evaluación, con un enrutador entre ambos | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
-| 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
+| 16 | Suscripción o créditos de Azure | Quién la pone; tope de gasto y alertas. Supuesto de costo: USD 20-58, dentro de los USD 200 de crédito de prueba (estimación de Natalia) | [Decisión 001](../docs/construir/decisiones/001-plataforma-azure.md) | | | |
 | 17 | Visibilidad del repositorio | Privado ahora y público al final, o público desde ya (hoy está público). Incluye si `team/` queda en la entrega o se borra antes | [Seguridad](../docs/construir/seguridad.md#repositorio-y-despliegue-públicos) | | | |
-| 12 | Almacenamiento y pipeline de datos | a) Local con DuckDB. b) propuesta de Natalia (canal, 27/9): Databricks con capas Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse. c) Bronze, Silver y Gold con DuckDB local: el mismo patrón, sin montaje ni costo en la nube. Define la arquitectura de datos | [Dataset](../docs/entender/dataset.md), [área de datos](../docs/construir/areas/datos.md) | | | |
+| 21 | Repositorios | Propuesta de Natalia: separar por dominio (datos, IA, web e infraestructura). Opciones: a) un solo repo con carpetas por dominio y dependencias separadas · b) varios repos para desarrollar y uno para entregar · c) submódulos. La entrega pide un solo repo público | Propuesta de Natalia (canal, 28/9) | | | |
 | 18 | Idioma de las especificaciones de OpenSpec | Propuesta: inglés, porque se entregan | [Decisión 002](../docs/construir/decisiones/002-openspec.md) | | | |
 
 ## Más adelante
 
 | # | Decisión | Opciones o propuesta | Para cuándo |
 |---|---|---|---|
+| 10 | Modelos del LLM híbrido | El enrutador ya está decidido; falta qué modelo va en cada ruta. Propuesta de Natalia: Llama 3 en Databricks para consultas frecuentes y GPT-4o para casos ambiguos, portugués y evaluación | Mar 29/9 |
+| 12 | Almacenamiento y pipeline de datos | a) DuckDB local · b) Databricks con Bronze, Silver y Gold en Delta Lake sobre ADLS; la API consulta Gold por SQL Warehouse (propuesta de Natalia) · c) Bronze, Silver y Gold con DuckDB local. Mientras tanto, el pipeline arranca local con el mismo patrón | Mar 29/9 |
 | 3 | Alcance de la demo | Qué acciones hace el asistente (consultar, bloquear, abrir reclamo…) y cuáles no | Mar 29/9 |
-| 11 | Frontend | Chat simple: Streamlit, Gradio o web propia | Mar 29/9 |
+| 11 | Frontend | Chat simple: Streamlit, Gradio o web propia (Python o Node; sin .NET, trabajamos en Linux) | Mar 29/9 |
 | 13 | Servicios de Azure | Despliegue (Container Apps o App Service), secretos (Key Vault). Con la opción b de la decisión 12: ADLS, Databricks y Unity Catalog | Mar 29/9 |
 | 15 | Casos de prueba en portugués | Traducidos, sintéticos o escritos por alguien que lea portugués. El dataset está solo en español: definir también quién los revisa | Mar 29/9 |
 | 20 | Quién hace la presentación y el video | El guion empieza el miércoles | Mar 29/9 |

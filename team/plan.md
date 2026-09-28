@@ -27,6 +27,9 @@ Queremos tener **todo listo el viernes 2/10** y usar el fin de semana de margen.
 | Nombre del equipo: Sentinel Engine | Aceptada | — |
 | Plataforma: Microsoft Azure | Aceptada | [001](../docs/construir/decisiones/001-plataforma-azure.md) |
 | Especificaciones con OpenSpec | Aceptada | [002](../docs/construir/decisiones/002-openspec.md) |
+| Responsables: Natalia, datos y análisis de datos · Rubén, IA, arquitectura y ML · Felix, full-stack | Aceptada | — |
+| LLM híbrido con enrutador entre modelos (los modelos se eligen el martes) | Aceptada | — |
+| Presupuesto de infraestructura: la estimación de Natalia (USD 20-58, dentro de los USD 200 de crédito de prueba de Azure) como supuesto | Aceptada | — |
 | Flujo inicial: disputas de transacciones, hasta la revisión del martes 29/9 | Propuesta | [003](../docs/construir/decisiones/003-flujo-disputas.md) |
 
 Las de producto y técnicas van en [decisiones](../docs/construir/decisiones/), un archivo por decisión. Las del equipo (forma de trabajo, responsables) las anotamos aquí.
