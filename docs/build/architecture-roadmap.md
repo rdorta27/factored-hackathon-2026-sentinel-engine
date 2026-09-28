@@ -1,12 +1,12 @@
 # Architecture and roadmap
 
-Architecture, personal data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
+Architecture, personal data (PII) lifecycle and action plan. Source: the data area's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
 > Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
 > Submission: Monday, October 5 (time to be confirmed)
 > Internal goal: everything ready Friday, October 2; the weekend is buffer
-> Team: Natalia Restrepo (data and data analysis), Rubén Dorta (AI, architecture, ML), Felix Uchubanda (full-stack)
+> Areas: data and data analysis · AI, architecture and ML · full-stack (owners in the [plan](../../team/plan.md#decisions-made))
 
 ## Executive summary
 
@@ -18,7 +18,7 @@ Sentinel Engine is an AI banking assistant that takes in transaction disputes in
 
 PII management spans data engineering, AI engineering and full-stack, across two planes (see [decision 004](decisions/004-pii-lifecycle.md), proposed).
 
-### Plane 1: data at rest (batch / lakehouse) — Natalia
+### Plane 1: data at rest (batch / lakehouse) — data area
 
 ```mermaid
 flowchart LR
@@ -36,9 +36,9 @@ flowchart LR
 ```
 
 > [!NOTE]
-> Proposed, not implemented. Static masking is recorded in [security](security.md#data) as Natalia's 9/28 proposal.
+> Proposed, not implemented. Static masking is recorded in [security](security.md#data) as the 9/28 proposal.
 
-### Plane 2: data in flight (real-time chat) — Rubén & Felix
+### Plane 2: data in flight (real-time chat) — AI and full-stack areas
 
 ```mermaid
 flowchart TD
@@ -66,9 +66,9 @@ flowchart TD
 
 | Domain | Responsibility | Owner | Tools |
 |---|---|---|---|
-| Data engineering (at rest) | Static masking and hashing in the Silver layer, so analysts and batch ML never see raw credentials | Natalia Restrepo | PySpark, Delta Lake column masking, hash functions |
-| AI engineering (in flight) | Dynamic prompt masking and unmasking: mask before LLM calls, keep the per-session token vault, unmask inside tool calls | Rubén Dorta | Python, Presidio / Regex / SpaCy NER, session token vault |
-| Full-stack / backend (session security) | Secure transport and UI rendering: `customer_id` via headers/JWT, no PII in browser logs or client storage | Felix Uchubanda | FastAPI, JWT, HTTPS/TLS |
+| Data engineering (at rest) | Static masking and hashing in the Silver layer, so analysts and batch ML never see raw credentials | Natalia | PySpark, Delta Lake column masking, hash functions |
+| AI engineering (in flight) | Dynamic prompt masking and unmasking: mask before LLM calls, keep the per-session token vault, unmask inside tool calls | Rubén | Python, Presidio / Regex / SpaCy NER, session token vault |
+| Full-stack / backend (session security) | Secure transport and UI rendering: `customer_id` via headers/JWT, no PII in browser logs or client storage | Felix | FastAPI, JWT, HTTPS/TLS |
 
 ## System architecture (4 stages)
 
@@ -93,15 +93,15 @@ flowchart TD
 ```
 
 > [!NOTE]
-> Stage 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for Natalia (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
+> Stage 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for the data area (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
 
 ## Repository layout
 
 ```mermaid
 flowchart TD
-    d["sentinel-data-engine · Natalia<br/>Medallion pipelines, static PII masking,<br/>quality checks, schema contracts<br/>PySpark · Delta Lake"]
-    a["sentinel-ai-core · Rubén<br/>PII masking, LLM router,<br/>deterministic rules<br/>Python · FastAPI · Pydantic"]
-    w["sentinel-web-interface · Felix<br/>chat UI, handoff view,<br/>session management"]
+    d["sentinel-data-engine · data area<br/>Medallion pipelines, static PII masking,<br/>quality checks, schema contracts<br/>PySpark · Delta Lake"]
+    a["sentinel-ai-core · AI area<br/>PII masking, LLM router,<br/>deterministic rules<br/>Python · FastAPI · Pydantic"]
+    w["sentinel-web-interface · full-stack area<br/>chat UI, handoff view,<br/>session management"]
     infra["sentinel-devops-infra · shared<br/>IaC (Terraform or Bicep) · CI/CD (GitHub Actions)"]
     delivery[("Public submission repo<br/>factored-hackathon-2026-sentinel-engine<br/>who assembles it: decision 21")]
     d & a & w -. "merged into" .-> delivery
@@ -188,11 +188,11 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 |---|---|---|
 | 1 | Focus: transaction-dispute intake es-419/pt-BR | Working hypothesis, provisional until Tue 9/29 review ([003](decisions/003-disputes-flow.md)) |
 | 2 | Guiding principle | Accepted, canonical in [architecture](../understand/architecture.md#central-principle) |
-| 3 | Domain owners Natalia / Rubén / Felix | Accepted ([plan](../../team/plan.md)) |
-| 4 | Static masking in Silver | Proposed by Natalia (9/28), recorded in [security](security.md#data), not implemented |
+| 3 | Domain owners per area | Accepted ([plan](../../team/plan.md)) |
+| 4 | Static masking in Silver | Proposed on 9/28, recorded in [security](security.md#data), not implemented |
 | 5 | Dynamic masking: token vault, mask and unmask | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
 | 6 | Hybrid router model choice | Undecided (decision 10, due Tue 9/29) |
-| 7 | Storage backend | Open question for Natalia (decision 12) |
+| 7 | Storage backend | Open question for the data area (decision 12) |
 | 8 | Multi-repo development layout | Pending (decision 21); conflicts with the single-public-repo submission requirement |
 | 9 | MVP cost USD 20–58 | Working assumption, pending Azure validation (decision 16) |
 | 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; submission time/channel unconfirmed |
