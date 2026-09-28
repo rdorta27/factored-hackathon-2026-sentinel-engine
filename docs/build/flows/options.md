@@ -73,7 +73,7 @@ We evaluated it as a 5th option and **discarded** it: it is not among the origin
 
 ## Comparison
 
-Initial estimate for discussion; not a recommendation.
+Initial estimate for discussion, made before profiling the data. The measured comparison is in [flow data evidence](data-evidence.md).
 
 | # | Option (official term) | Effort | Scope risk | Data richness | Demo |
 |---|---|---|---|---|---|

@@ -12,7 +12,7 @@ The guiding principle: **AI understands; code executes and verifies.**
 
 ## Requirements coverage
 
-**0% covered (0 of 57 requirements Done)**: P0 0/41 · P1 0/12 · P2 0/4. All requirements are still Pending; see the [requirements](docs/requirements/requirements.md) for status.
+**0% covered (0 of 57 requirements Done)**: P0 0/41 · P1 0/12 · P2 0/4. 4 are In progress (REQ-0014, 0015, 0017, 0053, from the [flow data evidence](docs/build/flows/data-evidence.md)); see the [requirements](docs/requirements/requirements.md) for status.
 
 ## Start here (about 15 minutes)
 

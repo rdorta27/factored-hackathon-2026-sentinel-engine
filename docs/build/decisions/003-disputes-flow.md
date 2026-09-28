@@ -21,13 +21,13 @@ The flow must simultaneously demonstrate: data analysis, tool-using conversation
 
 We start with the **transaction-dispute flow** as our working hypothesis. We confirm or change it on Tuesday 9/29 according to the following criteria, measured on the real data.
 
-| Criterion | How it is measured | We stay with disputes if… |
-|---|---|---|
-| Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) |
-| Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases |
-| Labels | Quality and balance of `category` / `subcategory` and of `was_escalated` | At least one label is consistent and non-trivial |
-| Defensible ML | Keyword or TF-IDF baseline vs. a learned component, with a temporal split. The component can be a simple model or a few-shot LLM classifier (the mentors confirmed on 9/28 that a prompted LLM counts) | The component beats the baseline on the same held-out set, with valid labels and no leakage |
-| Data leakage | Feature review | Only opening-time fields are used; outcome fields (`status`, `resolution`, `sla_breached`, etc.) stay out |
+| Criterion | How it is measured | We stay with disputes if… | Result 9/28 ([evidence](../flows/data-evidence.md)) |
+|---|---|---|---|
+| Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) | Low: 251 unrecognized-charge claims in Q4-2024 (~2.7 a day), 4.47% of complaints; the entry point is backed by 35% transactional calls |
+| Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases | **Fails:** 0% of complaints carry `origin_interaction_id`; transcripts are templates |
+| Labels | Quality and balance of `category` / `subcategory` and of `was_escalated` | At least one label is consistent and non-trivial | **Fails for complaints:** `description` leaks `category`; `was_escalated` exists only on calls (10%) and shows no single-field signal |
+| Defensible ML | Keyword or TF-IDF baseline vs. a learned component, with a temporal split. The component can be a simple model or a few-shot LLM classifier (the mentors confirmed on 9/28 that a prompted LLM counts) | The component beats the baseline on the same held-out set, with valid labels and no leakage | Open: prompted LLM on team-generated text is the viable path; multivariate check on call escalation pending |
+| Data leakage | Feature review | Only opening-time fields are used; outcome fields (`status`, `resolution`, `sla_breached`, etc.) stay out | Done: closing and post-opening fields identified and banned |
 
 If volume or labels fail, the preferred alternative is **cards** (same structure: confirm, act, verify, and handoff on fraud). A classical model with no margin over the baseline no longer triggers the switch, as long as the few-shot LLM approach is defensible.
 
