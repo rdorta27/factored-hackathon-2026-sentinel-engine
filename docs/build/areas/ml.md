@@ -39,7 +39,7 @@ Predicts whether a case will be resolved without escalation, from call-center in
 - **Complementary label:** "the call ended in a complaint" (`complaints.origin_interaction_id`). It is another signal of poor resolution; since the complaint happens afterwards, it is a label, never a feature.
 - **Forbidden features:** everything that happens after or at the end of the interaction (survey, duration, final sentiment). From prior interactions, only surveys **answered before** the case timestamp count (the table carries the hours between the interaction and the response).
 - **Threshold:** a measured business decision. We choose it on the development set (never on held-out), balancing missed transfers (risk) against unnecessary ones (cost), and record it in [decisions](../decisions/).
-- It does not decide cases covered by a policy rule (e.g., an explicit request for an advisor); see [conversation](../conversation.md#when-the-customer-asks-for-a-human).
+- It does not decide cases covered by a policy rule (e.g., an explicit request for an advisor); see [conversation](../conversation.md#when-the-customer-asks-to-speak-to-a-person).
 
 Discarded as a learned component: customer segmentation (no valid labels to compare against a baseline, and it does not participate in the conversation). It remains useful for analysis and fairness.
 

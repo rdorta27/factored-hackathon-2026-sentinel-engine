@@ -42,8 +42,8 @@ The official documents (problem statement, kickoff, dataset summary, and diction
 | REQ-0012 | Robust interactions in Spanish and Portuguese | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Scope · Kickoff p. 10 | PT demo + metrics by language | Pending |
 | REQ-0033 | Separate conversation, risk, and eligibility policy; the LLM neither approves nor invents rules | P0 | Credit | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries | Architecture | Pending |
 | REQ-0038 | Simple frontend for using the system (e.g., chat); dashboard not required (scope decision: no dashboard) | P0 | All | AI Engineering | ai | Kickoff p. 20 | Demo | Pending |
-| REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-stale) | Demo + tools with "updated through" | Pending |
-| REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-for-a-human) | Human-case demo | Pending |
+| REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) | Demo + tools with "updated through" | Pending |
+| REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person) | Human-case demo | Pending |
 | REQ-0041 | Show amounts in the transaction's original currency; language follows the customer, currency follows the account | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#language) | PT demo | Pending |
 | REQ-0042 | Open claims with minimum effort: show candidate transactions instead of asking for amounts | P1 | Claims | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-claim) | Demo | Pending |
 | REQ-0043 | Check the charge status (Pending, Reversed) before opening a claim | P1 | Claims, accounts | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-claim) | Demo | Pending |
@@ -82,7 +82,7 @@ The official documents (problem statement, kickoff, dataset summary, and diction
 | REQ-0018 | Real incremental processing (late arrivals, duplicates, changing schema) or, if data is static, labeled fixture | P1 | All | Data Engineering | data | Problem statement: Architecture freedom | Update fixture | Pending |
 | REQ-0019 | Experiment tracking: model and prompt versions, parameters, metrics | P1 | All | Machine Learning | ml | Kickoff p. 20 | Experiment log | Pending |
 | REQ-0024 | Breakdown by language, country, and segment; separate offline, simulation, and projection | P1 | All | Data Analytics | analysis | Problem statement: Evaluation evidence | Metrics report | Pending |
-| REQ-0050 | Monitoring by country (latency, failures, escalations, complaints) | P1 | All | Data Analytics | analysis | Own: [analysis](../build/areas/analysis.md#monitoring-by-country) | Report by country | Pending |
+| REQ-0050 | Monitoring by country (latency, failures, escalations, complaints) | P1 | All | Data Analytics | analysis | Own: [analysis](../build/areas/analysis.md#country-monitoring) | Report by country | Pending |
 | REQ-0023 | If there is an LLM judge: documented rubric validated against a human sample | P2 | If applicable | Machine Learning | ml | Problem statement: Evaluation evidence | Rubric + validated sample | Pending |
 
 ## Delivery (E)
