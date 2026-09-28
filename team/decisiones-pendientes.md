@@ -4,19 +4,19 @@ Lo que hay que decidir, con opciones y material de apoyo. Sirve con o sin reuni�
 
 ## Cómo decidimos (propuesta)
 
-1. Cada uno lee el material de apoyo de cada decisión y anota su preferencia en su columna (o la escribe en el canal), antes del **lunes 28/9 a las 12:00**.
+1. Cada uno lee el material de apoyo de cada decisión y anota su preferencia en su columna (o la escribe en el canal), antes del **lunes 28/9**.
 2. Si hay acuerdo, la decisión queda tomada. Si no, se discute en el canal o en una llamada corta.
 3. Si al final del día sigue sin acuerdo: las decisiones de un área las toma su responsable; las demás, por mayoría.
 4. Al tomarse, cada decisión se registra: producto y técnicas en [decisiones](../docs/construir/decisiones/) (un archivo por decisión, con la [plantilla](../docs/construir/decisiones/_plantilla.md)); equipo en el [plan](plan.md). Después se borra de esta lista.
 
 ## Lunes 28/9
 
-Estas bloquean el esqueleto del martes.
+Estas bloquean el esqueleto del martes. Las más urgentes son **4** (sin responsables no arranca el cronograma), **10** (bloquea el trabajo de AI), **12** (el pipeline empieza hoy) y **16** (el despliegue está previsto para el jueves).
 
 | # | Decisión | Opciones o propuesta | Material de apoyo | Felix | Natalia | Rubén |
 |---|---|---|---|---|---|---|
-| 1 | Flujo | Cuentas o pagos, tarjetas, reclamos por cargos, crédito | [Opciones de flujo](../docs/construir/flujos/opciones.md), [resumen](../docs/entender/resumen.md) | | | |
-| 2 | Componente aprendido | Predictor de escalamiento, clasificador de intención, detector de fraude. Depende del flujo | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
+| 1 | Flujo | Propuesta: disputes (reclamos por cargos no reconocidos), provisional; se confirma o cambia el martes 29/9 con criterios medibles. Alternativa: tarjetas | [Decisión 003 (propuesta)](../docs/construir/decisiones/003-flujo-disputes.md), [opciones de flujo](../docs/construir/flujos/opciones.md) | | | |
+| 2 | Componente aprendido | Con disputes: clasificador de categoría del reclamo (`description` / `customer_text`) frente a palabras clave, o predictor de escalamiento (`was_escalated`) con variables de apertura. Se elige en la revisión del martes junto con la decisión 1 | [ML](../docs/construir/areas/ml.md), [métricas](../docs/construir/metricas.md) | | | |
 | 4 | Responsables por área | Quién toma dos de las 4 áreas | [Tabla del equipo](plan.md#equipo), [áreas](../docs/construir/areas/) | | | |
 | 5 | Seguimiento diario | Reunión de 15 min o mensaje en el canal; hora | | | | |
 | 6 | Herramienta de tareas | Propuesta: [tareas.md](tareas.md) en el repo | | | | |
@@ -36,7 +36,7 @@ Estas bloquean el esqueleto del martes.
 | 3 | Alcance de la demo | Qué acciones hace el asistente (consultar, bloquear, abrir reclamo…) y cuáles no | Mar 29/9 |
 | 11 | Frontend | Chat simple: Streamlit, Gradio o web propia | Mar 29/9 |
 | 13 | Servicios de Azure | Despliegue (Container Apps o App Service), secretos (Key Vault). Con la opción b de la decisión 12: ADLS, Databricks y Unity Catalog | Mar 29/9 |
-| 15 | Casos de prueba en portugués | Traducidos, sintéticos o escritos por alguien que lea portugués | Mar 29/9 |
+| 15 | Casos de prueba en portugués | Traducidos, sintéticos o escritos por alguien que lea portugués. El dataset está solo en español: definir también quién los revisa | Mar 29/9 |
 | 20 | Quién hace la presentación y el video | El guion empieza el miércoles | Mar 29/9 |
 | 14 | Tracking de experimentos | MLflow (incluido en Databricks si se elige la opción b de la decisión 12), Azure ML u otro | Mié 30/9 |
 | 19 | Idioma de `docs/` en la entrega | Dejarlos en español o traducir los principales | Jue 1/10 |
