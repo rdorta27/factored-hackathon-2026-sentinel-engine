@@ -42,6 +42,22 @@ For agents:
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).
 
+## Stack
+
+Accepted decisions that code must follow:
+
+- **Backend:** Python + FastAPI. LangGraph runs in the same process and owns
+  only the loop (Understand → Decide → Act → Verify → Escalate). Policy, the
+  authenticated session and idempotency stay in code, outside the graph; the
+  graph never sees `customer_id`. See
+  [005](docs/build/decisions/005-backend.md).
+- **Frontend:** a one-page chat (HTML and a little JavaScript) served by the
+  same FastAPI process, talking to `POST /chat`. See
+  [006](docs/build/decisions/006-frontend.md).
+- **Platform:** Azure; locally it runs on Linux. See
+  [001](docs/build/decisions/001-azure-platform.md).
+- Which model serves each route is still open (pending decision 10).
+
 ## Rules
 
 - **No secrets, no data in the repo.** The repository is delivered public.

@@ -13,9 +13,9 @@ Tentative: we adjust it if anything slips.
 | Sun | 9/27 | Prepare: data access, repository, readings | Everyone has access |
 | Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
 | Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
-| Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline. Presentation and video script | **One case works fully** |
-| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
-| Fri | 10/2 | Held-out evaluation and metrics. Presentation, video, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
+| Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline | **One case works fully** |
+| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script starts. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
+| Fri | 10/2 | Held-out evaluation and metrics. Presentation, video recording, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
 | Sat to Mon | 10/3 to 10/5 | Buffer: corrections only. Early submission | **Submitted** |
 
 We want **everything ready by Friday 10/2** and keep the weekend as buffer. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
@@ -34,6 +34,10 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [architecture](../docs/understand/architecture.md#stack) |
 | Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
+| No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
+| Backend: Python + FastAPI; LangGraph in-process for the loop only (decision 9) | Accepted | [005](../docs/build/decisions/005-backend.md) |
+| Frontend: one-page chat served by FastAPI; no Streamlit or Gradio (decision 11) | Accepted | [006](../docs/build/decisions/006-frontend.md) |
+| Video: Rubén; script starts Thursday 10/1 (decision 20, slides still open) | Accepted | [delivery](../docs/build/delivery.md) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
@@ -42,7 +46,7 @@ Product and technical decisions go in [decisions](../docs/build/decisions/), one
 | Topic | How we work |
 |---|---|
 | Communication | Everything in the team channel. Challenge questions go to the hackathon help channel |
-| Daily sync | 15 min or a channel message: what I did, what I will do, what blocks me. Format and time: decision 5 |
+| Status | No standing sync. We talk on Slack during the day. A written status, if needed, goes in the channel at the end of the day |
 | Tasks | In [tasks](tasks.md), with owner, date and status |
 | Specs | With OpenSpec: we propose each change before implementing and cite its requirements |
 | Code | Proposal: branch per task and PR reviewed by someone else; `main` always works. Decision 7 pending |
