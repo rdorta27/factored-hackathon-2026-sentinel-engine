@@ -27,6 +27,9 @@ For agents:
   kept in the original with an English explanation on first use; locale
   vocabulary lives in [`docs/understand/glossary/`](docs/understand/glossary/).
 - New English text is expected whenever it belongs to a deliverable.
+- Locales are written as BCP 47 tags: `en-US`, `es-MX`, `es-CO`, `es-AR`,
+  `pt-BR`. When something applies to Spanish across the three countries, use
+  `es-419` (Latin American Spanish). Do not write `ES`/`PT` alone.
 
 ## Layout
 

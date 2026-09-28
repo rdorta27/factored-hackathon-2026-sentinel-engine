@@ -1,10 +1,10 @@
-# Glossário — PT-BR
+# Glossário — pt-BR
 
 Brazil overlay on the [canonical English glossary](glossary.en-us.md). The local term stays intact; the explanation is in English for the submission. Most likely language of the Portuguese test cases.
 
 ## Banking terms
 
-| Concept | Brazilian term (PT-BR) | English |
+| Concept | Brazilian term (pt-BR) | English |
 |---|---|---|
 | Currency | BRL (real) | Brazilian real |
 | ID documents | CPF (*Cadastro de Pessoas Físicas*, person registry number) and RG (*carteira de identidade*, identity card) | Person registry number and identity card |
@@ -22,7 +22,7 @@ Brazil overlay on the [canonical English glossary](glossary.en-us.md). The local
 
 ## Customer support
 
-| Concept | Brazilian term (PT-BR) | English |
+| Concept | Brazilian term (pt-BR) | English |
 |---|---|---|
 | Call-center advisor | Atendente | Advisor |
 | Support center | Central de atendimento, SAC (*Serviço de Atendimento ao Consumidor*) | Support center, consumer support service |

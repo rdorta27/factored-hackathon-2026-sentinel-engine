@@ -1,10 +1,10 @@
-# Glosario — ES-MX
+# Glosario — es-MX
 
 Overlay de México sobre el [glosario canónico en inglés](glossary.en-us.md). El término local se conserva intacto; la explicación va en inglés para la entrega.
 
 ## Banking terms
 
-| Concept | Mexican term (ES-MX) | English |
+| Concept | Mexican term (es-MX) | English |
 |---|---|---|
 | Currency | MXN (peso mexicano), + USD | Mexican peso and US dollar |
 | ID document | CURP (*Clave Única de Registro de Población*) | Population registry code |
@@ -22,7 +22,7 @@ Overlay de México sobre el [glosario canónico en inglés](glossary.en-us.md). 
 
 ## Customer support
 
-| Concept | Mexican term (ES-MX) | English |
+| Concept | Mexican term (es-MX) | English |
 |---|---|---|
 | Call-center advisor | Asesor, agente, ejecutivo | Advisor |
 | Support center | Call center, centro de contacto | Contact center |

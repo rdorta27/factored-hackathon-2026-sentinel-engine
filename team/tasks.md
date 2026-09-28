@@ -13,7 +13,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Mon 9/28 | Decisions recorded; first data measurements | [See](#mon-928) |
 | Tue 9/29 | Flow confirmed; the skeleton answers end to end | [See](#tue-929) |
 | Wed 9/30 | One case works fully | [See](#wed-930) |
-| Thu 10/1 | 3 cases in ES and PT, public link | [See](#thu-101) |
+| Thu 10/1 | 3 cases in es-419 and pt-BR, public link | [See](#thu-101) |
 | Fri 10/2 | Ready to submit | [See](#fri-102) |
 | Sat 10/3 to Mon 10/5 | Submitted | [See](#sat-103-to-mon-105) |
 

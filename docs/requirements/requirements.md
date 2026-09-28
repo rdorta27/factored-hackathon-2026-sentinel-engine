@@ -33,7 +33,7 @@ A requirement with no official source is marked **Own**: a team design decision,
 
 | Priority | Count | What it includes |
 |---|---|---|
-| P0 | 36 | The 3 demo cases, ES and PT, verification, permissions in code, handoff, learned component vs baseline, pipeline with contracts, failure tests, deliverables, delivery language |
+| P0 | 36 | The 3 demo cases, es-419 and pt-BR, verification, permissions in code, handoff, learned component vs baseline, pipeline with contracts, failure tests, deliverables, delivery language |
 | P1 | 11 | Tracking, real incremental processing, observability, retries, breakdown by language and country, fine-grained conversation rules |
 | P2 | 4 | Country as configuration, app-error context, handoff routing, LLM judge |
 
@@ -50,7 +50,7 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0009 | Demo: normal case resolved per policies | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
 | REQ-0010 | Demo: ambiguous or unsupported case (clarifies or abstains) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
 | REQ-0011 | Demo: case requiring a human (escalates with handoff) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
-| REQ-0012 | Robust interactions in Spanish and Portuguese | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Scope · Kickoff p. 10 | PT demo + metrics by language | Pending |
+| REQ-0012 | Robust interactions in Spanish and Portuguese | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Scope · Kickoff p. 10 | pt-BR demo + metrics by language | Pending |
 | REQ-0033 | Separate conversation, risk, and eligibility policy; the LLM neither approves nor invents rules | P0 | Credit | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries | Architecture | Pending |
 | REQ-0038 | Simple frontend for using the system (e.g., chat); dashboard not required (scope decision: no dashboard) | P0 | All | AI Engineering | ai | Kickoff p. 20 | Demo | Pending |
 | REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) | Demo + tools with "updated through" | Pending |

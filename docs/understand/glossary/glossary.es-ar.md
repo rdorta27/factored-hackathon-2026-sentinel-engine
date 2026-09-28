@@ -1,10 +1,10 @@
-# Glosario — ES-AR
+# Glosario — es-AR
 
 Overlay de Argentina sobre el [glosario canónico en inglés](glossary.en-us.md). El término local se conserva intacto; la explicación va en inglés para la entrega.
 
 ## Banking terms
 
-| Concept | Argentine term (ES-AR) | English |
+| Concept | Argentine term (es-AR) | English |
 |---|---|---|
 | Currency | ARS (peso argentino), + USD | Argentine peso and US dollar |
 | ID document | DNI (*Documento Nacional de Identidad*) | National ID |
@@ -22,7 +22,7 @@ Overlay de Argentina sobre el [glosario canónico en inglés](glossary.en-us.md)
 
 ## Customer support
 
-| Concept | Argentine term (ES-AR) | English |
+| Concept | Argentine term (es-AR) | English |
 |---|---|---|
 | Call-center advisor | Asesor, agente | Advisor |
 | Support center | Call center, centro de contacto | Contact center |

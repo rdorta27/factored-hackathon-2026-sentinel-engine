@@ -12,7 +12,7 @@ Everything, working material included, is written in **English from the first dr
 | GitHub repo title and description | English | Done | Rubén | Kept in English |
 | Presentation (4 to 6 slides) | Born in English | Pending | | Fri 10/2 |
 | Video script | Born in English | Pending | | Fri 10/2 |
-| Demos: ES and PT cases | Spanish and Portuguese | — | — | What the system says |
+| Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
 | `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
 
 We update it at each review, not at the end. Statuses: Pending, In progress, Done.
@@ -38,8 +38,8 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 Mandatory and short. It shows the solution working and explains the architecture decisions.
 
 1. The problem, in one sentence and with one data point.
-2. Demo of the **normal case** (ES).
-3. Demo of the **ambiguous case** (PT).
+2. Demo of the **normal case** (es-419).
+3. Demo of the **ambiguous case** (pt-BR).
 4. Demo of the **human case**, showing the JSON handoff.
 5. A prompt injection attempt that fails.
 6. Key architecture decisions (from [decisions](decisions/)).

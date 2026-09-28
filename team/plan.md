@@ -14,7 +14,7 @@ Tentative: we adjust it if anything slips.
 | Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
 | Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
 | Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline. Presentation and video script | **One case works fully** |
-| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. P1 if time allows | **3 cases in ES and PT, public link** |
+| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
 | Fri | 10/2 | Held-out evaluation and metrics. Presentation, video, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
 | Sat to Mon | 10/3 to 10/5 | Buffer: corrections only. Early submission | **Submitted** |
 
