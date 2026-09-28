@@ -16,10 +16,11 @@ Personal data must never reach the LLM or the browser (REQ-0047, no identifiers 
 
 ## Decision
 
-We propose option 1 (two-plane masking). Static masking lands in the Silver layer; dynamic masking (Regex + NER, e.g. Microsoft Presidio or SpaCy) intercepts live prompts, replaces PII with session tokens, and re-hydrates tokens only inside parameterized tool calls. Final confirmation pending implementation capacity.
+We propose option 1 (two-plane masking). Static masking lands in the Silver layer; dynamic masking (Regex + NER, e.g. Microsoft Presidio or SpaCy) intercepts live prompts, replaces PII with session tokens, and re-hydrates tokens only inside parameterized tool calls. **A re-hydrated value is never a lookup key:** every tool reads by the session's `customer_id`, and a token can only be compared against that customer's own data (e.g. the last four digits of their card). Looking up by an identifier typed in the chat would let anyone read another customer's data. Final confirmation pending implementation capacity.
 
 ## Consequences
 
 - What we gain: defense in depth across batch and real-time; the LLM only ever sees anonymized prompts; analysts and batch ML never see raw credentials.
 - What we sacrifice: we must build and secure the session vault, define its retention, and keep the re-hydration path out of logs.
+- Credit score and income are not hashed in Silver: ML and analysis need them as features. Pending: how we restrict access to them.
 - Pending: tooling choice (Presidio vs Regex/SpaCy), vault retention policy, adversarial coverage of the masking path (with [ML](../areas/ml.md), REQ-0021), and the storage decision it partially depends on (decision 12).

@@ -1,4 +1,4 @@
-# The challenge in one page
+# The Challenge
 
 **Purpose:** understand the hackathon without reading the PDFs. **Related:** [architecture](architecture.md), [dataset](dataset.md), [requirements](../requirements/requirements.md), [glossary](glossary/).
 
@@ -8,7 +8,7 @@
 
 A **customer-support assistant for a bank** operating in Mexico, Colombia, and Argentina. Not a chatbot: a **system** that understands the customer, queries verified data, executes safe actions, verifies that they happened, and hands the case to a person when appropriate.
 
-- **A single flow**, chosen on Mon 9/28: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count.
+- **A single flow**, one of: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count. Ours is transaction disputes ([decision 003](../build/decisions/003-disputes-flow.md)).
 - It must work in **Spanish and Portuguese**. The data is only in Spanish.
 - **End-to-end working first**; then we optimize.
 

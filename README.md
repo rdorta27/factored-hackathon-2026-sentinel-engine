@@ -2,42 +2,44 @@
 
 Felix, Natalia and Rubén · Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5** (time to be confirmed)
 
-Our starting point. Almost everything here is a proposal and gets adjusted as we go.
+A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Work in progress: decisions are recorded as they are made, and open ones are marked as such.
 
 ## What we are building
 
-A **customer service assistant for a bank** operating in Mexico, Colombia and Argentina. The idea is not just another chatbot: it should understand the customer, answer with verified data, perform safe actions, confirm that they happened, and hand the case over to a person when needed. It has to work in **Spanish and Portuguese**.
+An assistant, not just a chatbot. It understands the customer, answers only with verified data, opens a dispute when the customer does not recognize a charge, confirms that the dispute exists, and hands the case to a person when needed. It works in **Spanish and Portuguese**.
+
+The guiding principle: **AI understands; code executes and verifies.**
 
 ## Start here (about 15 minutes)
 
-1. **[The challenge in one page](docs/understand/overview.md):** what has to be built, how we are judged and what we submit.
-2. **[Architecture](docs/understand/architecture.md):** layers, decision priority and the guiding principle (AI understands; code executes and verifies), with diagrams.
-3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** PII lifecycle, 4-layer design, repository layout, timeline and costs, with pending decisions marked.
-4. **[Team plan](team/plan.md):** tentative schedule and how we propose to work.
+1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
+2. **[Architecture](docs/understand/architecture.md):** layers, components and mocks, decision priority and a case walkthrough, with diagrams.
+3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** Natalia's proposal reconciled with the repository: personal-data lifecycle, four-layer design, repository layout, timeline and costs.
+4. **[Team plan](team/plan.md):** schedule, decisions made, working method and mocks.
 
-The [documentation index](docs/README.md) helps you find the rest of the topics.
+The [documentation index](docs/README.md) covers everything else.
 
 ## Repository map
 
 | Path | What it holds |
 |---|---|
-| [`docs/understand/`](docs/understand/) | The challenge, the system and the data: [overview](docs/understand/overview.md), [architecture](docs/understand/architecture.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
-| [`docs/requirements/`](docs/requirements/requirements.md) | Requirements with priority, owner, evidence and status |
-| [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) and the [roadmap](docs/build/architecture-roadmap.md) |
+| [`docs/understand/`](docs/understand/) | The challenge, the system and the data: [The Challenge](docs/understand/overview.md), [architecture](docs/understand/architecture.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
+| [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
+| [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md), [roadmap](docs/build/architecture-roadmap.md) |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 
 ## Team workflow
 
-Planning lives in [`team/`](team/), separate from the project documentation:
+Planning lives in [`team/`](team/), apart from the project documentation:
 
-- **[Pending decisions](team/pending-decisions.md):** on Monday 28/9 we decide the flow, the owners per area, the working method and the stack. Everyone records their preference there.
+- **[Pending decisions](team/pending-decisions.md):** what is still open and when it must be settled. Each teammate records a preference there.
 - **[Tasks](team/tasks.md):** who does what, and by when.
-- **[Plan](team/plan.md):** team, schedule, mock strategy, working method and decisions taken.
+- **[Plan](team/plan.md):** schedule, decisions made, working method and mocks.
 
-## Hackathon rules that already apply
+## Rules that already apply
 
-- **No secrets and no data in the repository.** The repository is delivered public; credentials go in `.env` (excluded by `.gitignore`) and are shared by direct message.
-- **Submission in English.** Everything in this repository is written in English, including working documents; the system itself answers in Spanish and Portuguese.
+- **No secrets and no data in the repository.** The repository is public; credentials go in `.env` (excluded by `.gitignore`) and are shared by direct message.
+- **Everything in English.** Code and documents are written in English; the assistant itself answers in Spanish and Portuguese.
 
 ## For agents
 

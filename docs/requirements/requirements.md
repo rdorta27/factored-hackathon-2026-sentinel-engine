@@ -1,22 +1,33 @@
 # Requirements
 
-What the system must satisfy. Each requirement has an ID `REQ-####` that we use in the rest of the documentation. This table is also the traceability matrix: each requirement with its evaluation criterion, area, evidence, and status.
+What the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`) that the rest of the documentation cites, and this table doubles as the traceability matrix: every requirement is tied to the official document it comes from, the evaluation criterion it serves, the area that owns it, the evidence that will prove it, and its status.
 
-**Purpose:** prioritize the work and see which criterion still lacks evidence. **Related:** [challenge summary](../understand/overview.md), [glossary](../understand/glossary/).
+**Purpose:** prioritize the work and spot evaluation criteria that still lack evidence. **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
+
+## Hackathon material
+
+Requirements come from four official documents. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+
+| Document | Cited as | What it defines | Requirements that cite it |
+|---|---|---|---|
+| Problem statement (*Factored AI & Data Hackathon 2026*) | Problem statement: *section* | Scope, what the solution must demonstrate, data and execution boundaries, submission | 32 |
+| Kickoff deck (*Datathon 2026 kickoff*) | Kickoff p. *N* | Evaluation criteria, workflows, multilingual support, headline metrics | 30 |
+| Dataset summary (*LATAM Bank*) | Dataset summary | Tables, volumes and the intentional quality problems (duplicates, nulls, late arrivals, schema changes) | — |
+| Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | — |
+
+A requirement with no official source is marked **Own**: a team design decision, linked to where it is explained (13 requirements). The dataset documents shape the data requirements through [dataset](../understand/dataset.md), but no row cites them directly yet; adding those citations is pending.
 
 ## Classification
 
 | Column | Values |
 |---|---|
 | **Type** | **F** = functional (what it does) · **NF** = non-functional (how: security, reliability, operations) · **DML** = data and ML · **E** = delivery |
-| **Priority** | **P0** = mandatory, ready by Fri 10/2 · **P1** = scores points, starting Thu 10/1 if P0 is on track · **P2** = if time remains. Code freezes Fri 10/2 at night |
-| **Flow** | "All", or the flow it depends on (proposal: transaction disputes, see [decision 003](../build/decisions/003-disputes-flow.md)) |
+| **Priority** | **P0** = mandatory, ready by Fri 10/2 · **P1** = scores points, from Thu 10/1 if P0 is on track · **P2** = only if time remains. Code freezes on Fri 10/2 at night |
+| **Flow** | "All", or the flow it depends on (transaction disputes, see [decision 003](../build/decisions/003-disputes-flow.md)) |
 | **Criterion** | Kickoff evaluation criterion: Rationale, AI Engineering, Data Engineering, Data Analytics, Machine Learning |
-| **Area** | Areas working on the requirement; the first one owns it and the others collaborate: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
-| **Status** | Pending, In progress, Done. We update it when closing each task |
-| **Source** | Official document and section (problem statement) or page (kickoff), or **Own** = team design decision, with a link to where it is explained |
-
-The official documents (problem statement, kickoff, dataset summary, and dictionary) are not in the repository: we cite them by section or page.
+| **Area** | Areas that work on it; the first one owns it and the rest collaborate: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
+| **Status** | Pending, In progress, Done. Updated when the task that covers it closes |
+| **Source** | Official document and section or page (see [hackathon material](#hackathon-material)), or **Own** |
 
 ## Summary by priority
 
@@ -104,5 +115,5 @@ The official documents (problem statement, kickoff, dataset summary, and diction
 
 ## Open questions
 
-- Which flow do we choose? (Mon 9/28). This confirms or discards the flow-dependent requirements.
+- Does the Tuesday 9/29 review confirm transaction disputes? That settles the flow-dependent requirements.
 - How do we build the reference labels for evaluation (which cases require a human)?

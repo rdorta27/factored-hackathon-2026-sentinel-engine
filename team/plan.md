@@ -30,6 +30,7 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
+| Disputes store: SQLite locally, Postgres on Azure, separate from Gold | Accepted | [architecture](../docs/understand/architecture.md#two-layers) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [architecture](../docs/understand/architecture.md#stack) |
 | Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
@@ -47,7 +48,7 @@ Product and technical decisions go in [decisions](../docs/build/decisions/), one
 | Code | Proposal: branch per task and PR reviewed by someone else; `main` always works. Decision 7 pending |
 | Decisions | Product and technical ones in [decisions](../docs/build/decisions/); team ones here. We announce all of them in the channel |
 | Progress | When a task closes, we update its status in the [requirements](../docs/requirements/requirements.md) |
-| Repository | Single repo (`factored-hackathon-2026-sentinel-engine`), private while we work and public at the end |
+| Repository | Single repo (`factored-hackathon-2026-sentinel-engine`), public from the start and it stays public |
 
 Two hackathon rules are non-negotiable: no secrets or data in the repo (credentials go in `.env` and are shared by direct message), and the submission is in English.
 
@@ -57,7 +58,7 @@ We start with well-documented mocks and swap them for the real thing one by one,
 
 - **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with fixed contracts: look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff (see [components and mocks](../docs/understand/architecture.md#components-and-mocks)). Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
 - **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
-  - Wed 9/30, normal case: reads move to the chosen storage (decision 12; proposal: DuckDB), with declared freshness. The action asks for explicit confirmation.
+  - Wed 9/30, normal case: reads move to the chosen storage (decision 12: DuckDB or Databricks), with declared freshness. The action asks for explicit confirmation.
   - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries and pipeline with partitions, watermark and deduplication.
   - Whatever we do not reach stays a mock and we report it under limitations.
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
