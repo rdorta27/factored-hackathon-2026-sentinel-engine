@@ -1,6 +1,6 @@
 # Data Analytics
 
-**Criterio de evaluación:** calidad de datos e insights relevantes de la solución. **Responsable:** por definir.
+**Criterio de evaluación:** calidad de datos e insights relevantes de la solución. **Responsable:** Natalia.
 
 **Requerimientos:** los de área `analisis` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
 
