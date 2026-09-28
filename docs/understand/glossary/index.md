@@ -11,9 +11,11 @@ Two vocabularies:
 
 The "Official" column shows the hackathon material term, so it can be located in the PDFs.
 
+**Locales:** `en-US` (canonical), `es-MX`, `es-CO`, `es-AR` and `pt-BR`. Anything shared by the three Spanish locales is tagged `es-419` (Latin American Spanish).
+
 ## Contents
 
-[Shared terms (en-US)](glossary.en-us.md) · [ES-MX](glossary.es-mx.md) · [ES-CO](glossary.es-co.md) · [ES-AR](glossary.es-ar.md) · [PT-BR](glossary.pt-br.md)
+[Shared terms (en-US)](glossary.en-us.md) · [es-MX](glossary.es-mx.md) · [es-CO](glossary.es-co.md) · [es-AR](glossary.es-ar.md) · [pt-BR](glossary.pt-br.md)
 
 | Lookup | File |
 |---|---|

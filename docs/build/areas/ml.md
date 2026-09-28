@@ -51,7 +51,7 @@ Discarded as a learned component: customer segmentation (no valid labels to comp
   3. **By features:** each feature is computed using only information prior to the case date and time (e.g., "did they escalate before?" counts only prior escalations).
 - A random split "sees the future" and inflates the metric (e.g., 94% random vs. 81% by time). It is the same model: what changes is the measurement. We report the time-based split, alongside the baseline on the same split. More data does not fix a bad split.
 - **Held-out:** we measure it only once at the end; we improve the system with the development set.
-- **Multilingual:** the component must work in PT with no PT training data (see [languages](../conversation.md#languages)).
+- **Multilingual:** the component must work in pt-BR with no pt-BR training data (see [languages](../conversation.md#languages)).
 - **LLM judge:** documented rubric validated against a human sample.
 
 ## Evidence for evaluation

@@ -1,10 +1,10 @@
-# Glosario — ES-CO
+# Glosario — es-CO
 
 Overlay de Colombia sobre el [glosario canónico en inglés](glossary.en-us.md). El término local se conserva intacto; la explicación va en inglés para la entrega.
 
 ## Banking terms
 
-| Concept | Colombian term (ES-CO) | English |
+| Concept | Colombian term (es-CO) | English |
 |---|---|---|
 | Currency | COP (peso colombiano), + USD | Colombian peso and US dollar |
 | ID documents | CC (*cédula de ciudadanía*), CE (*cédula de extranjería*) | Citizenship and foreigner ID cards |
@@ -22,7 +22,7 @@ Overlay de Colombia sobre el [glosario canónico en inglés](glossary.en-us.md).
 
 ## Customer support
 
-| Concept | Colombian term (ES-CO) | English |
+| Concept | Colombian term (es-CO) | English |
 |---|---|---|
 | Call-center advisor | Asesor, agente | Advisor |
 | Support center | Call center, centro de contacto | Contact center |

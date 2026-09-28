@@ -56,7 +56,7 @@ REQ-0045 (recent app errors, only as auxiliary context: app diagnosis is not a f
 
 ## Language
 
-REQ-0044 (neutral Spanish) and REQ-0041 (original currency). The account's country does not say where the customer is from (e.g., a Venezuelan in Colombia).
+REQ-0044 (neutral Spanish (es-419)) and REQ-0041 (original currency). The account's country does not say where the customer is from (e.g., a Venezuelan in Colombia).
 
 - Neutral, clear Spanish, with no single-country slang.
 - Explain acronyms and local terms on first use (e.g., "SPEI, Mexico's instant-transfer system").
@@ -78,10 +78,10 @@ REQ-0044 (neutral Spanish) and REQ-0041 (original currency). The account's count
 
 ### Strategy
 
-- We prefer **multilingual** components (LLM, multilingual embeddings) over models trained only on ES.
+- We prefer **multilingual** components (LLM, multilingual embeddings) over models trained only on Spanish.
 - Deterministic logic does **not depend on language**: no Spanish-only keywords.
-- We create our own PT test cases (translated or synthetic), **labeled as such** and **held back**: we do not use them to tune the system.
-- We put PT in the adversarial set (injection, multilingual ambiguity).
+- We create our own pt-BR test cases (translated or synthetic), **labeled as such** and **held back**: we do not use them to tune the system.
+- We put pt-BR in the adversarial set (injection, multilingual ambiguity).
 
 ### Language, country, and currency are independent
 
@@ -102,9 +102,9 @@ The dataset includes accent-detection fields (Mexican, Colombian, Argentine and,
 ### Reporting
 
 - Metrics by language, with n.
-- If PT performs worse, we explain the cause (e.g., no PT training data); we do not hide it.
+- If pt-BR performs worse, we explain the cause (e.g., no pt-BR training data); we do not hide it.
 
 ### Open questions
 
-- How do we generate and validate the PT cases? Does anyone on the team read Portuguese?
-- How many PT cases do we need for the comparison to be meaningful?
+- How do we generate and validate the pt-BR cases? Does anyone on the team read Portuguese?
+- How many pt-BR cases do we need for the comparison to be meaningful?

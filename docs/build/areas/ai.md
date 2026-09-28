@@ -44,7 +44,7 @@ With `service_agents` we pick an active advisor who speaks the customer's langua
 
 ## Evidence for evaluation
 
-- [ ] Demo of the 3 cases (normal, ambiguous, human) in ES and PT
+- [ ] Demo of the 3 cases (normal, ambiguous, human) in es-419 and pt-BR
 - [ ] Working deployed link
 - [ ] Auditable execution logs
 - [ ] Reproducible installation instructions

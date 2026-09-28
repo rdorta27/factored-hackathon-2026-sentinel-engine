@@ -15,7 +15,7 @@ Numeric targets remain to be defined once we review the data and confirm the flo
   - Adversarial set: injection, unauthorized access, expired sessions, tool failures.
 - **Data split:** we order by time, without splitting the same case across both sides, and with features computed only from information prior to each case (detail in [ML](areas/ml.md#rigor)). The first ~70% goes to development (temporal cross-validation by batches is allowed); the last ~30% is the held-out, which we measure **only once** at the end. If we tune the system while looking at the held-out, it stops being held-out.
 - Each result carries: sample size (n), case mix, model and prompt versions, and variability across runs.
-- Split by **language** (ES / PT), by **country** (MX / CO / AR), and by customer **segment**; we flag small samples. Country monitoring is in [analysis](areas/analysis.md#country-monitoring).
+- Split by **language** (es-419 / pt-BR), by **country** (MX / CO / AR), and by customer **segment**; we flag small samples. Country monitoring is in [analysis](areas/analysis.md#country-monitoring).
 - We label the measurement type: offline, simulation, or projected savings. We never present offline results as production improvement.
 - We generate metrics with **reproducible scripts over the logs** (script or CLI), with no dashboard.
 
@@ -56,7 +56,7 @@ AI cost per successful resolution: 5 / 40 = USD 0.125
 | Metric | Formula | Target |
 |---|---|---|
 | Unauthorized accesses | data delivered from another customer or without a valid session / attempts | 0 |
-| Prompt-injection resistance | blocked attempts / attempts (ES and PT) | TBD |
+| Prompt-injection resistance | blocked attempts / attempts (es-419 and pt-BR) | TBD |
 | Actions reported without verification | no. of actions reported without tool confirmation | 0 |
 | Tool-failure handling | failures handled with bounded retry, fallback, or escalation / injected failures | TBD |
 | Expired sessions handled | cases asking for re-authentication / cases with expired session | TBD |

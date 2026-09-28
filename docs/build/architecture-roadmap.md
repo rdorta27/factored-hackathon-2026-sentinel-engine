@@ -134,7 +134,7 @@ gantt
     Decisions recorded                     :milestone, m1, 2026-09-28, 0d
     Skeleton answers end to end            :milestone, m2, 2026-09-29, 0d
     One case works fully                   :milestone, m3, 2026-09-30, 0d
-    3 cases in ES and PT, public link      :milestone, m4, 2026-10-01, 0d
+    3 cases in es-419 and pt-BR, public link      :milestone, m4, 2026-10-01, 0d
     P0 ready, code freeze                  :milestone, m5, 2026-10-02, 0d
     Submission                             :milestone, m6, 2026-10-05, 0d
     section Data (Natalia)
@@ -147,7 +147,7 @@ gantt
     section AI, architecture, ML (Rubén)
     Measurements for the flow review       :2026-09-28, 1d
     Orchestrator, mocks, baseline, PII     :2026-09-29, 1d
-    Normal ES case, ML vs baseline         :2026-09-30, 1d
+    Normal es-419 case, ML vs baseline         :2026-09-30, 1d
     Ambiguous, human, pt-BR, adversarial   :2026-10-01, 1d
     Held-out evaluation and metrics        :2026-10-02, 1d
     section Full-stack (Felix)
@@ -186,7 +186,7 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 
 | # | Claim | Repo status |
 |---|---|---|
-| 1 | Focus: transaction-dispute intake ES/PT | Working hypothesis, provisional until Tue 9/29 review ([003](decisions/003-disputes-flow.md)) |
+| 1 | Focus: transaction-dispute intake es-419/pt-BR | Working hypothesis, provisional until Tue 9/29 review ([003](decisions/003-disputes-flow.md)) |
 | 2 | Guiding principle | Accepted, canonical in [architecture](../understand/architecture.md#central-principle) |
 | 3 | Domain owners Natalia / Rubén / Felix | Accepted ([plan](../../team/plan.md)) |
 | 4 | Static masking in Silver | Proposed by Natalia (9/28), recorded in [security](security.md#data), not implemented |
