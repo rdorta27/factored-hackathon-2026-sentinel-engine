@@ -6,7 +6,7 @@
 
 **Relacionados:** [arquitectura](../../entender/arquitectura.md), [conversación](../conversacion.md) (qué dice el asistente), [seguridad](../seguridad.md).
 
-## Qué construye esta área
+## Alcance
 
 - **Orquestador:** el ciclo entender, decidir, actuar, verificar y escalar, con el orden de decisión política > predictor > LLM.
 - **Herramientas** (mock) con contratos documentados, filtradas por el cliente de la sesión, que devuelven el dato y su fecha de actualización.
@@ -40,7 +40,7 @@
 
 ### Enrutamiento (simulado)
 
-Con `service_agents`: elegir un asesor activo que hable el idioma del cliente y tenga la especialidad del flujo. Ver [dataset](../../entender/dataset.md#diccionario-dimensiones-de-apoyo).
+Con `service_agents` elegimos un asesor activo que hable el idioma del cliente y tenga la especialidad del flujo. Ver [dataset](../../entender/dataset.md#diccionario-dimensiones-de-apoyo).
 
 ## Evidencia para la evaluación
 

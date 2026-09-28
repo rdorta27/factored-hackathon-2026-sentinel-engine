@@ -61,7 +61,7 @@ REQ-0044 (español neutro) y REQ-0041 (moneda original). El país de la cuenta n
 
 ## Idiomas
 
-### Qué pide el reto
+### Requisitos del reto
 
 - Interacciones **robustas** en español y portugués. El kickoff lo marca como obligatorio.
 - Reportar las limitaciones de datos y de cobertura de idiomas.
@@ -73,10 +73,10 @@ REQ-0044 (español neutro) y REQ-0041 (moneda original). El país de la cuenta n
 
 ### Estrategia
 
-- Preferir componentes **multilingües** (LLM, embeddings multilingües) sobre modelos entrenados solo en ES.
+- Preferimos componentes **multilingües** (LLM, embeddings multilingües) a modelos entrenados solo en ES.
 - La lógica determinista **no depende del idioma**: nada de palabras clave solo en español.
-- Crear casos de prueba propios en PT (traducidos o sintéticos), **etiquetados como tales** y **reservados**: no se usan para ajustar el sistema.
-- Incluir PT en el set adversarial (injection, ambigüedad multilingüe).
+- Creamos casos de prueba propios en PT (traducidos o sintéticos), **etiquetados como tales** y **reservados**: no los usamos para ajustar el sistema.
+- Metemos PT en el set adversarial (injection, ambigüedad multilingüe).
 
 ### Idioma, país y moneda son independientes
 
@@ -84,7 +84,7 @@ Un cliente puede escribir en portugués y tener su cuenta en MX, CO o AR.
 
 - El **idioma de la respuesta** sigue al cliente.
 - La **moneda** sigue a la cuenta o transacción (MXN, COP, ARS o USD), nunca se convierte al idioma.
-- Las métricas se desglosan por idioma **y** por país, por separado.
+- Las métricas las separamos por idioma **y** por país.
 
 ### Portugués de Brasil
 
@@ -94,10 +94,10 @@ Lo más probable es que las pruebas en portugués sean de Brasil (pt-BR). El cli
 
 El dataset incluye campos de detección de acento (mexicano, colombiano, argentino y, en `customers`, neutral). Sirven como segmentos para medir equidad dentro del español.
 
-### Cómo se reporta
+### Reporte
 
-- Métricas desglosadas por idioma, con n.
-- Si PT rinde peor: explicar la causa (ej.: sin datos de entrenamiento en PT), no ocultarlo.
+- Métricas por idioma, con n.
+- Si PT rinde peor, explicamos la causa (ej.: sin datos de entrenamiento en PT); no lo escondemos.
 
 ### Preguntas abiertas
 

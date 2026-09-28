@@ -15,7 +15,7 @@ La columna "Oficial" muestra el término del material del hackathon, para ubicar
 
 ## Siglas y términos del negocio
 
-El público del hackathon es técnico (software, datos). Estos términos de contact center y banca se explican siempre.
+El público del hackathon es técnico (software, datos). Estos términos de contact center y banca los explicamos siempre.
 
 | Término | En inglés | Qué significa |
 |---|---|---|
@@ -99,7 +99,7 @@ Las siglas de métricas (CSAT, NPS, CES, FCR) son iguales en todos los países.
 | Construcción | Funcional | Oficial | Definición |
 |---|---|---|---|
 | Elección del flujo | — | Task selection | Qué trabajo de atención realizará el asistente; el proyecto (el asistente) ya está fijado |
-| Flujo de reclamos | Reclamo por cargo no reconocido / contracargo | Transaction disputes | El cliente no reconoce un cargo y pide revertirlo |
+| Flujo de disputas de transacciones | Reclamo por cargo no reconocido / contracargo | Transaction disputes / transaction-dispute intake | El cliente no reconoce un cargo y pide revertirlo |
 | — | Queja | Complaint | Insatisfacción con el servicio; en el dataset, parte de PQR |
 | — | PQR | Complaints (PQR) | Peticiones, quejas y reclamos |
 | Flujo de tarjetas | Servicios de tarjeta | Card support | Bloqueo, reposición, consultas de tarjeta |

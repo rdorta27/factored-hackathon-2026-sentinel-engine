@@ -26,7 +26,7 @@ Fuentes: *resumen del dataset*, *diccionario de datos*.
 | Llegadas tardías | Sí | Procesamiento **incremental** y política de frescura. El planteamiento pide un fixture etiquetado solo si los datos son estáticos |
 | Evolución de esquema | Sí | Contratos versionados |
 
-Son una prueba de ingeniería de datos: se manejan, se documentan y se miden; no se borran en silencio.
+Son una prueba de ingeniería de datos: los manejamos, los documentamos y los medimos; no los borramos en silencio.
 
 ## Tablas
 
@@ -46,7 +46,7 @@ Son una prueba de ingeniería de datos: se manejan, se documentan y se miden; no
 | Hechos | campaign_sends | 2.000.000 | Envíos de campañas |
 | Referencia | daily_exchange_rates | 3.000 | Tipos de cambio diarios |
 
-Enfoque: explorar primero las tablas ligadas al flujo elegido y muestrear las grandes; procesar a escala solo lo que el sistema necesita.
+Primero exploramos las tablas ligadas al flujo y muestreamos las grandes; a escala procesamos solo lo que el sistema necesita.
 
 ## Diccionario: clientes y productos
 
@@ -122,6 +122,6 @@ Enfoque: explorar primero las tablas ligadas al flujo elegido y muestrear las gr
 ## Cuidados generales
 
 - Montos siempre con su moneda. Al cliente se le muestra la **moneda original** de la transacción (casi siempre la local; puede ser USD). El monto en USD es para análisis entre países.
-- **Registros huérfanos** (ej.: transacción de un cliente inexistente): incluidos a propósito. Se detectan con el contrato, van a cuarentena, se cuentan y nunca se devuelven como datos de un cliente.
-- Aunque los datos sean sintéticos, se aplican igual los controles de acceso y privacidad, y se declaran como sintéticos en el inventario.
+- **Registros huérfanos** (ej.: transacción de un cliente inexistente): vienen a propósito. Los detectamos con el contrato, los mandamos a cuarentena, los contamos y nunca los devolvemos como datos de un cliente.
+- Aunque los datos sean sintéticos, aplicamos igual los controles de acceso y privacidad, y los declaramos como sintéticos en el inventario.
 - Pendiente de confirmar cuando lleguen los datos: si hay varias fotos mensuales y cómo se calculó `is_repeat_complainer`.

@@ -2,22 +2,22 @@
 
 Catálogo de métricas del sistema.
 
-**Para qué sirve:** qué se mide y cómo se reporta. **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
+**Para qué sirve:** qué medimos y cómo lo reportamos. **Relacionados:** [ML](areas/ml.md), [análisis](areas/analisis.md).
 
 Los objetivos numéricos quedan por definir cuando elijamos el flujo y revisemos los datos.
 
 ## Reglas para todas las métricas
 
 - **Métricas principales** (destacadas en el kickoff): resolución automatizada segura, resultados inseguros y eficiencia de costo. El resto son de apoyo.
-- Línea base y sistema propuesto se miden sobre el **mismo set held-out**.
-- **Dos sets de evaluación**, reportados por separado:
+- Medimos el baseline y el sistema sobre el **mismo set held-out**.
+- **Dos sets de evaluación**, que reportamos por separado:
   - Held-out realista: la mezcla real de casos. Da las métricas globales.
   - Set adversarial: injection, acceso no autorizado, sesiones expiradas, fallas de herramientas.
-- **División de los datos:** ordenar por tiempo, sin partir un mismo caso entre los dos lados, y con variables calculadas solo con información anterior a cada caso (detalle en [ML](areas/ml.md#rigor)). Los primeros ~70 % van a desarrollo (se permite validación cruzada temporal por batches); los últimos ~30 % son el held-out, que se mide **una sola vez** al final. Ajustar el sistema mirando el held-out lo convierte en set de desarrollo.
-- Cada resultado se reporta con: tamaño de muestra (n), mezcla de casos, versiones de modelos y prompts, y variabilidad entre ejecuciones.
-- Desglose por **idioma** (ES / PT), por **país** (MX / CO / AR) y por **segmento** de cliente; señalar muestras pequeñas. El monitoreo por país está detallado en [análisis](areas/analisis.md#monitoreo-por-país).
-- Etiquetar el tipo de medición: offline, simulación o ahorro proyectado. Nunca presentar lo offline como mejora en producción.
-- Las métricas se generan con **scripts reproducibles sobre los logs** (script o CLI), sin dashboard.
+- **División de los datos:** ordenamos por tiempo, sin partir un mismo caso entre los dos lados, y con variables calculadas solo con información anterior a cada caso (detalle en [ML](areas/ml.md#rigor)). El primer ~70 % va a desarrollo (vale validación cruzada temporal por batches); el último ~30 % es el held-out, que medimos **una sola vez** al final. Si ajustamos el sistema mirando el held-out, deja de ser held-out.
+- Cada resultado lleva: tamaño de muestra (n), mezcla de casos, versiones de modelos y prompts, y variabilidad entre ejecuciones.
+- Desglose por **idioma** (ES / PT), por **país** (MX / CO / AR) y por **segmento** de cliente; marcamos las muestras pequeñas. El monitoreo por país está en [análisis](areas/analisis.md#monitoreo-por-país).
+- Etiquetamos el tipo de medición: offline, simulación o ahorro proyectado. Nunca presentamos lo offline como mejora en producción.
+- Generamos las métricas con **scripts reproducibles sobre los logs** (script o CLI), sin dashboard.
 
 ## 1. Resultado
 
@@ -47,9 +47,9 @@ Solo humanos: 100 × 2     = USD 200  → USD 2,00 por caso
 Costo IA por resolución exitosa: 5 / 40 = USD 0,125
 ```
 
-- Trabajar en totales; no sumar costos unitarios con totales.
+- Trabajamos en totales; no mezclamos costos unitarios con totales.
 - El ahorro depende sobre todo de la tasa de resolución segura, no del costo de la IA.
-- Reportar siempre junto a la tasa de resultados inseguros.
+- Siempre lo reportamos junto a la tasa de resultados inseguros.
 
 ## 2. Seguridad y confiabilidad
 
@@ -72,9 +72,9 @@ Costo IA por resolución exitosa: 5 / 40 = USD 0,125
 
 ## 4. Componente aprendido
 
-Al menos uno, siempre contra una línea base y sobre held-out. Depende de la arquitectura (ver [ML](areas/ml.md)).
+Al menos uno, siempre contra un baseline y sobre held-out. Con el flujo de disputas de transacciones, los candidatos están en la [decisión 003](decisiones/003-flujo-disputas.md); el detalle, en [ML](areas/ml.md).
 
-| Componente posible | Métrica | Línea base posible |
+| Componente posible | Métrica | Baseline posible |
 |---|---|---|
 | Clasificador de intención o motivo | accuracy, F1 por clase | Palabras clave o clase mayoritaria |
 | Predictor de escalamiento | AUC, transferencias omitidas e innecesarias al umbral elegido | Reglas simples por motivo |

@@ -1,10 +1,10 @@
 # Entrega
 
-Lunes 5/10 (hora por confirmar). Se trabaja en español y se entrega en **inglés**. Lista completa de entregables en el [resumen](../entender/resumen.md#entregables-lunes-510-hora-por-confirmar).
+Lunes 5/10 (hora por confirmar). Trabajamos en español y entregamos en **inglés**. La lista completa de entregables está en el [resumen](../entender/resumen.md#entregables-lunes-510-hora-por-confirmar).
 
 ## Idioma
 
-Lo que se entrega se escribe en **inglés desde el primer borrador**; lo que se trabaja se escribe en **español**. No hay una pasada de traducción al final: el README, la presentación y el guion del video se redactan en inglés mientras se crean. `docs/` y `team/` se quedan en español. Registrado como [REQ-0051](../requerimientos/requerimientos.md).
+Lo que entregamos lo escribimos en **inglés desde el primer borrador**; lo de trabajo, en **español**. No hay pasada de traducción al final: el README, la presentación y el guion del video los redactamos en inglés desde que los empezamos. `docs/` y `team/` se quedan en español. Registrado como [REQ-0051](../requerimientos/requerimientos.md).
 
 | Pieza | Idioma | Estado | Quién revisa | Se congela |
 |---|---|---|---|---|
@@ -15,7 +15,7 @@ Lo que se entrega se escribe en **inglés desde el primer borrador**; lo que se 
 | Demos: casos ES y PT | Español y portugués | — | — | Es lo que dice el sistema |
 | `docs/` y `team/` | Español | — | — | No se traducen |
 
-Se actualiza en cada revisión, no al final. Estados: Pendiente, En curso, Listo.
+La actualizamos en cada revisión, no al final. Estados: Pendiente, En curso, Listo.
 
 ## Presentación
 
@@ -26,12 +26,12 @@ Se actualiza en cada revisión, no al final. Estados: Pendiente, En curso, Listo
 | 1 | Problema y flujo elegido, respaldado por datos | [análisis](areas/analisis.md), [decisiones](decisiones/) |
 | 2 | Arquitectura (principio central y capas) | [arquitectura](../entender/arquitectura.md), [decisiones](decisiones/) |
 | 3 | Seguridad y control: permisos, handoff, cuándo NO actuar | [seguridad](seguridad.md), [conversación](conversacion.md) |
-| 4 | Resultados: línea base vs sistema (métricas principales, por idioma) | [métricas](metricas.md) |
+| 4 | Resultados: baseline vs sistema (métricas principales, por idioma) | [métricas](metricas.md) |
 | 5 | Limitaciones y ruta a producción | [requerimientos](../requerimientos/requerimientos.md) (REQ-0030, lo que falta) |
 
-- Mostrar las 3 métricas principales: resolución segura, resultados inseguros, costo.
+- Mostramos las 3 métricas principales: resolución segura, resultados inseguros, costo.
 - Cada cifra con n y tipo de medición (offline, simulación, proyección).
-- Incluir las fallas y las limitaciones; ocultarlas resta.
+- Incluimos las fallas y las limitaciones; esconderlas resta.
 
 ## Video pitch
 
