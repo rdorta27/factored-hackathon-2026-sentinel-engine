@@ -28,7 +28,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
 | First look at the data: table inventory vs the dictionary | Unassigned | Pending |
-| Measure claim volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Unassigned | Pending |
+| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Unassigned | Pending |
 | Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Unassigned | Pending |
 | Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Unassigned | Pending |
 | Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |

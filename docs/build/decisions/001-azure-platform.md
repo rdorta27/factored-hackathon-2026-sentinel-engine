@@ -21,7 +21,7 @@ Azure.
 ## Consequences
 
 - Services to define (proposal, pending confirmation):
-  - **LLM:** Azure OpenAI (Azure AI Foundry). Verify that it neither retains data nor uses it for training.
+  - **LLM:** Azure OpenAI (Azure AI Foundry). Verify that it neither retains data nor uses it for training. *Updated 9/28:* the team accepted a hybrid LLM with a router across models ([plan](../../../team/plan.md#decisions-made)); which model serves each route, and whether Azure OpenAI is one of them, is pending (decision 10, Tue 9/29).
   - **Deployment:** Azure Container Apps or App Service.
   - **Secrets:** Azure Key Vault or the service's environment variables; never in the repository.
   - **Data:** wherever the hackathon data lands (Azure storage or local).

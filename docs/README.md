@@ -10,7 +10,7 @@ The official hackathon material (problem statement, kickoff, dataset summary, an
 
 If you are new, read in this order (about 20 minutes):
 
-1. [The challenge in one page](understand/overview.md)
+1. [The Challenge](understand/overview.md)
 2. [Team plan](../team/plan.md): schedule and ways of working
 3. [Architecture](understand/architecture.md)
 4. [Requirements](requirements/requirements.md): only the summary table and the P0s

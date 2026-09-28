@@ -1,16 +1,16 @@
 # Architecture and roadmap
 
-Sentinel Engine — architecture, PII lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Everything stated here as decided is backed by a linked decision or requirement; proposals still pending carry a callout with their decision number.
+Architecture, personal-data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number.
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
 > Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
 > Submission: Monday, October 5 (time to be confirmed)
 > Internal goal: everything ready Friday, October 2; the weekend is buffer
-> Team: Natalia Restrepo (data), Rubén Dorta (AI, architecture, ML), Felix Uchubanda (full-stack)
+> Team: Natalia Restrepo (data and data analysis), Rubén Dorta (AI, architecture, ML), Felix Uchubanda (full-stack)
 
 ## Executive summary
 
-Sentinel Engine is an enterprise-grade AI banking assistant for processing transaction disputes across Latin America (Mexico, Colombia and Argentina).
+Sentinel Engine is an AI banking assistant that takes in transaction disputes in Mexico, Colombia and Argentina.
 
 **Guiding principle: AI understands; code executes and verifies.** The LLM handles comprehension, intent extraction and multilingual dialogue. Financial decisions, identity authorization, dispute eligibility thresholds and dispute creation are enforced by deterministic code and backend APIs. Same principle as [architecture](../understand/architecture.md#central-principle), which stays the canonical reference for layers and walkthroughs.
 
@@ -23,7 +23,7 @@ PII management spans data engineering, AI/agent engineering and full-stack, acro
 ```mermaid
 flowchart LR
     raw["S3 raw data"] --> bronze["Bronze layer"]
-    bronze --> silver["Silver layer:<br/>static PII redaction & hashing<br/>· hash customer DNIs / credit scores<br/>· mask card numbers (**** **** **** 1234)<br/>· schema contracts & compliance audit"]
+    bronze --> silver["Silver layer:<br/>static PII redaction & hashing<br/>· hash customer DNIs<br/>· restrict access to credit scores (kept as ML features)<br/>· mask card numbers (**** **** **** 1234)<br/>· schema contracts & compliance audit"]
     silver --> gold["Gold layer"]
 ```
 
@@ -40,12 +40,12 @@ flowchart TD
     llm -- "anonymized prompt only<br/>(zero PII leakage)" --> llm
     llm -- "tool intent + token parameters" --> tools["Layer 3: deterministic tool calling<br/>& re-hydration"]
     vault -- "re-hydrate token" --> tools
-    tools -- "parameterized SQL<br/>(no raw PII in prompts or logs)" --> db[("Gold store")]
+    tools -- "parameterized SQL by session customer_id<br/>(no raw PII in prompts or logs)" --> db[("Gold store")]
     tools --> ui["Client UI: renders secure response"]
 ```
 
 > [!NOTE]
-> Proposal without implementation yet — no code, tooling undecided (Presidio vs Regex/SpaCy), retention policy pending. Tracked in [decision 004](decisions/004-pii-lifecycle.md).
+> Proposal without implementation yet — no code, tooling undecided (Presidio vs Regex/SpaCy), retention policy pending. Re-hydrated values are only compared against the session customer's data, never used as lookup keys. Tracked in [decision 004](decisions/004-pii-lifecycle.md).
 
 | Domain | Responsibility | Owner | Tools |
 |---|---|---|---|
@@ -65,7 +65,7 @@ flowchart TD
 ```
 
 > [!NOTE]
-> Layer 2 models are undecided (decision 10, due Tue 9/29). Layer 4 storage backend is an open question for Natalia (decision 12: local DuckDB vs Databricks options). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
+> Layer 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for Natalia (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
 
 ## Repository layout
 
@@ -81,34 +81,50 @@ flowchart TD
 
 ## Action plan (deadline Monday 10/5, time TBD)
 
+Per-person view of the [plan schedule](../../team/plan.md#schedule): same dates and milestones, split by owner. If they ever differ, the plan wins.
+
 ```mermaid
 gantt
     title Sentinel Engine — action plan
-    dateFormat MM-DD
+    dateFormat YYYY-MM-DD
     axisFormat %m/%d
     section Milestones
-    Architecture freeze & scope commitment :milestone, m1, 09-28, 0d
-    Skeleton answers end to end            :milestone, m2, 09-29, 0d
-    Live public URL & P0 complete          :milestone, m3, 10-01, 0d
-    Code freeze                            :milestone, m4, 10-02, 0d
-    Submission                             :milestone, m5, 10-05, 0d
+    Decisions recorded                     :milestone, m1, 2026-09-28, 0d
+    Skeleton answers end to end            :milestone, m2, 2026-09-29, 0d
+    One case works fully                   :milestone, m3, 2026-09-30, 0d
+    3 cases in ES and PT, public link      :milestone, m4, 2026-10-01, 0d
+    P0 ready, code freeze                  :milestone, m5, 2026-10-02, 0d
+    Submission                             :milestone, m6, 2026-10-05, 0d
     section Data (Natalia)
-    Medallion pipeline                     :09-29, 3d
-    section AI (Rubén)
-    Dynamic PII + ES dispute flow          :09-29, 2d
-    Edge cases + pt-BR + handoff           :10-01, 2d
+    Ingestion and profiling                :2026-09-28, 1d
+    Analysis backing the flow              :2026-09-28, 2d
+    Bronze and Silver, PII at rest         :2026-09-29, 1d
+    Gold with cutoff date                  :2026-09-30, 1d
+    Incremental pipeline                   :2026-10-01, 1d
+    Data quality and limitations           :2026-10-02, 1d
+    section AI, architecture, ML (Rubén)
+    Measurements for the flow review       :2026-09-28, 1d
+    Orchestrator, mocks, baseline, PII     :2026-09-29, 1d
+    Normal ES case, ML vs baseline         :2026-09-30, 1d
+    Ambiguous, human, pt-BR, adversarial   :2026-10-01, 1d
+    Held-out evaluation and metrics        :2026-10-02, 1d
     section Full-stack (Felix)
-    FastAPI endpoints                      :09-29, 2d
-    Azure deploy                           :10-01, 2d
+    FastAPI, chat and session skeleton     :2026-09-29, 1d
+    Confirmation and handoff in the UI     :2026-09-30, 1d
+    Azure deployment                       :2026-10-01, 1d
+    README                                 :2026-10-02, 1d
     section Team
-    Held-out evaluation + slides + video   :10-01, 2d
+    Deck and video script                  :2026-09-30, 2d
+    Deck and video                         :2026-10-02, 1d
+    Buffer, fixes only                     :2026-10-03, 3d
 ```
 
 Notes:
 
-- Video and slides start **no earlier than Oct 1** (likely Oct 2); the weekend of Oct 3–5 is buffer for corrections only, with early submission.
-- Portuguese test cases: source and reviewer still to define, owner TBD (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
-- Submission time and channel are unconfirmed (asked in the hackathon help channel); until confirmed, assume Monday 10/5 EOD.
+- The script starts on Wednesday 9/30; deck and video are finished on Friday 10/2, once the held-out results exist. Who makes them is decision 20.
+- The weekend is buffer for corrections only, with early submission.
+- Portuguese test cases: source and reviewer still to define (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
+- Submission time and channel are unconfirmed (asked in the hackathon help channel); until confirmed, assume Monday 10/5, end of day.
 
 ## Cost matrix (MVP budget)
 
@@ -141,3 +157,4 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |
 | 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Proposals under pending decisions 1, 11, 13 |
 | 13 | JSON handoff dossier | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |
+| 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, script from Wed 9/30, held-out on Fri 10/2, weekend as buffer. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |

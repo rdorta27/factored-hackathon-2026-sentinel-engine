@@ -35,7 +35,7 @@
 
 ## Data
 
-- **Personal data at rest:** in the Silver layer we mask or hash it (documents, card numbers, credit score), so analysis and ML never work with the original values. Proposed by Natalia (9/28).
+- **Personal data at rest:** in the Silver layer we mask or hash identifiers (documents, card numbers), so analysis and ML never work with the original values. Proposed by Natalia (9/28). `credit_score` and income are not hashed, because ML and analysis use them as features; we restrict who and what can read them instead. Pending: define that access restriction (decision 004).
 - Only approved data; label the origin of each input.
 - Nothing restricted (private records, credentials) in requests to external LLMs or in unmasked logs.
 - **Retention:** explicit policy on what is stored, for how long, and with what masking; it balances audit and privacy.

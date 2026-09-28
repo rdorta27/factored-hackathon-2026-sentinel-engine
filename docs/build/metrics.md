@@ -4,7 +4,7 @@ System metrics catalog.
 
 **Purpose:** what we measure and how we report it. **Related:** [ML](areas/ml.md), [analysis](areas/analysis.md).
 
-Numeric targets remain to be defined once we choose the flow and review the data.
+Numeric targets remain to be defined once we review the data and confirm the flow on Tuesday 9/29.
 
 ## Rules for all metrics
 
