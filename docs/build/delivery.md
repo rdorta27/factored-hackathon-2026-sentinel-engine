@@ -1,6 +1,6 @@
 # Delivery
 
-Monday 10/5 (time TBD). We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables-monday-105-time-tbd).
+Monday 10/5 (time TBD). We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables-mon-105-time-to-be-confirmed).
 
 ## Language
 

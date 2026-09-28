@@ -35,7 +35,7 @@ Streaming is not mandatory: it is only worthwhile if the flow needs seconds-leve
 
 - LATAM numeric formats (e.g., "1.200,50"): the contract defines the expected format instead of guessing it.
 - Currency mandatory and validated on every amount.
-- Null is not orphan: the contract distinguishes them (see [dataset](../../understand/dataset.md#table-relationships)).
+- Null is not orphan: the contract distinguishes them (see [dataset](../../understand/dataset.md#relationships-between-tables)).
 - Date partitions: we read only new partitions plus the reprocessing window.
 - Each tool read returns the data and its "updated through" mark.
 

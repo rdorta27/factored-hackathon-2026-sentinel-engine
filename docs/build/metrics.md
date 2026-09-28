@@ -89,7 +89,7 @@ AUC measures **ranking** (0.5 = chance), not calibration or the threshold; the p
 | Metric | Formula |
 |---|---|
 | Data quality | % of records passing the contracts (types, nulls, ranges) |
-| Freshness | time from when the fact occurs until the system sees it (see [glossary](../understand/glossary/#data)) |
+| Freshness | time from when the fact occurs until the system sees it (see [glossary](../understand/glossary/glossary.en-us.md#data)) |
 | Update test | the update fixture passes (yes / no) |
 
 ## Open questions

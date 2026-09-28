@@ -6,7 +6,7 @@ How the assistant behaves with the customer, organized by situation, and how it 
 
 ## Principles
 
-- **AI understands; code executes and verifies** (see [architecture](../understand/architecture.md#core-principle)).
+- **AI understands; code executes and verifies** (see [architecture](../understand/architecture.md#central-principle)).
 - **Autonomy by risk:** actions with consequences (blocking, opening a claim — PQR, petición, queja o reclamo, the Colombian formal complaint/request mechanism) ask for confirmation (REQ-0006, autonomy rules).
 - **Only verified facts;** if the data does not exist, say so and offer an alternative. Never answer with the model's own knowledge (REQ-0003, verified records).
 - **Separate what is verified from what the customer states.**
