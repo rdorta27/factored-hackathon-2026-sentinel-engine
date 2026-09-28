@@ -7,7 +7,7 @@ How the assistant behaves with the customer, organized by situation, and how it 
 ## Principles
 
 - **AI understands; code executes and verifies** (see [architecture](../understand/architecture.md#central-principle)).
-- **Autonomy by risk:** actions with consequences (blocking, opening a claim — PQR, petición, queja o reclamo, the Colombian formal complaint/request mechanism) ask for confirmation (REQ-0006, autonomy rules).
+- **Autonomy by risk:** actions with consequences (blocking, opening a dispute) ask for confirmation (REQ-0006, autonomy rules).
 - **Only verified facts;** if the data does not exist, say so and offer an alternative. Never answer with the model's own knowledge (REQ-0003, verified records).
 - **Separate what is verified from what the customer states.**
 - **Only report actions confirmed** by the tool; timeout is not success (REQ-0005, verified actions).
@@ -17,18 +17,18 @@ How the assistant behaves with the customer, organized by situation, and how it 
 REQ-0039 (declare freshness). If the customer mentions something more recent than the data, do not claim it is visible:
 
 > "Mis registros están actualizados hasta hoy a las 00:00 y todavía no veo ese cobro. Puedo abrir el reclamo ahora como pendiente de verificación; se confirmará en la próxima actualización. ¿Lo abro?"
-> ("My records are updated as of today at 00:00 and I still don't see that charge. I can open the claim now as pending verification; it will be confirmed in the next update. Shall I open it?")
+> ("My records are updated as of today at 00:00 and I still don't see that charge. I can open the dispute now as pending verification; it will be confirmed in the next update. Shall I open it?")
 
 ## When information is missing
 
 REQ-0002 (clarify or abstain). Ask only what is essential. When possible, **show verified options** instead of asking the customer to type data.
 
-## When opening a claim
+## When opening a dispute
 
 REQ-0042 (minimum effort) and REQ-0043 (check the charge status).
 
 1. Search the session customer's candidate transactions.
-2. Check the status: **Pending** may be a pre-authorization that clears on its own (offer to wait or file the claim); **Reversed** means it was already refunded.
+2. Check the status: **Pending** may be a pre-authorization that clears on its own (offer to wait or file the dispute); **Reversed** means it was already refunded.
 3. Show the candidates and let the customer choose:
    > "Veo estas compras repetidas en los últimos 7 días:
    > 1. Supermercado Éxito, 85.000 COP, 25/09, tarjeta de débito •••4521
@@ -39,7 +39,7 @@ REQ-0042 (minimum effort) and REQ-0043 (check the charge status).
    > 2. Rappi, 32,500 COP, 09/24, credit card •••7788
    > Which one do you want to dispute?")
 4. Two identical charges can be legitimate: show the facts without concluding there was an error.
-5. If it does not appear, ask for the minimum and open the claim as **pending verification**.
+5. If it does not appear, ask for the minimum and open the dispute as **pending verification**.
 6. Ask for confirmation before opening it; report the case number only when the tool confirms it.
 
 ## When the customer asks to speak to a person

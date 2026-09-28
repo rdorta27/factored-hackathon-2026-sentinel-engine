@@ -22,7 +22,7 @@ Sources: *brief* (Scope: account or payment inquiries, card-service support, tra
 
 ## 1. Account or payment inquiries (account / payment inquiries)
 
-**Problem:** call-center transactional volume: balances, movements, declined, pending, or reversed payments. The assistant authenticates the customer, checks balances and movements, explains the status with real data, and opens a claim only if the customer does not recognize a charge.
+**Problem:** call-center transactional volume: balances, movements, declined, pending, or reversed payments. The assistant authenticates the customer, checks balances and movements, explains the status with real data, and opens a dispute only if the customer does not recognize a charge.
 
 - **Data:** `products` (balances, status), `transactions` (status Approved/Declined/Pending/Reversed, merchant_category, channel), `call_center_interactions` (reason_category = Transactional).
 - **Learned component:** intent classifier (TF-IDF + logistic regression as baseline vs. multilingual embeddings) trained on `contact_reason` and transcripts. The split is by time, without splitting a case, and with features using only prior information (see [ML](../areas/ml.md#rigor)).
@@ -33,14 +33,14 @@ Sources: *brief* (Scope: account or payment inquiries, card-service support, tra
 
 ## 2. Transaction disputes (transaction-dispute intake)
 
-**Problem:** the customer does not recognize a charge and asks to reverse it. Turning free-form conversation into a well-structured claim (category, linked transaction, evidence) and routing it to the right queue. Today, miscategorized claims are reopened or escalated to the regulator.
+**Problem:** the customer does not recognize a charge and asks to reverse it. Turning free-form conversation into a well-structured dispute (category, linked transaction, evidence) and routing it to the right queue. Today, miscategorized disputes are reopened or escalated to the regulator.
 
 - **Data:** `complaints` (case_type = Claim, category, subcategory, reception_channel including *Regulator*, status Escalated/Rejected), `transactions`, `satisfaction_surveys`.
 - **Learned component:** category and subcategory classifier, plus an escalation-risk model (probability that the case ends in *Escalated* or arrives via the regulator). The baseline is keyword rules.
-- **Deterministic controls:** legal deadlines and mandatory fields per country as rules. The system does **not** resolve the claim: it only opens, classifies, and routes it.
+- **Deterministic controls:** legal deadlines and mandatory fields per country as rules. The system does **not** resolve the dispute: it only opens, classifies, and routes it.
 - **Handoff:** the package for the advisor (summary, verified facts, evidence, and open questions) is precisely the main deliverable.
 - **Why it fits the timeline:** no money moves, so risk is low and the metric is clear (routing accuracy and completeness).
-- **Expansion:** each country's claim taxonomies and regulatory deadlines (SLA, service-level agreement) (Condusef and CNBV in MX, SFC in CO, BCRA in AR; Banco Central do Brasil if expanded) are mapped per country.
+- **Expansion:** each country's dispute taxonomies and regulatory deadlines (SLA, service-level agreement) (Condusef and CNBV in MX, SFC in CO, BCRA in AR; Banco Central do Brasil if expanded) are mapped per country.
 
 ## 3. Card support (card-service support)
 

@@ -78,7 +78,7 @@ At least one, always against a baseline and on held-out. With the transaction-di
 |---|---|---|
 | Intent or reason classifier | accuracy, F1 per class | Keywords or majority class |
 | Escalation predictor | AUC, missed and unnecessary transfers at the chosen threshold | Simple reason-based rules |
-| Fraud detection (cards or claims) | AUC, precision and recall at one threshold | Bank's existing `fraud_score` |
+| Fraud detection (cards or disputes) | AUC, precision and recall at one threshold | Bank's existing `fraud_score` |
 | Policy retrieval (RAG) | recall@k, MRR | BM25 |
 | Risk model (if the flow is credit) | AUC, calibration | Logistic regression or fixed rule |
 

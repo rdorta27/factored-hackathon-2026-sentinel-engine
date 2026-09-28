@@ -54,7 +54,7 @@ Two hackathon rules are non-negotiable: no secrets or data in the repo (credenti
 
 We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Works for any flow.
 
-- **Tue 9/29, skeleton:** 2-3 in-memory mock tools with fixed contracts: 1-2 read tools (e.g. customer data or their transactions), 1 action tool (open a claim or block a card) and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
+- **Tue 9/29, skeleton:** 2-3 in-memory mock tools with fixed contracts: 1-2 read tools (e.g. customer data or their transactions), 1 action tool (open a dispute or block a card) and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
 - **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
   - Wed 9/30, normal case: reads move to the chosen storage (decision 12; proposal: DuckDB), with declared freshness. The action asks for explicit confirmation.
   - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries, idempotent action and pipeline with partitions, watermark and deduplication.

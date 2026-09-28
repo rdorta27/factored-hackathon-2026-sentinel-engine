@@ -29,9 +29,9 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
 | First look at the data: table inventory vs the dictionary | Unassigned | Pending |
 | Measure claim volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Unassigned | Pending |
-| Measure what % of claims has a valid `origin_interaction_id` and what % of those interactions has a transcript | Unassigned | Pending |
+| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Unassigned | Pending |
 | Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Unassigned | Pending |
-| Keyword baseline for claim category, with a time-based split | Unassigned | Pending |
+| Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
 | List `complaints` opening vs outcome fields to avoid data leakage | Unassigned | Pending |
 
 ## Tue 9/29
@@ -52,7 +52,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Task | Owner | Status |
 |---|---|---|
 | Normal case end to end with real data | Unassigned | Pending |
-| Action verification: the claim exists after creation | Unassigned | Pending |
+| Action verification: the dispute exists after creation | Unassigned | Pending |
 | Handoff integrated into the flow | Unassigned | Pending |
 | Learned component vs baseline | Unassigned | Pending |
 | First evaluation cases | Unassigned | Pending |
@@ -99,6 +99,7 @@ Need information, not a decision. Ordered by date.
 | Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
 | Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | Pending |
 | How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Pending |
+| Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
 | How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Pending |
 | Cost assumptions (LLM price, agent cost) | Analysis area | Thu 10/1 | Pending |
 
