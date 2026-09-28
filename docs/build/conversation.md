@@ -1,105 +1,110 @@
-# Conversación
+# Conversation
 
-Cómo se comporta el asistente con el cliente, organizado por situación, y cómo maneja el español y el portugués. Es la base de la demo y del video.
+How the assistant behaves with the customer, organized by situation, and how it handles Spanish and Portuguese. It is the basis of the demo and the video.
 
-**Para qué sirve:** decidir qué dice y qué hace el asistente en cada situación. **Relacionados:** [arquitectura](../entender/arquitectura.md), [seguridad](seguridad.md), [requerimientos](../requerimientos/requerimientos.md).
+**Purpose:** decide what the assistant says and does in each situation. **Related:** [architecture](../understand/architecture.md), [security](security.md), [requirements](../requirements/requirements.md).
 
-## Principios
+## Principles
 
-- **La IA entiende; el código ejecuta y verifica** (ver [arquitectura](../entender/arquitectura.md#principio-central)).
-- **Autonomía según el riesgo:** las acciones con consecuencias (bloquear, abrir un reclamo) piden confirmación (REQ-0006, reglas de autonomía).
-- **Solo hechos verificados;** si el dato no existe, decirlo y ofrecer una alternativa. Nunca responder con el conocimiento propio del modelo (REQ-0003, registros verificados).
-- **Separar lo verificado de lo que declara el cliente.**
-- **Solo reportar acciones confirmadas** por la herramienta; timeout no es éxito (REQ-0005, acciones verificadas).
+- **AI understands; code executes and verifies** (see [architecture](../understand/architecture.md#core-principle)).
+- **Autonomy by risk:** actions with consequences (blocking, opening a claim — PQR, petición, queja o reclamo, the Colombian formal complaint/request mechanism) ask for confirmation (REQ-0006, autonomy rules).
+- **Only verified facts;** if the data does not exist, say so and offer an alternative. Never answer with the model's own knowledge (REQ-0003, verified records).
+- **Separate what is verified from what the customer states.**
+- **Only report actions confirmed** by the tool; timeout is not success (REQ-0005, verified actions).
 
-## Cuando los datos no están al día
+## When data is not up to date
 
-REQ-0039 (declarar frescura). Si el cliente menciona algo más reciente que los datos, no afirmar que se ve:
+REQ-0039 (declare freshness). If the customer mentions something more recent than the data, do not claim it is visible:
 
 > "Mis registros están actualizados hasta hoy a las 00:00 y todavía no veo ese cobro. Puedo abrir el reclamo ahora como pendiente de verificación; se confirmará en la próxima actualización. ¿Lo abro?"
+> ("My records are updated as of today at 00:00 and I still don't see that charge. I can open the claim now as pending verification; it will be confirmed in the next update. Shall I open it?")
 
-## Cuando falta información
+## When information is missing
 
-REQ-0002 (aclarar o abstenerse). Preguntar solo lo imprescindible. Si se puede, **mostrar opciones** verificadas en vez de pedir que el cliente escriba datos.
+REQ-0002 (clarify or abstain). Ask only what is essential. When possible, **show verified options** instead of asking the customer to type data.
 
-## Al abrir un reclamo
+## When opening a claim
 
-REQ-0042 (mínimo esfuerzo) y REQ-0043 (revisar el estado del cargo).
+REQ-0042 (minimum effort) and REQ-0043 (check the charge status).
 
-1. Buscar las transacciones candidatas del cliente de la sesión.
-2. Revisar el estado: **Pending** puede ser una preautorización que se libera sola (ofrecer esperar o reclamar); **Reversed** significa que ya se devolvió.
-3. Mostrar las candidatas y que el cliente elija:
+1. Search the session customer's candidate transactions.
+2. Check the status: **Pending** may be a pre-authorization that clears on its own (offer to wait or file the claim); **Reversed** means it was already refunded.
+3. Show the candidates and let the customer choose:
    > "Veo estas compras repetidas en los últimos 7 días:
    > 1. Supermercado Éxito, 85.000 COP, 25/09, tarjeta de débito •••4521
    > 2. Rappi, 32.500 COP, 24/09, tarjeta de crédito •••7788
    > ¿Cuál quieres reclamar?"
-4. Dos cargos iguales pueden ser legítimos: mostrar los hechos sin concluir que hubo un error.
-5. Si no aparece, pedir lo mínimo y abrir el reclamo como **pendiente de verificación**.
-6. Pedir confirmación antes de abrirlo; informar el número de caso solo cuando la herramienta lo confirme.
+   > ("I see these repeated purchases in the last 7 days:
+   > 1. Éxito supermarket, 85,000 COP, 09/25, debit card •••4521
+   > 2. Rappi, 32,500 COP, 09/24, credit card •••7788
+   > Which one do you want to dispute?")
+4. Two identical charges can be legitimate: show the facts without concluding there was an error.
+5. If it does not appear, ask for the minimum and open the claim as **pending verification**.
+6. Ask for confirmation before opening it; report the case number only when the tool confirms it.
 
-## Cuando el cliente pide hablar con una persona
+## When the customer asks to speak to a person
 
-REQ-0040 (pedido de asesor). Lo decide la política en código, no el predictor ni el LLM.
+REQ-0040 (agent request). The policy in code decides, not the predictor or the LLM.
 
-- Una sola oferta: "Puedo ayudarte con esto ahora mismo. ¿Prefieres intentarlo conmigo o que te comunique con un asesor?"
-- Si repite o elige asesor: escalar de inmediato, sin insistir.
-- Registrar cada pedido: muchos pedidos en un mismo paso señalan un problema del flujo.
+- A single offer: "Puedo ayudarte con esto ahora mismo. ¿Prefieres intentarlo conmigo o que te comunique con un asesor?" ("I can help you with this right now. Would you prefer to try it with me or that I connect you with an agent?")
+- If they repeat or choose the agent: escalate immediately, without insisting.
+- Log each request: many requests at the same step signal a flow problem.
 
-## Contexto de la app
+## App context
 
-REQ-0045 (errores recientes de la app, solo como contexto auxiliar: el diagnóstico de app no es un flujo del planteamiento). Si hay un error reciente (ej.: transferencia fallida), ofrecerlo como pregunta: "¿Tu consulta tiene que ver con la transferencia que falló ayer?". Nunca afirmarlo ni sorprender al cliente.
+REQ-0045 (recent app errors, only as auxiliary context: app diagnosis is not a flow in the challenge statement). If there is a recent error (e.g., a failed transfer — SPEI, the Mexican instant-transfer system — or Pix, the Brazilian instant-payment system), offer it as a question: "¿Tu consulta tiene que ver con la transferencia que falló ayer?" ("Is your question about the transfer that failed yesterday?"). Never assert it or surprise the customer.
 
-## Lenguaje
+## Language
 
-REQ-0044 (español neutro) y REQ-0041 (moneda original). El país de la cuenta no dice de dónde es el cliente (ej.: un venezolano en Colombia).
+REQ-0044 (neutral Spanish) and REQ-0041 (original currency). The account's country does not say where the customer is from (e.g., a Venezuelan in Colombia).
 
-- Español neutro y claro, sin modismos de un solo país.
-- Explicar las siglas y los términos locales la primera vez (ej.: "SPEI, el sistema de transferencias inmediatas de México").
-- Entender términos de otros países ("pago móvil", "Pix") y responder con lo que sí existe en su banco.
-- El idioma de la respuesta sigue al cliente; la moneda sigue a la cuenta (ver [idiomas](#idioma-país-y-moneda-son-independientes)).
-- Equivalencias por país en el [glosario](../entender/glosario.md).
+- Neutral, clear Spanish, with no single-country slang.
+- Explain acronyms and local terms on first use (e.g., "SPEI, Mexico's instant-transfer system").
+- Understand other countries' terms ("pago móvil", the Venezuelan mobile-payment system; "Pix", the Brazilian instant-payment system) and respond with what does exist at their bank.
+- The response language follows the customer; the currency follows the account (see [languages](#language-country-and-currency-are-independent)).
+- Per-country equivalences in the [glossary](../understand/glossary/).
 
-## Idiomas
+## Languages
 
-### Requisitos del reto
+### Challenge requirements
 
-- Interacciones **robustas** en español y portugués. El kickoff lo marca como obligatorio.
-- Reportar las limitaciones de datos y de cobertura de idiomas.
-- No se exige paridad exacta, pero sí medir por idioma e investigar las diferencias.
+- **Robust** interactions in Spanish and Portuguese. The kickoff marks this as mandatory.
+- Report data and language-coverage limitations.
+- Exact parity is not required, but metrics must be split by language and differences investigated.
 
-### Riesgo principal
+### Main risk
 
-**No nos dan datos en portugués para construir** (el dataset confirma: todo el texto está en español, con acentos de México, Colombia y Argentina; ningún país lusófono), pero los evaluadores probablemente sí prueben en PT, como un set de prueba oculto.
+**We are given no Portuguese data to build with** (the dataset confirms it: all text is in Spanish, with Mexican, Colombian, and Argentine variants; no Lusophone country), but evaluators will likely still test in PT, like a hidden test set.
 
-### Estrategia
+### Strategy
 
-- Preferimos componentes **multilingües** (LLM, embeddings multilingües) a modelos entrenados solo en ES.
-- La lógica determinista **no depende del idioma**: nada de palabras clave solo en español.
-- Creamos casos de prueba propios en PT (traducidos o sintéticos), **etiquetados como tales** y **reservados**: no los usamos para ajustar el sistema.
-- Metemos PT en el set adversarial (injection, ambigüedad multilingüe).
+- We prefer **multilingual** components (LLM, multilingual embeddings) over models trained only on ES.
+- Deterministic logic does **not depend on language**: no Spanish-only keywords.
+- We create our own PT test cases (translated or synthetic), **labeled as such** and **held back**: we do not use them to tune the system.
+- We put PT in the adversarial set (injection, multilingual ambiguity).
 
-### Idioma, país y moneda son independientes
+### Language, country, and currency are independent
 
-Un cliente puede escribir en portugués y tener su cuenta en MX, CO o AR.
+A customer may write in Portuguese and hold their account in MX, CO, or AR.
 
-- El **idioma de la respuesta** sigue al cliente.
-- La **moneda** sigue a la cuenta o transacción (MXN, COP, ARS o USD), nunca se convierte al idioma.
-- Las métricas las separamos por idioma **y** por país.
+- The **response language** follows the customer.
+- The **currency** follows the account or transaction (MXN, COP, ARS, or USD); it is never converted to match the language.
+- We split metrics by language **and** by country.
 
-### Portugués de Brasil
+### Brazilian Portuguese
 
-Lo más probable es que las pruebas en portugués sean de Brasil (pt-BR). El cliente puede usar términos propios del sistema brasileño (Pix, extrato, estorno, atendente, CPF) aunque su cuenta sea de MX, CO o AR. El asistente debe entenderlos, pero responder con los datos reales de la cuenta (por ejemplo, no hay Pix en el dataset). Equivalencias en el [glosario](../entender/glosario.md#equivalencias-por-país).
+Portuguese tests are most likely to be from Brazil (pt-BR). The customer may use terms from the Brazilian system (Pix, extrato — statement; estorno — refund/chargeback; atendente — agent; CPF, Cadastro de Pessoas Físicas, the Brazilian individual taxpayer ID) even if their account is in MX, CO, or AR. The assistant must understand them but respond with the account's real data (for example, there is no Pix in the dataset). Equivalences in the [glossary](../understand/glossary/glossary.pt-br.md).
 
-### Variantes del español
+### Spanish variants
 
-El dataset incluye campos de detección de acento (mexicano, colombiano, argentino y, en `customers`, neutral). Sirven como segmentos para medir equidad dentro del español.
+The dataset includes accent-detection fields (Mexican, Colombian, Argentine and, in `customers`, neutral). They serve as segments to measure fairness within Spanish.
 
-### Reporte
+### Reporting
 
-- Métricas por idioma, con n.
-- Si PT rinde peor, explicamos la causa (ej.: sin datos de entrenamiento en PT); no lo escondemos.
+- Metrics by language, with n.
+- If PT performs worse, we explain the cause (e.g., no PT training data); we do not hide it.
 
-### Preguntas abiertas
+### Open questions
 
-- ¿Cómo generamos y validamos los casos en PT? ¿Alguien del equipo lee portugués?
-- ¿Cuántos casos PT necesitamos para que la comparación tenga sentido?
+- How do we generate and validate the PT cases? Does anyone on the team read Portuguese?
+- How many PT cases do we need for the comparison to be meaningful?

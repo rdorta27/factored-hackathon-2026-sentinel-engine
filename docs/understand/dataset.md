@@ -1,127 +1,127 @@
 # Dataset
 
-Referencia del dataset LATAM Bank: qué hay, qué columna sirve para qué y qué cuidados tener.
+Reference for the LATAM Bank dataset: what exists, what each column is for, and what to watch out for.
 
-**Para qué sirve:** consultar tablas y columnas sin abrir el diccionario oficial. **Relacionados:** [área de datos](../construir/areas/datos.md) (pipeline), [ML](../construir/areas/ml.md) (etiquetas y variables), [glosario](glosario.md).
+**Purpose:** look up tables and columns without opening the official dictionary. **Related:** [data area](../build/areas/data.md) (pipeline), [ML](../build/areas/ml.md) (labels and features), [glossary](glossary/).
 
-Fuentes: *resumen del dataset*, *diccionario de datos*.
+Sources: *dataset summary*, *data dictionary*.
 
-## Contenido
+## Contents
 
-- [El dataset](#el-dataset-resumen-oficial) · [Tablas](#tablas) · [Clientes y productos](#diccionario-clientes-y-productos) · [Dimensiones de apoyo](#diccionario-dimensiones-de-apoyo) · [Transacciones](#diccionario-transacciones) · [Contacto con el cliente](#diccionario-contacto-con-el-cliente) · [Reclamos](#diccionario-reclamos) · [Canales digitales](#diccionario-canales-digitales-y-campañas) · [Relaciones](#relaciones-entre-tablas) · [Cuidados](#cuidados-generales)
+- [The dataset](#the-dataset-official-summary) · [Tables](#tables) · [Customers and products](#dictionary-customers-and-products) · [Supporting dimensions](#dictionary-supporting-dimensions) · [Transactions](#dictionary-transactions) · [Customer contact](#dictionary-customer-contact) · [Claims](#dictionary-claims) · [Digital channels](#dictionary-digital-channels-and-campaigns) · [Relationships](#relationships-between-tables) · [Caveats](#general-caveats)
 
-## El dataset (resumen oficial)
+## The dataset (official summary)
 
-- LATAM Bank v1.0.0: ~19 millones de registros, 13 tablas, **100 % sintético**.
-- Países: México, Colombia, Argentina. Periodo: 2023-06-17 a 2026-06-17.
-- Monedas: MXN, COP, ARS y USD (tipos de cambio diarios).
-- Texto solo en **español** (acentos mexicano, colombiano y argentino).
+- LATAM Bank v1.0.0: ~19 million records, 13 tables, **100% synthetic**.
+- Countries: Mexico, Colombia, Argentina. Period: 2023-06-17 to 2026-06-17.
+- Currencies: MXN, COP, ARS, and USD (daily exchange rates).
+- Text only in **Spanish** (Mexican, Colombian, and Argentine accents).
 
-### Problemas de calidad intencionales
+### Intentional quality issues
 
-| Problema | Tasa | Qué implica |
+| Issue | Rate | Implication |
 |---|---|---|
-| Duplicados | ~2 % | Deduplicación documentada y medida |
-| Nulos | ~5 % | En campos no obligatorios; el contrato define cuáles pueden ser nulos |
-| Llegadas tardías | Sí | Procesamiento **incremental** y política de frescura. El planteamiento pide un fixture etiquetado solo si los datos son estáticos |
-| Evolución de esquema | Sí | Contratos versionados |
+| Duplicates | ~2% | Documented and measured deduplication |
+| Nulls | ~5% | In non-mandatory fields; the contract defines which fields may be null |
+| Late arrivals | Yes | **Incremental** processing and freshness policy. The problem statement asks for a labeled fixture only if the data is static |
+| Schema evolution | Yes | Versioned contracts |
 
-Son una prueba de ingeniería de datos: los manejamos, los documentamos y los medimos; no los borramos en silencio.
+They are a data-engineering test: we handle, document, and measure them; we do not silently delete them.
 
-## Tablas
+## Tables
 
-| Tipo | Tabla | Filas | Uso probable |
+| Type | Table | Rows | Likely use |
 |---|---|---|---|
-| Dimensión | customers | 150.000 | Clientes; base del aislamiento por cliente |
-| Dimensión | products | 400.000 | Productos financieros activos |
-| Dimensión | branches | 350 | Sucursales |
-| Dimensión | service_agents | 1.200 | Asesores del call center |
-| Dimensión | marketing_campaigns | 200 | Campañas |
-| Hechos | transactions | 5.000.000 | Movimientos; consultas y reclamos por cargos |
-| Hechos | call_center_interactions | 800.000 | Motivos de contacto, resolución, escalamiento |
-| Hechos | call_transcripts | 200.000 | Texto para intención (cubre ~25 % de las interacciones: revisar sesgo) |
-| Hechos | satisfaction_surveys | 250.000 | CSAT y NPS |
-| Hechos | digital_events | 10.000.000 | App y web; muestrear |
-| Hechos | complaints | 80.000 | PQR |
-| Hechos | campaign_sends | 2.000.000 | Envíos de campañas |
-| Referencia | daily_exchange_rates | 3.000 | Tipos de cambio diarios |
+| Dimension | customers | 150,000 | Customers; basis for per-customer isolation |
+| Dimension | products | 400,000 | Active financial products |
+| Dimension | branches | 350 | Branches |
+| Dimension | service_agents | 1,200 | Call-center agents |
+| Dimension | marketing_campaigns | 200 | Campaigns |
+| Facts | transactions | 5,000,000 | Movements; charge inquiries and claims |
+| Facts | call_center_interactions | 800,000 | Contact reasons, resolution, escalation |
+| Facts | call_transcripts | 200,000 | Text for intent (covers ~25% of interactions: check for bias) |
+| Facts | satisfaction_surveys | 250,000 | CSAT (Customer Satisfaction Score) and NPS (Net Promoter Score) |
+| Facts | digital_events | 10,000,000 | App and web; sample it |
+| Facts | complaints | 80,000 | PQR (Peticiones, Quejas y Reclamos — requests, complaints, and claims) |
+| Facts | campaign_sends | 2,000,000 | Campaign sends |
+| Reference | daily_exchange_rates | 3,000 | Daily exchange rates |
 
-Primero exploramos las tablas ligadas al flujo y muestreamos las grandes; a escala procesamos solo lo que el sistema necesita.
+We first explore the tables linked to the flow and sample the large ones; at scale we process only what the system needs.
 
-## Diccionario: clientes y productos
+## Dictionary: customers and products
 
-| Tabla | Partición | Columnas clave | Cuidado |
+| Table | Partition | Key columns | Caveat |
 |---|---|---|---|
-| customers | Foto mensual | customer_id, country, detected_accent (incluye "neutral"), **segment** (Premium, Plus, Basic, Student), credit_score, estimated_monthly_income, customer_status, last_updated | Datos personales (documento, nombre, email, teléfono, dirección): nunca al LLM |
-| products | Foto mensual | product_id, customer_id, product_type, currency, **current_balance**, credit_limit, product_status (Active, Blocked, Closed, Suspended), days_past_due, last_transaction_date | El saldo es el de la última foto: calcularlo con transacciones posteriores o informar la fecha de corte |
+| customers | Monthly snapshot | customer_id, country, detected_accent (includes "neutral"), **segment** (Premium, Plus, Basic, Student), credit_score, estimated_monthly_income, customer_status, last_updated | Personal data (document, name, email, phone, address): never to the LLM |
+| products | Monthly snapshot | product_id, customer_id, product_type, currency, **current_balance**, credit_limit, product_status (Active, Blocked, Closed, Suspended), days_past_due, last_transaction_date | The balance is from the latest snapshot: compute it with later transactions or report the cutoff date |
 
-- Para variables de ML, usar la **última foto anterior a la fecha del caso** (nunca la más reciente).
+- For ML features, use the **latest snapshot before the case date** (never the most recent one).
 
-## Diccionario: dimensiones de apoyo
+## Dictionary: supporting dimensions
 
-| Tabla | Partición | Columnas clave | Uso probable |
+| Table | Partition | Key columns | Likely use |
 |---|---|---|---|
-| branches | Foto completa | branch_type, dirección, opening_time / closing_time, has_atms, branch_status | Si el flujo deriva a una sucursal: horarios y estado |
-| service_agents | Foto mensual | native_accent, agent_type, experience_level, **languages**, **specialty**, avg_csat, total_monthly_interactions, agent_status | **Enrutar el handoff** (simulado): asesor que hable el idioma del cliente y tenga la especialidad del flujo |
-| marketing_campaigns | Foto completa | campaign_type, campaign_objective, promoted_product, target_segment, target_country, start_date / end_date | Explicar picos de demanda por fecha y país |
+| branches | Full snapshot | branch_type, address, opening_time / closing_time, has_atms, branch_status | If the flow routes to a branch: hours and status |
+| service_agents | Monthly snapshot | native_accent, agent_type, experience_level, **languages**, **specialty**, avg_csat, total_monthly_interactions, agent_status | **Route the handoff** (simulated): an agent who speaks the customer's language and has the flow's specialty |
+| marketing_campaigns | Full snapshot | campaign_type, campaign_objective, promoted_product, target_segment, target_country, start_date / end_date | Explain demand spikes by date and country |
 
-- `avg_csat` y `total_monthly_interactions` son del último mes e incluyen los casos de ese mes: como variables, usar la **foto del mes anterior** al caso.
-- Datos personales de asesores (nombre, email, teléfono): no se exponen al cliente ni al LLM.
+- `avg_csat` and `total_monthly_interactions` are from the latest month and include that month's cases: as features, use the snapshot from the **month before** the case.
+- Agent personal data (name, email, phone): never exposed to the customer or the LLM.
 
-## Diccionario: transacciones
+## Dictionary: transactions
 
-| Tabla | Partición | Columnas clave |
+| Table | Partition | Key columns |
 |---|---|---|
-| transactions | Diaria (`process_date`) | transaction_id, **transaction_date**, **process_date**, product_id, customer_id, transaction_type, amount, currency, amount_usd (puede ser nulo), channel, merchant_name, transaction_country, **transaction_status** (Approved, Declined, Pending, Reversed), **is_fraud**, **fraud_score** (0-100) |
-| daily_exchange_rates | Diaria | date, source_currency, target_currency, exchange_rate, buy_rate, sell_rate |
+| transactions | Daily (`process_date`) | transaction_id, **transaction_date**, **process_date**, product_id, customer_id, transaction_type, amount, currency, amount_usd (may be null), channel, merchant_name, transaction_country, **transaction_status** (Approved, Declined, Pending, Reversed), **is_fraud**, **fraud_score** (0-100) |
+| daily_exchange_rates | Daily | date, source_currency, target_currency, exchange_rate, buy_rate, sell_rate |
 
-- **Dos fechas:** `process_date` para el pipeline (qué particiones leer, watermark); `transaction_date` para responder al cliente y para la división por tiempo. La diferencia entre ambas mide las llegadas tardías.
-- `amount_usd` nulo: recalcular con `daily_exchange_rates` de la fecha de la transacción, o dejarlo nulo y contarlo; no inventarlo.
-- `product_status = Blocked` es el estado que modificaría una acción de bloqueo de tarjeta.
+- **Two dates:** `process_date` for the pipeline (which partitions to read, watermark); `transaction_date` for answering the customer and for the time-based split. The difference between them measures late arrivals.
+- Null `amount_usd`: recompute with the `daily_exchange_rates` for the transaction date, or leave it null and count it; never invent it.
+- `product_status = Blocked` is the state a card-blocking action would modify.
 
-## Diccionario: contacto con el cliente
+## Dictionary: customer contact
 
-| Tabla | Partición | Columnas clave |
+| Table | Partition | Key columns |
 |---|---|---|
-| call_center_interactions | Diaria | interaction_date, customer_id, agent_id, interaction_type, channel, **contact_reason**, **reason_category** (Transactional, Product, Technical, Commercial, Complaint), duration_seconds, wait_time_seconds, **was_resolved** (FCR), **requires_followup**, detected_sentiment, **was_escalated** (a supervisor), has_transcript |
-| call_transcripts | Diaria | interaction_id, full_text, **customer_text**, agent_text, detected_language, detected_accent, detected_keywords, mentioned_entities (JSON), **detected_intents**, main_topics, transcription_model, audio_quality |
-| satisfaction_surveys | Diaria | survey_date, interaction_id, survey_type (CSAT, NPS, CES), main_score, nps_category, open_comments, **response_time_hours** |
+| call_center_interactions | Daily | interaction_date, customer_id, agent_id, interaction_type, channel, **contact_reason**, **reason_category** (Transactional, Product, Technical, Commercial, Complaint), duration_seconds, wait_time_seconds, **was_resolved** (FCR — first-contact resolution), **requires_followup**, detected_sentiment, **was_escalated** (to a supervisor), has_transcript |
+| call_transcripts | Daily | interaction_id, full_text, **customer_text**, agent_text, detected_language, detected_accent, detected_keywords, mentioned_entities (JSON), **detected_intents**, main_topics, transcription_model, audio_quality |
+| satisfaction_surveys | Daily | survey_date, interaction_id, survey_type (CSAT, NPS, CES — Customer Effort Score), main_score, nps_category, open_comments, **response_time_hours** |
 
-- Motivos de contacto y su categoría: base del análisis que justifica el flujo.
-- Las encuestas llegan después de la interacción: son métricas de resultado, no variables.
+- Contact reasons and their category: the basis of the analysis that justifies the flow.
+- Surveys arrive after the interaction: they are outcome metrics, not features.
 
-## Diccionario: reclamos
+## Dictionary: claims
 
-| Tabla | Partición | Columnas clave |
+| Table | Partition | Key columns |
 |---|---|---|
-| complaints | Diaria | creation_date, customer_id, **case_type** (Complaint = queja, Claim = reclamo, Request = petición, Suggestion = sugerencia), category, subcategory, reception_channel (incluye Regulator), affected_product_id, **origin_interaction_id**, description, claimed_amount, currency, priority, **status** (Open, In Process, Escalated, Resolved, Closed, Rejected), fechas de asignación, primera respuesta, resolución y cierre, **sla_breached**, resolution_days, resolution, compensation_granted, resolution_satisfaction, **is_repeat_complainer** (reclamos en los últimos 90 días) |
+| complaints | Daily | creation_date, customer_id, **case_type** (Complaint = queja, Claim = reclamo, Request = petición, Suggestion = sugerencia), category, subcategory, reception_channel (includes Regulator), affected_product_id, **origin_interaction_id**, description, claimed_amount, currency, priority, **status** (Open, In Process, Escalated, Resolved, Closed, Rejected), assignment, first-response, resolution, and closure dates, **sla_breached**, resolution_days, resolution, compensation_granted, resolution_satisfaction, **is_repeat_complainer** (claims in the last 90 days) |
 
-- **Campos de apertura** (los completa el asistente): case_type, category, affected_product_id, description, claimed_amount, currency, reception_channel, origin_interaction_id. **Campos de ciclo de vida y resultado** (los define el banco después): status, asignación, fechas, resolución, compensación, satisfacción.
-- Como variables de ML, los campos de resultado son información del futuro.
-- `is_repeat_complainer`: verificar si se calculó con los 90 días previos a cada caso; si no se puede confirmar, recalcularlo con reclamos anteriores.
-- `origin_interaction_id` une el reclamo con la llamada que lo originó.
+- **Opening fields** (completed by the assistant): case_type, category, affected_product_id, description, claimed_amount, currency, reception_channel, origin_interaction_id. **Lifecycle and outcome fields** (defined by the bank afterwards): status, assignment, dates, resolution, compensation, satisfaction.
+- As ML features, outcome fields are future information.
+- `is_repeat_complainer`: verify whether it was computed with the 90 days before each case; if it cannot be confirmed, recompute it with prior claims.
+- `origin_interaction_id` joins the claim to the call that originated it.
 
-## Diccionario: canales digitales y campañas
+## Dictionary: digital channels and campaigns
 
-| Tabla | Partición | Columnas clave |
+| Table | Partition | Key columns |
 |---|---|---|
-| digital_events | Diaria | event_date, customer_id (**puede ser nulo**: eventos antes del login), session_id, **event_type** (PageView, Click, FormSubmit, Login, Logout, **Error**, Purchase), event_category, channel, platform, app_version, page_url, action, product_id, **ip_address**, **ip_country**, ip_city, UTM |
-| campaign_sends | Diaria | send_date, campaign_id, customer_id, send_channel, send_status, was_delivered, was_opened, was_clicked, **had_conversion**, conversion_value, **send_cost** |
+| digital_events | Daily | event_date, customer_id (**may be null**: pre-login events), session_id, **event_type** (PageView, Click, FormSubmit, Login, Logout, **Error**, Purchase), event_category, channel, platform, app_version, page_url, action, product_id, **ip_address**, **ip_country**, ip_city, UTM |
+| campaign_sends | Daily | send_date, campaign_id, customer_id, send_channel, send_status, was_delivered, was_opened, was_clicked, **had_conversion**, conversion_value, **send_cost** |
 
-- **Errores de la app:** suelen preceder a una llamada o reclamo. Cruzarlos por cliente y fecha para el análisis de demanda y para dar contexto en la conversación.
-- **IP:** dato personal. No va al LLM, se enmascara en los logs y se usa solo en código.
-- **País de la IP distinto del país de la cuenta:** señal de riesgo, no veredicto (viaje, familia, VPN). Sirve para el componente de fraude o para pedir verificación extra en acciones sensibles; nunca bloquear ni discriminar por origen.
-- Tabla de 10 millones de filas: muestrear para explorar.
+- **App errors:** they often precede a call or claim. Join them by customer and date for demand analysis and to give context in the conversation.
+- **IP:** personal data. It does not go to the LLM, it is masked in logs, and it is used only in code.
+- **IP country different from the account country:** a risk signal, not a verdict (travel, family, VPN). Useful for the fraud component or for requesting extra verification in sensitive actions; never block or discriminate by origin.
+- 10-million-row table: sample it for exploration.
 
-## Relaciones entre tablas
+## Relationships between tables
 
-- `customer_id` enlaza 8 tablas con `customers`. Es el **filtro obligatorio** de toda herramienta que lea datos de clientes: siempre el de la sesión autenticada, nunca elegido por el LLM.
-- Cadena de atención: `call_center_interactions` → `call_transcripts` y `satisfaction_surveys` (por `interaction_id`) → `complaints` (por `origin_interaction_id`).
-- **Nulo no es huérfano:** un `customer_id` nulo en `digital_events` es válido (evento antes del login); un `customer_id` que no existe en `customers` es huérfano y va a cuarentena. El contrato los distingue.
+- `customer_id` links 8 tables to `customers`. It is the **mandatory filter** of every tool that reads customer data: always the authenticated session's customer, never chosen by the LLM.
+- Support chain: `call_center_interactions` → `call_transcripts` and `satisfaction_surveys` (by `interaction_id`) → `complaints` (by `origin_interaction_id`).
+- **Null is not orphan:** a null `customer_id` in `digital_events` is valid (pre-login event); a `customer_id` that does not exist in `customers` is orphaned and goes to quarantine. The contract distinguishes them.
 
-## Cuidados generales
+## General caveats
 
-- Montos siempre con su moneda. Al cliente se le muestra la **moneda original** de la transacción (casi siempre la local; puede ser USD). El monto en USD es para análisis entre países.
-- **Registros huérfanos** (ej.: transacción de un cliente inexistente): vienen a propósito. Los detectamos con el contrato, los mandamos a cuarentena, los contamos y nunca los devolvemos como datos de un cliente.
-- Aunque los datos sean sintéticos, aplicamos igual los controles de acceso y privacidad, y los declaramos como sintéticos en el inventario.
-- Pendiente de confirmar cuando lleguen los datos: si hay varias fotos mensuales y cómo se calculó `is_repeat_complainer`.
+- Amounts always with their currency. The customer is shown the **original** transaction currency (almost always the local one; it may be USD). The USD amount is for cross-country analysis.
+- **Orphan records** (e.g., a transaction for a nonexistent customer): intentional. We detect them with the contract, send them to quarantine, count them, and never return them as a customer's data.
+- Even though the data is synthetic, we apply access and privacy controls equally, and we label it as synthetic in the inventory.
+- Pending confirmation once the data arrives: whether there are multiple monthly snapshots and how `is_repeat_complainer` was computed.

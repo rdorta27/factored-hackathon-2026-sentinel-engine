@@ -1,51 +1,51 @@
-# Entrega
+# Delivery
 
-Lunes 5/10 (hora por confirmar). Trabajamos en español y entregamos en **inglés**. La lista completa de entregables está en el [resumen](../entender/resumen.md#entregables-lunes-510-hora-por-confirmar).
+Monday 10/5 (time TBD). We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables-monday-105-time-tbd).
 
-## Idioma
+## Language
 
-Lo que entregamos lo escribimos en **inglés desde el primer borrador**; lo de trabajo, en **español**. No hay pasada de traducción al final: el README, la presentación y el guion del video los redactamos en inglés desde que los empezamos. `docs/` y `team/` se quedan en español. Registrado como [REQ-0051](../requerimientos/requerimientos.md).
+Everything, working material included, is written in **English from the first draft**. There is no translation pass at the end: the README, the presentation, and the video script are drafted in English from the start. `docs/` and `team/` are translated. Registered as [REQ-0051](../requirements/requirements.md).
 
-| Pieza | Idioma | Estado | Quién revisa | Se congela |
+| Piece | Language | Status | Reviewed by | Frozen |
 |---|---|---|---|---|
-| `README.md` del repo (el link de la entrega) | Inglés | Listo | Rubén | Mantenido en inglés |
-| Título y descripción del repo en GitHub | Inglés | Listo | Rubén | Mantenido en inglés |
-| Presentación (4 a 6 diapositivas) | Nace en inglés | Pendiente | | Vie 2/10 |
-| Guion del video | Nace en inglés | Pendiente | | Vie 2/10 |
-| Demos: casos ES y PT | Español y portugués | — | — | Es lo que dice el sistema |
-| `docs/` y `team/` | Español | — | — | No se traducen |
+| Repo `README.md` (the delivery link) | English | Done | Rubén | Kept in English |
+| GitHub repo title and description | English | Done | Rubén | Kept in English |
+| Presentation (4 to 6 slides) | Born in English | Pending | | Fri 10/2 |
+| Video script | Born in English | Pending | | Fri 10/2 |
+| Demos: ES and PT cases | Spanish and Portuguese | — | — | What the system says |
+| `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
 
-La actualizamos en cada revisión, no al final. Estados: Pendiente, En curso, Listo.
+We update it at each review, not at the end. Statuses: Pending, In progress, Done.
 
-## Presentación
+## Presentation
 
-4 a 6 diapositivas.
+4 to 6 slides.
 
-| # | Diapositiva | Fuente |
+| # | Slide | Source |
 |---|---|---|
-| 1 | Problema y flujo elegido, respaldado por datos | [análisis](areas/analisis.md), [decisiones](decisiones/) |
-| 2 | Arquitectura (principio central y capas) | [arquitectura](../entender/arquitectura.md), [decisiones](decisiones/) |
-| 3 | Seguridad y control: permisos, handoff, cuándo NO actuar | [seguridad](seguridad.md), [conversación](conversacion.md) |
-| 4 | Resultados: baseline vs sistema (métricas principales, por idioma) | [métricas](metricas.md) |
-| 5 | Limitaciones y ruta a producción | [requerimientos](../requerimientos/requerimientos.md) (REQ-0030, lo que falta) |
+| 1 | Problem and chosen flow, backed by data | [analysis](areas/analysis.md), [decisions](decisions/) |
+| 2 | Architecture (core principle and layers) | [architecture](../understand/architecture.md), [decisions](decisions/) |
+| 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
+| 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
+| 5 | Limitations and path to production | [requirements](../requirements/requirements.md) (REQ-0030, what is missing) |
 
-- Mostramos las 3 métricas principales: resolución segura, resultados inseguros, costo.
-- Cada cifra con n y tipo de medición (offline, simulación, proyección).
-- Incluimos las fallas y las limitaciones; esconderlas resta.
+- We show the 3 top metrics: safe resolution, unsafe outcomes, cost.
+- Each figure with n and measurement type (offline, simulation, projection).
+- We include failures and limitations; hiding them counts against us.
 
 ## Video pitch
 
-Obligatorio y corto. Muestra la solución funcionando y explica las decisiones de arquitectura.
+Mandatory and short. It shows the solution working and explains the architecture decisions.
 
-1. El problema, en una frase y con un dato.
-2. Demo del **caso normal** (ES).
-3. Demo del **caso ambiguo** (PT).
-4. Demo del **caso humano**, mostrando el handoff JSON.
-5. Un intento de prompt injection que falla.
-6. Decisiones de arquitectura clave (desde [decisiones](decisiones/)).
-7. Resultados principales y limitaciones.
+1. The problem, in one sentence and with one data point.
+2. Demo of the **normal case** (ES).
+3. Demo of the **ambiguous case** (PT).
+4. Demo of the **human case**, showing the JSON handoff.
+5. A prompt injection attempt that fails.
+6. Key architecture decisions (from [decisions](decisions/)).
+7. Top results and limitations.
 
-## Pendientes
+## Pending
 
-- [ ] Duración máxima del video (confirmar con los organizadores)
-- [ ] Herramienta de grabación
+- [ ] Maximum video length (confirm with the organizers)
+- [ ] Recording tool

@@ -1,53 +1,52 @@
 # Data Engineering
 
-**Criterio de evaluación:** extracción y transformación de los datos. **Responsable:** Natalia.
+**Evaluation criterion:** data extraction and transformation. **Owner:** Natalia.
 
-**Requerimientos:** los de área `datos` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
+**Requirements:** those in the `data` area in the [requirements table](../../requirements/requirements.md).
 
-**Relacionados:** [dataset](../../entender/dataset.md) (tablas y columnas), [arquitectura](../../entender/arquitectura.md).
+**Related:** [dataset](../../understand/dataset.md) (tables and columns), [architecture](../../understand/architecture.md).
 
-## Alcance
+## Scope
 
-- **Pipeline ETL/ELT** repetible y determinista: misma entrada, misma salida.
-- **Contratos de esquema estrictos**: un dato inválido lo rechazamos o lo aislamos y lo reportamos; nunca entra en silencio.
-- **Controles de calidad**, **linaje** y **política de frescura**.
-- **Aislamiento de registros por cliente**, base del control de acceso.
-- Procesamiento batch, incremental o streaming según latencia y frescura. Archivos incrementales no obligan a streaming.
-- Con datos estáticos: **fixture de actualización** etiquetado, sin modificar los datos oficiales.
-- Inventario de fuentes: real, desidentificado, sintético o generado por el equipo.
+- **Repeatable, deterministic ETL/ELT pipeline**: same input, same output.
+- **Strict schema contracts**: invalid data is rejected or quarantined and reported; it never enters silently.
+- **Quality checks**, **lineage**, and **freshness policy**.
+- **Per-customer record isolation**, the basis of access control.
+- Batch, incremental, or streaming processing depending on latency and freshness. Incremental files do not mandate streaming.
+- With static data: labeled **refresh fixture**, without modifying the official data.
+- Source inventory: real, de-identified, synthetic, or team-generated.
 
-## Procesamiento incremental
+## Incremental processing
 
-Las tablas grandes vienen particionadas por fecha, con llegadas tardías, duplicados y esquema cambiante. Piezas del pipeline:
+Large tables arrive partitioned by date, with late arrivals, duplicates, and evolving schema. Pipeline pieces:
 
-| Pieza | Qué hace |
+| Piece | What it does |
 |---|---|
-| Watermark | Guarda hasta qué partición se procesó; la próxima ejecución toma solo lo nuevo |
-| Ventana de reproceso | Vuelve a mirar los últimos N días para capturar llegadas tardías (el watermark solo las saltaría) |
-| Upsert idempotente | Si la clave existe, actualiza; si no, inserta. Reprocesar no duplica |
-| Deduplicación por clave | Absorbe el ~2 % de duplicados |
-| Contratos versionados | Detecta columnas nuevas y decide si aceptarlas; nunca en silencio |
-| Política de frescura | Declara el atraso máximo aceptable (ej.: 24 h) |
+| Watermark | Records up to which partition was processed; the next run picks up only what is new |
+| Reprocessing window | Re-examines the last N days to capture late arrivals (the watermark alone would skip them) |
+| Idempotent upsert | If the key exists, update; if not, insert. Reprocessing does not duplicate |
+| Key-based deduplication | Absorbs the ~2% duplicates |
+| Versioned contracts | Detect new columns and decide whether to accept them; never silently |
+| Freshness policy | Declares the maximum acceptable lag (e.g., 24 h) |
 
-Streaming no es obligatorio: solo vale la pena si el flujo necesita segundos de frescura.
+Streaming is not mandatory: it is only worthwhile if the flow needs seconds-level freshness.
 
-## Casos a cuidar en el pipeline
+## Pipeline cases to handle
 
-- Formatos numéricos LATAM (ej.: "1.200,50"): el contrato define el formato esperado en lugar de adivinarlo.
-- Moneda obligatoria y validada en cada monto.
-- Nulo no es huérfano: el contrato los distingue (ver [dataset](../../entender/dataset.md#relaciones-entre-tablas)).
-- Particiones por fecha: leemos solo las nuevas y las de la ventana de reproceso.
-- Cada lectura de herramienta devuelve el dato y su marca de "actualizado hasta".
+- LATAM numeric formats (e.g., "1.200,50"): the contract defines the expected format instead of guessing it.
+- Currency mandatory and validated on every amount.
+- Null is not orphan: the contract distinguishes them (see [dataset](../../understand/dataset.md#table-relationships)).
+- Date partitions: we read only new partitions plus the reprocessing window.
+- Each tool read returns the data and its "updated through" mark.
 
-## Evidencia para la evaluación
+## Evidence for evaluation
 
-- [ ] Pipeline ejecutable con un comando
-- [ ] Contratos y reporte de calidad
-- [ ] Fixture de actualización que pasa
-- [ ] Inventario de fuentes
+- [ ] Executable pipeline with a single command
+- [ ] Contracts and quality report
+- [ ] Passing refresh fixture
+- [ ] Source inventory
 
-## Decisiones pendientes
+## Pending decisions
 
-- Herramientas del pipeline
-- Batch o incremental (depende de cómo lleguen los datos)
-
+- Pipeline tooling
+- Batch or incremental (depends on how the data arrives)

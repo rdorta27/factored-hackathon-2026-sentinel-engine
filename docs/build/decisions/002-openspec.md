@@ -1,28 +1,28 @@
-# 002 · Especificaciones con OpenSpec
+# 002 · Specifications with OpenSpec
 
-**Fecha:** 2026-09-27
-**Estado:** Aceptada
-**Participantes:** Equipo
+**Date:** 2026-09-27
+**Status:** Accepted
+**Participants:** Team
 
-## Contexto
+## Context
 
-Somos 3 personas con plazo hasta el 5/10 y asistentes de IA para programar. Necesitamos que cada pieza tenga una especificación clara antes de implementarla, que el cambio sea revisable y que las especificaciones sirvan como documentación para la evaluación (criterio "fundamento y documentación").
+We are 3 people with a deadline of 10/5 and AI assistants for coding. We need every piece to have a clear specification before implementation, changes to be reviewable, and specifications to serve as documentation for the evaluation ("rationale and documentation" criterion).
 
-## Opciones
+## Options
 
-1. **OpenSpec:** desarrollo guiado por especificaciones. Cada cambio se propone con su motivación, tareas y los requisitos que agrega o modifica; al terminar, las especificaciones quedan actualizadas.
-2. **Solo GitHub Issues:** más liviano, pero las especificaciones quedan dispersas.
-3. **Documentos libres en `docs/`:** ya los tenemos, pero no están pensados para guiar la implementación paso a paso.
+1. **OpenSpec:** specification-driven development. Each change is proposed with its motivation, tasks, and the requirements it adds or modifies; when finished, the specifications stay up to date.
+2. **GitHub Issues only:** lighter, but specifications end up scattered.
+3. **Free-form documents in `docs/`:** we already have them, but they are not designed to guide implementation step by step.
 
-## Decisión
+## Decision
 
-OpenSpec, en la carpeta `openspec/` del repositorio.
+OpenSpec, in the repository's `openspec/` folder.
 
-## Consecuencias
+## Consequences
 
-- **Relación con `docs/`:** `docs/` explica el reto y las reglas de diseño; `openspec/` especifica lo que se construye.
-  - Cada especificación cita los requerimientos que cubre (ej.: REQ-0008, handoff JSON).
-  - El contexto del proyecto de OpenSpec enlaza a [arquitectura](../../entender/arquitectura.md), [conversación](../conversacion.md) y [seguridad](../seguridad.md), en vez de copiarlos.
-- **Idioma:** por definir. Las especificaciones son parte de la entrega pública, por lo que conviene escribirlas en inglés.
-- **Flujo de trabajo:** propuesta de cambio → revisión en pull request → implementación → archivo del cambio. Los issues de GitHub enlazan a su propuesta.
-- Pendiente: instalar OpenSpec e inicializar la carpeta después de elegir el flujo (lunes 28/9).
+- **Relationship with `docs/`:** `docs/` explains the challenge and the design rules; `openspec/` specifies what gets built.
+  - Each specification cites the requirements it covers (e.g., REQ-0008, JSON handoff).
+  - The OpenSpec project context links to [architecture](../../understand/architecture.md), [conversation](../conversation.md), and [security](../security.md), instead of copying them.
+- **Language:** to be defined. The specifications are part of the public deliverable, so writing them in English is preferable.
+- **Workflow:** change proposal → pull-request review → implementation → change archival. GitHub issues link to their proposal.
+- Pending: install OpenSpec and initialize the folder after choosing the flow (Monday 9/28).

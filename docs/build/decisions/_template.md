@@ -1,22 +1,22 @@
-# NNN · Título de la decisión
+# NNN · Decision title
 
-**Fecha:** AAAA-MM-DD
-**Estado:** Propuesta | Aceptada | Reemplazada por NNN
-**Participantes:**
+**Date:** YYYY-MM-DD
+**Status:** Proposed | Accepted | Superseded by NNN
+**Participants:**
 
-## Contexto
+## Context
 
-Qué problema resolvemos y qué restricciones aplican (citar requerimientos `REQ-####`).
+What problem we are solving and which constraints apply (cite requirements `REQ-####`).
 
-## Opciones
+## Options
 
-1. **Opción A:** a favor / en contra
-2. **Opción B:** a favor / en contra
+1. **Option A:** pros / cons
+2. **Option B:** pros / cons
 
-## Decisión
+## Decision
 
-Qué elegimos y por qué.
+What we chose and why.
 
-## Consecuencias
+## Consequences
 
-Qué ganamos, qué sacrificamos y qué queda pendiente.
+What we gain, what we sacrifice, and what remains pending.

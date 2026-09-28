@@ -1,29 +1,29 @@
 # AI Engineering
 
-**Criterio de evaluación:** backend, frontend y despliegue. **Responsable:** Rubén (IA y arquitectura); Felix (backend, frontend y despliegue).
+**Evaluation criterion:** backend, frontend, and deployment. **Owners:** Rubén (AI and architecture); Felix (backend, frontend, and deployment).
 
-**Requerimientos:** los de área `ai` en la [tabla de requerimientos](../../requerimientos/requerimientos.md).
+**Requirements:** those in the `ai` area in the [requirements table](../../requirements/requirements.md).
 
-**Relacionados:** [arquitectura](../../entender/arquitectura.md), [conversación](../conversacion.md) (qué dice el asistente), [seguridad](../seguridad.md).
+**Related:** [architecture](../../understand/architecture.md), [conversation](../conversation.md) (what the assistant says), [security](../security.md).
 
-## Alcance
+## Scope
 
-- **Orquestador:** el ciclo entender, decidir, actuar, verificar y escalar, con el orden de decisión política > predictor > LLM.
-- **Herramientas** (mock) con contratos documentados, filtradas por el cliente de la sesión, que devuelven el dato y su fecha de actualización.
-- **Políticas en código:** qué responde solo, qué requiere confirmación y cuándo escalar.
-- **Handoff** en JSON con esquema validable.
-- **Frontend simple** (chat). Sin dashboard.
-- **Despliegue** con link público, límites de uso y tope de gasto.
-- **Observabilidad:** trazas y registros de ejecución, con país e idioma en cada registro (para el [monitoreo por país](analisis.md#monitoreo-por-país)).
+- **Orchestrator:** the understand, decide, act, verify, and escalate loop, with decision order policy > predictor > LLM.
+- **Tools** (mock) with documented contracts, filtered by the session's customer, returning the data and its last-updated date.
+- **Policies in code:** what it answers on its own, what requires confirmation, and when to escalate.
+- **Handoff** in JSON with a validatable schema.
+- **Simple frontend** (chat). No dashboard.
+- **Deployment** with a public link, usage limits, and a spending cap.
+- **Observability:** execution traces and logs, with country and language on every record (for [country monitoring](analysis.md#country-monitoring)).
 
-## Reglas técnicas
+## Technical rules
 
-- Reintentos acotados; acciones idempotentes (repetirlas no las duplica).
-- El país es configuración, no código: moneda, documentos, términos, regulador y plazos de cada país en archivos de configuración. Hoy MX, CO y AR.
+- Bounded retries; idempotent actions (repeating them does not duplicate them).
+- Country is configuration, not code: currency, documents, terms, regulator, and deadlines for each country live in configuration files. Today MX, CO, and AR.
 
 ## Handoff
 
-### Esquema (borrador)
+### Schema (draft)
 
 ```json
 {
@@ -38,19 +38,19 @@
 }
 ```
 
-### Enrutamiento (simulado)
+### Simulated routing
 
-Con `service_agents` elegimos un asesor activo que hable el idioma del cliente y tenga la especialidad del flujo. Ver [dataset](../../entender/dataset.md#diccionario-dimensiones-de-apoyo).
+With `service_agents` we pick an active advisor who speaks the customer's language and has the specialty of the flow. See [dataset](../../understand/dataset.md#support-dimensions-dictionary).
 
-## Evidencia para la evaluación
+## Evidence for evaluation
 
-- [ ] Demo de los 3 casos (normal, ambiguo, humano) en ES y PT
-- [ ] Link desplegado funcionando
-- [ ] Logs de ejecución auditables
-- [ ] Instrucciones de instalación reproducibles
+- [ ] Demo of the 3 cases (normal, ambiguous, human) in ES and PT
+- [ ] Working deployed link
+- [ ] Auditable execution logs
+- [ ] Reproducible installation instructions
 
-## Decisiones pendientes
+## Pending decisions
 
-- Framework del backend y del frontend
-- Modelos del LLM híbrido (el enrutador ya está decidido)
-- Servicio de despliegue en Azure
+- Backend and frontend framework
+- Hybrid LLM models (the router is already decided)
+- Deployment service on Azure

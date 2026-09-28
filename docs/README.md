@@ -1,43 +1,43 @@
-# Documentación del equipo
+# Team documentation
 
-El reto, los requerimientos y las reglas de diseño. La planificación del equipo está en [`team/`](../team/). Todo está en construcción: si algo no se entiende o falta, lo ajustamos.
+The challenge, the requirements, and the design rules. Team planning lives in [`team/`](../team/). Everything is under construction: if something is unclear or missing, we adjust it.
 
-Trabajamos en español. Lo que entregamos —README del repo, presentación y guion del video— lo escribimos en inglés desde el primer borrador; ver [idioma](construir/entrega.md#idioma).
+We work in English. Everything we deliver — the repo README, the presentation, and the video script — as well as `docs/` and `team/` is written in English from the first draft; see [language](build/delivery.md#language).
 
-El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y diccionario) no está en el repositorio; cada uno tiene su copia.
+The official hackathon material (problem statement, kickoff, dataset summary, and data dictionary) is not in the repository; each member keeps their own copy.
 
-## Orden de lectura
+## Reading order
 
-Si llegas nuevo, lee en este orden (unos 20 minutos):
+If you are new, read in this order (about 20 minutes):
 
-1. [El reto en una página](entender/resumen.md)
-2. [Plan del equipo](../team/plan.md): cronograma y forma de trabajo
-3. [Arquitectura](entender/arquitectura.md)
-4. [Requerimientos](requerimientos/requerimientos.md): solo la tabla de resumen y los P0
-5. El documento de tu área en [construir/areas/](construir/areas/)
+1. [The challenge in one page](understand/overview.md)
+2. [Team plan](../team/plan.md): schedule and ways of working
+3. [Architecture](understand/architecture.md)
+4. [Requirements](requirements/requirements.md): only the summary table and the P0s
+5. Your area's document in [build/areas/](build/areas/)
 
-## Índice por pregunta
+## Index by question
 
-| Pregunta | Documento |
+| Question | Document |
 |---|---|
-| ¿Qué hay que construir y cuándo se entrega? | [Resumen](entender/resumen.md) |
-| ¿Cómo encajan las piezas del sistema? | [Arquitectura](entender/arquitectura.md) |
-| ¿Qué significa CSAT, PQR, held-out…? | [Glosario](entender/glosario.md) |
-| ¿Qué tablas hay y qué columna sirve para qué? | [Dataset](entender/dataset.md) |
-| ¿Qué es obligatorio y qué criterio no tiene evidencia todavía? | [Requerimientos](requerimientos/requerimientos.md) |
-| ¿Qué dice el asistente en cada situación? | [Conversación](construir/conversacion.md) |
-| ¿Qué puede ver el LLM? ¿Cómo evitamos el acceso indebido? | [Seguridad](construir/seguridad.md) |
-| ¿Cómo manejamos el portugués? | [Conversación: idiomas](construir/conversacion.md#idiomas) |
-| ¿Qué medimos y cómo dividimos los datos? | [Métricas](construir/metricas.md), [ML](construir/areas/ml.md#rigor) |
-| ¿Qué flujo elegimos? | [Decisión 003](construir/decisiones/003-flujo-disputas.md), [opciones de flujo](construir/flujos/opciones.md) |
-| ¿Por qué decidimos X? | [Decisiones](construir/decisiones/) |
-| ¿Qué va en la presentación y el video? | [Entrega](construir/entrega.md) |
-| ¿Quién hace qué, cuándo y cómo trabajamos? | [Plan](../team/plan.md), [tareas](../team/tareas.md), [decisiones pendientes](../team/decisiones-pendientes.md) |
+| What must be built and when is it due? | [Overview](understand/overview.md) |
+| How do the system pieces fit together? | [Architecture](understand/architecture.md) |
+| What do CSAT (Customer Satisfaction Score), PQR (Peticiones, Quejas y Reclamos — requests, complaints, and claims), held-out… mean? | [Glossary](understand/glossary/) |
+| Which tables exist and what is each column for? | [Dataset](understand/dataset.md) |
+| What is mandatory and which criterion still lacks evidence? | [Requirements](requirements/requirements.md) |
+| What does the assistant say in each situation? | [Conversation](build/conversation.md) |
+| What can the LLM see? How do we prevent unauthorized access? | [Security](build/security.md) |
+| How do we handle Portuguese? | [Conversation: languages](build/conversation.md#languages) |
+| What do we measure and how do we split the data? | [Metrics](build/metrics.md), [ML](build/areas/ml.md#rigor) |
+| Which flow did we choose? | [Decision 003](build/decisions/003-disputes-flow.md), [flow options](build/flows/options.md) |
+| Why did we decide X? | [Decisions](build/decisions/) |
+| What goes into the presentation and the video? | [Delivery](build/delivery.md) |
+| Who does what, when, and how do we work? | [Plan](../team/plan.md), [tasks](../team/tasks.md), [pending decisions](../team/pending-decisions.md) |
 
-## Estructura
+## Structure
 
-| Carpeta o archivo | Para qué |
+| Folder or file | Purpose |
 |---|---|
-| [entender/](entender/) | Entender el reto, el sistema y los datos sin leerlo todo |
-| [requerimientos/](requerimientos/) | Qué tiene que cumplir el sistema, con prioridad, área, evidencia y estado |
-| [construir/](construir/) | Áreas, reglas de diseño, decisiones y entrega |
+| [understand/](understand/) | Understand the challenge, the system, and the data without reading everything |
+| [requirements/](requirements/) | What the system must satisfy, with priority, area, evidence, and status |
+| [build/](build/) | Areas, design rules, decisions, and delivery |
