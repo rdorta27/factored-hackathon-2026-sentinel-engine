@@ -26,10 +26,10 @@ We start with the **transaction-dispute flow** as our working hypothesis. We con
 | Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) |
 | Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases |
 | Labels | Quality and balance of `category` / `subcategory` and of `was_escalated` | At least one label is consistent and non-trivial |
-| Defensible ML | Keyword baseline vs. a simple model, with a temporal split | The model beats the baseline and the baseline is nowhere near 100% (a sign of template-generated labels) |
+| Defensible ML | Keyword or TF-IDF baseline vs. a learned component, with a temporal split. The component can be a simple model or a few-shot LLM classifier (the mentors confirmed on 9/28 that a prompted LLM counts) | The component beats the baseline on the same held-out set, with valid labels and no leakage |
 | Data leakage | Feature review | Only opening-time fields are used; outcome fields (`status`, `resolution`, `sla_breached`, etc.) stay out |
 
-If volume or ML fails, the preferred alternative is **cards** (same structure: confirm, act, verify, and handoff on fraud).
+If volume or labels fail, the preferred alternative is **cards** (same structure: confirm, act, verify, and handoff on fraud). A classical model with no margin over the baseline no longer triggers the switch, as long as the few-shot LLM approach is defensible.
 
 ## Consequences
 

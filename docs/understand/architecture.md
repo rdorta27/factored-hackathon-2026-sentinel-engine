@@ -179,6 +179,20 @@ sequenceDiagram
 
 Chosen at the Tuesday 9/29 review, together with the flow; the candidates are in [decision 003](../build/decisions/003-disputes-flow.md). Whatever we pick is measured against a baseline. Details in [ML](../build/areas/ml.md).
 
+## Path to production
+
+REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a credible path to production. The prototype keeps a minimal deployment for the public link and documents the rest.
+
+| Aspect | Prototype | Production |
+|---|---|---|
+| Data | Local DuckDB with Bronze/Silver/Gold | Databricks on Azure (Delta Lake, SQL Warehouse) |
+| Disputes store | SQLite | Postgres on Azure |
+| Serving | One container behind the public link | Azure Container Apps with autoscaling |
+| LLM | Hybrid router, usage caps | Same router, per-route quotas and fallback |
+| Monitoring | Traces and audit log in files | Centralized logs, alerts by country |
+| Security | Test session, masked PII, secrets in `.env` | Identity provider, Key Vault, retention policy |
+| Volume | Sized to the sample (see [analysis](../build/areas/analysis.md#sizing)) | Capacity plan from real traffic |
+
 ## Stack
 
 | Piece | Status |

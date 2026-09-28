@@ -39,7 +39,9 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Task | Owner | Status |
 |---|---|---|
 | Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Pending |
-| Pick the learned component (decision 2) | Team | Pending |
+| Pick the learned component (decision 2); lead candidate: few-shot LLM classifier | Team | Pending |
+| Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
+| Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
 | JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
 | Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
 | Backend skeleton: orchestrator and 4 mock tools with fixed contracts (open dispute idempotent) | Unassigned | Pending |
@@ -54,7 +56,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Normal case end to end with real data | Unassigned | Pending |
 | Action verification: the dispute exists after creation | Unassigned | Pending |
 | Handoff integrated into the flow | Unassigned | Pending |
-| Learned component vs baseline | Unassigned | Pending |
+| Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
 | First evaluation cases | Unassigned | Pending |
 | Start the presentation and video script | Unassigned | Pending |
 
@@ -74,6 +76,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 |---|---|---|
 | Held-out evaluation and metrics (success, unsafe outcomes, handoff, latency, cost) | Unassigned | Pending |
 | Failure analysis and limitations | Unassigned | Pending |
+| Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
+| Path to production write-up (REQ-0052) | Rubén | Pending |
 | README in English, presentation and video | Unassigned | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 
