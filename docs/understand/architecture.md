@@ -10,23 +10,22 @@ System overview. Platform: Azure; we decide the rest of the stack after choosing
 
 ## Two layers
 
-```
-SERVICE LAYER (real time)                            DATA LAYER (batch or incremental)
-─────────────────────────────                        ───────────────────────────────────
-Client ⇄ Frontend (chat)                             Dataset files
-               │                                     (date partitions, late
-               ▼                                      arrivals, duplicates, changing
-    Orchestrator (code + LLM)                         schema)
-    Understand → Decide → Act                                 │
-    → Verify → Escalate                                      ▼
-               │                                     Pipeline: contracts, deduplication,
-               ▼                                     upsert, quality
-    Tools (with session)                                         │
-    · check balance, movements  ◄── read ──  Operational store (mock of the banking
-    · block card, open claim ── write ──►    core, per customer)
-               │                                         │
-               ▼                                     Analytical store (analysis,
-    Handoff JSON → agent (simulated)                 training, baseline)
+```mermaid
+flowchart LR
+    subgraph service["SERVICE LAYER (real time)"]
+        client["Client"] <--> frontend["Frontend (chat)"]
+        frontend --> orch["Orchestrator (code + LLM)<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
+        orch --> tools["Tools (with session)<br/>· check balance, movements<br/>· block card, open claim"]
+        tools --> handoff["Handoff JSON → agent (simulated)"]
+    end
+    subgraph dataL["DATA LAYER (batch or incremental)"]
+        files["Dataset files<br/>(date partitions, late<br/>arrivals, duplicates, changing<br/>schema)"]
+        files --> pipe["Pipeline: contracts,<br/>deduplication, upsert, quality"]
+        pipe --> opstore["Operational store<br/>(mock of the banking<br/>core, per customer)"]
+        pipe --> anstore["Analytical store<br/>(analysis, training, baseline)"]
+    end
+    tools -- read --- opstore
+    tools -- write --- opstore
 ```
 
 - **Service layer:** latency, action verification, retries, and idempotency matter.
@@ -35,6 +34,18 @@ Client ⇄ Frontend (chat)                             Dataset files
 ## Decision priority
 
 Highest to lowest:
+
+```mermaid
+flowchart TD
+    req["Decision request"] --> policy{"Policy in code?"}
+    policy -- "rule matches" --> apply["Apply rule<br/>(permissions, confirmations,<br/>fixed escalations)"]
+    policy -- "no rule" --> learned{"Learned component<br/>weighs in?"}
+    learned -- yes --> predict["Predictor decides<br/>(e.g. escalation score)"]
+    learned -- no --> llm["LLM drafts and picks<br/>a tool to call"]
+    predict --> llm
+    apply --> done(["Outcome"])
+    llm --> done
+```
 
 1. **Policy in code.** Permissions, confirmations, and fixed rules (for example: if the customer asks to speak to a person, we escalate).
 2. **Learned component**, if it takes part in the decision (e.g., an escalation predictor). It decides whether escalation is worthwhile where there is no rule.
@@ -47,6 +58,30 @@ Highest to lowest:
 - Detail in [security](../build/security.md).
 
 ## Walkthrough of a case (example: duplicate-charge claim)
+
+```mermaid
+sequenceDiagram
+    participant C as Customer
+    participant F as Frontend (chat)
+    participant O as Orchestrator<br/>(code + LLM)
+    participant T as Tools<br/>(with session)
+    participant S as Operational store
+    participant A as Agent (simulated)
+    C->>F: "me cobraron dos veces"<br/>("I was charged twice")
+    F->>O: Understand: intent = charge claim
+    O->>T: Decide: search repeated purchases<br/>(session customer)
+    T->>S: read transactions
+    S-->>T: candidate charges
+    T-->>O: candidates + cutoff date
+    O->>C: Show candidates in account currency
+    C->>O: Pick one
+    O->>C: Act: ask for confirmation
+    C->>O: Confirm
+    O->>T: open claim
+    T-->>O: Verify: case number
+    O->>C: Report case number
+    O->>A: Escalate if rule/predictor says so:<br/>JSON handoff (verified facts,<br/>open questions)
+```
 
 1. The customer writes: "me cobraron dos veces" ("I was charged twice").
 2. **Understand:** intent = charge claim.
