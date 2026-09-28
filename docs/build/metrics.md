@@ -94,5 +94,5 @@ AUC measures **ranking** (0.5 = chance), not calibration or the threshold; the p
 
 ## Open questions
 
-- What cost assumptions do we use (price per token, human-agent cost)?
+- What cost assumptions do we use (price per token, human-advisor cost)?
 - How many held-out cases do we need per language for the comparison to be meaningful?

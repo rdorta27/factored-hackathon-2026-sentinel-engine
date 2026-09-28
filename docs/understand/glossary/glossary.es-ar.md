@@ -24,8 +24,8 @@ Overlay de Argentina sobre el [glosario canónico en inglés](glossary.en-us.md)
 
 | Concept | Argentine term (ES-AR) | English |
 |---|---|---|
-| Call-center agent | Asesor, agente | Agent |
+| Call-center advisor | Asesor, agente | Advisor |
 | Support center | Call center, centro de contacto | Contact center |
 | Complaints system | Reclamos | Claims / complaints |
 | Banking regulator | BCRA (*Banco Central de la República Argentina*) | Central bank |
-| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an agent |
+| "I want to talk to a person" | Quiero hablar con un asesor | I want to talk to an advisor |

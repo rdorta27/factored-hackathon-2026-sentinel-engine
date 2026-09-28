@@ -17,7 +17,7 @@ flowchart LR
         client(["Customer"]) <--> frontend["Frontend<br/>chat"]
         frontend --> orch["Orchestrator · code + LLM<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
         orch --> tools["Tools bound to the session<br/>look up transactions · open dispute<br/>look up dispute · handoff"]
-        tools --> agent(["Agent<br/>simulated"])
+        tools --> advisor(["Advisor<br/>simulated"])
         tools -- "write · read back" --> disputes[("Disputes store<br/>SQLite locally · Postgres on Azure")]
     end
     subgraph dataL["Data layer · batch or incremental"]
@@ -33,7 +33,7 @@ flowchart LR
     classDef store fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
     classDef proposed fill:#f1f1f4,stroke:#77778a,stroke-width:2px,stroke-dasharray:4 3,color:#26262f
     classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
-    class client,agent ext
+    class client,advisor ext
     class frontend,orch,tools,pipe real
     class files,gold,anstore,disputes store
 ```
@@ -51,7 +51,7 @@ flowchart TB
     client(["Customer"]) --> chat["Web chat<br/>login and confirmation"] --> auth["Authenticated session<br/>customer_id"] --> orch["Orchestrator<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
 
     subgraph brain["Reasoning and control"]
-        pii["Personal-data<br/>masking"] --> llm["Hybrid LLM<br/>with router"]
+        pii["Personal data (PII)<br/>masking"] --> llm["Hybrid LLM<br/>with router"]
         policy["Policy in code<br/>permissions, confirmation"]
         ml["Learned component<br/>vs baseline"]
     end
@@ -64,7 +64,7 @@ flowchart TB
     subgraph stores["Stores"]
         gold[("Transactions<br/>with cutoff date")]
         disputes[("Disputes<br/>store")]
-        agents[("Agent<br/>queue")]
+        advisors[("Advisor<br/>queue")]
         traces[("Traces and<br/>audit log")]
     end
 
@@ -73,7 +73,7 @@ flowchart TB
     read --> gold
     open --> disputes
     verify --> disputes
-    handoff --> agents
+    handoff --> advisors
     orch -.-> traces
     s3[("S3 dataset")] --> pipeline["Pipeline<br/>Bronze → Silver → Gold"] --> gold
 
@@ -84,7 +84,7 @@ flowchart TB
     classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
     class client ext
     class chat,orch,pii,policy,llm,pipeline real
-    class auth,ml,read,open,verify,handoff,gold,disputes,agents mock
+    class auth,ml,read,open,verify,handoff,gold,disputes,advisors mock
     class traces,s3 store
 ```
 
@@ -136,12 +136,12 @@ sequenceDiagram
     participant O as Orchestrator<br/>(code + LLM)
     participant T as Tools<br/>(session-bound)
     participant S as Stores
-    participant A as Agent (simulated)
+    participant A as Advisor (simulated)
 
     C->>F: "me cobraron dos veces"<br/>("I was charged twice")
     F->>O: message + session
     rect rgba(91, 79, 214, 0.08)
-    Note over O: Understand: intent = charge dispute<br/>(personal data masked before the LLM)
+    Note over O: Understand: intent = charge dispute<br/>(PII masked before the LLM)
     O->>T: Decide: search repeated purchases<br/>(session customer)
     T->>S: read transactions (Gold)
     S-->>T: candidate charges + cutoff date

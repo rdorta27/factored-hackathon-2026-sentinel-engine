@@ -6,7 +6,7 @@
 
 ## Context
 
-The kickoff leaves tooling open and suggests Azure, Snowflake, AWS, and Databricks as optional. We need somewhere to deploy the tool (REQ-0035, deployed link), an LLM that meets the data limits (REQ-0047, the LLM receives no personal data; REQ-0031, approved data), and somewhere to store secrets.
+The kickoff leaves tooling open and suggests Azure, Snowflake, AWS, and Databricks as optional. We need somewhere to deploy the tool (REQ-0035, deployed link), an LLM that meets the data limits (REQ-0047, the LLM receives no personal data (PII); REQ-0031, approved data), and somewhere to store secrets.
 
 ## Options
 

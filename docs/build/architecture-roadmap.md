@@ -1,6 +1,6 @@
 # Architecture and roadmap
 
-Architecture, personal-data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
+Architecture, personal data (PII) lifecycle and action plan. Source: Natalia's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
 > Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
@@ -16,7 +16,7 @@ Sentinel Engine is an AI banking assistant that takes in transaction disputes in
 
 ## PII lifecycle
 
-PII management spans data engineering, AI/agent engineering and full-stack, across two planes (see [decision 004](decisions/004-pii-lifecycle.md), proposed).
+PII management spans data engineering, AI engineering and full-stack, across two planes (see [decision 004](decisions/004-pii-lifecycle.md), proposed).
 
 ### Plane 1: data at rest (batch / lakehouse) — Natalia
 
@@ -42,10 +42,10 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    msg(["Customer message<br/>'My DNI is 1098234'"]) --> mask["Layer 1 · masking engine<br/>Regex + NER"]
+    msg(["Customer message<br/>'My DNI is 1098234'"]) --> mask["Stage 1 · masking engine<br/>Regex + NER"]
     mask -- "store encrypted map<br/>TOKEN_ID_1 → 1098234" --> vault[("Token vault<br/>per session, ephemeral")]
-    mask -- "anonymized prompt only<br/>'My DNI is [TOKEN_ID_1]'" --> llm["Layer 2 · hybrid LLM router<br/>models: decision 10"]
-    llm -- "tool intent + token parameters" --> tools["Layer 3 · deterministic tools<br/>unmask inside the tool"]
+    mask -- "anonymized prompt only<br/>'My DNI is [TOKEN_ID_1]'" --> llm["Stage 2 · hybrid LLM router<br/>models: decision 10"]
+    llm -- "tool intent + token parameters" --> tools["Stage 3 · deterministic tools<br/>unmask inside the tool"]
     vault -- "unmask token<br/>(compare only, never a lookup key)" --> tools
     session[("Session<br/>customer_id")] -- "lookup key" --> tools
     tools -- "parameterized SQL<br/>WHERE customer_id = session" --> db[("Gold")]
@@ -67,18 +67,18 @@ flowchart TD
 | Domain | Responsibility | Owner | Tools |
 |---|---|---|---|
 | Data engineering (at rest) | Static masking and hashing in the Silver layer, so analysts and batch ML never see raw credentials | Natalia Restrepo | PySpark, Delta Lake column masking, hash functions |
-| AI / agent engineering (in flight) | Dynamic prompt masking and unmasking: mask before LLM calls, keep the per-session token vault, unmask inside tool calls | Rubén Dorta | Python, Presidio / Regex / SpaCy NER, session token vault |
+| AI engineering (in flight) | Dynamic prompt masking and unmasking: mask before LLM calls, keep the per-session token vault, unmask inside tool calls | Rubén Dorta | Python, Presidio / Regex / SpaCy NER, session token vault |
 | Full-stack / backend (session security) | Secure transport and UI rendering: `customer_id` via headers/JWT, no PII in browser logs or client storage | Felix Uchubanda | FastAPI, JWT, HTTPS/TLS |
 
-## System architecture (4 layers)
+## System architecture (4 stages)
 
 ```mermaid
 flowchart TD
     ui(["Customer chat · web UI<br/>Spanish and Portuguese"]) --> l1
-    l1["Layer 1 · security and session isolation<br/>PII masking · token vault<br/>authenticated customer_id"] -- "anonymized prompt" --> l2
-    l2["Layer 2 · orchestrator and hybrid LLM router<br/>routine queries → light model<br/>ambiguous, pt-BR, evaluation → strong model<br/>(models: decision 10)"] -- "tool intent + token parameters" --> l3
-    l3["Layer 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff package (JSON)"]
-    l3 --> l4[("Layer 4 · audit log<br/>append-only, anonymized<br/>MX · CO · AR")]
+    l1["Stage 1 · security and session isolation<br/>PII masking · token vault<br/>authenticated customer_id"] -- "anonymized prompt" --> l2
+    l2["Stage 2 · orchestrator and hybrid LLM router<br/>routine queries → light model<br/>ambiguous, pt-BR, evaluation → strong model<br/>(models: decision 10)"] -- "tool intent + token parameters" --> l3
+    l3["Stage 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff package (JSON)"]
+    l3 --> l4[("Stage 4 · audit log<br/>append-only, anonymized<br/>MX · CO · AR")]
     l3 -- "read" --> gold[("Gold<br/>backend: decision 12")]
     l3 -- "write · read back" --> disputes[("Disputes store<br/>SQLite · Postgres")]
 
@@ -93,7 +93,7 @@ flowchart TD
 ```
 
 > [!NOTE]
-> Layer 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for Natalia (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
+> Stage 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for Natalia (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
 
 ## Repository layout
 

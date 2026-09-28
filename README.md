@@ -14,7 +14,7 @@ The guiding principle: **AI understands; code executes and verifies.**
 
 1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
 2. **[Architecture](docs/understand/architecture.md):** layers, components and mocks, decision priority and a case walkthrough, with diagrams.
-3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** Natalia's proposal reconciled with the repository: personal-data lifecycle, four-layer design, repository layout, timeline and costs.
+3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** Natalia's proposal reconciled with the repository: personal data (PII) lifecycle, four-stage design, repository layout, timeline and costs.
 4. **[Team plan](team/plan.md):** schedule, decisions made, working method and mocks.
 
 The [documentation index](docs/README.md) covers everything else.

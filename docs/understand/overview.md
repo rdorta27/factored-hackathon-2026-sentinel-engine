@@ -18,7 +18,7 @@ A **customer-support assistant for a bank** operating in Mexico, Colombia, and A
 |---|---|
 | Normal | Resolves it alone, following bank policies |
 | Ambiguous or unsupported | Asks for what is missing or says it cannot help |
-| Requires a person | Escalates with a structured summary for the agent |
+| Requires a person | Escalates with a structured summary for the advisor |
 
 ## Golden rules
 
