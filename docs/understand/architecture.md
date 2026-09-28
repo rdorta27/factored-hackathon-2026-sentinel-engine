@@ -144,6 +144,9 @@ We decide it together with the flow; with the transaction-disputes flow, the can
 | Deployment | To be decided; proposal: Azure Container Apps or App Service |
 | Repositories | To be decided: one repository or one per domain (Natalia's proposal); delivery requires a single public repository |
 
-**Constraint:** everything must install and run the same way on Linux and Windows, so no platform-specific tooling (such as .NET).
+**Target:** the system runs on Azure; locally it runs on Linux. We rule out .NET because it is outside the team's stack (Python, FastAPI).
+
+> [!WARNING]
+> Windows is not a target, but a teammate may develop on it. Known friction: the commit hook is a bash script (needs Git Bash), and local PySpark/Delta Lake needs Java and usually `winutils`. Work that can run remotely (Databricks, Azure) avoids both.
 
 We record each choice in [decisions](../build/decisions/).

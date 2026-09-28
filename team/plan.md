@@ -12,7 +12,7 @@ Tentative: we adjust it if anything slips.
 |---|---|---|---|
 | Sun | 9/27 | Prepare: data access, repository, readings | Everyone has access |
 | Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
-| Tue | 9/29 | Skeleton: 2-3 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
+| Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
 | Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline. Presentation and video script | **One case works fully** |
 | Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. P1 if time allows | **3 cases in ES and PT, public link** |
 | Fri | 10/2 | Held-out evaluation and metrics. Presentation, video, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
@@ -30,6 +30,7 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
+| No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [architecture](../docs/understand/architecture.md#stack) |
 | Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
 
@@ -52,12 +53,12 @@ Two hackathon rules are non-negotiable: no secrets or data in the repo (credenti
 
 ## Mocks
 
-We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Works for any flow.
+We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Shown here for the transaction-disputes flow.
 
-- **Tue 9/29, skeleton:** 2-3 in-memory mock tools with fixed contracts: 1-2 read tools (e.g. customer data or their transactions), 1 action tool (open a dispute or block a card) and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
+- **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with fixed contracts: look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff (see [components and mocks](../docs/understand/architecture.md#components-and-mocks)). Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
 - **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
   - Wed 9/30, normal case: reads move to the chosen storage (decision 12; proposal: DuckDB), with declared freshness. The action asks for explicit confirmation.
-  - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries, idempotent action and pipeline with partitions, watermark and deduplication.
+  - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries and pipeline with partitions, watermark and deduplication.
   - Whatever we do not reach stays a mock and we report it under limitations.
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
 - **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).

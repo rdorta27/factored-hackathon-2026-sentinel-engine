@@ -6,7 +6,7 @@
 
 ## Context
 
-We must choose a flow to start building on Tuesday, before having profiled the data. The 9/28 presentation (*decisiones-2*) proposes transaction disputes as the starting point and leaves the door open to change if the data analysis does not support it. Options and comparison in [flow options](../flows/options.md).
+We must choose a flow to start building on Tuesday, before having profiled the data. The 9/28 status presentation proposes transaction disputes as the starting point and leaves the door open to change if the data analysis does not support it. Options and comparison in [flow options](../flows/options.md).
 
 The flow must simultaneously demonstrate: data analysis, tool-using conversation, confirmed and verified action, evidence-backed handoff, and a learned component against a baseline.
 
