@@ -1,8 +1,8 @@
 # Documentación del equipo
 
-Documentación del proyecto: el reto, los requerimientos y las reglas de diseño. La planificación del equipo está en [`equipo/`](../equipo/). Está en construcción: si algo no se entiende o falta, se ajusta.
+Documentación del proyecto: el reto, los requerimientos y las reglas de diseño. La planificación del equipo está en [`team/`](../team/). Está en construcción: si algo no se entiende o falta, se ajusta.
 
-Se trabaja en español. Para la entrega, el README principal, la presentación y el video se pasan a inglés.
+Se trabaja en español. Lo que se entrega —README del repo, presentación y guion del video— se redacta en inglés desde el primer borrador; ver [idioma](construir/entrega.md#idioma).
 
 El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y diccionario) no está en el repositorio; lo tiene cada integrante.
 
@@ -11,7 +11,7 @@ El material oficial del hackathon (planteamiento, kickoff, resumen del dataset y
 Lee en este orden (unos 20 minutos):
 
 1. [El reto en una página](entender/resumen.md)
-2. [Plan del equipo](../equipo/plan.md): cronograma y cómo trabajamos
+2. [Plan del equipo](../team/plan.md): cronograma y cómo trabajamos
 3. [Arquitectura](entender/arquitectura.md)
 4. [Requerimientos](requerimientos/requerimientos.md): solo la tabla de resumen y los P0
 5. El documento de tu área en [construir/areas/](construir/areas/)
@@ -32,7 +32,7 @@ Lee en este orden (unos 20 minutos):
 | ¿Qué flujo elegimos? | [Opciones de flujo](construir/flujos/opciones.md) |
 | ¿Por qué decidimos X? | [Decisiones](construir/decisiones/) |
 | ¿Qué va en la presentación y el video? | [Entrega](construir/entrega.md) |
-| ¿Quién hace qué, cuándo y cómo trabajamos? | [Plan](../equipo/plan.md), [tareas](../equipo/tareas.md), [decisiones pendientes](../equipo/decisiones-pendientes.md) |
+| ¿Quién hace qué, cuándo y cómo trabajamos? | [Plan](../team/plan.md), [tareas](../team/tareas.md), [decisiones pendientes](../team/decisiones-pendientes.md) |
 
 ## Estructura
 

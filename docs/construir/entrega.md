@@ -2,6 +2,21 @@
 
 Lunes 5/10 (hora por confirmar). Se trabaja en español y se entrega en **inglés**. Lista completa de entregables en el [resumen](../entender/resumen.md#entregables-lunes-510-hora-por-confirmar).
 
+## Idioma
+
+Lo que se entrega se escribe en **inglés desde el primer borrador**; lo que se trabaja se escribe en **español**. No hay una pasada de traducción al final: el README, la presentación y el guion del video se redactan en inglés mientras se crean. `docs/` y `team/` se quedan en español. Registrado como [REQ-0051](../requerimientos/requerimientos.md).
+
+| Pieza | Idioma | Estado | Quién revisa | Se congela |
+|---|---|---|---|---|
+| `README.md` del repo (el link de la entrega) | Inglés | Listo | Rubén | Mantenido en inglés |
+| Título y descripción del repo en GitHub | Inglés | Listo | Rubén | Mantenido en inglés |
+| Presentación (4 a 6 diapositivas) | Nace en inglés | Pendiente | | Vie 2/10 |
+| Guion del video | Nace en inglés | Pendiente | | Vie 2/10 |
+| Demos: casos ES y PT | Español y portugués | — | — | Es lo que dice el sistema |
+| `docs/` y `team/` | Español | — | — | No se traducen |
+
+Se actualiza en cada revisión, no al final. Estados: Pendiente, En curso, Listo.
+
 ## Presentación
 
 4 a 6 diapositivas.

@@ -11,6 +11,7 @@ Quién hace qué y para cuándo. Al tomar una tarea, poner el nombre; al termina
 | Completar la [tabla del equipo](plan.md#equipo): fortalezas y disponibilidad | Cada uno | Pendiente |
 | Anotar la preferencia en las [decisiones pendientes](decisiones-pendientes.md) | Cada uno | Pendiente |
 | Confirmar que las credenciales de S3 funcionan para los 3 (Natalia ya las probó) | Felix, Rubén | En curso |
+| Activar el hook de commits: `git config core.hooksPath .githooks` | Felix, Natalia | Pendiente |
 | Subir al repo el script de ingesta (`scripts/ingest_s3_data.py`), sin credenciales: se leen de `.env` | Natalia | Pendiente |
 | Documentar la fuente, el formato y las particiones de los datos en el [dataset](../docs/entender/dataset.md) | Natalia | Pendiente |
 | Definir quién pone la suscripción de Azure, con tope de gasto y alertas | Por asignar | Pendiente |

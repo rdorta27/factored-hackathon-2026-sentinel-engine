@@ -82,4 +82,4 @@ Estimación inicial para discutir el lunes 28/9; no es una recomendación.
 | 3 | Card support | Bajo | Bajo | Media | Muy buena |
 | 4 | Credit-product info & eligibility | Alto | Alto | Media | Buena |
 
-El reparto de áreas se decide aparte (ver [decisiones pendientes](../../../equipo/decisiones-pendientes.md)).
+El reparto de áreas se decide aparte (ver [decisiones pendientes](../../../team/decisiones-pendientes.md)).
