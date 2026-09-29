@@ -14,8 +14,8 @@ Tentative: we adjust it if anything slips.
 | Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
 | Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
 | Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline | **One case works fully** |
-| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script starts. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
-| Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Freeze code at night | **Code and results frozen** |
+| Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script and slide outline start. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
+| Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Group validates the slide outline. Freeze code at night | **Code and results frozen** |
 | Sat to Mon | 10/3 to 10/5 | Presentation review and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
 
 We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
@@ -67,7 +67,7 @@ We start with well-documented mocks and swap them for the real thing one by one,
 
 - **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with fixed contracts: look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff (see [components and mocks](../docs/understand/architecture.md#components-and-mocks)). Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
 - **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
-  - Wed 9/30, normal case: reads move to the chosen storage (decision 12: DuckDB or Databricks), with declared freshness. The action asks for explicit confirmation.
+  - Wed 9/30, normal case: reads move to the chosen storage (decision 12: DuckDB locally, Databricks in production), with declared freshness. The action asks for explicit confirmation.
   - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries and pipeline with partitions, watermark and deduplication.
   - Whatever we do not reach stays a mock and we report it under limitations.
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).

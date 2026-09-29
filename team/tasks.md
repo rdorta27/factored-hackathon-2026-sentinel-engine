@@ -79,7 +79,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
 | Path to production write-up (REQ-0052) | Rubén | Pending |
-| README in English | Unassigned | Pending |
+| Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 | Validate the presentation outline with the group | Rubén, team | Pending |
 
