@@ -6,7 +6,7 @@ Who does what and by when, per day. When you pick a task, add your name; when yo
 
 ## Summary
 
-Daily goals and milestones live in the [plan schedule](plan.md#schedule). We work with the transaction-disputes flow until the Tuesday review ([decision 003](../docs/build/decisions/003-disputes-flow.md)).
+Daily goals and milestones live in the [plan schedule](plan.md#schedule). The flow is transaction disputes, entered through an account inquiry ([decision 003](../docs/build/decisions/003-disputes-flow.md)).
 
 | Day | Milestone | Tasks |
 |---|---|---|
@@ -37,7 +37,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 
 | Task | Owner | Status |
 |---|---|---|
-| Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Pending |
+| Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Done: disputes confirmed 9/29 ([flow selection](../docs/build/flows/03-flow-selection.md)) |
 | Pick the learned component (decision 2); lead candidate: few-shot LLM classifier | Team | Pending |
 | Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
 | Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
@@ -80,12 +80,13 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Path to production write-up (REQ-0052) | Rubén | Pending |
 | README in English | Unassigned | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
+| Validate the slides with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5
 
 | Task | Owner | Status |
 |---|---|---|
-| Finish the presentation (4 to 6 slides) with the frozen results | Unassigned | Pending |
+| Finish the presentation (4 to 6 slides) with the frozen results | Rubén | Pending |
 | Record and edit the video (3 minutes at most) | Rubén | Pending |
 | Critical fixes only | Team | Pending |
 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | Unassigned | Pending |

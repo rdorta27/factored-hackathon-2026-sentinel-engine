@@ -122,5 +122,4 @@ A requirement with no official source is marked **Own**: a team design decision,
 
 ## Open questions
 
-- Does the Tuesday 9/29 review confirm transaction disputes? That settles the flow-dependent requirements.
 - How do we build the reference labels for evaluation (which cases require a human)?

@@ -37,7 +37,11 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
 | Backend: Python + FastAPI (decision 9); loop tool (LangGraph or plain Python) deferred | Accepted | [005](../docs/build/decisions/005-backend.md) |
 | Frontend: one-page chat served by FastAPI; no Streamlit or Gradio (decision 11) | Accepted | [006](../docs/build/decisions/006-frontend.md) |
-| Video: Rubén; script starts Thursday 10/1 (decision 20, slides still open) | Accepted | [delivery](../docs/build/delivery.md) |
+| Video and slides: Rubén. Script from Thursday 10/1. Group validates the slides Friday 10/2; content finished over the weekend and Monday; frozen Monday 10/5 (decision 20) | Accepted | [delivery](../docs/build/delivery.md) |
+| Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
+| Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
+| No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
+| One public repository. Git submodules still open (decision 21) | Accepted | [architecture roadmap](../docs/build/architecture-roadmap.md#repository-layout) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
@@ -46,10 +50,10 @@ Product and technical decisions go in [decisions](../docs/build/decisions/), one
 | Topic | How we work |
 |---|---|
 | Communication | Everything in the team channel. Challenge questions go to the hackathon help channel |
-| Status | No standing sync. We talk on Slack during the day. A written status, if needed, goes in the channel at the end of the day |
+| Status | No standing sync and no standing milestone meetings. We talk on Slack during the day. A meeting, individual or with the group, happens only when a task needs it; the outcome goes in the channel |
 | Tasks | In [tasks](tasks.md), with owner, date and status |
 | Specs | With OpenSpec: we propose each change before implementing and cite its requirements |
-| Code | Proposal: branch per task and PR reviewed by someone else; `main` always works. Decision 7 pending |
+| Code | Branch per change, push, ask in Slack for authorization to merge. Any other teammate can authorize; the author merges. No direct push to `main` |
 | Decisions | Product and technical ones in [decisions](../docs/build/decisions/); team ones here. We announce all of them in the channel |
 | Progress | When a task closes, we update its status in the [requirements](../docs/requirements/requirements.md) |
 | Repository | Single repo (`factored-hackathon-2026-sentinel-engine`), public from the start and it stays public |

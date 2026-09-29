@@ -19,7 +19,7 @@ The flow must simultaneously demonstrate: data analysis, tool-using conversation
 
 ## Decision
 
-We start with the **transaction-dispute flow** as our working hypothesis. We confirm or change it on Tuesday 9/29 according to the following criteria, measured on the real data.
+Confirmed on 9/29: **transaction disputes, entered through an account inquiry** ([flow selection](../flows/03-flow-selection.md)). The Tuesday criteria below are the ones we measured; cards was the alternative we did not take.
 
 | Criterion | How it is measured | We stay with disputes if… | Result 9/28 ([evidence](../flows/03-flow-selection.md)) |
 |---|---|---|---|

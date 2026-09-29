@@ -58,7 +58,7 @@ Accepted decisions that code must follow:
   [006](docs/build/decisions/006-frontend.md).
 - **Platform:** Azure; locally it runs on Linux. See
   [001](docs/build/decisions/001-azure-platform.md).
-- **Proposed flow** (decided at the 9/29 review): a dispute starts as an account
+- **Flow** (confirmed at the 9/29 review): a dispute starts as an account
   inquiry; the learned component is a prompted LLM against a keyword baseline.
   See [flow selection analysis](docs/build/flows/03-flow-selection.md).
 - Which model serves each route is still open (pending decision 10).

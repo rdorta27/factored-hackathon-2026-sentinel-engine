@@ -210,7 +210,7 @@ REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a cr
 | Backend | **Python + FastAPI** (decided). Loop tool deferred: LangGraph or plain Python ([decision 005](../build/decisions/005-backend.md)) |
 | Frontend | **One-page chat served by FastAPI.** No Streamlit or Gradio ([decision 006](../build/decisions/006-frontend.md)) |
 | Deployment | Open (decision 13); proposal: Azure Container Apps or App Service |
-| Repositories | Open (decision 21): one repository or one per domain (proposed on 9/28). The submission requires a single public repository |
+| Repositories | **One public repository** (decision 21). Git submodules still open |
 
 **Target:** the system runs on Azure and, locally, on Linux. .NET is out because it is not part of the team's stack (Python, FastAPI).
 
