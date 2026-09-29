@@ -28,7 +28,7 @@ Campaigns (`marketing_campaigns`, `campaign_sends`) may explain spikes in contac
 
 ## Sizing
 
-REQ-0053. The dataset has about 730–900 call-center interactions a day (800K over three years). We estimate how many of them are disputes per day, state the volume the prototype is designed for, and what would change at real volume. The mentors (9/28) value recognizing sizing limits as business judgment; a prototype is not expected to handle the full volume.
+REQ-0053. The dataset has about 730–900 call-center interactions a day (800K over three years). We estimate how many of them are disputes per day, state the volume the prototype is designed for, and what would change at real volume. Recognizing sizing limits is valued as business judgment (help channel, 9/28); a prototype is not expected to handle the full volume.
 
 ## Country monitoring
 

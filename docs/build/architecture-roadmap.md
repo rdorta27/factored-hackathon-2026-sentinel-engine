@@ -103,7 +103,7 @@ flowchart TD
     a["sentinel-ai-core · AI area<br/>PII masking, LLM router,<br/>deterministic rules<br/>Python · FastAPI · Pydantic"]
     w["sentinel-web-interface · full-stack area<br/>chat UI, handoff view,<br/>session management"]
     infra["sentinel-devops-infra · shared<br/>IaC (Terraform or Bicep) · CI/CD (GitHub Actions)"]
-    delivery[("Single public repo<br/>factored-hackathon-2026-sentinel-engine<br/>submodules: decision 21")]
+    delivery[("Single public repo<br/>factored-hackathon-2026-sentinel-engine<br/>submodules: decision 22")]
     d & a & w -. "folders, not separate repos" .-> delivery
     infra -- "builds and deploys" --> delivery
 
@@ -117,7 +117,7 @@ flowchart TD
 ```
 
 > [!WARNING]
-> One public repository (decision 21, 9/29). Separate repos are out. Still open: whether this repo uses git submodules.
+> One public repository (decision 21, 9/29). Separate repos are out. Still open (decision 22): whether this repo uses git submodules.
 
 ## Action plan (deadline Monday 10/5, 11:59 pm UTC-5)
 
@@ -170,7 +170,7 @@ Notes:
 
 ## Cost matrix (MVP budget)
 
-Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**. The mentors confirmed (9/28) that cloud deployment is not mandatory: the prototype can run locally (DuckDB, local model route) and this matrix becomes the production scenario, see [path to production](../understand/architecture.md#path-to-production).
+Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**. Cloud deployment is not mandatory (help channel, 9/28): the prototype can run locally (DuckDB, local model route) and this matrix becomes the production scenario, see [path to production](../understand/architecture.md#path-to-production).
 
 | Component | Open source / free tier | Paid cloud (Azure / Databricks) | Estimated MVP cost |
 |---|---|---|---|
@@ -224,7 +224,7 @@ The system handles the full intake arc: account inquiry → unrecognized-charge 
 | 5 | Dynamic masking: token vault, mask and unmask | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
 | 6 | Hybrid router model choice | Undecided (decision 10, due Tue 9/29) |
 | 7 | Storage backend | **Decided and implemented.** Delta Lakehouse: DuckDB + Delta extension locally (zero cost, no SQL server), Azure Databricks + PySpark + Delta Lake on ADLS Gen2 in production. Full Medallion pipeline (Bronze → Silver → Gold) lives in `sentinel-data-engine/`. |
-| 8 | One public repo; git submodules still open | One repo accepted 9/29 (decision 21). Submodules undecided |
+| 8 | One public repo; git submodules still open | One repo accepted 9/29 (decision 21). Submodules undecided (decision 22) |
 | 9 | MVP cost USD 20–58 | Working assumption, pending Azure validation (decision 16) |
 | 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; deadline confirmed: Mon 10/5, 11:59 pm (UTC-5) |
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |

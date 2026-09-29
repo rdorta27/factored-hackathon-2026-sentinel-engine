@@ -6,7 +6,7 @@ What the system must do to meet the hackathon brief. Each requirement has an ID 
 
 ## Hackathon material
 
-Requirements come from four official documents, plus clarifications from the mentors in the help channel. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+Requirements come from four official documents, plus clarifications published in the help channel. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|
@@ -14,7 +14,7 @@ Requirements come from four official documents, plus clarifications from the men
 | Kickoff deck (*Datathon 2026 kickoff*) | Kickoff p. *N* | Evaluation criteria, workflows, multilingual support, headline metrics | 36 |
 | Dataset summary (*LATAM Bank*) | Dataset summary | Tables, volumes and the intentional quality problems (duplicates, nulls, late arrivals, schema changes) | 6 |
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | 1 |
-| Mentor answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
+| Answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
 A requirement with no official source is marked **Own**: a team design decision, linked to where it is explained (10 requirements rely only on it; others combine it with an official source). The dataset documents shape the data requirements through [dataset](../understand/dataset.md) and are cited where a row depends on a declared property of the data.
 
@@ -85,7 +85,7 @@ A requirement with no official source is marked **Own**: a team design decision,
 
 | ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
 |---|---|---|---|---|---|---|---|---|
-| REQ-0014 | Data-backed problem, with reproducible analysis justifying the flow | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 1 · Kickoff p. 13 | Reproducible analysis | In progress |
+| REQ-0014 | Data-backed problem, with reproducible analysis justifying the flow | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 1 · Kickoff p. 13 | Reproducible analysis | Done |
 | REQ-0015 | Repeatable pipeline with strict contracts, quality, lineage, and freshness; handles the declared ~2% duplicates, ~5% nulls and orphaned records | P0 | All | Data Engineering | data | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Dataset summary · Dictionary | Pipeline + quality report | In progress |
 | REQ-0016 | At least one learned component compared against a baseline on held-out; a prompted or fine-tuned LLM counts if defined, evaluated and justified | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28) | Results table | Pending |
 | REQ-0017 | Valid labels with no data leakage; justify metrics, thresholds, and splits | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Split description | In progress |

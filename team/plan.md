@@ -42,7 +42,7 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
-| One public repository. Git submodules still open (decision 21) | Accepted | [architecture roadmap](../docs/build/architecture-roadmap.md#repository-layout) |
+| One public repository (decision 21). Git submodules are open (decision 22) | Accepted | [architecture roadmap](../docs/build/architecture-roadmap.md#repository-layout) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 

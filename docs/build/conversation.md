@@ -80,7 +80,7 @@ REQ-0044 (neutral Spanish (es-419)) and REQ-0041 (original currency). The accoun
 
 - We prefer **multilingual** components (LLM, multilingual embeddings) over models trained only on Spanish.
 - Deterministic logic does **not depend on language**: no Spanish-only keywords.
-- We create our own pt-BR test cases (translated, synthetic, or drawn from external Brazilian complaint data), **labeled as such** and **held back**: we do not use them to tune the system. External data is allowed if justified (mentors, 9/28; REQ-0054).
+- We create our own pt-BR test cases (translated, synthetic, or drawn from external Brazilian complaint data), **labeled as such** and **held back**: we do not use them to tune the system. External data is allowed if justified (help channel, 9/28; REQ-0054).
 - We put pt-BR in the adversarial set (injection, multilingual ambiguity).
 
 ### Language, country, and currency are independent

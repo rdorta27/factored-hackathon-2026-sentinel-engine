@@ -128,7 +128,7 @@ flowchart TD
 
 ## Walkthrough of a case (example: unrecognized charge)
 
-The suggested flow starts as an account inquiry and becomes a dispute only when it has to ([flow selection analysis](../build/flows/03-flow-selection.md#suggested-flow)).
+The suggested flow starts as an account inquiry and becomes a dispute only when it has to ([flow selection](../build/flows/03-flow-selection.md#suggested-flow)).
 
 ```mermaid
 sequenceDiagram
@@ -186,7 +186,7 @@ A **prompted LLM** classifies intent and flags when to escalate, measured agains
 
 ## Path to production
 
-REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a credible path to production. The prototype keeps a minimal deployment for the public link and documents the rest.
+REQ-0052. Cloud deployment is not mandatory (help channel, 9/28); what counts is a credible path to production. The prototype keeps a minimal deployment for the public link and documents the rest.
 
 | Aspect | Prototype | Production |
 |---|---|---|
@@ -210,7 +210,7 @@ REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a cr
 | Backend | **Python + FastAPI** (decided). Loop tool deferred: LangGraph or plain Python ([decision 005](../build/decisions/005-backend.md)) |
 | Frontend | **One-page chat served by FastAPI.** No Streamlit or Gradio ([decision 006](../build/decisions/006-frontend.md)) |
 | Deployment | Open (decision 13); proposal: Azure Container Apps or App Service |
-| Repositories | **One public repository** (decision 21). Git submodules still open |
+| Repositories | **One public repository** (decision 21). Git submodules are open (decision 22) |
 
 **Target:** the system runs on Azure and, locally, on Linux. .NET is out because it is not part of the team's stack (Python, FastAPI).
 

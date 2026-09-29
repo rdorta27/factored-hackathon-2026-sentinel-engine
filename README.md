@@ -14,7 +14,7 @@ The data backbone is a **100% Delta Lakehouse** — no traditional RDBMS for ana
 
 ## Requirements coverage
 
-**0% covered (0 of 57 requirements Done)**: P0 0/41 · P1 0/12 · P2 0/4. 4 are In progress (REQ-0014, 0015, 0017, 0053, from the [flow measurements](docs/build/flows/02-flow-measurements.md)); see the [requirements](docs/requirements/requirements.md) for status.
+**2% covered (1 of 57 requirements Done)**: P0 1/41 · P1 0/12 · P2 0/4. REQ-0014 is done ([measurements](docs/build/flows/02-flow-measurements.md), [selection](docs/build/flows/03-flow-selection.md)); 3 are In progress (REQ-0015, 0017, 0053). See the [requirements](docs/requirements/requirements.md) for status.
 
 ## Start here (about 15 minutes)
 
