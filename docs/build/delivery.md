@@ -23,7 +23,7 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 
 | # | Slide | Source |
 |---|---|---|
-| 1 | Problem and chosen flow, backed by data | [analysis](areas/analysis.md), [decisions](decisions/) |
+| 1 | Problem and chosen flow, backed by data | [flow selection](flows/03-flow-selection.md), [decisions](decisions/) |
 | 2 | Architecture (core principle and layers) | [architecture](../understand/architecture.md), [decisions](decisions/) |
 | 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
 | 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |

@@ -35,7 +35,7 @@ Even if we do not train a model, we show rigor through: component selection, rel
 
 ## Candidate: escalation predictor
 
-**Data check 9/28 ([evidence](../flows/03-flow-selection.md)):** `was_escalated` is 10% of calls, but no single call field separates it (9–11%). Kept as a candidate only if a simple multivariate model beats the rule baseline on a time split.
+**Data check 9/28 ([evidence](../flows/03-flow-selection.md)):** `was_escalated` is 10% of calls, but no single call field separates it (spreads of 0.65% to 1.59%; see [measurements](../flows/02-flow-measurements.md)). Kept as a candidate only if a simple multivariate model beats the rule baseline on a time split.
 
 Predicts whether a case will be resolved without escalation, from call-center interaction history (first-contact-resolution, FCR, idea).
 
@@ -54,7 +54,7 @@ Discarded as a learned component: customer segmentation (no valid labels to comp
 
 - **Data leakage**, three ways to avoid it:
   1. **By unit:** a case (one complaint, one interaction with all its messages) stays whole on a single side; never split.
-  2. **By time:** we train on old data and test on recent data (e.g., with the ~70/30 split from [metrics](../metrics.md), we train through mid-2025 and test from there to Jun 2026). This is the primary split: it simulates production, where the model learns from the past and predicts what comes next. The same customer may have old cases in training and recent ones in testing; that is realistic. We split by customer only if we want to measure new customers.
+  2. **By time:** we develop on old data and test on recent data (e.g., with the ~70/30 split from [metrics](../metrics.md), we train through mid-2025 and test from there to Jun 2026). This is the primary split: it simulates production, where the model learns from the past and predicts what comes next. The same customer may have old cases in training and recent ones in testing; that is realistic. We split by customer only if we want to measure new customers.
   3. **By features:** each feature is computed using only information prior to the case date and time (e.g., "did they escalate before?" counts only prior escalations).
 - A random split "sees the future" and inflates the metric (e.g., 94% random vs. 81% by time). It is the same model: what changes is the measurement. We report the time-based split, alongside the baseline on the same split. More data does not fix a bad split.
 - **Held-out:** we measure it only once at the end; we improve the system with the development set.

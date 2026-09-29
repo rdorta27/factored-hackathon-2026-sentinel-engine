@@ -75,7 +75,7 @@ AI cost per successful resolution: 5 / 40 = USD 0.125
 
 At least one, always against a baseline and on held-out. The chosen component is the prompted LLM of [decision 007](decisions/007-learned-component.md); the other rows are alternatives considered. Detail in [ML](areas/ml.md).
 
-| Possible component | Metric | Possible baseline |
+| Component | Metric | Baseline |
 |---|---|---|
 | **Dispute-category classifier, few-shot LLM (chosen)** | accuracy, F1 per class, by locale; cost and latency per case | Keywords or TF-IDF; the same LLM zero-shot |
 | Intent or reason classifier | accuracy, F1 per class | Keywords or majority class |

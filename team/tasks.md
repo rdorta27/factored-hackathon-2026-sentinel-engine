@@ -30,7 +30,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | First look at the data: table inventory vs the dictionary | Rubén | In progress |
 | Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 | Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
-| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | X baseline for dispute category, with a time-based split | Unassigned | Pending |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
+| Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
 | List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 
 ## Tue 9/29
@@ -38,7 +39,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Task | Owner | Status |
 |---|---|---|
 | Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Done: disputes confirmed 9/29 ([flow selection](../docs/build/flows/03-flow-selection.md)) |
-| Pick the learned component (decision 2) | Team | Done: prompted LLM, 9/29 ([007](../docs/build/decisions/007-learned-component.md)) |
+| Pick the learned component | Team | Done: prompted LLM, 9/29 ([decision 007](../docs/build/decisions/007-learned-component.md)) |
 | Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
 | Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
 | JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
@@ -57,7 +58,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Handoff integrated into the flow | Unassigned | Pending |
 | Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
 | First evaluation cases | Unassigned | Pending |
-| Start the presentation (4 to 6 slides) | Unassigned | Pending |
+| Start the presentation (4 to 6 slides) | Rubén | Pending |
 
 ## Thu 10/1
 

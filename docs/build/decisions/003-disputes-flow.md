@@ -1,6 +1,6 @@
 # 003 · Initial flow: transaction disputes
 
-**Date:** 2026-09-28
+**Date:** 2026-09-28 · **Updated:** 2026-09-29
 **Status:** Accepted (confirmed at the 9/29 review; evidence in [flow selection](../flows/03-flow-selection.md))
 **Participants:** Team
 
@@ -21,12 +21,12 @@ The flow must simultaneously demonstrate: data analysis, tool-using conversation
 
 Confirmed on 9/29: **transaction disputes, entered through an account inquiry** ([flow selection](../flows/03-flow-selection.md)). The Tuesday criteria below are the ones we measured; cards was the alternative we did not take.
 
-| Criterion | How it is measured | We stay with disputes if… | Result 9/28 ([evidence](../flows/03-flow-selection.md)) |
+| Criterion | How it is measured | We stay with disputes if… | Result (measured 9/28, confirmed 9/29; [evidence](../flows/03-flow-selection.md)) |
 |---|---|---|---|
 | Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) | Low: 251 unrecognized-charge claims in Q4-2024 (~2.7 a day), 4.47% of complaints; the entry point is backed by 35% transactional calls |
 | Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases | **Fails:** 0% of complaints carry `origin_interaction_id`; transcripts are templates |
 | Labels | Quality and balance of `category` / `subcategory` and of `was_escalated` | At least one label is consistent and non-trivial | **Fails for complaints:** `description` leaks `category`; `was_escalated` exists only on calls (10%) and shows no single-field signal |
-| Defensible ML | Keyword or TF-IDF baseline vs. a learned component, with a temporal split. The component can be a simple model or a few-shot LLM classifier (a prompted LLM counts as a learned component if it is defined, evaluated and justified; REQ-0016) | The component beats the baseline on the same held-out set, with valid labels and no leakage | Open: prompted LLM on team-generated text is the viable path; multivariate check on call escalation pending |
+| Defensible ML | Keyword or TF-IDF baseline vs. a learned component, with a temporal split. The component can be a simple model or a few-shot LLM classifier (a prompted LLM counts as a learned component if it is defined, evaluated and justified; REQ-0016) | The component beats the baseline on the same held-out set, with valid labels and no leakage | Decided 9/29: prompted LLM on team-generated text ([decision 007](007-learned-component.md)); a multivariate check on call escalation is not part of the design |
 | Data leakage | Feature review | Only opening-time fields are used; outcome fields (`status`, `resolution`, `sla_breached`, etc.) stay out | Done: closing and post-opening fields identified and banned |
 
 If volume or labels fail, the preferred alternative is **cards** (same structure: confirm, act, verify, and handoff on fraud). A classical model with no margin over the baseline no longer triggers the switch, as long as the few-shot LLM approach is defensible.
@@ -38,6 +38,6 @@ If volume or labels fail, the preferred alternative is **cards** (same structure
 - **Handoff:** on suspected fraud (`is_fraud` / `fraud_score`), high amount, repeat customer, insufficient information, policy limit, or customer request. The package follows section 8 of the presentation: request, verified facts, transactions, actions taken, evidence, open questions, and reason.
 - **Dispute window:** a charge can be disputed up to **90 days** after its `transaction_date`; older charges cannot be disputed: the assistant explains why and offers a handoff. Natalia's assumption, source still to confirm; it lives in configuration as a synthetic policy, so the value can change per country. With static data, "today" is the simulated demo date, not the real one.
 - **Late arrivals:** if the charge does not appear, we open the dispute as *pending verification* ([conversation](../conversation.md)).
-- **Portuguese:** the dataset is Spanish-only; we define the Portuguese test cases in decision 15, which should be brought forward.
-- **Refinement confirmed on 9/29 ([evidence](../flows/03-flow-selection.md#suggested-flow)):** the dispute starts as an account inquiry (look up the charge and its status first), because demand sits in transactional calls and the dispute labels fail the ML criteria in every flow. The learned component becomes a prompted LLM on team-generated text ([007](007-learned-component.md)).
-- **Pending:** the numeric thresholds, set with the held-out set.
+- **Portuguese:** the dataset is Spanish-only; the Portuguese test cases are defined in decision 15, still open.
+- **Refinement confirmed on 9/29 ([evidence](../flows/03-flow-selection.md#suggested-flow)):** the dispute starts as an account inquiry (look up the charge and its status first), because demand sits in transactional calls and the dispute labels fail the ML criteria in every flow. The learned component becomes a prompted LLM on team-generated text ([decision 007](007-learned-component.md)).
+- **Pending:** the numeric thresholds, set with the held-out set (REQ-0017).
