@@ -51,7 +51,7 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 | 5 | Daily sync | No meeting. Slack is enough if we talk every day. A status, if needed, goes in the channel at the end of the day | 9/28 |
 | 9 | Backend | Python + FastAPI decided; loop tool (LangGraph or plain Python) deferred. Policy, session and idempotency stay in code | 9/28 |
 | 11 | Frontend | One-page chat served by FastAPI. Streamlit and Gradio are out. Node only if Felix asks for the video | 9/28 |
-| 20 | Video and slides | Rubén. Script starts Thursday 10/1. Slides: Rubén; the group validates them Friday 10/2; content is finished over the weekend and Monday; frozen Monday 10/5 | 9/29 |
+| 20 | Video and slides | Rubén. Script starts Thursday 10/1. Slides: Rubén; outline on Thursday 10/1, validated by the group on Friday 10/2, reviewed from Friday to Monday with the results; frozen Monday 10/5 | 9/29 |
 | 6 | Task tool | [tasks.md](tasks.md) in the repo. Follow-up is in the team channel; Rubén reviews what is still pending | 9/29 |
 | 7 | Code flow | Each person works on a branch, pushes it, and asks in Slack for authorization to merge. Any other teammate can authorize. The author merges. No direct push to `main` | 9/29 |
 | 8 | Milestone meetings | No standing meetings. Tasks are assigned as they come up. A meeting, individual or with the group, happens only when needed | 9/29 |

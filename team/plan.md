@@ -16,7 +16,7 @@ Tentative: we adjust it if anything slips.
 | Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline | **One case works fully** |
 | Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script starts. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
 | Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Freeze code at night | **Code and results frozen** |
-| Sat to Mon | 10/3 to 10/5 | Presentation and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
+| Sat to Mon | 10/3 to 10/5 | Presentation review and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
 
 We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
 
@@ -38,7 +38,7 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | Backend: Python + FastAPI (decision 9); loop tool (LangGraph or plain Python) deferred | Accepted | [005](../docs/build/decisions/005-backend.md) |
 | Frontend: one-page chat served by FastAPI; no Streamlit or Gradio (decision 11) | Accepted | [006](../docs/build/decisions/006-frontend.md) |
 | Learned component: prompted LLM classifying the dispute category, against a keyword baseline, on team-written text | Accepted | [007](../docs/build/decisions/007-learned-component.md) |
-| Video and slides: Rubén. Script from Thursday 10/1. Group validates the slides Friday 10/2; content finished over the weekend and Monday; frozen Monday 10/5 (decision 20) | Accepted | [delivery](../docs/build/delivery.md) |
+| Video and slides: Rubén. Script from Thursday 10/1. Slide outline Thursday 10/1, validated by the group Friday 10/2, reviewed from Friday to Monday with the results; frozen Monday 10/5 (decision 20) | Accepted | [delivery](../docs/build/delivery.md) |
 | Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |

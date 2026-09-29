@@ -58,7 +58,6 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Handoff integrated into the flow | Unassigned | Pending |
 | Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
 | First evaluation cases | Unassigned | Pending |
-| Start the presentation (4 to 6 slides) | Rubén | Pending |
 
 ## Thu 10/1
 
@@ -66,6 +65,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 |---|---|---|
 | Ambiguous and human cases | Unassigned | Pending |
 | Start the video script | Rubén | Pending |
+| Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
 | Portuguese | Unassigned | Pending |
 | Failure handling: down tools, expired session, bounded retries | Unassigned | Pending |
 | Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
@@ -81,13 +81,13 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Path to production write-up (REQ-0052) | Rubén | Pending |
 | README in English | Unassigned | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
-| Validate the slides with the group | Rubén, team | Pending |
+| Validate the presentation outline with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5
 
 | Task | Owner | Status |
 |---|---|---|
-| Finish the presentation (4 to 6 slides) with the frozen results | Rubén | Pending |
+| Review and complete the presentation (4 to 6 slides) with the frozen results, from Friday on | Rubén | Pending |
 | Record and edit the video (3 minutes at most) | Rubén | Pending |
 | Critical fixes only | Team | Pending |
 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | Unassigned | Pending |

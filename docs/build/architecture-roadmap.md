@@ -157,13 +157,14 @@ gantt
     README                                 :2026-10-02, 1d
     section Team
     Video script                           :2026-10-01, 1d
-    Validate slides                        :2026-10-02, 1d
+    Slide outline                          :2026-10-01, 1d
+    Validate outline                       :2026-10-02, 1d
     Deck and video                         :2026-10-03, 3d
 ```
 
 Notes:
 
-- The video script starts on Thursday 10/1 (Rubén). Slides are Rubén's: the group validates them Friday 10/2; content is finished over the weekend and Monday 10/5, once the held-out results exist.
+- The video script starts on Thursday 10/1 (Rubén). Slides are Rubén's: outline on Thursday 10/1, validated by the group on Friday 10/2, then reviewed from Friday to Monday 10/5 once the held-out results exist.
 - The weekend and Monday 10/5 go to the deck and the video on the frozen build; code changes are critical fixes only. Submit with margin before 11:59 pm.
 - Portuguese test cases: source and reviewer still to define (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
 - Submission deadline confirmed by the organizers: Monday 10/5, 11:59 pm (UTC-5). The video lasts 3 minutes at most.
