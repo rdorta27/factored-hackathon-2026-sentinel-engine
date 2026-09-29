@@ -79,7 +79,7 @@ flowchart TD
     l2["Stage 2 · orchestrator and hybrid LLM router<br/>routine queries → light model<br/>ambiguous, pt-BR, evaluation → strong model<br/>(models: decision 10)"] -- "tool intent + token parameters" --> l3
     l3["Stage 3 · deterministic policy and tools<br/>parameterized queries by session<br/>eligibility rules (90-day window, to validate)<br/>handoff package (JSON)"]
     l3 --> l4[("Stage 4 · audit log<br/>append-only, anonymized<br/>MX · CO · AR")]
-    l3 -- "read" --> gold[("Gold<br/>backend: decision 12")]
+    l3 -- "read (sub-50ms)" --> gold[("Gold · Delta Lake<br/>DuckDB local · Databricks prod<br/>sentinel-data-engine")]
     l3 -- "write · read back" --> disputes[("Disputes store<br/>SQLite · Postgres")]
 
     classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
@@ -93,7 +93,7 @@ flowchart TD
 ```
 
 > [!NOTE]
-> Stage 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is an open question for the data area (decision 12: local DuckDB or Databricks). Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
+> Stage 2 models are undecided (decision 10, due Tue 9/29). The Gold storage backend is **decided and implemented**: DuckDB + Delta Lake locally, Azure Databricks in production — both via the `sentinel-data-engine` module (see [`sentinel-data-engine/README.md`](../../sentinel-data-engine/README.md)). Gold tables served: `gold_dispute_customer_360`, `gold_dispute_eligible_transactions`, `gold_dispute_cases_summary`. Disputes are not written to Gold: they go to a separate operational store (SQLite locally, Postgres on Azure), so they can be read back at once to verify them ([architecture](../understand/architecture.md#two-layers)). The >90-day eligibility cutoff is a valid working rule but must be validated against the data ([decision 003](decisions/003-disputes-flow.md)).
 
 ## Repository layout
 
@@ -182,6 +182,37 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | CI/CD & DevOps | GitHub Actions (free minutes) | GitHub Actions runner | USD 0 |
 | **Total** | — | — | **USD 20–58 (covered by USD 200 credit)** |
 
+## Product Vision: Customer Peace of Mind
+
+The end-to-end design is anchored to a single user outcome: **the customer should never wonder whether their dispute was heard or what happens next**.
+
+**Core principle:** *AI understands; code verifies and executes.* The LLM handles multilingual comprehension and intent extraction. Financial rules, eligibility checks, dispute creation, and status retrieval are enforced deterministically by code backed by verified Gold Delta data.
+
+### "Proof of Work" UI Card
+
+When a dispute is opened, the customer receives a real-time transparency card that shows:
+
+| Element | What it communicates |
+|---|---|
+| **Transaction pause confirmation** | The charge is frozen — no further activity while the dispute is under review |
+| **Verified eligibility summary** | Which rules passed (e.g., "within 90-day window", "transaction not already disputed") — sourced directly from `gold_dispute_eligible_transactions` |
+| **Downloadable PDF receipt** | Timestamped proof of the dispute filing with case number |
+| **SLA countdown timer** | Days remaining until the bank's statutory response deadline — sourced from `gold_dispute_cases_summary.sla_breached` |
+| **Human-in-the-Loop (HIL) escalation status** | Real-time indicator when the case has been transferred to a human advisor, with the handoff JSON summary |
+
+This card is populated directly from the Gold serving tables — no ad-hoc joins, no LLM inference for data facts. Every displayed value is a verified field from the Medallion pipeline.
+
+### Dispute Intake Use Case — LATAM Retail Banking
+
+| Market | Language | Locale tag |
+|---|---|---|
+| Mexico | Spanish | `es-MX` |
+| Colombia | Spanish | `es-CO` |
+| Argentina | Spanish | `es-AR` |
+| Brazil | Portuguese | `pt-BR` |
+
+The system handles the full intake arc: account inquiry → unrecognized-charge identification → eligibility check → dispute creation (idempotent) → confirmation → optional HIL escalation.
+
 ## Appendix: alignment with the repository
 
 | # | Claim | Repo status |
@@ -192,7 +223,7 @@ Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), *
 | 4 | Static masking in Silver | Proposed on 9/28, recorded in [security](security.md#data), not implemented |
 | 5 | Dynamic masking: token vault, mask and unmask | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
 | 6 | Hybrid router model choice | Undecided (decision 10, due Tue 9/29) |
-| 7 | Storage backend | Open question for the data area (decision 12) |
+| 7 | Storage backend | **Decided and implemented.** Delta Lakehouse: DuckDB + Delta extension locally (zero cost, no SQL server), Azure Databricks + PySpark + Delta Lake on ADLS Gen2 in production. Full Medallion pipeline (Bronze → Silver → Gold) lives in `sentinel-data-engine/`. |
 | 8 | Multi-repo development layout | Pending (decision 21); conflicts with the single-public-repo submission requirement |
 | 9 | MVP cost USD 20–58 | Working assumption, pending Azure validation (decision 16) |
 | 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; deadline confirmed: Mon 10/5, 11:59 pm (UTC-5) |

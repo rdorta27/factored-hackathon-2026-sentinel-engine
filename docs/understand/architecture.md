@@ -20,13 +20,13 @@ flowchart LR
         tools --> advisor(["Advisor<br/>simulated"])
         tools -- "write · read back" --> disputes[("Disputes store<br/>SQLite locally · Postgres on Azure")]
     end
-    subgraph dataL["Data layer · batch or incremental"]
+    subgraph dataL["Data layer · batch (sentinel-data-engine)"]
         direction TB
-        files[("Dataset files<br/>partitions, late arrivals,<br/>duplicates, schema changes")] --> pipe["Pipeline Bronze → Silver → Gold<br/>contracts, dedup, upsert, quality"]
-        pipe --> gold[("Gold<br/>transactions per customer<br/>with cutoff date")]
-        pipe --> anstore[("Analytical data<br/>analysis, training, baseline")]
+        files[("S3 raw data<br/>factored-datathon-2026-s3-*<br/>13 tables · ~19 M records<br/>MX · CO · AR")] --> pipe["Medallion Pipeline · sentinel-data-engine<br/>Bronze (append-only) → Silver (validated, deduped)<br/>→ Gold (denormalized, dispute-ready)"]
+        pipe --> gold[("Gold Delta Tables<br/>gold_dispute_customer_360<br/>gold_dispute_eligible_transactions<br/>gold_dispute_cases_summary")]
+        pipe --> anstore[("Silver curated tables<br/>+ rejected_records quarantine")]
     end
-    tools -- "read" --> gold
+    tools -- "read (sub-50ms)" --> gold
 
     classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
     classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
@@ -75,7 +75,7 @@ flowchart TB
     verify --> disputes
     handoff --> advisors
     orch -.-> traces
-    s3[("S3 dataset")] --> pipeline["Pipeline<br/>Bronze → Silver → Gold"] --> gold
+    s3[("S3 dataset<br/>factored-datathon-2026-s3-*<br/>13 tables · ~19 M records")] --> pipeline["sentinel-data-engine<br/>Bronze → Silver → Gold<br/>DuckDB local · Databricks cloud"] --> gold
 
     classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
     classDef mock fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,stroke-dasharray:6 4,color:#3a2a00
@@ -190,7 +190,7 @@ REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a cr
 
 | Aspect | Prototype | Production |
 |---|---|---|
-| Data | Local DuckDB with Bronze/Silver/Gold | Databricks on Azure (Delta Lake, SQL Warehouse) |
+| Data | DuckDB + Delta Lake (local `./data/`) — sentinel-data-engine, full Medallion pipeline implemented | Azure Databricks + PySpark + Delta Lake on ADLS Gen2 (Databricks Asset Bundle in `databricks.yml`) |
 | Disputes store | SQLite | Postgres on Azure |
 | Serving | One container behind the public link | Azure Container Apps with autoscaling |
 | LLM | Hybrid router, usage caps | Same router, per-route quotas and fallback |
@@ -206,7 +206,7 @@ REQ-0052. Cloud deployment is not mandatory (mentors, 9/28); what counts is a cr
 | Specifications | **OpenSpec** ([decision 002](../build/decisions/002-openspec.md)) |
 | LLM | **Hybrid, with a router** between models. Which model serves each route: Tue 9/29 (decision 10) |
 | Disputes store | **SQLite locally, Postgres on Azure**, separate from Gold |
-| Data storage | Tue 9/29 (decision 12): local DuckDB or Databricks, both with Bronze/Silver/Gold. Meanwhile the pipeline starts locally |
+| Data storage | **Delta Lakehouse** — DuckDB locally (zero cost, no server), Azure Databricks in production. Both run the same `sentinel_data` package via `--run-mode local\|databricks`. Medallion pipeline (Bronze → Silver → Gold) fully implemented in `sentinel-data-engine/`. |
 | Backend | **Python + FastAPI** (decided). Loop tool deferred: LangGraph or plain Python ([decision 005](../build/decisions/005-backend.md)) |
 | Frontend | **One-page chat served by FastAPI.** No Streamlit or Gradio ([decision 006](../build/decisions/006-frontend.md)) |
 | Deployment | Open (decision 13); proposal: Azure Container Apps or App Service |
