@@ -57,20 +57,25 @@ sentinel-data-engine/
 │
 ├── src/sentinel_data/
 │   ├── __init__.py
-│   ├── __main__.py                         # Unified CLI entry point (--layer bronze|silver)
+│   ├── __main__.py                         # Unified CLI entry point (--layer bronze|silver|gold)
 │   ├── catalog.py                          # ★ Central source of truth for all 13 tables
 │   │
 │   ├── bronze/
 │   │   ├── __init__.py
 │   │   └── ingest_bronze.py               # BronzeIngestor — append-only raw ingestion
 │   │
-│   └── silver/
+│   ├── silver/
+│   │   ├── __init__.py
+│   │   └── transform_silver.py            # SilverTransformer — validate, quarantine, merge
+│   │
+│   └── gold/
 │       ├── __init__.py
-│       └── transform_silver.py            # SilverTransformer — validate, quarantine, merge
+│       └── build_gold.py                  # GoldBuilder — denormalized dispute serving tables
 │
 ├── tests/
 │   ├── test_ingest_bronze.py              # Bronze idempotency + metadata tests (6 tests)
-│   └── test_silver_quarantine.py          # Silver quarantine split tests (6 tests)
+│   ├── test_silver_quarantine.py          # Silver quarantine split tests (6 tests)
+│   └── test_gold_builder.py               # Gold derivation + eligibility tests (13 tests)
 │
 └── data/                                  # Local sample data (git-ignored)
     ├── raw/<table>/year=*/month=*/day=*/  # Source CSVs (mirrors S3 partition layout)
@@ -107,8 +112,12 @@ S3 / local CSV
                            │
                            ▼
 ┌─────────────────────────────────────────────────────────┐
-│  GOLD  (aggregations, metrics, analytics-ready)         │
-│  • Coming in next sprint                                │
+│  GOLD  (denormalized, dispute-ready, sub-50ms serving)  │
+│  • gold_dispute_customer_360 (1 row/customer)           │
+│  • gold_dispute_eligible_transactions (1 row/txn)       │
+│  • gold_dispute_cases_summary (1 row/complaint)         │
+│  • Pre-computed flags: is_eligible_for_dispute,         │
+│    dispute_risk_level, sla_breached                     │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -498,11 +507,21 @@ data/
 │   └── transactions/            ← Delta table (immutable append-only)
 │       ├── _delta_log/
 │       └── part-*.parquet
-└── silver/
-    ├── transactions/             ← Delta table (curated, deduplicated)
+├── silver/
+│   ├── transactions/             ← Delta table (curated, deduplicated)
+│   │   ├── _delta_log/
+│   │   └── part-*.parquet
+│   └── rejected_records/         ← Quarantine Delta table
+│       ├── _delta_log/
+│       └── part-*.parquet
+└── gold/
+    ├── gold_dispute_customer_360/       ← 1 row per customer (risk level, balances, CSAT)
     │   ├── _delta_log/
     │   └── part-*.parquet
-    └── rejected_records/         ← Quarantine Delta table
+    ├── gold_dispute_eligible_transactions/  ← 1 row per transaction (eligibility flags)
+    │   ├── _delta_log/
+    │   └── part-*.parquet
+    └── gold_dispute_cases_summary/      ← 1 row per complaint (SLA, agent, sentiment)
         ├── _delta_log/
         └── part-*.parquet
 ```
@@ -572,8 +591,8 @@ pytest tests/ --cov=sentinel_data --cov-report=term-missing
 ### CLI reference (`python -m sentinel_data`)
 
 ```
---layer          bronze | silver          (required)
---table-name     <table>                  (required, validated against catalog)
+--layer          bronze | silver | gold   (required)
+--table-name     <table>                  (required for bronze/silver; omit for gold)
 --run-mode       local | databricks       (default: local)
 
 Bronze-only:

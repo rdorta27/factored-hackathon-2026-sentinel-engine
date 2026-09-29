@@ -23,4 +23,4 @@ We propose option 1 (two-plane masking). Static masking lands in the Silver laye
 - What we gain: defense in depth across batch and real-time; the LLM only ever sees anonymized prompts; analysts and batch ML never see raw credentials.
 - What we sacrifice: we must build and secure the token vault, define its retention, and keep the unmasking path out of logs.
 - Credit score and income are not hashed in Silver: ML and analysis need them as features. Pending: how we restrict access to them.
-- Pending: tooling choice (Presidio vs Regex/SpaCy), token vault retention policy, adversarial coverage of the masking path (with [ML](../areas/ml.md), REQ-0021), and the storage decision it partially depends on (decision 12).
+- Pending: tooling choice (Presidio vs Regex/SpaCy), token vault retention policy, adversarial coverage of the masking path (with [ML](../areas/ml.md), REQ-0021). The data storage decision (decision 12) is resolved: Delta Lakehouse (DuckDB locally, Azure Databricks in production) — static Silver masking runs in the same `sentinel_data` package via `transform_silver.py`.
