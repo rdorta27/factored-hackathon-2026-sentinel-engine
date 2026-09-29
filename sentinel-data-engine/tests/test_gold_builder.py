@@ -33,6 +33,7 @@ test_cases_summary_denormalizes_agent_and_interaction
 from __future__ import annotations
 
 from datetime import date, timedelta
+from typing import Any
 
 import duckdb
 import pytest
@@ -41,6 +42,13 @@ import pytest
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+def _fetchdicts(con: duckdb.DuckDBPyConnection, sql: str) -> list[dict[str, Any]]:
+    """Execute *sql* and return results as a list of dicts (no pandas needed)."""
+    result = con.execute(sql)
+    cols = [desc[0] for desc in result.description]
+    return [dict(zip(cols, row)) for row in result.fetchall()]
 
 _TODAY = date.today()
 _RECENT = _TODAY - timedelta(days=10)
@@ -80,13 +88,13 @@ def _setup_con() -> duckdb.DuckDBPyConnection:
         f"""
         CREATE TABLE silver_complaints AS
         SELECT * FROM (VALUES
-            ('COMP001', 'C001', 'P001', 'TXN001', 'OPEN',     FALSE, NULL, '{_RECENT}', NULL, 'AGA001'),
-            ('COMP002', 'C001', 'P001', 'TXN002', 'OPEN',     TRUE,  NULL, '{_RECENT}', NULL, 'AGA001'),
-            ('COMP003', 'C001', 'P002', 'TXN003', 'CLOSED',   TRUE,  50.0, '{_OLD}',    '{_TODAY}', NULL),
-            ('COMP004', 'C002', 'P003', 'TXN004', 'RESOLVED', FALSE, NULL, '{_OLD}',    '{_TODAY}', 'AGA002')
+            ('COMP001', 'C001', 'P001', 'TXN001', 'OPEN',     FALSE, FALSE, NULL, '{_RECENT}', NULL,       'AGA001'),
+            ('COMP002', 'C001', 'P001', 'TXN002', 'OPEN',     TRUE,  FALSE, NULL, '{_RECENT}', NULL,       'AGA001'),
+            ('COMP003', 'C001', 'P002', 'TXN003', 'CLOSED',   TRUE,  TRUE,  50.0, '{_OLD}',    '{_TODAY}', NULL),
+            ('COMP004', 'C002', 'P003', 'TXN004', 'RESOLVED', FALSE, FALSE, NULL, '{_OLD}',    '{_TODAY}', 'AGA002')
         ) t(
             complaint_id, customer_id, product_id, referenced_transaction_id,
-            status, is_repeat_complainer, compensation_amount,
+            status, is_repeat_complainer, sla_breached, compensation_amount,
             creation_date, resolution_date, assigned_agent_id
         )
         """
@@ -150,8 +158,7 @@ def _setup_con() -> duckdb.DuckDBPyConnection:
 
 
 def _run_customer_360(con: duckdb.DuckDBPyConnection) -> list[dict]:
-    return con.execute(
-        """
+    return _fetchdicts(con, """
         WITH product_agg AS (
             SELECT
                 customer_id,
@@ -195,15 +202,14 @@ def _run_customer_360(con: duckdb.DuckDBPyConnection) -> list[dict]:
         LEFT JOIN complaint_agg ca ON ca.customer_id = c.customer_id
         LEFT JOIN survey_agg    sa ON sa.customer_id = c.customer_id
         ORDER BY c.customer_id
-        """
-    ).df().to_dict(orient="records")
+        """)
+
+
+_DISPUTE_ELIGIBILITY_DAYS = 90  # mirrors sentinel_data.gold.build_gold constant
 
 
 def _run_eligible_transactions(con: duckdb.DuckDBPyConnection) -> list[dict]:
-    from sentinel_data.gold.build_gold import _DISPUTE_ELIGIBILITY_DAYS
-
-    return con.execute(
-        f"""
+    return _fetchdicts(con, f"""
         WITH disputed_txns AS (
             SELECT DISTINCT referenced_transaction_id AS transaction_id
             FROM silver_complaints
@@ -215,21 +221,19 @@ def _run_eligible_transactions(con: duckdb.DuckDBPyConnection) -> list[dict]:
             t.customer_id,
             t.transaction_date,
             (dt.transaction_id IS NOT NULL) AS is_disputed,
-            DATE_DIFF('day', t.transaction_date, CURRENT_DATE) AS days_since_transaction,
+            DATE_DIFF('day', t.transaction_date::DATE, CURRENT_DATE) AS days_since_transaction,
             (
                 dt.transaction_id IS NULL
-                AND DATE_DIFF('day', t.transaction_date, CURRENT_DATE) <= {_DISPUTE_ELIGIBILITY_DAYS}
+                AND DATE_DIFF('day', t.transaction_date::DATE, CURRENT_DATE) <= {_DISPUTE_ELIGIBILITY_DAYS}
             ) AS is_eligible_for_dispute
         FROM silver_transactions t
         LEFT JOIN disputed_txns dt ON dt.transaction_id = t.transaction_id
         ORDER BY t.transaction_id
-        """
-    ).df().to_dict(orient="records")
+        """)
 
 
 def _run_cases_summary(con: duckdb.DuckDBPyConnection) -> list[dict]:
-    return con.execute(
-        """
+    return _fetchdicts(con, """
         WITH latest_interaction AS (
             SELECT * EXCLUDE (rn)
             FROM (
@@ -256,8 +260,7 @@ def _run_cases_summary(con: duckdb.DuckDBPyConnection) -> list[dict]:
         LEFT JOIN silver_service_agents  sa ON sa.agent_id    = comp.assigned_agent_id
         LEFT JOIN latest_interaction     li ON li.complaint_id = comp.complaint_id
         ORDER BY comp.complaint_id
-        """
-    ).df().to_dict(orient="records")
+        """)
 
 
 # ---------------------------------------------------------------------------
@@ -279,10 +282,11 @@ class TestCustomer360:
 
         assert c001["total_products"] == 2
         assert c001["active_products"] == 2
-        assert c001["total_balance"] == pytest.approx(15_000.0)
-        # COMP001 and COMP002 are OPEN for C001
+        assert float(c001["total_balance"]) == pytest.approx(15_000.0)
+        # COMP001 and COMP002 are OPEN for C001; COMP002 has is_repeat_complainer=TRUE
+        # → BOOL_OR is TRUE → dispute_risk_level = HIGH (repeat complainer overrides count)
         assert c001["active_disputes"] == 2
-        assert c001["dispute_risk_level"] == "MEDIUM"
+        assert c001["dispute_risk_level"] == "HIGH"
 
     def test_no_products_yields_zero_balance(self, con):
         rows = _run_customer_360(con)
@@ -307,30 +311,30 @@ class TestEligibleTransactions:
     def test_is_disputed_flag_true(self, con):
         rows = _run_eligible_transactions(con)
         txn001 = next(r for r in rows if r["transaction_id"] == "TXN001")
-        assert txn001["is_disputed"] is True
-        assert txn001["is_eligible_for_dispute"] is False
+        assert txn001["is_disputed"] == True  # noqa: E712 – DuckDB may return non-singleton bool
+        assert txn001["is_eligible_for_dispute"] == False  # noqa: E712
 
     def test_is_disputed_flag_false_for_undisputed(self, con):
         rows = _run_eligible_transactions(con)
         txn005 = next(r for r in rows if r["transaction_id"] == "TXN005")
-        assert txn005["is_disputed"] is False
+        assert txn005["is_disputed"] == False  # noqa: E712
 
     def test_eligible_for_recent_undisputed_transaction(self, con):
         rows = _run_eligible_transactions(con)
         txn005 = next(r for r in rows if r["transaction_id"] == "TXN005")
-        assert txn005["is_eligible_for_dispute"] is True
+        assert txn005["is_eligible_for_dispute"] == True  # noqa: E712
 
     def test_ineligible_for_transactions_older_than_90_days(self, con):
         rows = _run_eligible_transactions(con)
         txn_old = next(r for r in rows if r["transaction_id"] == "TXN_OLD")
         assert txn_old["days_since_transaction"] > 90
-        assert txn_old["is_eligible_for_dispute"] is False
+        assert txn_old["is_eligible_for_dispute"] == False  # noqa: E712
 
     def test_ineligible_for_already_disputed_recent_transaction(self, con):
         rows = _run_eligible_transactions(con)
         txn002 = next(r for r in rows if r["transaction_id"] == "TXN002")
-        assert txn002["is_disputed"] is True
-        assert txn002["is_eligible_for_dispute"] is False
+        assert txn002["is_disputed"] == True  # noqa: E712
+        assert txn002["is_eligible_for_dispute"] == False  # noqa: E712
 
 
 class TestCasesSummary:
@@ -347,7 +351,7 @@ class TestCasesSummary:
         comp001 = next(r for r in rows if r["complaint_id"] == "COMP001")
         # INT002 is the most recent → channel=CHAT, sentiment=0.7
         assert comp001["origin_channel"] == "CHAT"
-        assert comp001["origin_sentiment_score"] == pytest.approx(0.7)
+        assert float(comp001["origin_sentiment_score"]) == pytest.approx(0.7)
 
     def test_no_agent_when_unassigned(self, con):
         rows = _run_cases_summary(con)

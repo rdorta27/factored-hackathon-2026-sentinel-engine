@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Sentinel Data Engine – Medallion Pipeline CLI")
 
-    p.add_argument("--layer", required=True, choices=["bronze", "silver"])
+    p.add_argument("--layer", required=True, choices=["bronze", "silver", "gold"])
     p.add_argument("--table-name", required=True)
     p.add_argument("--run-mode", default="local", choices=["local", "databricks"])
 
@@ -72,6 +72,23 @@ def main() -> None:
             ingestor.run(spark=spark)
         else:
             ingestor.run()
+
+    elif args.layer == "gold":
+        from sentinel_data.gold.build_gold import GoldBuilderConfig, GoldBuilder, RunMode as GoldRunMode
+
+        cfg_g = GoldBuilderConfig(
+            run_mode=GoldRunMode(args.run_mode),
+            databricks_catalog=args.databricks_catalog,
+            databricks_schema_silver=args.databricks_schema_bronze,
+            databricks_schema_gold="gold",
+        )
+        builder = GoldBuilder(cfg_g)
+        if args.run_mode == "databricks":
+            from pyspark.sql import SparkSession  # type: ignore[import]
+            spark = SparkSession.builder.getOrCreate()
+            builder.run(spark=spark)
+        else:
+            builder.run()
 
     elif args.layer == "silver":
         from sentinel_data.silver.transform_silver import (

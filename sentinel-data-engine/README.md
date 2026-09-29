@@ -606,3 +606,138 @@ Silver-only:
 
 > **Factored Datathon 2026** — Sentinel Engine Team  
 > Built with DuckDB · Delta Lake · PySpark · Databricks Asset Bundles
+
+---
+
+## 13. Gold Layer: Denormalized Serving Layer for Dispute Intake
+
+The Gold Layer is a high-speed data serving layer engineered specifically for the
+real-time AI Dispute Assistant and policy execution engine.
+
+### Architectural Justification: Why Denormalized Gold Tables?
+
+1. **Sub-50ms Query Latency**
+   Real-time conversational AI and RAG tool calls require immediate context
+   retrieval.  Performing multi-table relational joins
+   (`transactions` ⨝ `customers` ⨝ `products` ⨝ `complaints`) at query time
+   introduces high database CPU overhead and latency spikes.  Denormalizing
+   data into single flat tables indexed by key entities enables O(1)
+   point-lookups by `customer_id`, `transaction_id`, or `complaint_id`.
+
+2. **Deterministic Dispute Policy Enforcement**
+   Pre-computing business logic flags—such as transaction dispute eligibility
+   (`is_eligible_for_dispute`), customer dispute history
+   (`is_repeat_complainer`), and SLA status (`sla_breached`)—ensures that the
+   AI Agent evaluates claims against verified, deterministic rules rather than
+   relying on LLM inference for data joins or flag evaluation.
+
+3. **Decoupled API Consumption**
+   Backend endpoints (FastAPI) consume single Gold tables directly, providing
+   zero-coupling between raw operational data structures and customer-facing APIs.
+
+### Gold Schema Overview
+
+| Table | PK | Granularity | Key Derived Columns |
+|---|---|---|---|
+| `gold_dispute_customer_360` | `customer_id` | 1 row per customer | `dispute_risk_level`, `active_disputes`, `total_balance`, `avg_csat_score` |
+| `gold_dispute_eligible_transactions` | `transaction_id` | 1 row per transaction | `is_disputed`, `days_since_transaction`, `is_eligible_for_dispute` |
+| `gold_dispute_cases_summary` | `complaint_id` | 1 row per complaint | `sla_breached`, `case_age_days`, `agent_*`, `origin_sentiment_score` |
+
+### `gold_dispute_customer_360`
+
+Single-row customer view aggregating demographics, credit score, total product
+balances, historical dispute counts, and overall CSAT profile.
+
+| Column | Type | Description |
+|---|---|---|
+| `customer_id` | VARCHAR | Primary key |
+| `total_products` | BIGINT | All products held |
+| `active_products` | BIGINT | Products with `product_status = 'ACTIVE'` |
+| `total_balance` | DOUBLE | Sum of `current_balance` across all products |
+| `total_complaints` | BIGINT | Historical complaint count |
+| `active_disputes` | BIGINT | Open complaints (not CLOSED / RESOLVED) |
+| `is_repeat_complainer` | BOOLEAN | True if any complaint has the flag set |
+| `total_compensation_paid` | DOUBLE | Sum of `compensation_amount` |
+| `avg_csat_score` | DOUBLE | Average `main_score` from satisfaction surveys |
+| `dispute_risk_level` | VARCHAR | `HIGH` / `MEDIUM` / `LOW` (derived) |
+| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+
+**`dispute_risk_level` derivation:**
+
+```
+HIGH   → active_disputes >= 3 OR is_repeat_complainer = TRUE
+MEDIUM → active_disputes IN (1, 2)
+LOW    → active_disputes = 0 AND is_repeat_complainer = FALSE
+```
+
+### `gold_dispute_eligible_transactions`
+
+Denormalized transaction history pre-joined with customer profiles and existing
+open complaints, featuring derived eligibility indicators.
+
+| Column | Type | Description |
+|---|---|---|
+| `transaction_id` | VARCHAR | Primary key |
+| `customer_*` | various | Denormalized from `customers` |
+| `is_disputed` | BOOLEAN | True when an open complaint references this transaction |
+| `days_since_transaction` | BIGINT | `CURRENT_DATE − transaction_date` |
+| `is_eligible_for_dispute` | BOOLEAN | `NOT is_disputed AND days_since_transaction ≤ 90` |
+| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+
+### `gold_dispute_cases_summary`
+
+Comprehensive dispute lifecycle tracker joining complaints with assigned service
+agents, SLA breach metrics, and origin interaction context.
+
+| Column | Type | Description |
+|---|---|---|
+| `complaint_id` | VARCHAR | Primary key |
+| `sla_breached` | BOOLEAN | Sourced from `complaints.sla_breached` |
+| `case_age_days` | BIGINT | `resolution_date − creation_date` (or `CURRENT_DATE` if open) |
+| `agent_first_name` / `agent_last_name` | VARCHAR | Assigned agent from `service_agents` |
+| `agent_type` / `agent_experience_level` | VARCHAR | Agent classification |
+| `origin_sentiment_score` | DOUBLE | Sentiment from the most recent `call_center_interactions` row |
+| `origin_channel` | VARCHAR | Channel of most recent interaction |
+| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+
+### Running the Gold Build
+
+**Local (DuckDB):**
+```bash
+python -m sentinel_data --layer gold
+```
+
+**Databricks:**
+```bash
+databricks bundle run medallion_pipeline_job --target prod
+```
+
+**Output directories (local):**
+```
+data/gold/
+├── gold_dispute_customer_360/
+├── gold_dispute_eligible_transactions/
+└── gold_dispute_cases_summary/
+```
+
+### Gold Tests
+
+```bash
+python3 -m pytest tests/test_gold_builder.py -v
+```
+
+| Test | Validates |
+|---|---|
+| `test_aggregates_products_and_complaints` | Correct product count, balance, active dispute count, risk level |
+| `test_no_products_yields_zero_balance` | Zero totals for customers with no products |
+| `test_risk_level_high_for_repeat_complainers` | `HIGH` risk when `is_repeat_complainer` is True |
+| `test_avg_csat_score` | CSAT average computed correctly from multiple surveys |
+| `test_is_disputed_flag_true` | `is_disputed=True` when open complaint references transaction |
+| `test_is_disputed_flag_false_for_undisputed` | `is_disputed=False` when no complaint exists |
+| `test_eligible_for_recent_undisputed_transaction` | `is_eligible_for_dispute=True` within 90-day window |
+| `test_ineligible_for_transactions_older_than_90_days` | `is_eligible_for_dispute=False` beyond 90 days |
+| `test_ineligible_for_already_disputed_recent_transaction` | `is_eligible_for_dispute=False` when already disputed |
+| `test_denormalizes_agent_into_complaint_row` | Agent name and type denormalized into complaint row |
+| `test_latest_interaction_is_selected` | Most recent call interaction wins ROW_NUMBER deduplication |
+| `test_no_agent_when_unassigned` | NULL agent fields when `assigned_agent_id` is NULL |
+| `test_complaint_without_interaction_has_null_sentiment` | NULL sentiment when no interaction references the complaint |
