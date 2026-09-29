@@ -15,10 +15,10 @@ Tentative: we adjust it if anything slips.
 | Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
 | Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline | **One case works fully** |
 | Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script starts. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
-| Fri | 10/2 | Held-out evaluation and metrics. Presentation, video recording, README in English, limitations; review the repo for secrets. Freeze code at night | **Ready to submit** |
-| Sat to Mon | 10/3 to 10/5 | Buffer: corrections only. Early submission | **Submitted** |
+| Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Freeze code at night | **Code and results frozen** |
+| Sat to Mon | 10/3 to 10/5 | Presentation and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
 
-We want **everything ready by Friday 10/2** and keep the weekend as buffer. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
+We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
 
 ## Decisions made
 

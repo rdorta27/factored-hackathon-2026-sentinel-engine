@@ -163,8 +163,8 @@ gantt
 
 Notes:
 
-- The video script starts on Thursday 10/1 (Rubén). Slides are still unassigned (decision 20). Deck and video are finished on Friday 10/2, once the held-out results exist.
-- The weekend is buffer for corrections only, with early submission.
+- The video script starts on Thursday 10/1 (Rubén). Slides are still unassigned (decision 20). Deck and video are finished over the weekend and Monday 10/5, once the held-out results exist (Fri 10/2).
+- The weekend and Monday 10/5 go to the deck and the video on the frozen build; code changes are critical fixes only. Submit with margin before 11:59 pm.
 - Portuguese test cases: source and reviewer still to define (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
 - Submission deadline confirmed by the organizers: Monday 10/5, 11:59 pm (UTC-5). The video lasts 3 minutes at most.
 
@@ -230,4 +230,4 @@ The system handles the full intake arc: account inquiry → unrecognized-charge 
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |
 | 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Proposals under pending decisions 1, 11, 13 |
 | 13 | JSON handoff package | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |
-| 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, video script from Thu 10/1, held-out on Fri 10/2, weekend as buffer. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |
+| 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, video script from Thu 10/1, held-out on Fri 10/2, deck and video over the weekend and Mon 10/5. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |

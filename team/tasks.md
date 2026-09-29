@@ -14,8 +14,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Tue 9/29 | Flow confirmed; the skeleton answers end to end | [See](#tue-929) |
 | Wed 9/30 | One case works fully | [See](#wed-930) |
 | Thu 10/1 | 3 cases in es-419 and pt-BR, public link | [See](#thu-101) |
-| Fri 10/2 | Ready to submit | [See](#fri-102) |
-| Sat 10/3 to Mon 10/5 | Submitted | [See](#sat-103-to-mon-105) |
+| Fri 10/2 | Code and results frozen | [See](#fri-102) |
+| Sat 10/3 to Mon 10/5 | Presentation and video done; submitted | [See](#sat-103-to-mon-105) |
 
 ## Mon 9/28
 
@@ -30,8 +30,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | First look at the data: table inventory vs the dictionary | Rubén | In progress |
 | Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 | Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
-| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
-| Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | X baseline for dispute category, with a time-based split | Unassigned | Pending |
 | List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 
 ## Tue 9/29
@@ -79,16 +78,17 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
 | Path to production write-up (REQ-0052) | Rubén | Pending |
-| README in English and presentation | Unassigned | Pending |
-| Record the video | Rubén | Pending |
+| README in English | Unassigned | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 
 ## Sat 10/3 to Mon 10/5
 
 | Task | Owner | Status |
 |---|---|---|
+| Finish the presentation (4 to 6 slides) with the frozen results | Unassigned | Pending |
+| Record and edit the video (3 minutes at most) | Rubén | Pending |
 | Critical fixes only | Team | Pending |
-| Submission | Unassigned | Pending |
+| Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | Unassigned | Pending |
 
 ## To find out
 

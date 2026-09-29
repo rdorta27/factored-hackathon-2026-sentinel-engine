@@ -10,8 +10,8 @@ Everything, working material included, is written in **English from the first dr
 |---|---|---|---|---|
 | Repo `README.md` (the delivery link) | English | Done | Rubén | Kept in English |
 | GitHub repo title and description | English | Done | Rubén | Kept in English |
-| Presentation (4 to 6 slides) | Born in English | Pending | Unassigned | Fri 10/2 |
-| Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Fri 10/2 |
+| Presentation (4 to 6 slides) | Born in English | Pending | Unassigned | Mon 10/5 (internal deadline) |
+| Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Mon 10/5 (internal deadline) |
 | Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
 | `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
 
