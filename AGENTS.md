@@ -41,6 +41,8 @@ For agents:
 | [`team/`](team/) | Plan, tasks and pending decisions |
 | [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
+| [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
+| [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold) with its own `pyproject.toml`, tests and README |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).
@@ -58,9 +60,10 @@ Accepted decisions that code must follow:
   [006](docs/build/decisions/006-frontend.md).
 - **Platform:** Azure; locally it runs on Linux. See
   [001](docs/build/decisions/001-azure-platform.md).
-- **Proposed flow** (decided at the 9/29 review): a dispute starts as an account
+- **Flow** (confirmed at the 9/29 review): a dispute starts as an account
   inquiry; the learned component is a prompted LLM against a keyword baseline.
-  See [flow data evidence](docs/build/flows/data-evidence.md).
+  See [flow selection](docs/build/flows/03-flow-selection.md) and
+  [007](docs/build/decisions/007-learned-component.md).
 - Which model serves each route is still open (pending decision 10).
 
 ## Rules

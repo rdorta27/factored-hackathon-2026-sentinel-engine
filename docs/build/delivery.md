@@ -10,8 +10,8 @@ Everything, working material included, is written in **English from the first dr
 |---|---|---|---|---|
 | Repo `README.md` (the delivery link) | English | Done | Rubén | Kept in English |
 | GitHub repo title and description | English | Done | Rubén | Kept in English |
-| Presentation (4 to 6 slides) | Born in English | Pending | Unassigned | Fri 10/2 |
-| Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Fri 10/2 |
+| Presentation (4 to 6 slides) | Born in English | Pending | Rubén; group validates the outline Fri 10/2 | Outline Thu 10/1; reviewed Friday to Monday with the results; frozen Mon 10/5 |
+| Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Mon 10/5 (internal deadline) |
 | Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
 | `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
 
@@ -23,7 +23,7 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 
 | # | Slide | Source |
 |---|---|---|
-| 1 | Problem and chosen flow, backed by data | [analysis](areas/analysis.md), [decisions](decisions/) |
+| 1 | Problem and chosen flow, backed by data | [flow selection](flows/03-flow-selection.md), [decisions](decisions/) |
 | 2 | Architecture (core principle and layers) | [architecture](../understand/architecture.md), [decisions](decisions/) |
 | 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
 | 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |

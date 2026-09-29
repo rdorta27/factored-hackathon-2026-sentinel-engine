@@ -29,7 +29,7 @@ If you are new, read in this order (about 20 minutes):
 | What can the LLM see? How do we prevent unauthorized access? | [Security](build/security.md) |
 | How do we handle Portuguese? | [Conversation: languages](build/conversation.md#languages) |
 | What do we measure and how do we split the data? | [Metrics](build/metrics.md), [ML](build/areas/ml.md#rigor) |
-| Which flow did we choose? | [Decision 003](build/decisions/003-disputes-flow.md), [flow options](build/flows/options.md) |
+| Which flow did we choose, and what data supports it? | [Decision 003](build/decisions/003-disputes-flow.md), then [candidate flows](build/flows/01-flow-candidates.md), [measurements](build/flows/02-flow-measurements.md) and [selection](build/flows/03-flow-selection.md) |
 | Why did we decide X? | [Decisions](build/decisions/) |
 | What goes into the presentation and the video? | [Delivery](build/delivery.md) |
 | Who does what, when, and how do we work? | [Plan](../team/plan.md), [tasks](../team/tasks.md), [pending decisions](../team/pending-decisions.md) |

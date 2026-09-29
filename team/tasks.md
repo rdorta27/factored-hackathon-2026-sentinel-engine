@@ -6,7 +6,7 @@ Who does what and by when, per day. When you pick a task, add your name; when yo
 
 ## Summary
 
-Daily goals and milestones live in the [plan schedule](plan.md#schedule). We work with the transaction-disputes flow until the Tuesday review ([decision 003](../docs/build/decisions/003-disputes-flow.md)).
+Daily goals and milestones live in the [plan schedule](plan.md#schedule). The flow is transaction disputes, entered through an account inquiry ([decision 003](../docs/build/decisions/003-disputes-flow.md)).
 
 | Day | Milestone | Tasks |
 |---|---|---|
@@ -14,8 +14,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Tue 9/29 | Flow confirmed; the skeleton answers end to end | [See](#tue-929) |
 | Wed 9/30 | One case works fully | [See](#wed-930) |
 | Thu 10/1 | 3 cases in es-419 and pt-BR, public link | [See](#thu-101) |
-| Fri 10/2 | Ready to submit | [See](#fri-102) |
-| Sat 10/3 to Mon 10/5 | Submitted | [See](#sat-103-to-mon-105) |
+| Fri 10/2 | Code and results frozen | [See](#fri-102) |
+| Sat 10/3 to Mon 10/5 | Presentation and video done; submitted | [See](#sat-103-to-mon-105) |
 
 ## Mon 9/28
 
@@ -24,29 +24,29 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Record your preference in [pending decisions](pending-decisions.md) | Everyone | Pending |
 | Confirm S3 credentials work for all 3 (Natalia already tested them; Rubén verified 9/28: bucket listing OK) | Felix, Rubén | Done |
 | Enable the commit hook: `git config core.hooksPath .githooks` | Felix, Natalia | Pending |
-| Push the ingestion script (`scripts/ingest_s3_data.py`) to the repo, no credentials: read from `.env` | Natalia | Pending |
+| Push the ingestion script to the repo, no credentials: read from `.env` | Natalia | In progress: delivered as Bronze ingestion in `sentinel-data-engine/`; the bucket name in its README is to be removed |
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
 | First look at the data: table inventory vs the dictionary | Rubén | In progress |
-| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
-| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
-| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
+| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 | Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
-| List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 
 ## Tue 9/29
 
 | Task | Owner | Status |
 |---|---|---|
-| Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Pending |
-| Pick the learned component (decision 2); lead candidate: few-shot LLM classifier | Team | Pending |
+| Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Done: disputes confirmed 9/29 ([flow selection](../docs/build/flows/03-flow-selection.md)) |
+| Pick the learned component | Team | Done: prompted LLM, 9/29 ([decision 007](../docs/build/decisions/007-learned-component.md)) |
 | Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
 | Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
 | JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
 | Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
 | Backend skeleton: orchestrator and 4 mock tools with fixed contracts (open dispute idempotent) | Unassigned | Pending |
 | Simple chat with login and session, connected to the backend | Unassigned | Pending |
-| Minimal pipeline: ingestion, deduplication and quality checks | Unassigned | Pending |
+| Minimal pipeline: ingestion, deduplication and quality checks | Natalia | In progress: Bronze, Silver and Gold code with tests in `sentinel-data-engine/`; not yet validated end to end |
 | Analysis backing the flow: contact reasons, demand and data quality | Unassigned | Pending |
 
 ## Wed 9/30
@@ -58,7 +58,6 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Handoff integrated into the flow | Unassigned | Pending |
 | Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
 | First evaluation cases | Unassigned | Pending |
-| Start the presentation (4 to 6 slides) | Unassigned | Pending |
 
 ## Thu 10/1
 
@@ -66,6 +65,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 |---|---|---|
 | Ambiguous and human cases | Unassigned | Pending |
 | Start the video script | Rubén | Pending |
+| Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
 | Portuguese | Unassigned | Pending |
 | Failure handling: down tools, expired session, bounded retries | Unassigned | Pending |
 | Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
@@ -79,16 +79,18 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
 | Path to production write-up (REQ-0052) | Rubén | Pending |
-| README in English and presentation | Unassigned | Pending |
-| Record the video | Rubén | Pending |
+| Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
+| Validate the presentation outline with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5
 
 | Task | Owner | Status |
 |---|---|---|
+| Review and complete the presentation (4 to 6 slides) with the frozen results, from Friday on | Rubén | Pending |
+| Record and edit the video (3 minutes at most) | Rubén | Pending |
 | Critical fixes only | Team | Pending |
-| Submission | Unassigned | Pending |
+| Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | Unassigned | Pending |
 
 ## To find out
 

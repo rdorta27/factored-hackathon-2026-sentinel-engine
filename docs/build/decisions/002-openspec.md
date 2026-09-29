@@ -25,4 +25,4 @@ OpenSpec, in the repository's `openspec/` folder.
   - The OpenSpec project context links to [architecture](../../understand/architecture.md), [conversation](../conversation.md), and [security](../security.md), instead of copying them.
 - **Language:** English (decision 18, closed 9/28), since the specifications are part of the public deliverable.
 - **Workflow:** change proposal → pull-request review → implementation → change archival. GitHub issues link to their proposal.
-- Pending: install OpenSpec and initialize the folder with the Tuesday 9/29 skeleton, once the flow is confirmed.
+- OpenSpec is installed in the repository (`openspec/`). Specifications are added with each change proposal.

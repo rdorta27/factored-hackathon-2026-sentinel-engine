@@ -30,7 +30,7 @@ They are a data-engineering test: we handle, document, and measure them; we do n
 
 ### Measured issues (Q4-2024)
 
-From the [flow data evidence](../build/flows/data-evidence.md):
+From the [flow measurements](../build/flows/02-flow-measurements.md):
 
 | Issue | Measured | Implication |
 |---|---|---|

@@ -3,9 +3,9 @@
 Architecture, personal data (PII) lifecycle and action plan. Source: the data area's proposal (9/28), translated and reconciled with the repository. Anything stated as decided links to its decision or requirement; anything still open carries a callout with its decision number. In the diagrams, dashed grey boxes are proposals not yet built, blue boxes are agreed components and green cylinders are stores.
 
 > Project: Sentinel Engine — Factored AI & Data Hackathon 2026
-> Workflow focus: transaction-dispute intake (Spanish & Portuguese), as working hypothesis ([decision 003](decisions/003-disputes-flow.md), provisional until the Tuesday 9/29 review)
+> Workflow focus: transaction-dispute intake (Spanish & Portuguese), confirmed 9/29 ([decision 003](decisions/003-disputes-flow.md), [flow selection](flows/03-flow-selection.md))
 > Submission: Monday, October 5, 11:59 pm (UTC-5)
-> Internal goal: everything ready Friday, October 2; the weekend is buffer
+> Internal goal: code, results and README frozen Friday, October 2; deck and video over the weekend and Monday
 > Areas: data and data analysis · AI, architecture and ML · full-stack (owners in the [plan](../../team/plan.md#decisions-made))
 
 ## Executive summary
@@ -103,8 +103,8 @@ flowchart TD
     a["sentinel-ai-core · AI area<br/>PII masking, LLM router,<br/>deterministic rules<br/>Python · FastAPI · Pydantic"]
     w["sentinel-web-interface · full-stack area<br/>chat UI, handoff view,<br/>session management"]
     infra["sentinel-devops-infra · shared<br/>IaC (Terraform or Bicep) · CI/CD (GitHub Actions)"]
-    delivery[("Public submission repo<br/>factored-hackathon-2026-sentinel-engine<br/>who assembles it: decision 21")]
-    d & a & w -. "merged into" .-> delivery
+    delivery[("Single public repo<br/>factored-hackathon-2026-sentinel-engine<br/>submodules: decision 22")]
+    d & a & w -. "folders, not separate repos" .-> delivery
     infra -- "builds and deploys" --> delivery
 
     classDef real fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
@@ -117,7 +117,7 @@ flowchart TD
 ```
 
 > [!WARNING]
-> Pending (decision 21): separate-by-domain repos vs a single repo. The submission requires a single public repository, so if development splits across repos, the delivery repo and who assembles it must be defined before submission. The current repository is a single repo.
+> One public repository (decision 21, 9/29). Separate repos are out. Still open (decision 22): whether this repo uses git submodules.
 
 ## Action plan (deadline Monday 10/5, 11:59 pm UTC-5)
 
@@ -157,20 +157,21 @@ gantt
     README                                 :2026-10-02, 1d
     section Team
     Video script                           :2026-10-01, 1d
-    Deck and video                         :2026-10-02, 1d
-    Buffer, fixes only                     :2026-10-03, 3d
+    Slide outline                          :2026-10-01, 1d
+    Validate outline                       :2026-10-02, 1d
+    Deck and video                         :2026-10-03, 3d
 ```
 
 Notes:
 
-- The video script starts on Thursday 10/1 (Rubén). Slides are still unassigned (decision 20). Deck and video are finished on Friday 10/2, once the held-out results exist.
-- The weekend is buffer for corrections only, with early submission.
+- The video script starts on Thursday 10/1 (Rubén). Slides are Rubén's: outline on Thursday 10/1, validated by the group on Friday 10/2, then reviewed from Friday to Monday 10/5 once the held-out results exist.
+- The weekend and Monday 10/5 go to the deck and the video on the frozen build; code changes are critical fixes only. Submit with margin before 11:59 pm.
 - Portuguese test cases: source and reviewer still to define (decision 15). Vocabulary lives in [glossary.pt-br.md](../understand/glossary/glossary.pt-br.md).
 - Submission deadline confirmed by the organizers: Monday 10/5, 11:59 pm (UTC-5). The video lasts 3 minutes at most.
 
 ## Cost matrix (MVP budget)
 
-Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**. The mentors confirmed (9/28) that cloud deployment is not mandatory: the prototype can run locally (DuckDB, local model route) and this matrix becomes the production scenario, see [path to production](../understand/architecture.md#path-to-production).
+Working assumption (decision 16: USD 20–58 within the USD 200 trial credit), **pending validation against Azure pricing**. Cloud deployment is not mandatory (help channel, 9/28): the prototype can run locally (DuckDB, local model route) and this matrix becomes the production scenario, see [path to production](../understand/architecture.md#path-to-production).
 
 | Component | Open source / free tier | Paid cloud (Azure / Databricks) | Estimated MVP cost |
 |---|---|---|---|
@@ -217,17 +218,17 @@ The system handles the full intake arc: account inquiry → unrecognized-charge 
 
 | # | Claim | Repo status |
 |---|---|---|
-| 1 | Focus: transaction-dispute intake es-419/pt-BR | Working hypothesis, provisional until Tue 9/29 review ([003](decisions/003-disputes-flow.md)) |
+| 1 | Focus: transaction-dispute intake es-419/pt-BR | Accepted 9/29 ([003](decisions/003-disputes-flow.md), [flow selection](flows/03-flow-selection.md)) |
 | 2 | Guiding principle | Accepted, canonical in [architecture](../understand/architecture.md#central-principle) |
 | 3 | Domain owners per area | Accepted ([plan](../../team/plan.md)) |
 | 4 | Static masking in Silver | Proposed on 9/28, recorded in [security](security.md#data), not implemented |
 | 5 | Dynamic masking: token vault, mask and unmask | Proposed, no code yet ([004](decisions/004-pii-lifecycle.md)) |
 | 6 | Hybrid router model choice | Undecided (decision 10, due Tue 9/29) |
 | 7 | Storage backend | **Decided and implemented.** Delta Lakehouse: DuckDB + Delta extension locally (zero cost, no SQL server), Azure Databricks + PySpark + Delta Lake on ADLS Gen2 in production. Full Medallion pipeline (Bronze → Silver → Gold) lives in `sentinel-data-engine/`. |
-| 8 | Multi-repo development layout | Pending (decision 21); conflicts with the single-public-repo submission requirement |
+| 8 | One public repo; git submodules still open | One repo accepted 9/29 (decision 21). Submodules undecided (decision 22) |
 | 9 | MVP cost USD 20–58 | Working assumption, pending Azure validation (decision 16) |
 | 10 | Deadline Mon 10/5, internal goal Fri 10/2 | Accepted; deadline confirmed: Mon 10/5, 11:59 pm (UTC-5) |
 | 11 | Eligibility thresholds (e.g. >90-day cutoff) | Valid working rules, must be validated against data ([003](decisions/003-disputes-flow.md)) |
-| 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Proposals under pending decisions 1, 11, 13 |
+| 12 | Per-piece stack (Key Vault, Container Apps, frontend) | Frontend accepted ([006](decisions/006-frontend.md)). Key Vault and Container Apps still open (decision 13) |
 | 13 | JSON handoff package | Defined ([003](decisions/003-disputes-flow.md), REQ-0008) |
-| 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, video script from Thu 10/1, held-out on Fri 10/2, weekend as buffer. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |
+| 14 | Action plan: P0 complete Thu 10/1; held-out, deck and video from Thu 10/1; code freeze, evaluation and video over the weekend | Aligned with the [plan](../../team/plan.md#schedule): P0 and code freeze on Fri 10/2, video script from Thu 10/1, held-out on Fri 10/2, deck and video over the weekend and Mon 10/5. Added the learned component, adversarial set, frontend and data analysis, which the original plan lacked |
