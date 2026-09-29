@@ -126,7 +126,7 @@ S3 / local CSV
 | Dimension | Local Mode | Databricks Mode |
 |---|---|---|
 | **Engine** | DuckDB + Delta extension | PySpark + delta-spark |
-| **Source** | `./data/raw/<table>/` | `s3://factored-datathon-2026-s3-157725502942-us-east-2-an/` |
+| **Source** | `./data/raw/<table>/` | `s3://$S3_BUCKET_NAME/` |
 | **Sink** | `./data/bronze/` or `./data/silver/` | Unity Catalog managed Delta tables |
 | **Idempotency** | `_already_ingested_files()` set lookup | Auto Loader checkpoint directory |
 | **Cost** | Zero (runs on a laptop) | Single-node `Standard_DS3_v2` spot cluster |
@@ -373,7 +373,7 @@ Re-running the Silver transformer over the same Bronze data **always produces an
 
 ## 7. Dataset — 13 Source Tables
 
-**S3 Bucket:** `factored-datathon-2026-s3-157725502942-us-east-2-an`  
+**S3 Bucket:** `$S3_BUCKET_NAME` (set in `.env` — see [Configuration Reference](#11-configuration-reference))  
 **Region:** `us-east-2`
 
 ### Dimension Tables (slowly-changing, partitioned monthly or full snapshot)
