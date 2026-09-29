@@ -182,7 +182,7 @@ sequenceDiagram
 
 ## Learned component
 
-Proposed for the Tuesday 9/29 review: a **prompted LLM** that classifies intent and flags when to escalate, measured against a keyword baseline on the same held-out cases (REQ-0016; the mentors confirmed on 9/28 that a prompted LLM counts). The dataset has no learnable tabular label and no real customer language, so evaluation uses team-generated es-419 and pt-BR text, declared as such ([flow data evidence](../build/flows/03-flow-selection.md)). Details in [ML](../build/areas/ml.md).
+A **prompted LLM** classifies intent and flags when to escalate, measured against a keyword baseline on the same held-out cases (REQ-0016). The dataset has no learnable tabular label and no real customer language, so evaluation uses team-generated es-419 and pt-BR text, declared as such ([flow selection](../build/flows/03-flow-selection.md)). Details in [ML](../build/areas/ml.md).
 
 ## Path to production
 
