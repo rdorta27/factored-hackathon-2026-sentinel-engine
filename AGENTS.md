@@ -60,7 +60,8 @@ Accepted decisions that code must follow:
   [001](docs/build/decisions/001-azure-platform.md).
 - **Flow** (confirmed at the 9/29 review): a dispute starts as an account
   inquiry; the learned component is a prompted LLM against a keyword baseline.
-  See [flow selection analysis](docs/build/flows/03-flow-selection.md).
+  See [flow selection](docs/build/flows/03-flow-selection.md) and
+  [007](docs/build/decisions/007-learned-component.md).
 - Which model serves each route is still open (pending decision 10).
 
 ## Rules

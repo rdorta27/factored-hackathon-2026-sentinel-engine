@@ -4,7 +4,7 @@ System metrics catalog.
 
 **Purpose:** what we measure and how we report it. **Related:** [ML](areas/ml.md), [analysis](areas/analysis.md).
 
-Numeric targets remain to be defined once we review the data and confirm the flow on Tuesday 9/29.
+Numeric targets are set together with the held-out set. Until then, only the zero-tolerance rows in section 2 (unauthorized access, unverified actions, restricted data in external LLMs) have a target.
 
 ## Rules for all metrics
 
@@ -14,8 +14,9 @@ Numeric targets remain to be defined once we review the data and confirm the flo
   - Realistic held-out: the real case mix. It yields the global metrics.
   - Adversarial set: injection, unauthorized access, expired sessions, tool failures.
 - **Data split:** we order by time, without splitting the same case across both sides, and with features computed only from information prior to each case (detail in [ML](areas/ml.md#rigor)). The first ~70% goes to development (temporal cross-validation by batches is allowed); the last ~30% is the held-out, which we measure **only once** at the end. If we tune the system while looking at the held-out, it stops being held-out.
-- Each result carries: sample size (n), case mix, model and prompt versions, and variability across runs.
-- Split by **language** (es-419 / pt-BR), by **country** (MX / CO / AR), and by customer **segment**; we flag small samples. Country monitoring is in [analysis](areas/analysis.md#country-monitoring).
+- Each result carries: sample size (n), case mix, workload, label quality (how the reference labels were built and reviewed), model and prompt versions, and variability across runs.
+- **Failures are reported** with the results, with counts, and not only the successes.
+- Split by **language** (es-419 / pt-BR), by **country** (MX / CO / AR), and by customer **segment**; we flag small samples and investigate the disparities we find. Country monitoring is in [analysis](areas/analysis.md#country-monitoring).
 - We label the measurement type: offline, simulation, or projected savings. We never present offline results as production improvement.
 - We generate metrics with **reproducible scripts over the logs** (script or CLI), with no dashboard.
 
@@ -29,7 +30,7 @@ Numeric targets remain to be defined once we review the data and confirm the flo
 | Unnecessary transfers | cases escalated that did not need it / escalated cases | Requires reference labels |
 | Handoff quality | % of handoffs with request, verified facts, actions, evidence, and open questions | Validatable against the JSON schema |
 | **Unsafe outcomes** | no. of unauthorized disclosures or actions, or materially incorrect outcomes / n | Always with denominator; 0 on a small sample is not zero risk |
-| Latency p50 / p95 | 50th and 95th percentiles of end-to-end time per case | Do not use the average. High p95: abandonments, repeated requests, timeouts |
+| Latency p50 / p95 | 50th and 95th percentiles of end-to-end time per case | Do not use the average. High p95: abandonments, repeated requests, timeouts. State the workload |
 | **Cost per attempted case** | total cost / attempted cases | State assumptions |
 | **Cost per successful resolution** | total cost / safe automated resolutions | "Undefined" if there are no resolutions |
 
@@ -72,11 +73,11 @@ AI cost per successful resolution: 5 / 40 = USD 0.125
 
 ## 4. Learned component
 
-At least one, always against a baseline and on held-out. With the transaction-dispute flow, the candidates are in [decision 003](decisions/003-disputes-flow.md); the detail is in [ML](areas/ml.md).
+At least one, always against a baseline and on held-out. The chosen component is the prompted LLM of [decision 007](decisions/007-learned-component.md); the other rows are alternatives considered. Detail in [ML](areas/ml.md).
 
 | Possible component | Metric | Possible baseline |
 |---|---|---|
-| Dispute-category classifier, few-shot LLM | accuracy, F1 per class, by locale; cost and latency per case | Keywords or TF-IDF; the same LLM zero-shot |
+| **Dispute-category classifier, few-shot LLM (chosen)** | accuracy, F1 per class, by locale; cost and latency per case | Keywords or TF-IDF; the same LLM zero-shot |
 | Intent or reason classifier | accuracy, F1 per class | Keywords or majority class |
 | Escalation predictor | AUC, missed and unnecessary transfers at the chosen threshold | Simple reason-based rules |
 | Fraud detection (cards or disputes) | AUC, precision and recall at one threshold | Bank's existing `fraud_score` |

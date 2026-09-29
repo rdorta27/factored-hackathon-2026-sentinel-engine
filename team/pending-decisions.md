@@ -30,7 +30,6 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
-| 2 | Learned component | Lead candidate: few-shot LLM classifier of the dispute category (examples from the training split only), against keywords or TF-IDF and against the same LLM zero-shot. Works in pt-BR without Portuguese training data. Alternative: escalation predictor (`was_escalated`) with opening-time features. Mentors (9/28): a prompted LLM counts if it is defined, evaluated rigorously and justified | [ML](../docs/build/areas/ml.md), [metrics](../docs/build/metrics.md) |
 | 3 | Demo scope | Which actions the assistant performs (look up, open a dispute, hand off…) and which it does not | [Conversation](../docs/build/conversation.md) |
 | 10 | Hybrid LLM models | The router is decided; which model serves each route is not. Natalia's proposal: Llama 3 on Databricks for frequent queries, GPT-4o for ambiguous cases, Portuguese and evaluation | [Decision 001](../docs/build/decisions/001-azure-platform.md) |
 | 12 | Data storage and pipeline | a) local DuckDB · b) Databricks with Bronze, Silver and Gold in Delta Lake on ADLS, queried through SQL Warehouse (Natalia's proposal) · c) Bronze, Silver and Gold with local DuckDB. Until then, the pipeline starts locally with the same layers. Recommendation: a or c for the prototype, with Databricks as the documented production path, since cloud is not mandatory (mentors, 9/28) | [Dataset](../docs/understand/dataset.md), [data area](../docs/build/areas/data.md) |
@@ -47,6 +46,7 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 
 | # | Decision | Outcome | Date |
 |---|---|---|---|
+| 2 | Learned component | Prompted LLM that classifies the dispute category, against a keyword baseline and the same LLM zero-shot, on team-written es-419 and pt-BR text declared as simulation ([007](../docs/build/decisions/007-learned-component.md)) | 9/29 |
 | 4 | Owners per area | Natalia: data and data analysis · Rubén: AI, architecture and ML · Felix: full-stack | 9/28 |
 | 5 | Daily sync | No meeting. Slack is enough if we talk every day. A status, if needed, goes in the channel at the end of the day | 9/28 |
 | 9 | Backend | Python + FastAPI decided; loop tool (LangGraph or plain Python) deferred. Policy, session and idempotency stay in code | 9/28 |

@@ -38,7 +38,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Task | Owner | Status |
 |---|---|---|
 | Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Done: disputes confirmed 9/29 ([flow selection](../docs/build/flows/03-flow-selection.md)) |
-| Pick the learned component (decision 2); lead candidate: few-shot LLM classifier | Team | Pending |
+| Pick the learned component (decision 2) | Team | Done: prompted LLM, 9/29 ([007](../docs/build/decisions/007-learned-component.md)) |
 | Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
 | Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
 | JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |

@@ -37,6 +37,7 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
 | Backend: Python + FastAPI (decision 9); loop tool (LangGraph or plain Python) deferred | Accepted | [005](../docs/build/decisions/005-backend.md) |
 | Frontend: one-page chat served by FastAPI; no Streamlit or Gradio (decision 11) | Accepted | [006](../docs/build/decisions/006-frontend.md) |
+| Learned component: prompted LLM classifying the dispute category, against a keyword baseline, on team-written text (decision 2) | Accepted | [007](../docs/build/decisions/007-learned-component.md) |
 | Video and slides: Rubén. Script from Thursday 10/1. Group validates the slides Friday 10/2; content finished over the weekend and Monday; frozen Monday 10/5 (decision 20) | Accepted | [delivery](../docs/build/delivery.md) |
 | Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
