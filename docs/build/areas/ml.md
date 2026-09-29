@@ -23,7 +23,7 @@
 | Risk model (credit only) | AUC, calibration | Logistic regression or fixed rule |
 | Fraud detection (cards or disputes) | AUC, precision and recall at a threshold | The bank's existing `fraud_score` |
 
-**Ruled out on 9/28 ([evidence](../flows/data-evidence.md)):** `description` contains `category` in 100% of complaints (label leak) and transcripts are templates. A prompted LLM remains the lead option only on team-generated es-419 and pt-BR text, declared as such (REQ-0031); pending decision 2.
+**Ruled out on 9/28 ([evidence](../flows/03-flow-selection.md)):** `description` contains `category` in 100% of complaints (label leak) and transcripts are templates. A prompted LLM remains the lead option only on team-generated es-419 and pt-BR text, declared as such (REQ-0031); pending decision 2.
 
 Few-shot LLM (original plan): the input is the dispute text (`description` or `customer_text`); the label is `category` from `complaints`. The prompt's examples come **only from the training split**, never from held-out. It counts as the learned component (mentors, 9/28) because we define what it does, evaluate it on the same held-out set as the baselines and justify it. It also works in pt-BR with no Portuguese training data, which a Spanish-only TF-IDF model cannot.
 
@@ -35,7 +35,7 @@ Even if we do not train a model, we show rigor through: component selection, rel
 
 ## Candidate: escalation predictor
 
-**Data check 9/28 ([evidence](../flows/data-evidence.md)):** `was_escalated` is 10% of calls, but no single call field separates it (9–11%). Kept as a candidate only if a simple multivariate model beats the rule baseline on a time split.
+**Data check 9/28 ([evidence](../flows/03-flow-selection.md)):** `was_escalated` is 10% of calls, but no single call field separates it (9–11%). Kept as a candidate only if a simple multivariate model beats the rule baseline on a time split.
 
 Predicts whether a case will be resolved without escalation, from call-center interaction history (first-contact-resolution, FCR, idea).
 

@@ -32,7 +32,7 @@ We want **everything ready by Friday 10/2** and keep the weekend as buffer. Work
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
 | Disputes store: SQLite locally, Postgres on Azure, separate from Gold | Accepted | [architecture](../docs/understand/architecture.md#two-layers) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [architecture](../docs/understand/architecture.md#stack) |
-| Initial flow: transaction disputes, until the Tuesday 9/29 review | Proposed | [003](../docs/build/decisions/003-disputes-flow.md) |
+| Flow: transaction disputes, entered through an account inquiry (confirmed 9/29) | Accepted | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
 | No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
 | Backend: Python + FastAPI (decision 9); loop tool (LangGraph or plain Python) deferred | Accepted | [005](../docs/build/decisions/005-backend.md) |

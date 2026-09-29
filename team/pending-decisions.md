@@ -28,7 +28,7 @@ These block Tuesday's skeleton. Most urgent: **16**, because deployment is on Th
 
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
-| 1 | Flow | Proposal: transaction disputes, confirmed or changed against measurable criteria. Alternative: cards | [Decision 003](../docs/build/decisions/003-disputes-flow.md), [flow options](../docs/build/flows/options.md) |
+| 1 | Flow | Proposal: transaction disputes, confirmed or changed against measurable criteria. Alternative: cards | [Decision 003](../docs/build/decisions/003-disputes-flow.md), [candidate flows](../docs/build/flows/01-flow-candidates.md) |
 | 2 | Learned component | Lead candidate: few-shot LLM classifier of the dispute category (examples from the training split only), against keywords or TF-IDF and against the same LLM zero-shot. Works in pt-BR without Portuguese training data. Alternative: escalation predictor (`was_escalated`) with opening-time features. Mentors (9/28): a prompted LLM counts if it is defined, evaluated rigorously and justified | [ML](../docs/build/areas/ml.md), [metrics](../docs/build/metrics.md) |
 | 3 | Demo scope | Which actions the assistant performs (look up, open a dispute, hand off…) and which it does not | [Conversation](../docs/build/conversation.md) |
 | 10 | Hybrid LLM models | The router is decided; which model serves each route is not. Natalia's proposal: Llama 3 on Databricks for frequent queries, GPT-4o for ambiguous cases, Portuguese and evaluation | [Decision 001](../docs/build/decisions/001-azure-platform.md) |

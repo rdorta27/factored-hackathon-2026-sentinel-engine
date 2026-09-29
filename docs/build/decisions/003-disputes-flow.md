@@ -1,12 +1,12 @@
 # 003 · Initial flow: transaction disputes
 
 **Date:** 2026-09-28
-**Status:** Proposed (provisional until the Tuesday 9/29 review)
+**Status:** Accepted (confirmed at the 9/29 review; evidence in [flow selection](../flows/03-flow-selection.md))
 **Participants:** Team
 
 ## Context
 
-We must choose a flow to start building on Tuesday, before having profiled the data. The 9/28 status presentation proposes transaction disputes as the starting point and leaves the door open to change if the data analysis does not support it. Options and comparison in [flow options](../flows/options.md).
+We must choose a flow to start building on Tuesday, before having profiled the data. The 9/28 status presentation proposes transaction disputes as the starting point and leaves the door open to change if the data analysis does not support it. Options and comparison in [flow options](../flows/01-flow-candidates.md).
 
 The flow must simultaneously demonstrate: data analysis, tool-using conversation, confirmed and verified action, evidence-backed handoff, and a learned component against a baseline.
 
@@ -21,7 +21,7 @@ The flow must simultaneously demonstrate: data analysis, tool-using conversation
 
 We start with the **transaction-dispute flow** as our working hypothesis. We confirm or change it on Tuesday 9/29 according to the following criteria, measured on the real data.
 
-| Criterion | How it is measured | We stay with disputes if… | Result 9/28 ([evidence](../flows/data-evidence.md)) |
+| Criterion | How it is measured | We stay with disputes if… | Result 9/28 ([evidence](../flows/03-flow-selection.md)) |
 |---|---|---|---|
 | Relevant volume | Complaints with `case_type = Claim` and unrecognized-charge category; their weight in `contact_reason` of `call_center_interactions` | There is enough volume to train and evaluate (threshold to set once we see the distribution) | Low: 251 unrecognized-charge claims in Q4-2024 (~2.7 a day), 4.47% of complaints; the entry point is backed by 35% transactional calls |
 | Cross-source linkage | % of complaints with a valid `origin_interaction_id`; % of those interactions with a transcript | The call → transcript → complaint chain covers a useful share of cases | **Fails:** 0% of complaints carry `origin_interaction_id`; transcripts are templates |
@@ -39,5 +39,5 @@ If volume or labels fail, the preferred alternative is **cards** (same structure
 - **Dispute window:** a charge can be disputed up to **90 days** after its `transaction_date`; older charges cannot be disputed: the assistant explains why and offers a handoff. Natalia's assumption, source still to confirm; it lives in configuration as a synthetic policy, so the value can change per country. With static data, "today" is the simulated demo date, not the real one.
 - **Late arrivals:** if the charge does not appear, we open the dispute as *pending verification* ([conversation](../conversation.md)).
 - **Portuguese:** the dataset is Spanish-only; we define the Portuguese test cases in decision 15, which should be brought forward.
-- **Refinement proposed on 9/28 ([evidence](../flows/data-evidence.md#suggested-flow)):** the dispute starts as an account inquiry (look up the charge and its status first), because demand sits in transactional calls and the dispute labels fail the ML criteria in every flow. The learned component becomes a prompted LLM on team-generated text.
+- **Refinement proposed on 9/28 ([evidence](../flows/03-flow-selection.md#suggested-flow)):** the dispute starts as an account inquiry (look up the charge and its status first), because demand sits in transactional calls and the dispute labels fail the ML criteria in every flow. The learned component becomes a prompted LLM on team-generated text.
 - **Pending:** set the numeric thresholds once we see the data; choose the learned component (decision 2) in the same review.

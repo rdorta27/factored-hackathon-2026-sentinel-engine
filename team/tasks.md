@@ -28,11 +28,11 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). We wor
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
 | First look at the data: table inventory vs the dictionary | Rubén | In progress |
-| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
-| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
-| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| Measure dispute volume for unrecognized charges (`case_type = Claim` + category) and its weight in `contact_reason` | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
+| Measure what % of dispute-related complaints has a valid `origin_interaction_id` and what % of those interactions has a transcript | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
+| Profile candidate labels: `category` / `subcategory` and `was_escalated` (balance, consistency, template-like or not) | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 | Keyword baseline for dispute category, with a time-based split | Unassigned | Pending |
-| List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/data-evidence.md) |
+| List `complaints` opening vs outcome fields to avoid data leakage | Rubén | Done: [evidence](../docs/build/flows/02-flow-measurements.md) |
 
 ## Tue 9/29
 

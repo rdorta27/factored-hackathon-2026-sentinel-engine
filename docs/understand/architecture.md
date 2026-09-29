@@ -128,7 +128,7 @@ flowchart TD
 
 ## Walkthrough of a case (example: unrecognized charge)
 
-The suggested flow starts as an account inquiry and becomes a dispute only when it has to ([flow data evidence](../build/flows/data-evidence.md#suggested-flow)).
+The suggested flow starts as an account inquiry and becomes a dispute only when it has to ([flow selection analysis](../build/flows/03-flow-selection.md#suggested-flow)).
 
 ```mermaid
 sequenceDiagram
@@ -182,7 +182,7 @@ sequenceDiagram
 
 ## Learned component
 
-Proposed for the Tuesday 9/29 review: a **prompted LLM** that classifies intent and flags when to escalate, measured against a keyword baseline on the same held-out cases (REQ-0016; the mentors confirmed on 9/28 that a prompted LLM counts). The dataset has no learnable tabular label and no real customer language, so evaluation uses team-generated es-419 and pt-BR text, declared as such ([flow data evidence](../build/flows/data-evidence.md)). Details in [ML](../build/areas/ml.md).
+Proposed for the Tuesday 9/29 review: a **prompted LLM** that classifies intent and flags when to escalate, measured against a keyword baseline on the same held-out cases (REQ-0016; the mentors confirmed on 9/28 that a prompted LLM counts). The dataset has no learnable tabular label and no real customer language, so evaluation uses team-generated es-419 and pt-BR text, declared as such ([flow data evidence](../build/flows/03-flow-selection.md)). Details in [ML](../build/areas/ml.md).
 
 ## Path to production
 
