@@ -15,7 +15,11 @@ The pipeline is fully implemented in the [`sentinel-data-engine/`](../../../sent
 | Local development | DuckDB + Delta extension (`INSTALL delta; LOAD delta;`) | $0 — no server, no cloud | `python -m sentinel_data --layer bronze\|silver\|gold` |
 | Production (Azure) | Azure Databricks + PySpark + Delta Lake on ADLS Gen2 | Single-node `Standard_DS3_v2` spot | `databricks bundle run medallion_pipeline_job` |
 
+<<<<<<< HEAD
+**Source:** AWS S3 Read-Only Bucket (`S3_BUCKET_NAME` in `.env`) — 13 synthetic relational tables, ~19 M records across MX, CO, AR.
+=======
 **Source:** AWS S3 Read-Only Bucket `factored-datathon-2026-s3-157725502942-us-east-2-an` — 13 synthetic relational tables, ~19 M records across MX, CO, AR.
+>>>>>>> origin/main
 
 ## Centralized Data Catalog (`catalog.py`)
 
