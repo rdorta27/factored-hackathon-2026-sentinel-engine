@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel Engine · Brand preview</title>
+<link rel="stylesheet" href="brand.css">
+<link rel="stylesheet" href="theme-sentinel.css">
+<link rel="stylesheet" href="chat.css">
+<style>
+  body { margin: 0; background: var(--bg); }
+  .preview-bar { max-width: 760px; margin: 0 auto; padding: 16px 20px 0; display: flex; gap: 10px; align-items: center; }
+  .preview-bar h1 { font-family: var(--font-title); color: var(--title); font-size: 26px; margin: 0; }
+  .swatches { max-width: 760px; margin: 0 auto; padding: 16px 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch { border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 13px; background: var(--bg-elev); color: var(--text); }
+  .swatch i { display: inline-block; width: 14px; height: 14px; border-radius: 50%; margin-right: 8px; vertical-align: -2px; }
+</style>
+</head>
+<body>
+<div class="preview-bar">
+  <h1>Sentinel Engine · Brand</h1>
+  <button class="theme-toggle" onclick="document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'">Toggle dark</button>
+</div>
+<div class="swatches">
+  <span class="swatch"><i style="background:#6d4aff"></i>accent</span>
+  <span class="swatch"><i style="background:#ff4f8b"></i>accent-2</span>
+  <span class="swatch"><i style="background:#fbfaff;border:1px solid #ccc"></i>bg light</span>
+  <span class="swatch"><i style="background:#14121f"></i>bg dark</span>
+</div>
+<div class="chat">
+  <div class="chat-header">
+    <span class="chat-badge">SE</span>
+    <div>
+      <p class="chat-title">Dispute assistant</p>
+      <p class="chat-sub">Factored AI &amp; Data Hackathon 2026 · ES / PT</p>
+    </div>
+  </div>
+  <div class="chat-thread">
+    <div class="msg msg-user">No reconozco un cargo de $1,250 MXN.</div>
+    <div class="msg msg-bot">Encontré un cargo coincidente. ¿Es este?</div>
+    <div class="msg msg-audit">Verified data only · candidate #1 · awaiting explicit confirmation</div>
+  </div>
+  <div class="chat-candidates">
+    <button class="candidate" aria-pressed="true">$1,250 MXN · Tienda X · 27/09</button>
+    <button class="candidate" aria-pressed="false">$1,250 MXN · Tienda Y · 28/09</button>
+  </div>
+  <div class="chat-confirm">
+    <span>Confirm to open the dispute. Code executes, AI never invents data.</span>
+    <button type="button">Confirm</button>
+  </div>
+  <div class="chat-input">
+    <input placeholder="Escribe en español o portugués…">
+    <button type="button">Send</button>
+  </div>
+</div>
+</body>
+</html>

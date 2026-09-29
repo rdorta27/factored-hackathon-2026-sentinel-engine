@@ -1,0 +1,24 @@
+/* Sentinel Engine theme — gradient details on top of brand.css + base.css. */
+body.slides .slide h2::after {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  width: 96px;
+}
+
+body.slides .slide.cover p:nth-of-type(1) {
+  letter-spacing: 0.02em;
+}
+
+/* Focus visibility for interactive PDF links and the chat preview. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--accent-2);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Cards follow the active theme instead of hardcoded white. */
+.card {
+  background: var(--bg-elev);
+  border-color: var(--line);
+}
