@@ -41,6 +41,8 @@ For agents:
 | [`team/`](team/) | Plan, tasks and pending decisions |
 | [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
+| [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
+| [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold) with its own `pyproject.toml`, tests and README |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).

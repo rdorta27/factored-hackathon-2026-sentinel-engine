@@ -24,7 +24,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Record your preference in [pending decisions](pending-decisions.md) | Everyone | Pending |
 | Confirm S3 credentials work for all 3 (Natalia already tested them; Rubén verified 9/28: bucket listing OK) | Felix, Rubén | Done |
 | Enable the commit hook: `git config core.hooksPath .githooks` | Felix, Natalia | Pending |
-| Push the ingestion script (`scripts/ingest_s3_data.py`) to the repo, no credentials: read from `.env` | Natalia | Pending |
+| Push the ingestion script to the repo, no credentials: read from `.env` | Natalia | In progress: delivered as Bronze ingestion in `sentinel-data-engine/`; the bucket name in its README is to be removed |
 | Document data source, format and partitions in the [dataset](../docs/understand/dataset.md) | Natalia | Pending |
 | Decide who provides the Azure subscription, with spend cap and alerts | Unassigned | Pending |
 | First look at the data: table inventory vs the dictionary | Rubén | In progress |
@@ -45,7 +45,7 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
 | Backend skeleton: orchestrator and 4 mock tools with fixed contracts (open dispute idempotent) | Unassigned | Pending |
 | Simple chat with login and session, connected to the backend | Unassigned | Pending |
-| Minimal pipeline: ingestion, deduplication and quality checks | Unassigned | Pending |
+| Minimal pipeline: ingestion, deduplication and quality checks | Natalia | In progress: Bronze, Silver and Gold code with tests in `sentinel-data-engine/`; not yet validated end to end |
 | Analysis backing the flow: contact reasons, demand and data quality | Unassigned | Pending |
 
 ## Wed 9/30
