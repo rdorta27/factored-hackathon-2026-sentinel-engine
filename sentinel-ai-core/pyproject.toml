@@ -26,3 +26,6 @@ include = ["app*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "attack(id, group): adversarial attack with its honesty group (see tests/adversarial/summary.py)",
+]

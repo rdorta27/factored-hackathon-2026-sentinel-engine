@@ -9,15 +9,17 @@ This module adds the shapes that had no test: a forged cookie, a malformed
 reference, and the documented behaviour of a replayed bearer cookie.
 """
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.session.router import SESSION_COOKIE
 
-from .conftest import CUSTOMER, OTHER_CUSTOMER, facts_travel_nowhere
+from .conftest import CUSTOMER, facts_travel_nowhere
 
 # --- blocked (verified) ---
 
 
+@pytest.mark.attack("B3", "blocked_verified")
 def test_forged_session_token_is_rejected(api) -> None:
     """B3. An invented token has no server-side session behind it."""
     api.cookies.set(SESSION_COOKIE, "forged-token-value")
@@ -25,6 +27,7 @@ def test_forged_session_token_is_rejected(api) -> None:
     assert api.post("/chat", json={"message": "hola"}).status_code == 401
 
 
+@pytest.mark.attack("B6", "blocked_verified")
 def test_reference_with_path_shapes_is_rejected(logged_in) -> None:
     """B6. The selection pattern is format-neutral but bounded."""
     for payload in ("../../etc/passwd", "TXN 1001", "x" * 65, ""):
@@ -32,6 +35,7 @@ def test_reference_with_path_shapes_is_rejected(logged_in) -> None:
         assert response.status_code == 422, payload
 
 
+@pytest.mark.attack("B1v", "blocked_verified")
 def test_selection_cannot_name_another_customers_row(logged_in) -> None:
     """B1 variant: the same attempt through the session-scoped lookup.
 
@@ -43,6 +47,7 @@ def test_selection_cannot_name_another_customers_row(logged_in) -> None:
     assert facts_travel_nowhere(response.json())
 
 
+@pytest.mark.attack("B7", "blocked_verified")
 def test_foreign_rows_are_absent_from_the_listing(logged_in) -> None:
     listing = logged_in.get("/transactions").json()["transactions"]
     ids = {row["reference"] for row in listing}
@@ -54,6 +59,7 @@ def test_foreign_rows_are_absent_from_the_listing(logged_in) -> None:
 # --- documented behaviour, not a block: bearer cookie replay ---------------
 
 
+@pytest.mark.attack("B4", "documented")
 def test_replayed_bearer_cookie_still_works_by_design(api) -> None:
     """B4. Expected behaviour, **not** a blocked attack.
 
@@ -79,11 +85,11 @@ def test_replayed_bearer_cookie_still_works_by_design(api) -> None:
     )
 
     # The mitigation that does hold: the cookie is not script-accessible.
-    set_cookie = api.app.state and None  # keep flake8 quiet about unused names
     response = api.post("/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     assert "HttpOnly" in response.headers.get("set-cookie", "")
 
 
+@pytest.mark.attack("B8", "blocked_verified")
 def test_logout_does_not_invalidate_other_customers_sessions(api) -> None:
     """Isolation of the revocation, not of the credential.
 
