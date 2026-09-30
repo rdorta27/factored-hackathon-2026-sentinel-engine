@@ -52,7 +52,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Task | Owner | Status |
 |---|---|---|
 | Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | In progress: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff is not a tool yet; chat is not connected |
-| Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | In progress: chat page, test session and `POST /chat` merged (PR #13, restored in #14); confirm box still pending |
+| Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Done: chat page, test session, `POST /chat` and confirm box verified end to end (web session to case `D-1` + `test_full_turn_is_replayable_by_trace_id`) |
 | Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/` |
 | JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | Pending |
 | Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |

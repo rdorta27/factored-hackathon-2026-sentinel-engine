@@ -28,6 +28,12 @@ uvicorn app.main:app
 
 Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`).
 
+Watch the structured turn log while you chat (from the repository root):
+
+```bash
+tail -f sentinel-ai-core/var/turns.jsonl
+```
+
 Run the service tests:
 
 ```bash
