@@ -26,6 +26,24 @@ def fixture_filename(prompt_version: str, digest: str) -> str:
     return f"{safe_version}-{digest}.json"
 
 
+def _underlying(user_text: str) -> tuple[str, list[str]]:
+    """Recover the customer message and turn window from a router payload.
+
+    The router sends JSON ``{"message": ..., "turns": [...]}``; tests may send
+    the raw message. Hash the underlying message either way so fixtures keyed
+    by message hit from both paths.
+    """
+    try:
+        body = json.loads(user_text)
+    except (json.JSONDecodeError, TypeError):
+        return user_text, [user_text]
+    if isinstance(body, dict) and isinstance(body.get("message"), str):
+        turns = body.get("turns") or [body["message"]]
+        turns = [t for t in turns if isinstance(t, str)]
+        return body["message"], turns or [body["message"]]
+    return user_text, [user_text]
+
+
 class FixtureTransport:
     """Serve committed JSON fixtures without opening any connection."""
 
@@ -45,7 +63,8 @@ class FixtureTransport:
             if entry.get("role") == "user":
                 user_text = str(entry.get("content", ""))
                 break
-        digest = input_hash(user_text, [user_text])
+        message, turns = _underlying(user_text)
+        digest = input_hash(message, turns)
         path = self._dir / fixture_filename(self._prompt_version, digest)
         if not path.is_file():
             raise ModelUnavailable(f"no fixture for input hash {digest}")
