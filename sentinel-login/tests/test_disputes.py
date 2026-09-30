@@ -33,30 +33,46 @@ def test_eligible_creates_case_with_proof() -> None:
     body = response.json()
     assert body["case_id"].startswith("CASE-")
     assert body["verified"] is True
-    assert "temporarily held (simulated)" in body["hold"]
-    assert "90-day" in body["rule"] and "Art. 4" in body["rule"]
-    assert body["sla_deadline"].startswith("2026-06-21")
-    assert body["receipt_ref"] == f"RCPT-{body['case_id']}"
-    assert "Queued" in body["queue_status"]
+    assert body["display"]["amount"] == "1000.00"
+    assert body["display"]["currency"] == "MXN"
+    assert body["display"]["merchant"] == "ACME Store"
+    assert body["display"]["referenceDate"] == "2026-06-17"
+    assert body["display"]["slaDate"] == "2026-06-19"  # 2 business days
+    assert body["messages"]["rule"] == "ruleEligible"
+    assert body["messages"]["queue"] == "queueInReview"
+    assert body["messages"]["noFunds"] == "noFundsHeld"
     assert body["source"] == "mock"
+    assert "hold" not in body
+
+
+def test_currency_comes_from_the_account_not_the_locale() -> None:
+    client = make_client()
+    body = create(client, "TXN-1001").json()
+    assert body["display"]["currency"] == "MXN"
+    # Language only changes formatting; the payload value is unchanged.
+    client.get("/i18n/pt-BR")
+    assert create(client, "TXN-1005", key="cur-2").json()["display"]["currency"] == "MXN"
 
 
 def test_stale_refused_with_reason() -> None:
     response = create(make_client(), "TXN-1002")
     assert response.status_code == 422
-    assert "90-day" in response.json()["reason"]
+    assert response.json()["reason_key"] == "refusedIneligible"
+    assert "90-day" in response.json()["reason_detail"]
 
 
 def test_refunded_refused() -> None:
     response = create(make_client(), "TXN-1003")
     assert response.status_code == 422
-    assert "refunded" in response.json()["reason"]
+    assert response.json()["reason_key"] == "refusedIneligible"
+    assert "refunded" in response.json()["reason_detail"]
 
 
 def test_prior_dispute_refused() -> None:
     response = create(make_client(), "TXN-1004")
     assert response.status_code == 422
-    assert "already" in response.json()["reason"]
+    assert response.json()["reason_key"] == "refusedIneligible"
+    assert "already" in response.json()["reason_detail"]
 
 
 def test_unknown_reference_refused() -> None:
@@ -87,7 +103,9 @@ def test_receipt_download() -> None:
     assert response.status_code == 200
     assert "DISPUTE RECEIPT" in response.text
     assert case_id in response.text
-    assert "simulated" in response.text
+    assert "No funds were held or moved" in response.text
+    assert "Reference date: 2026-06-17" in response.text
+    assert "temporarily held" not in response.text
 
 
 def test_receipt_unknown_404() -> None:

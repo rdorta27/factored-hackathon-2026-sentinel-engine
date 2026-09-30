@@ -1,13 +1,28 @@
-"""Deterministic eligibility: pure function of row, policy, and demo date."""
+"""Deterministic eligibility: pure function of row, policy, and reference date."""
 
+import os
 from dataclasses import dataclass
 from datetime import date
 
 from app.gold.store import GoldRow
 
-# Simulated demo "today" (decision 003): the static data ends 2026-06-17,
-# so the demo clock sits just after it instead of using the real clock.
-DEMO_TODAY = date(2026, 6, 20)
+# The system's notion of "today" for the dispute window.
+#
+# It is not the wall clock on purpose: the demo dataset is static and ends on
+# 2026-06-17, so against the real date every charge would be months outside the
+# 90-day window and nothing would ever be eligible. Override with
+# SENTINEL_REFERENCE_DATE (ISO date) for another demo window.
+DEFAULT_REFERENCE_DATE = "2026-06-17"
+ENV_VAR = "SENTINEL_REFERENCE_DATE"
+
+
+def reference_date() -> date:
+    """Effective reference date, from the environment or the dataset end."""
+    raw = os.environ.get(ENV_VAR, DEFAULT_REFERENCE_DATE)
+    try:
+        return date.fromisoformat(raw)
+    except ValueError:
+        return date.fromisoformat(DEFAULT_REFERENCE_DATE)
 
 
 @dataclass(frozen=True)
@@ -19,10 +34,11 @@ class DisputePolicy:
 
 
 def check_eligibility(
-    row: GoldRow, policy: DisputePolicy, today: date = DEMO_TODAY
+    row: GoldRow, policy: DisputePolicy, today: date | None = None
 ) -> tuple[bool, str]:
     """Return (eligible, reason). Reason is empty when eligible."""
-    age = (today - date.fromisoformat(row.date)).days
+    reference = today or reference_date()
+    age = (reference - date.fromisoformat(row.date)).days
     if age > policy.window_days:
         return False, (
             f"Transaction is {age} days old, beyond the {policy.window_days}-day "

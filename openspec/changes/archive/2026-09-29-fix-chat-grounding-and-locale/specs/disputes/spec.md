@@ -1,10 +1,6 @@
-# disputes Specification
+# Spec Delta
 
-## Purpose
-
-Turns dispute creation into a deterministic, policy-gated operation whose response proves the work done, so the customer trusts the receipt instead of calling to confirm it.
-
-## Requirements
+## MODIFIED Requirements
 
 ### Requirement: Policy-gated dispute creation
 
@@ -32,12 +28,12 @@ The system SHALL expose `POST /api/v1/disputes/create` for role `customer`, taki
 
 ### Requirement: Proof-of-Work payload
 
-Every created case SHALL return the Proof-of-Work elements: the verified eligibility rule with policy article, the resolution deadline, a downloadable receipt, the human-queue status, and an explicit "no funds held" statement. The payload SHALL carry raw values and translation keys rather than authored prose, and SHALL NOT claim a hold or any movement of money, because the challenge does not authorize it. Traces to REQ-0003 (P0, Pending), REQ-0005 (P0, Pending), and REQ-0004 (P0, Pending).
+Every created case SHALL return the five Proof-of-Work elements: the verified eligibility rule with policy article, the SLA deadline, a downloadable receipt reference, the human-queue status, and an explicit "no funds held" statement. The payload SHALL NOT claim a hold or any movement of money, because the challenge does not authorize it. Traces to REQ-0003 (P0, Pending), REQ-0005 (P0, Pending), and REQ-0004 (P0, Pending).
 
-#### Scenario: Confirmation carries all the elements
+#### Scenario: Confirmation carries all five elements
 
 - **WHEN** a case is created and verified
-- **THEN** the payload contains the rule, the deadline, the receipt reference, the queue status, and the no-funds-held key
+- **THEN** the payload contains the rule plus article, SLA deadline, receipt reference, queue status, and the no-funds-held statement
 
 #### Scenario: No proof without verification
 
@@ -49,9 +45,11 @@ Every created case SHALL return the Proof-of-Work elements: the verified eligibi
 - **WHEN** any confirmation or receipt is rendered
 - **THEN** no text states or implies that funds were frozen, held, or moved
 
+## ADDED Requirements
+
 ### Requirement: Configurable reference date
 
-The system SHALL use one configurable reference date as its notion of "today" for the dispute window, SHALL display that date to the customer, and SHALL evaluate the window against it rather than the wall clock. The value SHALL come from the `SENTINEL_REFERENCE_DATE` environment variable with the default recorded in the chat capability. Traces to REQ-0039 (P0, Pending) and REQ-0048 (P0, Pending).
+The system SHALL use one configurable reference date as its notion of "today" for the dispute window, SHALL display that date to the customer, and SHALL evaluate the window against it rather than the wall clock. The value SHALL come from the `SENTINEL_REFERENCE_DATE` environment variable with the default recorded in the chat spec delta. Traces to REQ-0039 (P0, Pending) and REQ-0048 (P0, Pending).
 
 #### Scenario: Reference date is visible
 
@@ -81,26 +79,3 @@ The system SHALL take every amount and its currency from the account or transact
 
 - **WHEN** the MX, CO, and AR demo customers each open a dispute
 - **THEN** each confirmation shows MXN, COP, and ARS respectively
-
-### Requirement: Business-day resolution deadline
-
-The resolution deadline SHALL be computed in business days from the reference date by one shared calculation, and the same value SHALL be shown on the card and in the receipt. Traces to REQ-0003 (P0, Pending).
-
-#### Scenario: Weekend is not counted
-
-- **WHEN** the reference date plus the SLA in business days crosses a weekend
-- **THEN** the deadline lands on the next business day
-
-#### Scenario: One deadline everywhere
-
-- **WHEN** the confirmation and the receipt are compared
-- **THEN** they state the same resolution date
-
-### Requirement: Chat delegates creation
-
-`POST /chat` SHALL NOT invent transaction facts; it SHALL resolve the transaction through the Gold seam and create cases only through the disputes service. Traces to REQ-0003 (P0, Pending) and REQ-0006 (P0, Pending).
-
-#### Scenario: Chat confirmation matches the created case
-
-- **WHEN** the chat flow opens a dispute
-- **THEN** the confirmation equals the disputes service result field for field

@@ -3,7 +3,8 @@
 import secrets
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, status
+from fastapi.responses import RedirectResponse
 
 from app.audit.logger import AuditLogger
 from app.auth import router as auth_router
@@ -16,8 +17,9 @@ from app.advisor.router import router as advisor_router
 from app.chat import router as chat_router
 from app.chat.orchestrator import MockOrchestrator
 from app.chat.stores import InMemoryCaseStore
+from app.customer.router import router as customer_router
 from app.disputes import router as disputes_router
-from app.disputes.policy import DEMO_TODAY, DisputePolicy
+from app.disputes.policy import DisputePolicy, reference_date
 from app.disputes.service import DisputeService
 from app.gold.store import MockGoldStore
 from app.ui.router import mount_ui
@@ -26,10 +28,11 @@ FIXTURE_PATH = Path(__file__).parent / "auth" / "mocks" / "users.json"
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="Sentinel Login (test skeleton)")
+    app = FastAPI(title="Sentinel Engine (mock backend)")
     app.state.audit = AuditLogger()
     app.state.cases = InMemoryCaseStore()
-    app.state.gold = MockGoldStore(as_of=DEMO_TODAY.isoformat())
+    app.state.reference_date = reference_date()
+    app.state.gold = MockGoldStore(as_of=app.state.reference_date.isoformat())
     app.state.policy = DisputePolicy()
     app.state.disputes = DisputeService(
         app.state.gold, app.state.cases, app.state.policy, app.state.audit
@@ -54,7 +57,13 @@ def create_app() -> FastAPI:
     app.include_router(advisor_router)
     app.include_router(admin_router)
     app.include_router(disputes_router.router)
+    app.include_router(customer_router)
     mount_ui(app)
+
+    @app.get("/", include_in_schema=False)
+    def root_redirect():  # type: ignore[no-untyped-def]
+        return RedirectResponse(url="/ui/", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
     return app
 
 
