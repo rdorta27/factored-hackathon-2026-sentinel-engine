@@ -1,0 +1,46 @@
+# Synthetic policy written by the team. Not a bank policy.
+synthetic: true
+country: MX
+currency: MXN
+demo_today: "2026-06-17"
+window_days: 90
+mandatory_fields: []
+statuses:
+  Approved:
+    disputable: true
+    rule_id: status.approved
+  Pending:
+    disputable: false
+    rule_id: status.pending
+  Reversed:
+    disputable: false
+    rule_id: status.reversed
+  Declined:
+    disputable: false
+    rule_id: status.declined
+texts:
+  es-419:
+    status.pending: "Ese cargo está pendiente. No abro un reclamo."
+    status.reversed: "Ese cargo ya fue reversado. No hay nada que reclamar."
+    status.declined: "Ese cargo fue rechazado. No hay nada que reclamar."
+    window.expired: "Ese cargo quedó fuera del plazo para reclamar."
+    person.ask: "Puedo ayudarte con esto ahora mismo, o comunicarte con un asesor."
+  pt-BR:
+    status.pending: "Essa cobrança está pendente. Não abro uma disputa."
+    status.reversed: "Essa cobrança já foi estornada. Não há o que disputar."
+    status.declined: "Essa cobrança foi recusada. Não há o que disputar."
+    window.expired: "Essa cobrança ficou fora do prazo para disputa."
+    person.ask: "Posso ajudar com isso agora, ou chamar um atendente."
+thresholds:
+  fraud_score:
+    value: null
+    provisional: true
+    decision: 25
+  high_amount:
+    value: null
+    provisional: true
+    decision: 26
+  staleness_days:
+    value: null
+    provisional: true
+    decision: 27
