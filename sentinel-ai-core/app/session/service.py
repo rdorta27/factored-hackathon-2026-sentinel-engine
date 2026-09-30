@@ -42,7 +42,7 @@ class SessionService:
     def login(self, login: str, password: str, ip: str, trace_id: str) -> Session:
         keys = (f"id:{login}", f"ip:{ip}")
         if self._attempts.is_locked(*keys):
-            self._audit.emit("login_locked", login, trace_id, ip)
+            self._audit.emit("login_locked", trace_id)
             raise LockedOut
         user = self._users.get_by_login(login)
         if user is None:
@@ -52,28 +52,30 @@ class SessionService:
             ok = security.verify_password(password, user.salt_hex, user.hash_hex)
         if not ok:
             self._attempts.record_failure(*keys)
-            self._audit.emit("login_failed", login, trace_id, ip)
+            self._audit.emit("login_failed", trace_id)
             raise InvalidCredentials
         self._attempts.reset(*keys)
         session = self._sessions.create(user, SESSION_TTL)
-        self._audit.emit("login_success", user.customer_id, trace_id, ip)
+        self._audit.emit("login_success", trace_id, session.token, country=user.country)
         return session
 
     def logout(self, token: str | None, trace_id: str, ip: str) -> None:
-        customer_id = None
+        session_id = None
+        country = "MX"
         if token is not None:
             session = self._sessions.get(token)
             if session is not None:
-                customer_id = session.customer_id
+                session_id = session.token
+                country = session.country
             self._sessions.revoke(token)
-        self._audit.emit("logout", customer_id, trace_id, ip)
+        self._audit.emit("logout", trace_id, session_id, country=country)
 
     def validate(self, token: str, trace_id: str, ip: str) -> Session:
         session = self._sessions.get(token)
         if session is not None:
             return session
         if self._sessions.consume_expired(token):
-            self._audit.emit("session_expired", None, trace_id, ip)
+            self._audit.emit("session_expired", trace_id)
             raise SessionExpired
-        self._audit.emit("access_denied", None, trace_id, ip)
+        self._audit.emit("access_denied", trace_id)
         raise UnknownSession

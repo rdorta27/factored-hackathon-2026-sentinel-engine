@@ -64,12 +64,12 @@ The system SHALL lock out further login attempts for a customer and source IP af
 
 ### Requirement: Authentication audit log
 
-The system SHALL append a JSON-lines audit record with timestamp, customer, and `trace_id` for login success, login failure, lockout, logout, session expiry, and denied access, and SHALL never log passwords or full session tokens. Traces to REQ-0007 (P0, Pending).
+The system SHALL append a JSON-lines record in the observability format with `step: session` for login success, login failure, lockout, logout, session expiry, and denied access. The record SHALL carry a salted `session_ref` hash instead of the customer, SHALL NOT contain the client IP, and SHALL never log passwords, confirmation tokens, or full session tokens. Traces to REQ-0007 (P0, In progress) and REQ-0047 (P0, In progress).
 
 #### Scenario: Audit record is complete and safe
 
 - **WHEN** any authentication event occurs
-- **THEN** the log line contains timestamp, event name, customer, and `trace_id`, and contains no password or full token
+- **THEN** the log line contains timestamp, event name, salted `session_ref`, and `trace_id`, and contains no password, no client IP, no customer identifier, and no full token
 
 ### Requirement: Reference date is read once
 

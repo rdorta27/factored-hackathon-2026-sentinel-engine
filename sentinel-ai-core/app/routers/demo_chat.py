@@ -11,13 +11,17 @@ app.state.conversations (ConversationState), both keyed by the session token.
 
 from __future__ import annotations
 
+import secrets
 from datetime import date, timedelta
+from time import perf_counter
 from typing import Any
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 
 from app.ai.demo import DemoModel
+from app.observability import Recorder, TurnObserver
 from app.orchestrator.step import Ports, step
 from app.orchestrator.types import (
     CandidateIdInput,
@@ -105,13 +109,22 @@ def _to_response(output: TurnOutput, ref_date: date | None = None) -> dict[str, 
     return result
 
 
+def _turn_outcome(output: TurnOutput | None) -> str:
+    if output is None:
+        return "failed"
+    if output.kind is OutcomeKind.FAILURE:
+        return "rejected" if output.reason == "unknown_candidate" else "failed"
+    return "ok"
+
+
 @router.post("/chat")
 def chat(
     body: ChatInput,
     request: Request,
     session: Session = Depends(require_session),
-) -> dict[str, Any]:
+) -> JSONResponse:
     token: str = request.cookies.get(SESSION_COOKIE, "")
+    trace_id: str = secrets.token_hex(8)
 
     memories: dict[str, InMemoryTools] = request.app.state.memories
     conversations: dict[str, ConversationState] = request.app.state.conversations
@@ -125,17 +138,54 @@ def chat(
     state = conversations[token]
     gold = request.app.state.gold
     ref_date = request.app.state.reference_date
+    recorder: Recorder = request.app.state.recorder
+
+    observer = TurnObserver(
+        recorder=recorder,
+        trace_id=trace_id,
+        session_ref=recorder.session_ref(token),
+        country=session.country,
+    )
 
     bound = SessionBoundLookup(gold, session.customer_id, memory)
     ports = Ports(
-        session_ref=token,
+        idempotency_scope=token[:12],
         tools=bound,
         model=_MODEL,
         country=session.country,
         today=ref_date,
+        trace_id=trace_id,
+        observer=observer,
     )
 
+    started = perf_counter()
+    output: TurnOutput | None = None
+    outcome: str | None = None
+    policy_rule: str | None = None
+
     if body.selected_reference is not None:
+        # Check if this reference belongs to the customer at all.
+        row = gold.get(body.selected_reference, session.customer_id)
+        if row is None:
+            outcome = "ok"
+            policy_rule = "unknownCharge"
+            observer.emit(
+                step="turn",
+                language=state.language.value,
+                outcome=outcome,
+                attempt=1,
+                policy_rule=policy_rule,
+                latency_ms=(perf_counter() - started) * 1000,
+            )
+            return JSONResponse(
+                content={
+                    "kind": "handoff",
+                    "reason_key": "unknownCharge",
+                    "reference": f"HO-{trace_id[:8]}",
+                    "source": "mock",
+                },
+                headers={"X-Trace-Id": trace_id},
+            )
         # Pre-populate candidates from the Gold store when none are shown yet
         # so that a direct selection (without a prior text turn) is valid.
         if not state.candidates:
@@ -151,4 +201,16 @@ def chat(
     if output.kind is OutcomeKind.FAILURE:
         output = TurnOutput(kind=OutcomeKind.FAILURE, language=output.language)
 
-    return _to_response(output, ref_date=ref_date)
+    observer.emit(
+        step="turn",
+        language=state.language.value,
+        outcome=_turn_outcome(output),
+        attempt=output.attempt if output.attempt is not None else 1,
+        policy_rule=output.reason if output is not None else None,
+        latency_ms=(perf_counter() - started) * 1000,
+    )
+
+    return JSONResponse(
+        content=_to_response(output, ref_date=ref_date),
+        headers={"X-Trace-Id": trace_id},
+    )

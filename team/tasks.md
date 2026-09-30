@@ -52,7 +52,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Task | Owner | Status |
 |---|---|---|
 | Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | In progress: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff is not a tool yet; chat is not connected |
-| Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Pending |
+| Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Done: chat page, test session, `POST /chat` and confirm box verified end to end (web session to case `D-1` + `test_full_turn_is_replayable_by_trace_id`) |
 | Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/` |
 | JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | Pending |
 | Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |
@@ -78,9 +78,9 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Portuguese | Unassigned | Pending |
 | Failure handling: down tools, expired session, bounded retries | Rubén | Pending |
 | Structured confirmation: confirm box and `confirmation_token` ([confirmation](../docs/architecture/specification.md#confirmation)) | Felix, Rubén | Pending |
-| Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Felix | Pending |
+| Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Rubén | Done: `app/observability/` records + JSONL writer wired from `step()` and `/chat`, audit migrated off cleartext PII, acceptance test green (branch `feature/structured-log`) |
 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | Pending |
-| Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
+| Adversarial set: prompt injection and unauthorized access | Felix | In progress: started Wed 9/30 (REQ-0021, REQ-0047) |
 | Public link: Azure, or the free-host fallback of decision 13 | Felix | Pending |
 
 ## Fri 10/2
@@ -135,3 +135,4 @@ Need information, not a decision. Ordered by date.
 | Repository created | Rubén | Sun 9/27 |
 | Team name: Sentinel Engine | Team | Sun 9/27 |
 | Analysis of the challenge documents (datathon kickoff and hackathon brief); commit on Sunday | Rubén | Sat 9/26 |
+| Session-bound charge lookup (`GET /transactions` + `lookup_transactions`) with isolation, currency and canary tests | Felix | Wed 9/30 |

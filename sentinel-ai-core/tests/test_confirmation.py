@@ -42,7 +42,7 @@ def _candidate(status: TransactionStatus = TransactionStatus.APPROVED) -> Candid
 def test_written_yes_does_not_open() -> None:
     tools = InMemoryTools([_candidate()])
     state = ConversationState(language=Language.ES_419)
-    ports = Ports(session_ref="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
     first = step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
     assert first.kind is OutcomeKind.CONFIRM_BOX
     second = step(TextInput("sí"), state, ports)
@@ -54,7 +54,7 @@ def test_written_yes_does_not_open() -> None:
 def test_unknown_candidate_does_not_open() -> None:
     tools = InMemoryTools([_candidate()])
     state = ConversationState(language=Language.ES_419)
-    ports = Ports(session_ref="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
     step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
     result = step(CandidateIdInput("other"), state, ports)
     assert result.kind is OutcomeKind.FAILURE
@@ -64,7 +64,7 @@ def test_unknown_candidate_does_not_open() -> None:
 def test_confirm_returns_case_number_once() -> None:
     tools = InMemoryTools([_candidate()])
     state = ConversationState(language=Language.ES_419)
-    ports = Ports(session_ref="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
     step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
     opened = step(CandidateIdInput("c1"), state, ports)
     again = step(CandidateIdInput("c1"), state, ports)
@@ -77,7 +77,7 @@ def test_confirm_returns_case_number_once() -> None:
 def test_three_failed_lookups_hand_off_without_case_number() -> None:
     tools = InMemoryTools([_candidate()], lookup_failures=3)
     state = ConversationState(language=Language.ES_419)
-    ports = Ports(session_ref="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
     step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
     result = step(CandidateIdInput("c1"), state, ports)
     assert result.kind is OutcomeKind.HANDOFF

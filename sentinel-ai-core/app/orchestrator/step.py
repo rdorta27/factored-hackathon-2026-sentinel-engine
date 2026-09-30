@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from datetime import date
+from time import perf_counter
 from uuid import uuid4
 
 from app.ai.grounding import extract_facts, ground, rank_candidates
 from app.ai.port import ModelPort, UnderstandKind
+from app.observability.observer import TurnObserver
 from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
@@ -24,11 +26,28 @@ OPEN_ACTION = "open_dispute"
 
 @dataclass
 class Ports:
-    session_ref: str
+    idempotency_scope: str
     tools: TransactionLookup
     model: ModelPort
     country: str = "MX"
     today: date | None = None
+    trace_id: str | None = None
+    observer: TurnObserver | None = None
+
+
+def _emit(ports: Ports, language: str, **fields) -> None:  # type: ignore[no-untyped-def]
+    if ports.observer is None:
+        return
+    ports.observer.emit(language=language, **fields)
+
+
+def _tool_outcome(status: ToolStatus) -> str:
+    return {
+        ToolStatus.OK: "ok",
+        ToolStatus.REJECTED: "rejected",
+        ToolStatus.FAILED: "failed",
+        ToolStatus.NOT_FOUND: "failed",
+    }[status]
 
 
 def step(turn: TurnInput, state: ConversationState, ports: Ports) -> TurnOutput:
@@ -41,12 +60,20 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     state.turns.append(turn.text)
     if state.pending_confirmation is not None:
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language, text=turn.text)
+    started = perf_counter()
     understood = ports.model.understand(turn.text, state.turns)
+    _emit(
+        ports,
+        state.language.value,
+        step="understand",
+        latency_ms=(perf_counter() - started) * 1000,
+    )
     state.language = understood.language
     if understood.kind is UnderstandKind.MISSING:
         state.clarification_count += 1
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
     if understood.kind is UnderstandKind.OUT_OF_SCOPE:
+        _emit(ports, state.language.value, step="escalate", policy_rule=None)
         return TurnOutput(
             kind=OutcomeKind.HANDOFF,
             language=state.language,
@@ -55,8 +82,16 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     if understood.kind is UnderstandKind.PERSON:
         state.person_asks += 1
         hit = _hit(state, ports, Intent.PERSON, None)
-        return _from_hit(hit, state, None)
+        return _from_hit(hit, state, None, ports)
+    started = perf_counter()
     candidates = ports.tools.lookup_transactions()
+    _emit(
+        ports,
+        state.language.value,
+        step="act",
+        tool="lookup_transactions",
+        latency_ms=(perf_counter() - started) * 1000,
+    )
     today = _today(ports)
     facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
     result = ground(facts, candidates)
@@ -80,9 +115,10 @@ def _confirm(
         return _after_policy(state, ports, Intent.CHARGE, selected, "")
     hit = _hit(state, ports, Intent.DISPUTE, selected)
     if hit.outcome is not HitOutcome.ALLOW:
-        return _from_hit(hit, state, selected)
+        return _from_hit(hit, state, selected, ports)
     token = uuid4().hex
-    key = f"{ports.session_ref}:{pending.candidate_id}:{pending.action}"
+    key = f"{ports.idempotency_scope}:{pending.candidate_id}:{pending.action}"
+    started = perf_counter()
     opened = ports.tools.open_dispute(
         pending.candidate_id,
         token,
@@ -90,12 +126,31 @@ def _confirm(
         "",
         key,
     )
+    _emit(
+        ports,
+        state.language.value,
+        step="act",
+        tool="open_dispute",
+        outcome=_tool_outcome(opened.status),
+        latency_ms=(perf_counter() - started) * 1000,
+    )
     if opened.status is not ToolStatus.OK or opened.record is None:
-        return _unverified(state, 1)
+        return _unverified(state, 1, ports)
     for attempt in range(1, MAX_ATTEMPTS + 1):
+        started = perf_counter()
         found = ports.tools.lookup_dispute(opened.record.dispute_id)
+        _emit(
+            ports,
+            state.language.value,
+            step="act",
+            tool="lookup_dispute",
+            outcome="ok" if found is not None else "failed",
+            attempt=attempt,
+            latency_ms=(perf_counter() - started) * 1000,
+        )
         if found is not None:
             state.pending_confirmation = None
+            _emit(ports, state.language.value, step="verify")
             return TurnOutput(
                 kind=OutcomeKind.CASE_NUMBER,
                 language=state.language,
@@ -105,18 +160,30 @@ def _confirm(
                 category=found.category,
             )
         if attempt < MAX_ATTEMPTS:
-            ports.tools.open_dispute(
+            started = perf_counter()
+            opened = ports.tools.open_dispute(
                 pending.candidate_id,
                 None,
                 pending.category,
                 "",
                 key,
             )
-    return _unverified(state, MAX_ATTEMPTS)
+            _emit(
+                ports,
+                state.language.value,
+                step="act",
+                tool="open_dispute",
+                outcome=_tool_outcome(opened.status),
+                attempt=attempt + 1,
+                latency_ms=(perf_counter() - started) * 1000,
+            )
+    return _unverified(state, MAX_ATTEMPTS, ports)
 
 
-def _unverified(state: ConversationState, attempt: int) -> TurnOutput:
+def _unverified(state: ConversationState, attempt: int, ports: Ports) -> TurnOutput:
     state.pending_confirmation = None
+    _emit(ports, state.language.value, step="verify", outcome="failed", attempt=attempt)
+    _emit(ports, state.language.value, step="escalate", policy_rule=None, attempt=attempt)
     return TurnOutput(
         kind=OutcomeKind.HANDOFF,
         language=state.language,
@@ -133,7 +200,8 @@ def _hit(
 ) -> PolicyHit:
     policy = load_country(ports.country)
     today = _today(ports)
-    return evaluate(
+    started = perf_counter()
+    hit = evaluate(
         PolicyRequest(
             intent=intent,
             country=ports.country,
@@ -144,6 +212,14 @@ def _hit(
             policy=policy,
         )
     )
+    _emit(
+        ports,
+        state.language.value,
+        step="decide",
+        policy_rule=hit.rule_id,
+        latency_ms=(perf_counter() - started) * 1000,
+    )
+    return hit
 
 
 def _after_policy(
@@ -155,7 +231,7 @@ def _after_policy(
 ) -> TurnOutput:
     hit = _hit(state, ports, intent, selected)
     if hit.outcome is not HitOutcome.ALLOW:
-        return _from_hit(hit, state, selected)
+        return _from_hit(hit, state, selected, ports)
     category = ports.model.classify(message)
     state.pending_confirmation = PendingConfirmation(
         candidate_id=selected.candidate_id,
@@ -172,7 +248,7 @@ def _after_policy(
 
 
 def _from_hit(
-    hit: PolicyHit, state: ConversationState, candidate: Candidate | None
+    hit: PolicyHit, state: ConversationState, candidate: Candidate | None, ports: Ports
 ) -> TurnOutput:
     kind = {
         HitOutcome.EXPLAIN: OutcomeKind.EXPLAIN,
@@ -180,6 +256,8 @@ def _from_hit(
         HitOutcome.OFFER: OutcomeKind.OFFER,
         HitOutcome.ALLOW: OutcomeKind.CONFIRM_BOX,
     }[hit.outcome]
+    if kind is OutcomeKind.HANDOFF:
+        _emit(ports, state.language.value, step="escalate", policy_rule=hit.rule_id)
     return TurnOutput(
         kind=kind,
         language=state.language,

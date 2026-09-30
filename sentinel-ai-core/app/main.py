@@ -19,6 +19,7 @@ from typing import AsyncGenerator
 from fastapi import FastAPI
 
 from app.db.session import init_db
+from app.observability import Recorder
 from app.routers import chat, disputes, transactions
 from app.session.router import SESSION_COOKIE  # re-exported for test imports
 
@@ -81,14 +82,16 @@ def create_app() -> FastAPI:
 
     demo = FastAPI(title="Sentinel AI Core (demo)", version="0.1.0")
 
+    recorder = Recorder()
     ref_date = get_reference_date()
-    audit = AuditLogger()
+    audit = AuditLogger(recorder)
     users = JsonUserRepository(_FIXTURE_PATH)
     sessions = InMemorySessionStore()
     attempts = AttemptTracker()
     service = SessionService(users, sessions, attempts, audit)
     gold = MockGoldStore(as_of=ref_date.isoformat())
 
+    demo.state.recorder = recorder
     demo.state.audit = audit
     demo.state.session_service = service
     demo.state.gold = gold

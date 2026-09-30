@@ -17,7 +17,7 @@ def test_chat_without_session_is_401() -> None:
     api = client()
     response = api.post("/chat", json={"message": "hola"})
     assert response.status_code == 401
-    assert api.app.state.audit.records[-1]["event"] == "access_denied"
+    assert api.app.state.audit.records[-1].event == "access_denied"
 
 
 def test_extra_field_is_422() -> None:
