@@ -41,8 +41,18 @@ class FakeModel:
         }
 
     def understand(self, message: str, turns: list[str]) -> UnderstandResult:
-        return self.scripts[message]
+        if message in self.scripts:
+            return self.scripts[message]
+        for key, result in sorted(self.scripts.items(), key=lambda item: len(item[0]), reverse=True):
+            if key in message:
+                return result
+        raise KeyError(message)
 
     def classify(self, message: str) -> str:
         self.classify_calls += 1
-        return self.categories[message]
+        if message in self.categories:
+            return self.categories[message]
+        for key, category in self.categories.items():
+            if key in message:
+                return category
+        raise KeyError(message)

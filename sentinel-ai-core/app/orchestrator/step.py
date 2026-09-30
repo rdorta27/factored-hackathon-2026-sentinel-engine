@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from datetime import date
 from uuid import uuid4
 
+from app.ai.grounding import extract_facts, ground, rank_candidates
 from app.ai.port import ModelPort, UnderstandKind
 from app.orchestrator.types import (
     Candidate,
@@ -56,12 +57,15 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         hit = _hit(state, ports, Intent.PERSON, None)
         return _from_hit(hit, state, None)
     candidates = ports.tools.lookup_transactions()
-    state.candidates = candidates
-    if not candidates:
+    today = _today(ports)
+    facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
+    result = ground(facts, candidates)
+    if result.outcome != "matched" or result.match is None:
         state.clarification_count += 1
+        state.candidates = rank_candidates(facts, result.candidates or candidates, today)[:4]
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
-    selected = candidates[0]
-    return _after_policy(state, ports, Intent.CHARGE, selected, turn.text)
+    state.candidates = candidates
+    return _after_policy(state, ports, Intent.CHARGE, result.match, turn.text)
 
 
 def _confirm(
@@ -69,9 +73,11 @@ def _confirm(
 ) -> TurnOutput:
     pending = state.pending_confirmation
     shown = {item.candidate_id for item in state.candidates}
-    if pending is None or turn.candidate_id != pending.candidate_id or turn.candidate_id not in shown:
+    if turn.candidate_id not in shown:
         return TurnOutput(kind=OutcomeKind.FAILURE, language=state.language, reason="unknown_candidate")
     selected = shown_candidate(state, turn.candidate_id)
+    if pending is None or turn.candidate_id != pending.candidate_id:
+        return _after_policy(state, ports, Intent.CHARGE, selected, "")
     hit = _hit(state, ports, Intent.DISPUTE, selected)
     if hit.outcome is not HitOutcome.ALLOW:
         return _from_hit(hit, state, selected)
@@ -125,7 +131,7 @@ def _hit(
     candidate: Candidate | None,
 ) -> PolicyHit:
     policy = load_country(ports.country)
-    today = ports.today or (policy.demo_today if policy else date(2026, 6, 17))
+    today = _today(ports)
     return evaluate(
         PolicyRequest(
             intent=intent,
@@ -179,6 +185,13 @@ def _from_hit(
         candidate=candidate,
         reason=hit.rule_id,
     )
+
+
+def _today(ports: Ports) -> date:
+    if ports.today is not None:
+        return ports.today
+    policy = load_country(ports.country)
+    return policy.demo_today if policy else date(2026, 6, 17)
 
 
 def shown_candidate(state: ConversationState, candidate_id: str) -> Candidate | None:

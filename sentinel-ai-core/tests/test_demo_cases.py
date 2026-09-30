@@ -36,8 +36,8 @@ def _ports(model: FakeModel) -> tuple[InMemoryTools, Ports]:
 @pytest.mark.parametrize(
     ("text", "language", "category"),
     [
-        ("no reconozco este cargo", Language.ES_419, "Cargo no reconocido"),
-        ("não reconheço esta cobrança", Language.PT_BR, "Cargo no reconocido"),
+        ("no reconozco este cargo Exito 85.000 2024-10-01", Language.ES_419, "Cargo no reconocido"),
+        ("não reconheço esta cobrança Exito 85.000 2024-10-01", Language.PT_BR, "Cargo no reconocido"),
     ],
 )
 def test_normal_case_confirms_then_returns_case_number(
@@ -61,7 +61,7 @@ def test_duplicate_charge_is_the_normal_case_with_another_category() -> None:
     model = FakeModel()
     tools, ports = _ports(model)
     state = ConversationState(language=Language.ES_419)
-    shown = step(TextInput("me cobraron dos veces"), state, ports)
+    shown = step(TextInput("me cobraron dos veces Exito 85.000 2024-10-01"), state, ports)
     opened = step(CandidateIdInput("c1"), state, ports)
     assert shown.kind is OutcomeKind.CONFIRM_BOX
     assert opened.category == "Cargo duplicado"

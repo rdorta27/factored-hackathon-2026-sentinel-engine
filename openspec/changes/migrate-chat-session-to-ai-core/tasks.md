@@ -14,8 +14,8 @@
 
 ## 3. Grounding under the loop
 
-- [ ] 3.1 Add the `es-419` and `pt-BR` grounding fake in `app/ai/` (`cargo`, `cobro`, and `cobrança` are charges; amounts `1.000,00` and `1,000.00`). Rank with the demo date. Area: [AI](../../../docs/build/areas/ai.md). Verify Spanish and Portuguese match the same charge, and an ambiguous Portuguese message does not select one — evidence: `sentinel-ai-core/tests/test_grounding.py`.
-- [ ] 3.2 Stop taking the first charge. A match is input to policy. Person and out-of-scope run before grounding. A structured id is selection when no box is pending, and confirmation only when it matches the pending box. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify a Reversed match explains and does not show a box, and a written yes does not open — evidence: `sentinel-ai-core/tests/test_grounding.py`.
+- [x] 3.1 Add the `es-419` and `pt-BR` grounding fake in `app/ai/` (`cargo`, `cobro`, and `cobrança` are charges; amounts `1.000,00` and `1,000.00`). Rank with the demo date. Area: [AI](../../../docs/build/areas/ai.md). Verify Spanish and Portuguese match the same charge, and an ambiguous Portuguese message does not select one — evidence: `sentinel-ai-core/tests/test_grounding.py`.
+- [x] 3.2 Stop taking the first charge. A match is input to policy. Person and out-of-scope run before grounding. A structured id is selection when no box is pending, and confirmation only when it matches the pending box. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify a Reversed match explains and does not show a box, and a written yes does not open — evidence: `sentinel-ai-core/tests/test_grounding.py`.
 
 ## 4. POST /chat
 
