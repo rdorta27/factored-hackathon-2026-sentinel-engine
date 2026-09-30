@@ -64,7 +64,8 @@ Discarded as a learned component: customer segmentation (no valid labels to comp
 ## Evidence for evaluation
 
 - [x] Frozen label universe and case mix: `evidence/evaluation/2024Q4-v1/summary.json` (10 Claim combos, n=1383; full counter, never top-N) with the derived runner set `sentinel-ai-core/eval/labels.json` pinned by run id and summary hash
-- [ ] Component vs. baseline table on held-out data, with n
+- [x] Component vs. baseline on the identical held-out set: `evidence/evaluation-runs/2024Q4-eval-v1/summary.json` (35 team-written simulation cases; router and baseline accuracy with per-class P/R/F1 by locale; fixtures are baseline-mirrored so the delta is zero by construction; live-model comparison pending decision 010)
+- [x] System replay with mandatory outcome metrics: same run (safe resolution, unsafe outcomes `0/35`, escalation quality, p50/p95 latency, cost; fault injection degrading safely)
 - [ ] Error analysis
 - [ ] Experiment log
 - [ ] Adversarial set and its results (owner: ML; AI proposes the security cases, see [security](../security.md))
