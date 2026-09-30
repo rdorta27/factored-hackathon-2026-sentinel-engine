@@ -6,7 +6,7 @@ What the system must do to meet the hackathon brief. Each requirement has an ID 
 
 ## Hackathon material
 
-Requirements come from four official documents, plus clarifications published in the help channel. They are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+Requirements come from four official documents, plus clarifications published in the help channel. Except for the data dictionary, kept as a column-level reference in [understand/reference/](../understand/reference/), they are not in the repository; each teammate keeps a copy, and we cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|

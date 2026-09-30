@@ -36,7 +36,7 @@ For agents:
 | Path | What it holds |
 |---|---|
 | [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture and their specification |
-| [`docs/understand/`](docs/understand/) | The challenge and the data in one read |
+| [`docs/understand/`](docs/understand/) | The challenge and the data in one read; [`reference/`](docs/understand/reference/) holds the official data dictionary |
 | [`docs/requirements/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
@@ -72,7 +72,9 @@ Accepted decisions that code must follow:
 
 - **No secrets, no data in the repo.** The repository is delivered public.
   Credentials live in `.env` (gitignored) and are shared by direct message.
-  Hackathon datasets never get committed (`data/` is gitignored).
+  Hackathon datasets never get committed (`data/` is gitignored). The one
+  reference exception is the official data dictionary in
+  [`docs/understand/reference/`](docs/understand/reference/): schema, not rows.
 - **Commit messages** follow Conventional Commits with a mandatory two-block
   body, enforced by [`.githooks/commit-msg`](.githooks/commit-msg). Activate
   once per clone: `git config core.hooksPath .githooks`.
