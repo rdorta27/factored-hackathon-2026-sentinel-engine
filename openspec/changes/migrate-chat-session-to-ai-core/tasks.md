@@ -9,8 +9,8 @@
 
 ## 2. Gold adapter and listing
 
-- [ ] 2.1 Bind `customer_id` in an adapter before `step()`. Map a mock `Refunded` status to Reversed. Do not add a customer argument to `lookup_transactions()`. Area: [data](../../../docs/build/areas/data.md). Verify a foreign reference is absent and the as-of mark is the demo date — evidence: `sentinel-ai-core/tests/test_gold_adapter.py`.
-- [ ] 2.2 Add session-scoped `GET /transactions` with no customer identifier accepted. Area: [data](../../../docs/build/areas/data.md). Verify the list is only the session customer's rows and a customer identifier is rejected — evidence: `sentinel-ai-core/tests/test_transactions.py`.
+- [x] 2.1 Bind `customer_id` in an adapter before `step()`. Map a mock `Refunded` status to Reversed. Do not add a customer argument to `lookup_transactions()`. Area: [data](../../../docs/build/areas/data.md). Verify a foreign reference is absent and the as-of mark is the demo date — evidence: `sentinel-ai-core/tests/test_gold_adapter.py`.
+- [x] 2.2 Add session-scoped `GET /transactions` with no customer identifier accepted. Area: [data](../../../docs/build/areas/data.md). Verify the list is only the session customer's rows and a customer identifier is rejected — evidence: `sentinel-ai-core/tests/test_transactions.py`.
 
 ## 3. Grounding under the loop
 

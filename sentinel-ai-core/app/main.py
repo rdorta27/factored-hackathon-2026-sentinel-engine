@@ -3,12 +3,14 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 
+from app.routers.transactions import router as transactions_router
 from app.session.audit import AuditLogger
 from app.session.clock import reference_date
 from app.session.limits import AttemptTracker
 from app.session.router import SESSION_COOKIE, router as session_router
 from app.session.service import SessionService
 from app.session.store import InMemorySessionStore, JsonUserRepository
+from app.tools.gold import MockGoldStore
 
 FIXTURE_PATH = Path(__file__).parent / "session" / "fixtures" / "users.json"
 
@@ -17,6 +19,7 @@ def create_app() -> FastAPI:
     app = FastAPI(title="Sentinel Engine")
     app.state.audit = AuditLogger()
     app.state.reference_date = reference_date()
+    app.state.gold = MockGoldStore(as_of=app.state.reference_date.isoformat())
     app.state.session_service = SessionService(
         JsonUserRepository(FIXTURE_PATH),
         InMemorySessionStore(),
@@ -32,6 +35,7 @@ def create_app() -> FastAPI:
         return response
 
     app.include_router(session_router)
+    app.include_router(transactions_router)
     return app
 
 
