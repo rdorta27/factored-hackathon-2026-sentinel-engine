@@ -4,7 +4,7 @@
 
 **Requirements:** those in the `data` area in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md) (tables and columns), [architecture](../../understand/architecture.md), [`sentinel-data-engine/`](../../../sentinel-data-engine/README.md).
+**Related:** [dataset](../../understand/dataset.md) (tables and columns), [system](../../architecture/system-architecture.md), [`sentinel-data-engine/`](../../../sentinel-data-engine/README.md).
 
 ## Implementation: `sentinel-data-engine`
 
@@ -33,7 +33,7 @@ Schema enforcement and domain validation via `QualityRule` predicates defined in
 
 ### Gold Layer — Denormalized Serving (`build_gold.py`)
 
-Three denormalized tables consumed by FastAPI (`sentinel-ai-core`) with sub-50ms latency:
+Three denormalized tables `sentinel-ai-core/` will read. That folder is not in the repo yet ([folders](../../../team/plan.md#folders)). Target latency is sub-50ms:
 
 | Table | PK | Key Derived Columns |
 |---|---|---|

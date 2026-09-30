@@ -1,6 +1,6 @@
 # Security
 
-**Purpose:** security rules that affect all areas. **Related:** [architecture](../understand/architecture.md), [conversation](conversation.md).
+**Purpose:** security rules that affect all areas. **Related:** [system](../architecture/system-architecture.md), [demo](../architecture/demo-architecture.md), [conversation](conversation.md).
 
 ## Authentication
 

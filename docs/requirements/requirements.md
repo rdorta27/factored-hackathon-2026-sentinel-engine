@@ -38,6 +38,17 @@ A requirement with no official source is marked **Own**: a team design decision,
 | P1 | 12 | Tracking, business outcomes and ROI, observability, retries, breakdown by language and country, fine-grained conversation rules |
 | P2 | 4 | Country as configuration, app-error context, handoff routing, LLM judge |
 
+## Status by priority
+
+Counted from the *Status* column of the tables below; update it whenever a status changes.
+
+| Priority | Total | Done | In progress | Pending | Done % |
+|---|---|---|---|---|---|
+| P0 | 41 | 3 | 9 | 29 | 7% |
+| P1 | 12 | 0 | 3 | 9 | 0% |
+| P2 | 4 | 0 | 1 | 3 | 0% |
+| **Total** | **57** | 3 | 13 | 41 | 5% |
+
 ## Functional (F)
 
 | ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
@@ -45,14 +56,14 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0001 | Keep conversation context | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2 · Kickoff p. 11 | Demo | Pending |
 | REQ-0002 | Clarify ambiguous requests or abstain from unsupported ones | P0 | All | AI Engineering | ai | Problem statement: Scope; What your solution should demonstrate 2 · Kickoff p. 11 | Ambiguous-case demo | Pending |
 | REQ-0003 | Answer only with verified records; if the data does not exist, say so | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2 · Kickoff p. 13 | Demo + logs | Pending |
-| REQ-0004 | Use tools safely to execute the flow; no real movement of money or live decisions (simulated actions only) | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2; Data and execution boundaries · Kickoff p. 11 | Tool contracts | Pending |
-| REQ-0006 | Define what it answers alone, what requires confirmation, and when to escalate | P0 | All | Rationale | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11 | [Conversation](../build/conversation.md) | Pending |
-| REQ-0008 | Structured JSON handoff: request, verified facts, actions, evidence, open questions; no raw transcript | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11, 14 | Schema + example | Pending |
+| REQ-0004 | Use tools safely to execute the flow; no real movement of money or live decisions (simulated actions only) | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2; Data and execution boundaries · Kickoff p. 11 | Tool contracts | In progress |
+| REQ-0006 | Define what it answers alone, what requires confirmation, and when to escalate | P0 | All | Rationale | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11 | [Conversation](../build/conversation.md) | In progress |
+| REQ-0008 | Structured JSON handoff: request, verified facts, actions, evidence, open questions; no raw transcript | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11, 14 | Schema + example | In progress |
 | REQ-0009 | Demo: normal case resolved per policies | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
 | REQ-0010 | Demo: ambiguous or unsupported case (clarifies or abstains) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
 | REQ-0011 | Demo: case requiring a human (escalates with handoff) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Demo + video | Pending |
 | REQ-0012 | Robust interactions in Spanish and Portuguese; the dataset is Spanish-only, so pt-BR cases are team-generated and labeled as such | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Scope · Kickoff p. 10 · Dataset summary | pt-BR demo + metrics by language | Pending |
-| REQ-0033 | Policy decides, the LLM converses: it neither approves nor invents rules. The source's risk/eligibility separation is credit-specific and does not apply to disputes | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries; What your solution should demonstrate 3 | Architecture | Pending |
+| REQ-0033 | Policy decides, the LLM converses: it neither approves nor invents rules. The source's risk/eligibility separation is credit-specific and does not apply to disputes | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries; What your solution should demonstrate 3 | Architecture | Done |
 | REQ-0038 | Simple frontend for using the system (e.g., chat); dashboard not required (scope decision: no dashboard) | P0 | All | AI Engineering | ai | Kickoff p. 20 | Demo | Pending |
 | REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) · Dataset summary (data ends 2026-06-17) | Demo + tools with "updated through" | Pending |
 | REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person) | Human-case demo | Pending |
@@ -73,13 +84,13 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0027 | Authentication with test session, per-customer access control, retention policy | P0 | All | AI Engineering / Data Engineering | ai, data | Problem statement: What your solution should demonstrate 6; Data and execution boundaries · Kickoff p. 15 | Test session + policy | Pending |
 | REQ-0028 | Reproducibility: setup, versioning, repeatable evaluation | P0 | All | Rationale | all | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Setup README | Pending |
 | REQ-0047 | The LLM receives no identifiers or personal data (PII), and no restricted data goes in external model requests; tools filter by the session customer | P0 | All | AI Engineering | ai | Problem statement: Data and execution boundaries · Own: [security](../build/security.md#llm-visibility) | Code + adversarial test | Pending |
-| REQ-0048 | Decision order: policy in code > predictor > LLM | P0 | All | Rationale / ML | ai, ml | Problem statement: introduction · Kickoff p. 11 · Own: [architecture](../understand/architecture.md#decision-priority) | [Architecture](../understand/architecture.md) | Pending |
-| REQ-0056 | Explicit trade-offs across autonomy, accuracy, latency, cost, and human oversight; justify where AI is used and where deterministic logic is preferable | P0 | All | Rationale | all | Problem statement: introduction · Kickoff p. 11 | Decisions + presentation | Pending |
-| REQ-0025 | Observability: execution traces and logs, with country and language | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Traces and logs | Pending |
+| REQ-0048 | Decision order: policy in code > learned component > LLM | P0 | All | Rationale / ML | ai, ml | Problem statement: introduction · Kickoff p. 11 · Own: [system](../architecture/specification.md#decision-priority) | [Decision priority](../architecture/specification.md#decision-priority) | Done |
+| REQ-0056 | Explicit trade-offs across autonomy, accuracy, latency, cost, and human oversight; justify where AI is used and where deterministic logic is preferable | P0 | All | Rationale | all | Problem statement: introduction · Kickoff p. 11 | Decisions + presentation | In progress |
+| REQ-0025 | Observability: execution traces and logs, with country and language | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Traces and logs | In progress |
 | REQ-0026 | Bounded retries, safe fallback; idempotent actions | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Tool-failure test | Pending |
-| REQ-0029 | Explanations based on sources, rules, and logs; not on model reasoning | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 | Audit logs | Pending |
-| REQ-0032 | Mock tools with documented contracts and limitations | P1 | All | AI Engineering | ai | Problem statement: Data and execution boundaries | Tool contracts | Pending |
-| REQ-0049 | Country is configuration, not code | P2 | All | Rationale | ai | Own: [AI](../build/areas/ai.md#technical-rules) | Configuration file | Pending |
+| REQ-0029 | Explanations based on sources, rules, and logs; not on model reasoning | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 | Audit logs | In progress |
+| REQ-0032 | Mock tools with documented contracts and limitations | P1 | All | AI Engineering | ai | Problem statement: Data and execution boundaries | Tool contracts | In progress |
+| REQ-0049 | Country is configuration, not code | P2 | All | Rationale | ai | Own: [AI](../build/areas/ai.md#technical-rules) | Configuration file | In progress |
 
 ## Data and ML (DML)
 
@@ -112,8 +123,8 @@ A requirement with no official source is marked **Own**: a team design decision,
 | REQ-0037 | Short, mandatory video pitch: working demo and core architecture decisions | P0 | All | Rationale | all | Kickoff p. 18 | [Script](../build/delivery.md#video-pitch) | Pending |
 | REQ-0051 | Repo README, presentation (4 to 6 slides), video script, AND `docs/` and `team/` all in English | P0 | All | Rationale | all | Own: [language](../build/delivery.md#language) | [Pre-submission check](../build/delivery.md#language) | Pending |
 | REQ-0013 | Report data and language-coverage limitations, including that the dataset has no Portuguese text and covers only MX, CO and AR | P0 | All | Rationale | analysis | Problem statement: Scope · Kickoff p. 15 · Dataset summary | Limitations section | Pending |
-| REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28) | Limitations section | Pending |
-| REQ-0052 | Credible path to production: how it deploys, scales, is monitored and secured, and what changes from the prototype | P0 | All | AI Engineering / Rationale | ai, all | Help channel (9/28) · Kickoff p. 15 | [Path to production](../understand/architecture.md#path-to-production) | Pending |
+| REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28) | Limitations section | In progress |
+| REQ-0052 | Credible path to production: how it deploys, scales, is monitored and secured, and what changes from the prototype | P0 | All | AI Engineering / Rationale | ai, all | Help channel (9/28) · Kickoff p. 15 | [Path to production](../architecture/specification.md#path-to-production) | In progress |
 
 ## Future work (not requirements)
 

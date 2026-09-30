@@ -1,6 +1,6 @@
 # The Challenge
 
-**Purpose:** understand the hackathon without reading the PDFs. **Related:** [architecture](architecture.md), [dataset](dataset.md), [requirements](../requirements/requirements.md), [glossary](glossary/).
+**Purpose:** understand the hackathon without reading the PDFs. **Related:** [system](../architecture/system-architecture.md), [dataset](dataset.md), [requirements](../requirements/requirements.md), [glossary](glossary/).
 
 > "Build something that works, prove that it works, and know when it should not act. And show us what it would take to make it real."
 
@@ -22,7 +22,7 @@ A **customer-support assistant for a bank** operating in Mexico, Colombia, and A
 
 ## Golden rules
 
-This is the summary; the detail lives in [architecture](architecture.md) and [conversation](../build/conversation.md).
+This is the summary; the detail lives in [system](../architecture/system-architecture.md) and [conversation](../build/conversation.md).
 
 1. **AI understands; code executes and verifies.** Permissions live in code, not in the prompt.
 2. **Only verified facts.** If the data is missing or not current, we say so.

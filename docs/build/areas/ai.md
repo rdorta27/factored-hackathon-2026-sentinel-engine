@@ -4,7 +4,7 @@
 
 **Requirements:** those in the `ai` area in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [architecture](../../understand/architecture.md), [conversation](../conversation.md) (what the assistant says), [security](../security.md).
+**Related:** [system](../../architecture/system-architecture.md), [demo](../../architecture/demo-architecture.md), [conversation](../conversation.md) (what the assistant says), [security](../security.md).
 
 ## Scope
 

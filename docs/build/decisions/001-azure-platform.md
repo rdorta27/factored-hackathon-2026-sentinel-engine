@@ -27,4 +27,5 @@ Azure.
   - **Data:** wherever the hackathon data lands (Azure storage or local).
 - Pending: who holds the subscription or credits, and setting a **spending cap** and budget alerts from day one.
 - The public deployment needs usage limits to prevent abuse (see [security](../security.md#public-repository-and-deployment)).
+- *Updated 9/29 ([System Architecture](../../architecture/system-architecture.md#stack-and-deployment)):* the Databricks pipeline is implemented in code (Asset Bundle, Bronze and Silver jobs) but not deployed. Gold on Databricks is meant for historical analytics, so how the service reads charges at request time is not decided. The dispute-record engine is not decided either (SQLite and PostgreSQL are candidates).
 - The presentation must justify the choice: reproducibility, data control, and deployment.

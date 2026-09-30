@@ -4,7 +4,7 @@
 
 **Requirements:** those in the `ml` area in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md) (labels and columns), [metrics](../metrics.md), [architecture](../../understand/architecture.md).
+**Related:** [dataset](../../understand/dataset.md) (labels and columns), [metrics](../metrics.md), [system](../../architecture/system-architecture.md).
 
 ## Scope
 

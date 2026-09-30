@@ -71,4 +71,4 @@ The same four questions for every flow, answered with the measurements in docume
 | Is there **signal** for a learned component? | The brief requires one, evaluated against a baseline |
 | Are the **labels and text** trustworthy? | A leaky label makes any metric meaningless |
 
-The brief asks for one flow, so the comparison ends in one choice ([decision 003](../decisions/003-disputes-flow.md)). Technology choices are not made here: see [001](../decisions/001-azure-platform.md), [005](../decisions/005-backend.md), [006](../decisions/006-frontend.md) and the [architecture](../../understand/architecture.md).
+The brief asks for one flow, so the comparison ends in one choice ([decision 003](../decisions/003-disputes-flow.md)). Technology choices are not made here: see [001](../decisions/001-azure-platform.md), [005](../decisions/005-backend.md), [006](../decisions/006-frontend.md) and the [system](../../architecture/system-architecture.md).

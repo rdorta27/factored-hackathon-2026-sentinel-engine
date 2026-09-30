@@ -1,7 +1,7 @@
 # 004 · Personal data (PII) masking and unmasking lifecycle
 
 **Date:** 2026-09-28
-**Status:** Proposed
+**Status:** Partially accepted (9/29): option 2 is the built baseline; the option 1 additions stay proposed
 **Participants:** Natalia Restrepo, Rubén Dorta
 
 ## Context
@@ -17,6 +17,15 @@ PII must never reach the LLM or the browser (REQ-0047, no identifiers in the LLM
 ## Decision
 
 We propose option 1 (two-plane masking). Static masking lands in the Silver layer; dynamic masking (Regex + NER, e.g. Microsoft Presidio or SpaCy) intercepts live prompts, replaces PII with session tokens, and unmasks them only inside parameterized tool calls. **Mask** means replacing a personal value with a token before it reaches the LLM or the logs; **unmask** means code swapping the token back for the real value, only inside a tool. **An unmasked value is never a lookup key:** every tool reads by the session's `customer_id`, and a token can only be compared against that customer's own data (e.g. the last four digits of their card). Looking up by an identifier typed in the chat would let anyone read another customer's data. Final confirmation pending implementation capacity.
+
+## Update 9/29
+
+The architecture ([personal data](../../architecture/specification.md#personal-data)) builds **option 2** as the baseline: data minimisation at three boundaries, all in code. The service reads a Gold view without personal columns (to agree with the data owner), tools return only the fields the reply needs, and logs hold no customer text or `customer_id`. The two option 1 additions are not built for the submission and stay proposed:
+
+- **Token vault** for what the customer types: build or declare as a limitation is an open team question. The flow does not need the customer's national id, because the session identifies them.
+- **Static masking in Silver:** not implemented in `transform_silver.py`.
+
+The demo states the remaining gap: text the customer types reaches the LLM unmasked.
 
 ## Consequences
 
