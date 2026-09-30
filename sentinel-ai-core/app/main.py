@@ -20,8 +20,8 @@ FIXTURE_PATH = Path(__file__).parent / "session" / "fixtures" / "users.json"
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Sentinel Engine")
-    app.state.audit = AuditLogger()
     app.state.recorder = Recorder()
+    app.state.audit = AuditLogger(app.state.recorder)
     app.state.reference_date = reference_date()
     app.state.gold = MockGoldStore(as_of=app.state.reference_date.isoformat())
     app.state.conversations = {}

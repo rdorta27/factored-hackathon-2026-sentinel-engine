@@ -37,7 +37,7 @@ def test_wrong_password_and_unknown_user_are_identical() -> None:
     assert wrong.status_code == 401
     assert unknown.status_code == 401
     assert wrong.json() == unknown.json() == {"detail": "Invalid credentials"}
-    events = [row["event"] for row in api.app.state.audit.records]
+    events = [row.event for row in api.app.state.audit.records]
     assert events.count("login_failed") == 2
 
 
@@ -62,7 +62,7 @@ def test_expired_session_is_cleared() -> None:
     )
     response = api.get("/session/me")
     assert response.status_code == 401
-    assert api.app.state.audit.records[-1]["event"] == "session_expired"
+    assert api.app.state.audit.records[-1].event == "session_expired"
     assert token not in store._sessions
 
 
@@ -71,7 +71,7 @@ def test_logout_revokes_the_token() -> None:
     login(api)
     assert api.post("/session/logout").status_code == 200
     assert api.get("/session/me").status_code == 401
-    assert api.app.state.audit.records[-1]["event"] == "access_denied"
+    assert api.app.state.audit.records[-1].event == "access_denied"
 
 
 def test_lockout_after_five_failures() -> None:
@@ -80,17 +80,28 @@ def test_lockout_after_five_failures() -> None:
         assert login(api, password="wrong").status_code == 401
     blocked = login(api, password="wrong")
     assert blocked.status_code == 429
-    assert api.app.state.audit.records[-1]["event"] == "login_locked"
+    assert api.app.state.audit.records[-1].event == "login_locked"
 
 
 def test_audit_has_no_password_or_token() -> None:
     api = client()
     login(api)
     token = api.cookies.get(SESSION_COOKIE)
-    dumped = json.dumps(api.app.state.audit.records)
+    dumped = "\n".join(row.to_json() for row in api.app.state.audit.records)
     assert PASSWORD not in dumped
     assert token not in dumped
-    assert "trace_id" in api.app.state.audit.records[-1]
+    assert LOGIN not in dumped
+    assert api.app.state.audit.records[-1].trace_id
+
+
+def test_audit_session_ref_is_a_hash_not_the_customer() -> None:
+    api = client()
+    login(api)
+    record = api.app.state.audit.records[-1]
+    assert record.event == "login_success"
+    assert record.step == "session"
+    assert record.session_ref != LOGIN
+    assert len(record.session_ref) == 16
 
 
 def test_reference_date_defaults_and_override(monkeypatch) -> None:

@@ -48,7 +48,7 @@ def require_session(request: Request) -> Session:
     trace_id = _trace(request)
     ip = _ip(request)
     if token is None:
-        request.app.state.audit.emit("access_denied", None, trace_id, ip)
+        request.app.state.audit.emit("access_denied", trace_id)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
     try:
         return get_service(request).validate(token, trace_id, ip)
