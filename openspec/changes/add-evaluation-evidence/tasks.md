@@ -28,5 +28,5 @@
 
 ## 6. Integration
 
-- [ ] 6.1 Run the full script against the dataset, freeze `2024Q4-v1` and confirm `verify` passes (evidence: `evidence/evaluation/2024Q4-v1/summary.json`; ref: `evidence/flows/README.md`)
-- [ ] 6.2 Update the requirements status for REQ-0016, REQ-0017 and REQ-0020 and reference the run in the ML area doc (evidence: `docs/requirements/requirements.md`, `docs/build/areas/ml.md`)
+- [x] 6.1 Run the full script against the dataset, freeze `2024Q4-v1` and confirm `verify` passes (evidence: `evidence/evaluation/2024Q4-v1/summary.json`; ref: `evidence/flows/README.md`)
+- [x] 6.2 Update the requirements status for REQ-0016, REQ-0017 and REQ-0020 and reference the run in the ML area doc (evidence: `docs/requirements/requirements.md`, `docs/build/areas/ml.md`)
