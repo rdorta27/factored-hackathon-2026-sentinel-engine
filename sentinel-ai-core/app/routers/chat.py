@@ -16,7 +16,7 @@ from __future__ import annotations
 import os
 from typing import Any
 
-import anthropic
+from anthropic import AsyncAnthropic
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -84,10 +84,10 @@ async def chat(
 
     llm_reply = "ESCALATE"
     if not explicit_escalation:
-        client = anthropic.Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        client = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
         user_content = _build_user_context(body.message, transactions, body.locale)
         try:
-            response = client.messages.create(
+            response = await client.messages.create(
                 model=_ANTHROPIC_MODEL,
                 max_tokens=512,
                 system=_SYSTEM_PROMPT,
