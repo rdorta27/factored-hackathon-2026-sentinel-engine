@@ -82,10 +82,16 @@ Accepted decisions that code must follow:
   Requirements cited by a decision are listed in
   [`docs/requirements/requirements.md`](docs/requirements/requirements.md).
 - **Evidence runs are write-once.** A new run goes in a new folder under
-  `evidence/flows/` (e.g. `2024Q4-v3/`); never edit a committed run. Cite
-  `summary.json` fields, never hand-copied numbers. Scripts read the bucket
-  name from `.env` and data from the gitignored `data/`; never write the
-  bucket name, account IDs or dataset rows in the repo.
+  `evidence/flows/` (e.g. `2024Q4-v3/`) or `evidence/adversarial/`; never edit
+  a committed run. Cite `summary.json` fields, never hand-copied numbers.
+  Scripts read the bucket name from `.env` and data from the gitignored
+  `data/`; never write the bucket name, account IDs or dataset rows in the repo.
+- **Adversarial evidence** is produced by the test suite, not by hand. Run
+  `SENTINEL_WRITE_EVIDENCE=1 python -m pytest tests/adversarial -q` from
+  `sentinel-ai-core/` to write one new run under
+  `evidence/adversarial/<run-id>/summary.json`. The counts are derived from the
+  real pytest outcomes; the `unsafe_outcome_rate` denominator is every attack
+  attempted. See [`sentinel-ai-core/tests/adversarial/summary.py`](sentinel-ai-core/tests/adversarial/summary.py).
 - **Specs and changes** use OpenSpec (`/opsx:propose`, `/opsx:apply`, …) with
   the rules in [`openspec/config.yaml`](openspec/config.yaml): English only,
   every capability traced to a `REQ-####`.

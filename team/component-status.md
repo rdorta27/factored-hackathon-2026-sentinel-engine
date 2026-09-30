@@ -34,6 +34,8 @@ flowchart TB
     orch -.-> logs[("Structured logs<br/>traces, latency, cost")]
     evalr["Evaluation runner"] -.-> chat
     evalr -.-> logs
+    tests["Adversarial set<br/>29 attacks, 0/29 unsafe"] -.-> chat
+    tests -.-> session
     s3[("S3 raw data")] --> pipeline["Bronze → Silver → Gold<br/>code with tests, no end-to-end run"]
     pipeline --> goldmock
     deploy["Public deployment"] -.-> chat
@@ -42,7 +44,7 @@ flowchart TB
     classDef partial fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#4a3200
     classDef missing fill:#ffe3e3,stroke:#d33f3f,stroke-width:2px,color:#4a1111
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class chat,session,orch,policy,config,lookup,open,verify,disputes,logs done
+    class chat,session,orch,policy,config,lookup,open,verify,disputes,logs,tests done
     class learned,goldmock,handoff,pipeline partial
     class evalr,deploy,s3 missing
     class client ext
@@ -50,7 +52,7 @@ flowchart TB
 
 ## Reading it
 
-- **Done (10):** the full demo path works — chat, session, loop, policy with per-country files, the three tools against fakes, the in-memory dispute record with read-back verification, and the structured log with its JSONL file.
+- **Done (11):** the full demo path works — chat, session, loop, policy with per-country files, the three tools against fakes, the in-memory dispute record with read-back verification, the structured log with its JSONL file, and the measured [adversarial set](../evidence/adversarial/20260930T214744Z/summary.json) (29 attacks, `0/29` unsafe).
 - **Partial (4):** the learned component is a fake port (the classifier comparison is the biggest open ML item); Gold is a mock store (the pipeline code exists with tests but never ran end to end); the advisor handoff is a stub with no queue UI.
 - **Missing (3):** the evaluation runner (next, reads the new logs), the S3-to-service real read path, and the public deployment.
 
