@@ -55,4 +55,4 @@
 
 - [ ] Choose test authentication mechanism
 - [ ] Define retention policy
-- [ ] Propose security cases for the adversarial set (the set owner is [ML](areas/ml.md), REQ-0021)
+- [x] Propose security cases for the adversarial set (the set owner is [ML](areas/ml.md), REQ-0021); delivered in [tests/adversarial](../../sentinel-ai-core/tests/adversarial/README.md) — 29 attacks, `0/29` unsafe

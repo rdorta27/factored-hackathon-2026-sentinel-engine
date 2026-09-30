@@ -136,3 +136,4 @@ Need information, not a decision. Ordered by date.
 | Team name: Sentinel Engine | Team | Sun 9/27 |
 | Analysis of the challenge documents (datathon kickoff and hackathon brief); commit on Sunday | Rubén | Sat 9/26 |
 | Session-bound charge lookup (`GET /transactions` + `lookup_transactions`) with isolation, currency and canary tests | Felix | Wed 9/30 |
+| Adversarial set: 29 attacks measured, `0/29` unsafe, frozen in [evidence](../evidence/adversarial/20260930T214744Z/summary.json) | Felix | Wed 9/30 |
