@@ -1,5 +1,4 @@
 from fastapi.testclient import TestClient
-import pytest
 
 from app.main import create_app
 
@@ -112,10 +111,6 @@ def test_foreign_access_attempts_are_blocked_8_of_8() -> None:
 # --- Point 6: the raw Gold vocabulary never reaches an HTTP response
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="listing leaks raw Gold status; fix proposed in review report",
-)
 def test_raw_gold_status_never_appears_in_any_response() -> None:
     """"Refunded" is Gold vocabulary. The public contract must not carry it.
 
@@ -147,10 +142,6 @@ def test_chat_never_emits_raw_gold_status() -> None:
 # --- Point 2 (report): status is mapped on two paths, listing and chat differ
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="status mapped in two paths; fix proposed in review report",
-)
 def test_transactions_status_is_mapped() -> None:
     api = TestClient(create_app())
     login(api)

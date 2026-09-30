@@ -50,7 +50,7 @@ def test_spanish_and_portuguese_match_the_same_charge() -> None:
             as_of="2026-06-17",
         )
         ports = Ports(
-            session_ref="s1",
+            idempotency_scope="s1",
             tools=tools,
             model=ChargeModel(),
             today=date(2026, 6, 17),
@@ -64,7 +64,7 @@ def test_spanish_and_portuguese_match_the_same_charge() -> None:
 
 def test_portuguese_ambiguity_does_not_select_one() -> None:
     tools = InMemoryTools([_row(), _row(candidate_id="c2")])
-    ports = Ports(session_ref="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
     result = step(
         TextInput("cobrança na ACME Store"),
         ConversationState(language=Language.PT_BR),
@@ -76,7 +76,7 @@ def test_portuguese_ambiguity_does_not_select_one() -> None:
 
 def test_reversed_match_explains_and_skips_the_box() -> None:
     tools = InMemoryTools([_row(TransactionStatus.REVERSED)])
-    ports = Ports(session_ref="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
     result = step(
         TextInput("cargo del 10 de junio en ACME Store por 1.000,00"),
         ConversationState(language=Language.ES_419),
@@ -90,7 +90,7 @@ def test_reversed_match_explains_and_skips_the_box() -> None:
 def test_written_yes_does_not_open() -> None:
     tools = InMemoryTools([_row()])
     state = ConversationState(language=Language.ES_419)
-    ports = Ports(session_ref="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
     shown = step(
         TextInput("cargo del 10 de junio en ACME Store por 1.000,00"),
         state,
@@ -105,7 +105,7 @@ def test_written_yes_does_not_open() -> None:
 def test_structured_id_without_a_box_does_not_open() -> None:
     tools = InMemoryTools([_row()])
     state = ConversationState(language=Language.ES_419, candidates=tools.candidates)
-    ports = Ports(session_ref="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ChargeModel(), today=date(2026, 6, 17))
     result = step(CandidateIdInput("c1"), state, ports)
     assert result.kind is OutcomeKind.CONFIRM_BOX
     assert tools.open_calls == 0

@@ -30,7 +30,7 @@ def _candidate() -> Candidate:
 
 def _ports(model: FakeModel) -> tuple[InMemoryTools, Ports]:
     tools = InMemoryTools([_candidate()])
-    return tools, Ports(session_ref="s1", tools=tools, model=model, today=date(2024, 12, 1))
+    return tools, Ports(idempotency_scope="s1", tools=tools, model=model, today=date(2024, 12, 1))
 
 
 @pytest.mark.parametrize(

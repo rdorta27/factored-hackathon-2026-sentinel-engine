@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 
 from app.session.models import Session
 from app.session.router import require_session
-from app.tools.gold import GoldTransactions
+from app.tools.gold import GoldTransactions, to_candidate
 
 router = APIRouter(tags=["transactions"])
 
@@ -25,7 +25,7 @@ def list_transactions(
                 "currency": row.currency,
                 "merchant": row.merchant,
                 "date": row.date,
-                "status": row.status,
+                "status": to_candidate(row).status.value,
                 "as_of": row.as_of,
             }
             for row in rows
