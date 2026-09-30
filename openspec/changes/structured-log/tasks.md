@@ -8,8 +8,8 @@
 
 ## 2. Loop and chat wiring
 
-- [ ] 2.1 Extend `Ports` with optional `trace_id` and observer fields defaulting to no-op and emit one record per loop step from `step()` with policy rule, tool outcome, attempt, and latency; verify existing orchestrator tests still pass unchanged (evidence: `python3 -m pytest sentinel-ai-core/tests/test_demo_cases.py sentinel-ai-core/tests/test_policy_gate.py -q`; see `docs/build/decisions/007-learned-component.md`)
-- [ ] 2.2 Wire a per-turn recorder in `POST /chat` reusing the middleware `trace_id`, emitting the closing record with final outcome and aggregates including the exception and unknown-charge paths; verify a text turn and a failing turn each leave a complete trace (evidence: new tests in `tests/test_observability.py`; see `docs/build/areas/ai.md`)
+- [x] 2.1 Extend `Ports` with optional `trace_id` and observer fields defaulting to no-op and emit one record per loop step from `step()` with policy rule, tool outcome, attempt, and latency; verify existing orchestrator tests still pass unchanged (evidence: `python3 -m pytest sentinel-ai-core/tests/test_demo_cases.py sentinel-ai-core/tests/test_policy_gate.py -q`; see `docs/build/decisions/007-learned-component.md`)
+- [x] 2.2 Wire a per-turn recorder in `POST /chat` reusing the middleware `trace_id`, emitting the closing record with final outcome and aggregates including the exception and unknown-charge paths; verify a text turn and a failing turn each leave a complete trace (evidence: new tests in `tests/test_observability.py`; see `docs/build/areas/ai.md`)
 
 ## 3. Session audit migration
 

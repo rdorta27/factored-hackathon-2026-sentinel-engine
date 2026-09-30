@@ -3,6 +3,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 
+from app.observability import Recorder
 from app.routers.chat import router as chat_router
 from app.routers.ui import mount_ui
 from app.routers.transactions import router as transactions_router
@@ -20,6 +21,7 @@ FIXTURE_PATH = Path(__file__).parent / "session" / "fixtures" / "users.json"
 def create_app() -> FastAPI:
     app = FastAPI(title="Sentinel Engine")
     app.state.audit = AuditLogger()
+    app.state.recorder = Recorder()
     app.state.reference_date = reference_date()
     app.state.gold = MockGoldStore(as_of=app.state.reference_date.isoformat())
     app.state.conversations = {}

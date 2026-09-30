@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
+from time import perf_counter
 
 from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.ai.demo import DemoModel
+from app.observability import Recorder, TurnObserver
 from app.orchestrator.step import Ports, step
 from app.orchestrator.types import (
     Candidate,
@@ -13,6 +15,7 @@ from app.orchestrator.types import (
     Language,
     OutcomeKind,
     TextInput,
+    TurnOutput,
 )
 from app.session.models import Session
 from app.session.router import require_session
@@ -49,13 +52,44 @@ def _bundle(request: Request, session: Session) -> tuple[ConversationState, Sess
     return states[session.token], tools
 
 
-def _ports(request: Request, session: Session, tools: SessionBoundLookup) -> Ports:
+def _ports(
+    request: Request, session: Session, tools: SessionBoundLookup, observer: TurnObserver
+) -> Ports:
     return Ports(
         session_ref=session.token[:12],
         tools=tools,
         model=_MODEL,
         country=session.country,
         today=request.app.state.reference_date,
+        trace_id=_trace(request),
+        observer=observer,
+    )
+
+
+def _turn_outcome(output: TurnOutput | None) -> str:
+    if output is None:
+        return "failed"
+    if output.kind is OutcomeKind.FAILURE:
+        return "rejected" if output.reason == "unknown_candidate" else "failed"
+    return "ok"
+
+
+def _close_turn(
+    request: Request,
+    observer: TurnObserver,
+    state: ConversationState,
+    output: TurnOutput | None,
+    latency_ms: float,
+    outcome: str | None = None,
+    reason: str | None = None,
+) -> None:
+    observer.emit(
+        step="turn",
+        language=state.language.value,
+        outcome=outcome if outcome is not None else _turn_outcome(output),
+        attempt=output.attempt if output is not None and output.attempt is not None else 1,
+        policy_rule=reason if reason is not None else (output.reason if output is not None else None),
+        latency_ms=latency_ms,
     )
 
 
@@ -160,7 +194,15 @@ def chat(
     session: Session = Depends(require_session),
 ) -> JSONResponse:
     state, tools = _bundle(request, session)
-    ports = _ports(request, session, tools)
+    recorder: Recorder = request.app.state.recorder
+    observer = TurnObserver(
+        recorder=recorder,
+        trace_id=_trace(request),
+        session_ref=recorder.session_ref(session.token),
+        country=session.country,
+    )
+    ports = _ports(request, session, tools, observer)
+    started = perf_counter()
     try:
         if body.selected_reference:
             gold: GoldTransactions = request.app.state.gold
@@ -172,6 +214,15 @@ def chat(
                     "reference": f"HO-{_trace(request)}",
                     "source": "mock",
                 }
+                _close_turn(
+                    request,
+                    observer,
+                    state,
+                    None,
+                    (perf_counter() - started) * 1000,
+                    outcome="ok",
+                    reason="unknownCharge",
+                )
                 return JSONResponse(status_code=status.HTTP_200_OK, content=payload)
             candidate = to_candidate(row)
             if all(item.candidate_id != candidate.candidate_id for item in state.candidates):
@@ -180,6 +231,8 @@ def chat(
         else:
             output = step(TextInput(body.message), state, ports)
     except Exception:
+        _close_turn(request, observer, state, None, (perf_counter() - started) * 1000)
         payload = {"kind": "error", "message_key": "errorGeneric", "trace_id": _trace(request)}
         return JSONResponse(status_code=status.HTTP_200_OK, content=payload)
+    _close_turn(request, observer, state, output, (perf_counter() - started) * 1000)
     return JSONResponse(status_code=status.HTTP_200_OK, content=_render(output, state, request))

@@ -69,6 +69,47 @@ def test_record_rejects_bad_identifiers_and_enums() -> None:
         _valid(model="")
 
 
+def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+    from app.observability import Recorder
+
+    api = TestClient(create_app())
+    api.app.state.recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
+    assert (
+        api.post("/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        == 200
+    )
+    return api
+
+
+def test_text_turn_leaves_a_complete_trace(tmp_path) -> None:
+    api = _logged_in_client(tmp_path)
+    response = api.post("/chat", json={"message": "no reconozco un cargo"})
+    assert response.status_code == 200
+    trace_id = response.headers["X-Trace-Id"]
+
+    records = api.app.state.recorder.records_for(trace_id)
+    assert records, "a text turn must leave records"
+    assert {record.step for record in records} >= {"understand", "turn"}
+    closing = next(record for record in records if record.step == "turn")
+    assert closing.outcome == "ok"
+    assert isinstance(closing.latency_ms, float)
+
+
+def test_failing_turn_still_leaves_a_closing_record(tmp_path) -> None:
+    api = _logged_in_client(tmp_path)
+    response = api.post("/chat", json={"selected_reference": "TXN-9999"})
+    assert response.status_code == 200
+    trace_id = response.headers["X-Trace-Id"]
+
+    records = api.app.state.recorder.records_for(trace_id)
+    closing = [record for record in records if record.step == "turn"]
+    assert len(closing) == 1
+    assert closing[0].policy_rule == "unknownCharge"
+
+
 def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.observability import Recorder
 
