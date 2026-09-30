@@ -139,6 +139,7 @@ class GoldBuilder:
         self._local_load_silver_views(con, silver)
         self._local_build_customer_360(con, gold)
         self._local_build_eligible_transactions(con, gold)
+        self._local_build_service_eligible_transactions(con, gold)
         self._local_build_cases_summary(con, gold)
 
         con.close()
@@ -295,13 +296,13 @@ class GoldBuilder:
                 t.product_id,
                 t.customer_id,
                 t.transaction_type,
-                t.amount,
+                CAST(t.amount AS DOUBLE)      AS amount,
                 t.currency,
                 t.channel,
                 t.transaction_country,
                 t.transaction_status,
                 t.is_fraud,
-                t.fraud_score,
+                CAST(t.fraud_score AS DOUBLE) AS fraud_score,
                 t.merchant_name,
                 t.merchant_category,
                 -- Customer context
@@ -327,6 +328,66 @@ class GoldBuilder:
         ).to_arrow_table()
         write_deltalake(out_path, eligible_arrow, mode="overwrite")
         logger.info("Built gold_dispute_eligible_transactions → %s", out_path)
+
+    def _local_build_service_eligible_transactions(
+        self, con: duckdb.DuckDBPyConnection, gold: Path
+    ) -> None:
+        """
+        Build v_service_dispute_eligible_transactions (PII-free service projection).
+
+        Derived from gold_dispute_eligible_transactions by dropping the three PII
+        columns mandated by ADR 008:
+            - customer_first_name
+            - customer_last_name
+            - customer_credit_score
+
+        This table is the surface exposed to the FastAPI backend and any downstream
+        service that does not hold explicit PII-READ permission.  All eligibility
+        flags and transaction fields are preserved.
+        """
+        out_path = str(gold / "v_service_dispute_eligible_transactions")
+        gold_src = str(gold / "gold_dispute_eligible_transactions")
+
+        if not Path(gold_src).exists() or not any(Path(gold_src).iterdir()):
+            logger.warning(
+                "gold_dispute_eligible_transactions not found – "
+                "skipping service view build: %s",
+                gold_src,
+            )
+            return
+
+        service_arrow: pa.Table = con.execute(
+            f"""
+            SELECT
+                transaction_id,
+                transaction_date,
+                process_date,
+                product_id,
+                customer_id,
+                transaction_type,
+                CAST(amount AS DOUBLE)      AS amount,
+                currency,
+                channel,
+                transaction_country,
+                transaction_status,
+                is_fraud,
+                CAST(fraud_score AS DOUBLE) AS fraud_score,
+                merchant_name,
+                merchant_category,
+                -- Customer context (PII-safe subset only)
+                customer_segment,
+                customer_country,
+                -- Eligibility flags
+                is_disputed,
+                days_since_transaction,
+                is_eligible_for_dispute,
+                -- Snapshot metadata
+                snapshot_date
+            FROM delta_scan('{gold_src}')
+            """
+        ).to_arrow_table()
+        write_deltalake(out_path, service_arrow, mode="overwrite")
+        logger.info("Built v_service_dispute_eligible_transactions → %s", out_path)
 
     def _local_build_cases_summary(
         self, con: duckdb.DuckDBPyConnection, gold: Path
