@@ -21,15 +21,15 @@ The submission runs the same code with a few documented mocks (test session, in-
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 3 | 9 | 29 | 7% |
-| P1 | 12 | 0 | 3 | 9 | 0% |
-| P2 | 4 | 0 | 1 | 3 | 0% |
-| **Total** | **57** | 3 | 13 | 41 | 5% |
+| P0 | 41 | 4 | 17 | 20 | 9% |
+| P1 | 12 | 1 | 4 | 7 | 8% |
+| P2 | 4 | 1 | 0 | 3 | 25% |
+| **Total** | **57** | 6 | 21 | 30 | 10% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) |
-| **In progress** | Designed, waiting for code: REQ-0004 safe tools · 0006 answer, confirm, escalate · 0008 JSON handoff · 0025 observability · 0029 explanations from sources · 0032 documented mocks · 0049 country as configuration · 0052 path to production · 0056 trade-offs · 0030 limitations. Data and ML: REQ-0015 pipeline · 0017 labels and splits · 0053 sizing |
+| **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
+| **In progress** | Loop and policy in `sentinel-ai-core/`: REQ-0001 context · 0002 clarify or abstain · 0004 safe tools · 0006 confirm and escalate · 0007 policy in code · 0009–0011 the three demo cases (tests, not the video) · 0040 person request · 0043 status and window · 0047 no identifiers to the model · 0032 mock tools. Still design or data, not this folder: REQ-0008 handoff schema · 0015 pipeline · 0017 labels · 0025 observability · 0029 explanations from logs · 0030 limitations · 0052 path to production · 0053 sizing · 0056 trade-offs |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
@@ -47,7 +47,7 @@ The [documentation index](docs/README.md) covers everything else.
 | Path | What it holds |
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
-| `sentinel-ai-core/` | Not created yet. One FastAPI process: chat, orchestrator, policy, tools, observability and the evaluation runner. Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine, with in-memory tool fakes. No chat page, session, or `POST /chat` yet. Owners in [team/plan.md](team/plan.md#folders). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |

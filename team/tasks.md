@@ -51,9 +51,9 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 
 | Task | Owner | Status |
 |---|---|---|
-| Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | Pending |
+| Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | In progress: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff is not a tool yet; chat is not connected |
 | Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Pending |
-| Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Pending |
+| Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/` |
 | JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | Pending |
 | Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |
 | Evidence run `2024Q4-v4` recording claim categories and subcategories with counts | Natalia, Rubén | Pending |

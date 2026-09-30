@@ -33,7 +33,7 @@ Schema enforcement and domain validation via `QualityRule` predicates defined in
 
 ### Gold Layer — Denormalized Serving (`build_gold.py`)
 
-Three denormalized tables `sentinel-ai-core/` will read. That folder is not in the repo yet ([folders](../../../team/plan.md#folders)). Target latency is sub-50ms:
+Three denormalized tables `sentinel-ai-core/` will read. The folder exists; it does not read Gold yet ([folders](../../../team/plan.md#folders)). Target latency is sub-50ms:
 
 | Table | PK | Key Derived Columns |
 |---|---|---|
