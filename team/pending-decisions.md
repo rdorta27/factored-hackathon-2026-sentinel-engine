@@ -39,6 +39,7 @@ Postponed from 9/28 and 9/29. Until then the demo runs locally; the Azure servic
 |---|---|---|---|
 | 23 | `team/` in the submission | The repo stays public (decided). Open: keep `team/` in the submission or remove it before submitting. Does not block the skeleton | [Security](../docs/build/security.md#public-repository-and-deployment) |
 | 28 | Handoff delivery in production | How the JSON package reaches advisors in production: queue, CRM ticket or similar. Not needed for the demo (the package is returned and logged). Routing by language and specialty is REQ-0046 (P2, simulated). Presented as remaining deployment work | [Specification: path to production](../docs/architecture/specification.md#path-to-production) |
+| 29 | Advisor queue, admin panel and role landing (deferred from the chat-session migration) | (a) Implement advisor queue + role landing for the demo; (b) keep JSON-only handoff with no advisor UI; (c) admin counts only, no panel. Depends on PII review of the advisor summary vs REQ-0047/REQ-0008. Owner: Rubén | [Handoff](../docs/architecture/specification.md#tool-contracts), [roles spec](../openspec/specs/roles/spec.md), decision 28 |
 
 ## Decided
 

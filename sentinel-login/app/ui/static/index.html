@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es-419" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Sentinel Engine</title>
+<!-- Brand sheets first and unmodified: the only source of color and type. -->
+<link rel="stylesheet" href="/branding/brand.css">
+<link rel="stylesheet" href="/branding/chat.css">
+<!-- Local sheet: layout and positioning only (see tests/test_branding.py). -->
+<link rel="stylesheet" href="/ui/styles.css">
+<script src="/ui/app.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <header class="chat-header">
+    <span class="chat-badge" aria-hidden="true">SE</span>
+    <div class="app-headings">
+      <p class="chat-title" data-i18n="appTitle">Sentinel Engine</p>
+      <p class="chat-sub">
+        <span data-i18n="secureSession">Secure session</span>
+        <span id="session-user"></span>
+      </p>
+    </div>
+    <div class="topbar-controls">
+      <label>
+        <span class="sr-only" data-i18n="languageLabel">Language</span>
+        <select id="locale" class="theme-toggle" aria-label="Language">
+          <option value="es-419">es-419</option>
+          <option value="es-MX">es-MX</option>
+          <option value="es-CO">es-CO</option>
+          <option value="es-AR">es-AR</option>
+          <option value="pt-BR">pt-BR</option>
+        </select>
+      </label>
+      <button id="theme" class="theme-toggle" type="button" aria-pressed="false">
+        <span id="theme-icon" aria-hidden="true">sun</span>
+        <span class="sr-only" data-i18n="themeToggle">Toggle theme</span>
+      </button>
+      <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-login" class="msg msg-bot login-card">
+      <h2 data-i18n="loginTitle">Test login</h2>
+      <p class="chat-sub" data-i18n="mockBadge">Demo data</p>
+      <form id="login-form" class="login-form">
+        <label>
+          <span data-i18n="userLabel">User</span>
+          <input id="login-user" name="user" autocomplete="username" required>
+        </label>
+        <label>
+          <span data-i18n="passwordLabel">Password</span>
+          <input id="login-pass" name="pass" type="password" autocomplete="current-password" required>
+        </label>
+        <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
+        <p id="login-error" class="error" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="view-chat" hidden>
+      <div class="chat-grid">
+        <div class="chat-thread-col">
+          <div id="thread" class="chat-thread" aria-live="polite"></div>
+          <form id="chat-form" class="chat-input">
+            <input id="chat-input" data-i18n-ph="chatPlaceholder" placeholder="Describe the charge" maxlength="2000" required>
+            <button type="submit" data-i18n="sendButton">Send</button>
+          </form>
+          <button id="agent" class="theme-toggle full-width" type="button" data-i18n="agentButton">Talk to an agent</button>
+        </div>
+        <aside class="chat-panel" aria-labelledby="tx-title">
+          <h3 id="tx-title" class="chat-title" data-i18n="txTitle">Your recent charges</h3>
+          <p class="chat-sub" data-i18n="txHint">Tap a charge to dispute it</p>
+          <div id="transactions" class="tx-list"></div>
+          <p class="chat-sub" id="reference-date"></p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-queue" hidden>
+      <h2 class="chat-title" data-i18n="queueTitle">Escalated cases</h2>
+      <div id="queue"></div>
+    </section>
+
+    <section id="view-admin" hidden>
+      <h2 class="chat-title" data-i18n="adminTitle">Audit and metrics</h2>
+      <div id="metrics"></div>
+      <pre id="audit" class="msg msg-audit"></pre>
+    </section>
+  </main>
+</div>
+</body>
+</html>
