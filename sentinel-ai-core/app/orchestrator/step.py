@@ -99,6 +99,7 @@ def _confirm(
             return TurnOutput(
                 kind=OutcomeKind.CASE_NUMBER,
                 language=state.language,
+                candidate=selected,
                 case_number=found.dispute_id,
                 attempt=attempt,
                 category=found.category,

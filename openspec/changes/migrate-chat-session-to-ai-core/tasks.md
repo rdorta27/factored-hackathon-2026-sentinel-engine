@@ -19,8 +19,8 @@
 
 ## 4. POST /chat
 
-- [ ] 4.1 Accept only `message` and `selected_reference` on `POST /chat`. Identity comes from the session. Return `clarification`, `confirm_box`, `case_confirmation`, `handoff`, `text`, or `error`. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify 401 without a session, 422 on an extra field, and no open on selection — evidence: `sentinel-ai-core/tests/test_chat.py`.
-- [ ] 4.2 On the confirmation turn, issue the token only inside the loop. Do not put it in the request or the response. Emit `case_confirmation` only after read-back, with `source=mock`, and no receipt route. Decision: [006](../../../docs/build/decisions/006-frontend.md). Verify the token is absent from JSON and an unverified write is `handoff` with no case number — evidence: `sentinel-ai-core/tests/test_chat.py`.
+- [x] 4.1 Accept only `message` and `selected_reference` on `POST /chat`. Identity comes from the session. Return `clarification`, `confirm_box`, `case_confirmation`, `handoff`, `text`, or `error`. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify 401 without a session, 422 on an extra field, and no open on selection — evidence: `sentinel-ai-core/tests/test_chat.py`.
+- [x] 4.2 On the confirmation turn, issue the token only inside the loop. Do not put it in the request or the response. Emit `case_confirmation` only after read-back, with `source=mock`, and no receipt route. Decision: [006](../../../docs/build/decisions/006-frontend.md). Verify the token is absent from JSON and an unverified write is `handoff` with no case number — evidence: `sentinel-ai-core/tests/test_chat.py`.
 
 ## 5. Customer page
 
