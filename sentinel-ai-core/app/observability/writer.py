@@ -21,21 +21,37 @@ class Recorder:
 
     def __init__(self, path: Path | str | None = DEFAULT_PATH, salt: str | None = None) -> None:
         self._path = Path(path) if path is not None else None
-        if salt is not None:
-            self.salt = salt
-            self.ephemeral_salt = False
-        else:
-            env_salt = os.environ.get(SALT_ENV)
-            if env_salt:
-                self.salt = env_salt
-                self.ephemeral_salt = False
-            else:
-                self.salt = secrets.token_hex(16)
-                self.ephemeral_salt = True
-                logger.warning("%s is unset; using an ephemeral salt for session_ref", SALT_ENV)
+        self.salt, self.ephemeral_salt = self._resolve_salt(salt)
         self._records: list[StepRecord] = []
         if self._path is not None:
             self._path.parent.mkdir(parents=True, exist_ok=True)
+
+    @staticmethod
+    def _resolve_salt(explicit: str | None) -> tuple[str, bool]:
+        """Salt order: explicit argument, environment, persisted dev file,
+        generated. The dev file lives beside the log output (gitignored), so
+        restarts correlate without ever committing a secret."""
+        if explicit is not None:
+            return explicit, False
+        env_salt = os.environ.get(SALT_ENV)
+        if env_salt:
+            return env_salt, False
+        salt_file = Path("var") / ".session_salt"
+        if salt_file.is_file():
+            return salt_file.read_text(encoding="utf-8").strip(), False
+        generated = secrets.token_hex(16)
+        try:
+            salt_file.parent.mkdir(parents=True, exist_ok=True)
+            salt_file.write_text(generated, encoding="utf-8")
+        except OSError:
+            logger.warning("%s is unset; using an ephemeral salt for session_ref", SALT_ENV)
+            return generated, True
+        logger.warning(
+            "%s is unset; generated a dev salt at %s (gitignored, demo only)",
+            SALT_ENV,
+            salt_file,
+        )
+        return generated, False
 
     @property
     def records(self) -> list[StepRecord]:

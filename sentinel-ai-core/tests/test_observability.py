@@ -174,3 +174,15 @@ def test_session_ref_is_stable_and_not_the_identifier() -> None:
     assert ref == recorder.session_ref("CUST-0001")
     assert "CUST-0001" not in ref
     assert len(ref) == 16
+
+
+def test_dev_salt_persists_across_restarts(tmp_path, monkeypatch) -> None:
+    from app.observability import Recorder
+
+    monkeypatch.delenv("SENTINEL_SESSION_SALT", raising=False)
+    monkeypatch.chdir(tmp_path)
+    first = Recorder()
+    second = Recorder()
+    assert first.salt == second.salt
+    assert first.session_ref("CUST-0001") == second.session_ref("CUST-0001")
+    assert (tmp_path / "var" / ".session_salt").is_file()
