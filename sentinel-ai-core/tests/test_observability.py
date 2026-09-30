@@ -67,3 +67,28 @@ def test_record_rejects_bad_identifiers_and_enums() -> None:
         _valid(attempt=0)
     with pytest.raises(ValueError, match="never empty"):
         _valid(model="")
+
+
+def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.observability import Recorder
+
+    recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
+    first = _valid(trace_id="0" * 16)
+    second = _valid(trace_id="f" * 16)
+    recorder.emit(first)
+    recorder.emit(second)
+
+    assert recorder.records == [first, second]
+    assert recorder.records_for("0" * 16) == [first]
+    lines = (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()
+    assert [json.loads(line)["trace_id"] for line in lines] == ["0" * 16, "f" * 16]
+
+
+def test_session_ref_is_stable_and_not_the_identifier() -> None:
+    from app.observability import Recorder
+
+    recorder = Recorder(path=None, salt="test-salt")
+    ref = recorder.session_ref("CUST-0001")
+    assert ref == recorder.session_ref("CUST-0001")
+    assert "CUST-0001" not in ref
+    assert len(ref) == 16
