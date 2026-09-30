@@ -32,3 +32,7 @@ dev = [
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "attack(id, group): adversarial attack with its honesty group (see tests/adversarial/summary.py)",
+]
