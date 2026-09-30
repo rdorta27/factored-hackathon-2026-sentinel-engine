@@ -66,7 +66,7 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | REQ-0033 | Policy decides, the LLM converses: it neither approves nor invents rules. The source's risk/eligibility separation is credit-specific and does not apply to disputes | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries; What your solution should demonstrate 3 | Architecture | Done |
 | REQ-0038 | Simple frontend for using the system (e.g., chat); dashboard not required (scope decision: no dashboard) | P0 | All | AI Engineering | ai | Kickoff p. 20 | Demo | Pending |
 | REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) · Dataset summary (data ends 2026-06-17) | Demo + tools with "updated through" | Pending |
-| REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person) | Human-case demo | Pending |
+| REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person) | Human-case demo | In progress |
 | REQ-0041 | Show amounts in the transaction's original currency; language follows the customer, currency follows the account | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#language) · Dataset summary (local currency and USD) | pt-BR demo | Pending |
 | REQ-0042 | Open disputes with minimum effort: show candidate transactions instead of asking for amounts | P1 | Disputes | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-dispute) | Demo | Pending |
 | REQ-0043 | Check the charge status (Pending, Reversed) before opening a dispute | P1 | Disputes, accounts | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-dispute) | Demo | In progress |
@@ -90,7 +90,7 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | REQ-0026 | Bounded retries, safe fallback; idempotent actions | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Tool-failure test | Done |
 | REQ-0029 | Explanations based on sources, rules, and logs; not on model reasoning | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 | Audit logs | In progress |
 | REQ-0032 | Mock tools with documented contracts and limitations | P1 | All | AI Engineering | ai | Problem statement: Data and execution boundaries | Tool contracts | In progress |
-| REQ-0049 | Country is configuration, not code | P2 | All | Rationale | ai | Own: [AI](../build/areas/ai.md#technical-rules) | Configuration file | In progress |
+| REQ-0049 | Country is configuration, not code | P2 | All | Rationale | ai | Own: [AI](../build/areas/ai.md#technical-rules) | Configuration file | Done |
 
 ## Data and ML (DML)
 
