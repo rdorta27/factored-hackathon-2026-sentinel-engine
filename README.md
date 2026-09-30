@@ -19,7 +19,19 @@ The submission runs the same code with a few documented mocks (test session, in-
 
 ## Requirements coverage
 
-**5% covered (3 of 57 requirements Done)**: P0 3/41 · P1 0/12 · P2 0/4. Done: REQ-0014 (flow analysis, [measurements](docs/build/flows/02-flow-measurements.md), [selection](docs/build/flows/03-flow-selection.md)), REQ-0033 and REQ-0048 (policy over LLM and decision order, [specification](docs/architecture/specification.md#decision-priority)). 13 are In progress, most of them designed in the architecture and waiting for code. See the [requirements](docs/requirements/requirements.md) for status.
+| Priority | Total | Done | In progress | Pending | Done % |
+|---|---|---|---|---|---|
+| P0 | 41 | 3 | 9 | 29 | 7% |
+| P1 | 12 | 0 | 3 | 9 | 0% |
+| P2 | 4 | 0 | 1 | 3 | 0% |
+| **Total** | **57** | 3 | 13 | 41 | 5% |
+
+| Status | Requirements |
+|---|---|
+| **Done** | REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) |
+| **In progress** | Designed, waiting for code: REQ-0004 safe tools · 0006 answer, confirm, escalate · 0008 JSON handoff · 0025 observability · 0029 explanations from sources · 0032 documented mocks · 0049 country as configuration · 0052 path to production · 0056 trade-offs · 0030 limitations. Data and ML: REQ-0015 pipeline · 0017 labels and splits · 0053 sizing |
+
+Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
 ## Start here (about 15 minutes)
 

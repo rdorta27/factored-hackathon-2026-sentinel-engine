@@ -38,6 +38,17 @@ A requirement with no official source is marked **Own**: a team design decision,
 | P1 | 12 | Tracking, business outcomes and ROI, observability, retries, breakdown by language and country, fine-grained conversation rules |
 | P2 | 4 | Country as configuration, app-error context, handoff routing, LLM judge |
 
+## Status by priority
+
+Counted from the *Status* column of the tables below; update it whenever a status changes.
+
+| Priority | Total | Done | In progress | Pending | Done % |
+|---|---|---|---|---|---|
+| P0 | 41 | 3 | 9 | 29 | 7% |
+| P1 | 12 | 0 | 3 | 9 | 0% |
+| P2 | 4 | 0 | 1 | 3 | 0% |
+| **Total** | **57** | 3 | 13 | 41 | 5% |
+
 ## Functional (F)
 
 | ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
