@@ -22,5 +22,7 @@ A one-page chat served by FastAPI. Streamlit and Gradio are out. Node only if Fe
 
 ## Consequences
 
+- *Updated 9/29:* state-changing actions are confirmed with a confirm box (`.chat-confirm` in `branding/chat.css`); the page sends the candidate id to `POST /chat` as a structured field, not as text ([confirmation](../../architecture/specification.md#confirmation)).
+
 - No second framework and no second process for the Thursday deploy.
 - The page talks to `POST /chat` with the message and the session. It never sends a customer id for the tools to trust.

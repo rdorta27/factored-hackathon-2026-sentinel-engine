@@ -2,11 +2,11 @@
 
 How the assistant behaves with the customer, organized by situation, and how it handles Spanish and Portuguese. It is the basis of the demo and the video.
 
-**Purpose:** decide what the assistant says and does in each situation. **Related:** [architecture](../understand/architecture.md), [security](security.md), [requirements](../requirements/requirements.md).
+**Purpose:** decide what the assistant says and does in each situation. **Related:** [system](../architecture/system-architecture.md), [security](security.md), [requirements](../requirements/requirements.md).
 
 ## Principles
 
-- **AI understands; code executes and verifies** (see [architecture](../understand/architecture.md#central-principle)).
+- **AI understands; code executes and verifies** (see [system](../architecture/system-architecture.md#central-principle)).
 - **Autonomy by risk:** actions with consequences (blocking, opening a dispute) ask for confirmation (REQ-0006, autonomy rules).
 - **Only verified facts;** if the data does not exist, say so and offer an alternative. Never answer with the model's own knowledge (REQ-0003, verified records).
 - **Separate what is verified from what the customer states.**

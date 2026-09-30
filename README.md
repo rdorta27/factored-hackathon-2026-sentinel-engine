@@ -8,21 +8,25 @@ A customer-service assistant for transaction disputes at a bank in Mexico, Colom
 
 An assistant, not just a chatbot. It understands the customer, answers only with verified data, opens a dispute when the customer does not recognize a charge, confirms that the dispute exists, and hands the case to a person when needed. It works in **Spanish and Portuguese**.
 
-The guiding principle: **AI understands; code verifies and executes.**
+The guiding principle: **AI understands; code executes and verifies.** The loop is the one the hackathon asks for: Understand → Decide → Act → Verify → Escalate. Policy, confirmations and the session live in code; the LLM never sees the customer's identifiers.
 
-The data backbone is a **100% Delta Lakehouse** — no traditional RDBMS for analytics. DuckDB with the Delta extension runs the full Medallion pipeline locally at zero cost; Azure Databricks with PySpark handles production scale. Both execute the same `sentinel_data` Python package.
+Two layers:
+
+- **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold, with DuckDB locally and Azure Databricks in production, both running the same `sentinel_data` package.
+- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM classifies the dispute category and is measured against a keyword baseline.
+
+The submission runs the same code with a few documented mocks (test session, in-memory dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
 
 ## Requirements coverage
 
-**2% covered (1 of 57 requirements Done)**: P0 1/41 · P1 0/12 · P2 0/4. REQ-0014 is done ([measurements](docs/build/flows/02-flow-measurements.md), [selection](docs/build/flows/03-flow-selection.md)); 3 are In progress (REQ-0015, 0017, 0053). See the [requirements](docs/requirements/requirements.md) for status.
+**5% covered (3 of 57 requirements Done)**: P0 3/41 · P1 0/12 · P2 0/4. Done: REQ-0014 (flow analysis, [measurements](docs/build/flows/02-flow-measurements.md), [selection](docs/build/flows/03-flow-selection.md)), REQ-0033 and REQ-0048 (policy over LLM and decision order, [specification](docs/architecture/specification.md#decision-priority)). 13 are In progress, most of them designed in the architecture and waiting for code. See the [requirements](docs/requirements/requirements.md) for status.
 
 ## Start here (about 15 minutes)
 
 1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
-2. **[Architecture](docs/understand/architecture.md):** layers, components and mocks, decision priority and a case walkthrough, with diagrams.
-3. **[Architecture and roadmap](docs/build/architecture-roadmap.md):** the 9/28 architecture proposal reconciled with the repository: personal data (PII) lifecycle, four-stage design, repository layout, timeline and costs.
-4. **[Flow selection](docs/build/flows/03-flow-selection.md):** why transaction disputes, backed by data and reproducible measurements.
-5. **[Team plan](team/plan.md):** schedule, decisions made, working method and mocks.
+2. **[Architecture](docs/architecture/README.md):** the target system, the demo with its mocks, and the specification.
+3. **[Flow selection](docs/build/flows/03-flow-selection.md):** why transaction disputes, backed by data and reproducible measurements.
+4. **[Team plan](team/plan.md):** schedule, gantt, decisions made, working method and mocks.
 
 The [documentation index](docs/README.md) covers everything else.
 
@@ -30,11 +34,13 @@ The [documentation index](docs/README.md) covers everything else.
 
 | Path | What it holds |
 |---|---|
-| [`sentinel-data-engine/`](sentinel-data-engine/README.md) | **Data backbone** — Medallion pipeline (Bronze → Silver → Gold) over Delta Lake. DuckDB locally, Azure Databricks in production. 13 LATAM Bank tables, ~19 M records. See `sentinel-data-engine/README.md` for full API and architecture. |
-| [`docs/understand/`](docs/understand/) | The challenge, the system and the data: [The Challenge](docs/understand/overview.md), [architecture](docs/understand/architecture.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
+| [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
+| `sentinel-ai-core/` | Not created yet. One FastAPI process: chat, orchestrator, policy, tools, observability and the evaluation runner. Owners in [team/plan.md](team/plan.md#folders). |
+| [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
+| [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
-| [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md), [roadmap](docs/build/architecture-roadmap.md) |
-| [`evidence/`](evidence/) | Frozen, reproducible runs of the flow measurements, cited by the documentation |
+| [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) |
+| [`evidence/`](evidence/) | Frozen, reproducible runs of the flow measurements (and later the evaluation), cited by the documentation |
 | [`scripts/`](scripts/) | Repository scripts, such as the generator of the flow measurements page |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 

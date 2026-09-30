@@ -18,12 +18,13 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 | # | Decision | Options or proposal | Supporting material | Felix | Natalia | Rubén |
 |---|---|---|---|---|---|---|
 | 16 | Azure subscription or credits | Who provides it, with a spend cap and alerts. Only needed for the minimal deployment behind the public link: cloud is not mandatory (help channel, 9/28). Cost assumption: USD 20–58, within the USD 200 trial credit (Natalia's estimate) | [Decision 001](../docs/build/decisions/001-azure-platform.md) | | | |
-| 22 | Git submodules | One repo is decided. Open: whether that repo uses git submodules | [Architecture and roadmap](../docs/build/architecture-roadmap.md#repository-layout) | | | |
+| 22 | Git submodules | One repo is decided. Open: whether that repo uses git submodules | [Repository layout](../docs/architecture/system-architecture.md#repository-layout) | | | |
 
 ## Due before submission (Monday 10/5)
 
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
+| 28 | Handoff delivery in production | How the JSON package reaches advisors in production: queue, CRM ticket or similar. Not needed for the demo (the package is returned and logged). Routing by language and specialty is REQ-0046 (P2, simulated). Presented as remaining deployment work | [System: path to production](../docs/architecture/specification.md#path-to-production) |
 | 23 | `team/` in the submission | The repo stays public (decided). Open: keep `team/` in the submission or remove it before submitting. Does not block the skeleton | [Security](../docs/build/security.md#public-repository-and-deployment) |
 
 ## Due Tuesday 9/29
@@ -40,6 +41,9 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
 | 14 | Experiment tracking | MLflow (built into Databricks, decision 12), Azure ML or another tool | [ML](../docs/build/areas/ml.md) |
+| 25 | Suspected-fraud handoff rule | Which runtime signal triggers the handoff: (a) the customer states the charge was not theirs; (b) `fraud_score` above a threshold; (c) either. `is_fraud` is excluded: it is a label known after the fact. If (b) or (c), the threshold is chosen on the development split, never on held-out | [System: decision priority](../docs/architecture/specification.md#decision-priority), [ML](../docs/build/areas/ml.md) |
+| 26 | High-amount handoff threshold | Amount above which a dispute goes to an advisor, per country (MX, CO, AR) in the original currency, as configuration. Proposal: a high percentile of the development-window amounts per country | [System: decision priority](../docs/architecture/specification.md#decision-priority) |
+| 27 | Data staleness threshold | How old Gold may be before the assistant stops answering from it and offers a handoff. The as-of date is always stated either way (REQ-0039) | [System: failure handling](../docs/architecture/specification.md#failure-handling) |
 
 ## Decided
 
@@ -54,9 +58,10 @@ These no longer block the skeleton. Most urgent: **16**, because deployment is o
 | 8 | Milestone meetings | No standing meetings. Tasks are assigned as they come up. A meeting, individual or with the group, happens only when needed | 9/29 |
 | 9 | Backend | Python + FastAPI decided; loop tool (LangGraph or plain Python) deferred. Policy, session and idempotency stay in code | 9/28 |
 | 11 | Frontend | One-page chat served by FastAPI. Streamlit and Gradio are out. Node only if Felix asks for the video | 9/28 |
-| 12 | Data storage and pipeline | Delta Lakehouse: DuckDB with the Delta extension locally, Azure Databricks with PySpark and Delta Lake on ADLS Gen2 in production. Bronze, Silver and Gold live in `sentinel-data-engine/` ([architecture](../docs/understand/architecture.md), [roadmap](../docs/build/architecture-roadmap.md)) | 9/29 |
+| 12 | Data storage and pipeline | Delta Lakehouse: DuckDB with the Delta extension locally, Azure Databricks with PySpark and Delta Lake on ADLS Gen2 in production. Bronze, Silver and Gold live in `sentinel-data-engine/` ([stack](../docs/architecture/system-architecture.md#stack-and-deployment)) | 9/29 |
 | 17 | Repository visibility | Public from the start, and it stays public | 9/28 |
 | 18 | OpenSpec spec language | English, since specs are submitted | 9/28 |
 | 19 | Language of `docs/` and `team/` | Everything in English, including folder and file names | 9/28 |
 | 20 | Video and slides | Rubén. Script starts Thursday 10/1. Slides: Rubén; outline on Thursday 10/1, validated by the group on Friday 10/2, reviewed from Friday to Monday with the results; frozen Monday 10/5 | 9/29 |
 | 21 | Repositories | One public repo. Git submodules are decision 22 | 9/29 |
+| 24 | Account-inquiry scope | The entry point covers charges and transactions only (what a charge is, its status, whether it can be disputed). Balances, products, cards and credit are out of scope: the assistant says so and offers a handoff. One read tool, `lookup_transactions` ([scope](../docs/architecture/specification.md#scope)) | 9/29 |

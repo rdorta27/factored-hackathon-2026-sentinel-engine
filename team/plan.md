@@ -18,7 +18,22 @@ Tentative: we adjust it if anything slips.
 | Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Group validates the slide outline. Freeze code at night | **Code and results frozen** |
 | Sat to Mon | 10/3 to 10/5 | Presentation review and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
 
-We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
+```mermaid
+gantt
+    title Milestones
+    dateFormat YYYY-MM-DD
+    axisFormat %a %d/%m
+    tickInterval 1day
+    todayMarker off
+    Decisions recorded           :milestone, 2026-09-28, 0d
+    Skeleton answers end to end  :milestone, 2026-09-29, 0d
+    One case works fully         :milestone, 2026-09-30, 0d
+    3 cases, public link         :milestone, 2026-10-01, 0d
+    Code and results frozen      :milestone, 2026-10-02, 0d
+    Submitted                    :milestone, 2026-10-05, 0d
+```
+
+Per-person work is in [tasks](tasks.md), not on this chart. We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
 
 ## Decisions made
 
@@ -29,9 +44,9 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | Specs with OpenSpec, written in English (decision 18) | Accepted | [002](../docs/build/decisions/002-openspec.md) |
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
-| Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | — |
-| Disputes store: SQLite locally, Postgres on Azure, separate from Gold | Accepted | [architecture](../docs/understand/architecture.md#two-layers) |
-| No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [architecture](../docs/understand/architecture.md#stack) |
+| Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | [cost](../docs/build/cost.md) |
+| Dispute record: in-memory for the submission; SQLite locally and Postgres on Azure only as the production backend of the same tool contract. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
+| No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [stack](../docs/architecture/system-architecture.md#stack-and-deployment) |
 | Flow: transaction disputes, entered through an account inquiry (confirmed 9/29) | Accepted | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
 | No daily sync meeting. Slack if we talk every day; a status, if needed, at the end of the day (decision 5) | Accepted | [pending decisions](pending-decisions.md) |
@@ -42,7 +57,7 @@ We want **code, results and README frozen by Friday 10/2**. The presentation and
 | Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
-| One public repository (decision 21). Git submodules are open (decision 22) | Accepted | [architecture roadmap](../docs/build/architecture-roadmap.md#repository-layout) |
+| One public repository (decision 21). Git submodules are open (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
@@ -61,14 +76,39 @@ Product and technical decisions go in [decisions](../docs/build/decisions/), one
 
 Two hackathon rules are non-negotiable: no secrets or data in the repo (credentials go in `.env` and are shared by direct message), and the submission is in English.
 
+## Folders
+
+Two code folders. `sentinel-ai-core/` is the whole FastAPI process, including the chat, its policy configuration and the evaluation runner. It is not a separate AI service. No web package and no infrastructure folder.
+
+| Path | Who | What | Status |
+|---|---|---|---|
+| `sentinel-data-engine/` | Natalia | Medallion pipeline. Gold table and columns of the [data contract](../docs/architecture/specification.md#data-contract), as-of date, labelled incremental fixture. | Partial: pipeline, quarantine and `gold_dispute_eligible_transactions` in Gold with the contract columns exist; incremental fixture and as-of read not confirmed |
+| `sentinel-ai-core/app/static/`, `routers/` | Felix | Chat page with the confirm box, `POST /chat` with the structured confirmation field ([confirmation](../docs/architecture/specification.md#confirmation)). | Not started |
+| `sentinel-ai-core/app/session/` | Felix | Test session and [conversation state](../docs/architecture/specification.md#conversation-state), deleted on expiry. | Not started |
+| `sentinel-ai-core/app/orchestrator/`, `policy/`, `ai/` | Rubén | Loop, policy engine (evaluates the rules and the decision priority), `confirmation_token`, router, learned component. | Not started |
+| `sentinel-ai-core/config/policy/` | Rubén | Policy parameters, not code: synthetic [policy source](../docs/architecture/specification.md#policy-source), one file per country (MX, CO, AR), thresholds of decisions 25–27. Read by the engine in `app/policy/`. | Not started |
+| `sentinel-ai-core/app/tools/` | Felix and Rubén | The four tool contracts. Natalia owns what Gold returns. | Not started |
+| `sentinel-ai-core/app/observability/` | Felix | Structured log records with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)). Rubén defines the model and prompt fields. | Not started |
+| `sentinel-ai-core/eval/` | Rubén | [Evaluation](../docs/architecture/specification.md#evaluation) cases (JSONL) and runner, system vs baseline, with fault injection. | Not started |
+| `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Not started (flow measurements exist) |
+| Infrastructure as code | Nobody yet | Do not create the folder unless decision 13 lands. | Not started |
+
+Evaluation lives inside `sentinel-ai-core/` because it drives `POST /chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.
+
 ## Mocks
 
 We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Shown here for the transaction-disputes flow.
 
-- **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with fixed contracts: look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff (see [components and mocks](../docs/understand/architecture.md#components-and-mocks)). Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
-- **When we swap each mock:** when the schedule milestone asks for it, without changing the contract.
-  - Wed 9/30, normal case: reads move to the chosen storage (decision 12: DuckDB locally, Databricks in production), with declared freshness. The action asks for explicit confirmation.
-  - Thu 10/1, ambiguous and human cases, plus deployment: bounded retries and pipeline with partitions, watermark and deduplication.
-  - Whatever we do not reach stays a mock and we report it under limitations.
+- **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with the contracts in [system](../docs/architecture/specification.md#tool-contracts): look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
+- **When we swap each mock:** when the milestone asks for it, without changing the contract.
+
+| Milestone | Stays a mock | Becomes real | Not in this submission |
+|---|---|---|---|
+| Tue 9/29 | Four in-memory tools, test session, simple chat | — | Dispute database |
+| Wed 9/30 | Dispute write | Charge lookup moves to Gold if the serving path is up. If it is not, the fixture stays and we say so. Confirmation before the action | Dispute database |
+| Thu 10/1 | Whatever fixture is still in use | Bounded retries. Incremental pipeline, if it lands | Identity provider, Key Vault |
+| Fri 10/2 | Anything not reached, reported as a limitation | — | Production column in [path to production](../docs/architecture/specification.md#path-to-production) |
+
+SQLite and Postgres are not a milestone.
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
 - **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).
