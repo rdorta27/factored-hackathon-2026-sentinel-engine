@@ -41,8 +41,13 @@ class HandoffTicket(BaseModel):
     requires a human agent.  Never contains PII fields (first/last name,
     credit score) – those live in the Gold PII-full table accessible only to
     authorized agents.
+
+    Fields marked "sentinel-login contract" align with the Handoff schema in
+    sentinel-login so its i18n card component can render the escalation without
+    any frontend changes.
     """
 
+    # ── Core fields (original schema) ───────────────────────────────────────
     customer_id: str = Field(..., description="Opaque customer token (no PII)")
     verified_facts: VerifiedFacts
     escalation_reason: str = Field(
@@ -50,6 +55,32 @@ class HandoffTicket(BaseModel):
     )
     claim_summary: str = Field(
         ..., description="Short summary of the dispute claim for the receiving agent"
+    )
+
+    # ── sentinel-login contract fields ───────────────────────────────────────
+    kind: str = Field(
+        default="handoff",
+        description="sentinel-login card discriminator — always 'handoff'",
+    )
+    reference: str = Field(
+        default="",
+        description="Transaction or dispute reference shown on the handoff card",
+    )
+    reason_key: str = Field(
+        default="handoff.escalated",
+        description="i18n key used by the sentinel-login card (e.g. 'handoff.high_value_dispute')",
+    )
+    reason_detail: Optional[str] = Field(
+        default=None,
+        description="Optional free-text detail rendered below the i18n reason",
+    )
+    estimated_date: Optional[str] = Field(
+        default=None,
+        description="ISO-8601 estimated SLA resolution date shown to the customer",
+    )
+    source: str = Field(
+        default="mock",
+        description="'mock' for demo runs, 'live' when backed by a real dispute service",
     )
 
 

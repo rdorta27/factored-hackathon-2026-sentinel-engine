@@ -67,6 +67,7 @@ def create_app() -> FastAPI:
     Each call returns an independent FastAPI app with its own in-memory state,
     so test cases can spin up isolated instances.
     """
+    from app.routers.auth_compat import api_v1_auth_router, auth_router
     from app.routers.demo_chat import router as chat_router
     from app.routers.demo_transactions import router as txn_router
     from app.routers.ui import mount_ui
@@ -97,6 +98,8 @@ def create_app() -> FastAPI:
     demo.state.conversations = {}   # token → ConversationState
 
     demo.include_router(session_router)
+    demo.include_router(auth_router)          # POST /auth/login alias
+    demo.include_router(api_v1_auth_router)   # POST /api/v1/auth/login alias
     demo.include_router(txn_router)
     demo.include_router(chat_router)
     mount_ui(demo)

@@ -142,11 +142,8 @@ def test_chat_never_emits_raw_gold_status() -> None:
 # --- Point 2 (report): status is mapped on two paths, listing and chat differ
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason="status mapped in two paths; fix proposed in review report",
-)
 def test_transactions_status_is_mapped() -> None:
+    """The listing status is normalized through to_candidate; 'Refunded' → 'Reversed'."""
     api = TestClient(create_app())
     login(api)
     rows = {row["reference"]: row for row in api.get("/transactions").json()["transactions"]}

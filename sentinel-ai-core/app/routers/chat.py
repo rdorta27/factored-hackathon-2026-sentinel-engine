@@ -14,6 +14,7 @@ category, date, and eligibility flags.  customer_id is an opaque token.
 from __future__ import annotations
 
 import os
+from datetime import date, timedelta
 from typing import Any
 
 from anthropic import AsyncAnthropic
@@ -123,11 +124,22 @@ async def chat(
                 is_eligible_for_dispute=False,
             )
         )
+        # Derive sentinel-login contract fields from the anchor transaction.
+        anchor_ref = anchor["transaction_id"] if anchor else "N/A"
+        sla_date = (date.today() + timedelta(days=5)).isoformat()
+
         ticket = HandoffTicket(
             customer_id=session.customer_id,
             verified_facts=verified,
             escalation_reason="Customer requested human agent or dispute complexity exceeded automated handling.",
             claim_summary=body.message[:300],
+            # sentinel-login Handoff card fields
+            kind="handoff",
+            reference=anchor_ref,
+            reason_key="handoff.escalated",
+            reason_detail="Customer requested human agent or dispute complexity exceeded automated handling.",
+            estimated_date=sla_date,
+            source="mock",
         )
         return ChatResponse(
             session_id=body.session_id,
