@@ -71,6 +71,8 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Task | Owner | Status |
 |---|---|---|
 | Ambiguous and human cases | Unassigned | Pending |
+| Decide advisor queue + role landing + admin scope (pending decision 29): implement, JSON-only, or counts-only | Rubén | Pending |
+| PII review of the advisor summary before any queue UI (REQ-0047, REQ-0008) | Rubén | Pending |
 | Start the video script | Rubén | Pending |
 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
 | Portuguese | Unassigned | Pending |
