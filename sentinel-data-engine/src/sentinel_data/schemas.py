@@ -116,7 +116,7 @@ class GoldDisputeEligibleTransaction(BaseModel):
     product_id: str
     customer_id: str = Field(..., description="Owning customer key (PII – see ADR 008)")
     transaction_type: str
-    amount: float = Field(..., description="Transaction amount in the original currency")
+    amount: float = Field(..., description="Transaction amount in the original currency; enforced as DOUBLE at the SQL layer")
     currency: str = Field(..., min_length=3, max_length=3, description="ISO 4217 currency code")
     channel: str
     transaction_country: str
@@ -135,6 +135,64 @@ class GoldDisputeEligibleTransaction(BaseModel):
 
     # Eligibility flags
     is_disputed: bool = Field(..., description="True when an open complaint references this transaction")
+    days_since_transaction: int = Field(..., ge=0)
+    is_eligible_for_dispute: bool = Field(
+        ...,
+        description="True when NOT already disputed AND days_since_transaction <= 90",
+    )
+
+    # Metadata
+    snapshot_date: date
+
+
+# ---------------------------------------------------------------------------
+# v_service_dispute_eligible_transactions  (PII-free service projection)
+# ---------------------------------------------------------------------------
+
+
+class ServiceDisputeEligibleTransaction(BaseModel):
+    """
+    PII-free projection of gold_dispute_eligible_transactions.
+
+    Exposed to the FastAPI backend and any downstream service that does NOT
+    hold explicit PII-READ permission.  Drops the three PII columns mandated
+    by ADR 008:
+        - customer_first_name
+        - customer_last_name
+        - customer_credit_score
+
+    All eligibility flags, transaction fields, and non-PII customer context
+    (segment, country) are preserved.
+
+    Source table
+    ------------
+    v_service_dispute_eligible_transactions (Delta table in local Gold dir or
+    Unity Catalog gold schema in Databricks).
+    """
+
+    # Transaction identity
+    transaction_id: str
+    transaction_date: str
+    process_date: str
+    product_id: str
+    customer_id: str = Field(..., description="Opaque token in production (see ADR 008)")
+    transaction_type: str
+    amount: float = Field(..., description="Transaction amount; always numeric (DOUBLE at SQL layer)")
+    currency: str = Field(..., min_length=3, max_length=3)
+    channel: str
+    transaction_country: str
+    transaction_status: str
+    is_fraud: bool
+    fraud_score: Optional[float] = Field(None, ge=0.0, le=1.0)
+    merchant_name: Optional[str] = None
+    merchant_category: Optional[str] = None
+
+    # Non-PII customer context
+    customer_segment: str
+    customer_country: str
+
+    # Eligibility flags
+    is_disputed: bool
     days_since_transaction: int = Field(..., ge=0)
     is_eligible_for_dispute: bool = Field(
         ...,
