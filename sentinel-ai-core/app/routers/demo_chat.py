@@ -18,7 +18,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from app.ai.demo import DemoModel
 from app.observability import Recorder, TurnObserver
@@ -55,7 +55,12 @@ class ChatInput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     message: str | None = None
-    selected_reference: str | None = None
+    selected_reference: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=64,
+        pattern=r"^[A-Za-z0-9\-]+$",
+    )
 
 
 def _sla_date(ref_date: date) -> str:
@@ -194,7 +199,21 @@ def chat(
     else:
         turn = TextInput(text=body.message or "")
 
-    output = step(turn, state, ports)
+    try:
+        output = step(turn, state, ports)
+    except Exception:
+        # Gold or orchestrator failure: degrade gracefully without leaking internals.
+        observer.emit(
+            step="turn",
+            language=state.language.value,
+            outcome="failed",
+            attempt=1,
+            latency_ms=(perf_counter() - started) * 1000,
+        )
+        return JSONResponse(
+            content={"kind": "error", "message_key": "errorGeneric"},
+            headers={"X-Trace-Id": trace_id},
+        )
 
     # For FAILURE (unknown/foreign reference), strip candidate details to avoid
     # disclosing data from another customer's transaction.
