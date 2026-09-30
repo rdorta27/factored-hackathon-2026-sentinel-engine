@@ -65,3 +65,44 @@ def test_stub_transport_records_calls() -> None:
     response = stub.complete(model="cheap", messages=[{"role": "user", "content": "hola"}])
     assert response.tokens_in == 12
     assert stub.calls[0]["model"] == "cheap"
+
+
+def test_fixture_replay_returns_recorded_result_without_network(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import json
+    from pathlib import Path
+
+    import httpx
+
+    from app.ai.fixtures import FixtureTransport
+
+    def _forbidden(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("no HTTP connection may be opened during replay")
+
+    monkeypatch.setattr("httpx.Client.post", _forbidden)
+    fixtures = Path(__file__).parent.parent / "app" / "ai" / "fixtures"
+    transport = FixtureTransport(fixtures, prompt_version="v1")
+    response = transport.complete(
+        model="any", messages=[{"role": "user", "content": "no reconozco este cargo"}]
+    )
+    body = json.loads(response.content)
+    assert body == {"intent": "charge", "language": "es-419"}
+    assert response.tokens_in == 42
+    assert response.cost_usd == 0.0001
+
+
+def test_fixtures_carry_provenance_and_no_personal_data() -> None:
+    import json
+    from pathlib import Path
+
+    fixtures = Path(__file__).parent.parent / "app" / "ai" / "fixtures"
+    files = sorted(fixtures.glob("v1-*.json"))
+    assert files, "initial fixtures must be committed"
+    forbidden = ("CUST-", "customer_id", "first_name", "last_name", "credit_score", "document")
+    for path in files:
+        body = json.loads(path.read_text(encoding="utf-8"))
+        assert body["prompt_version"] == "v1"
+        assert body["input_hash"] in path.name
+        blob = json.dumps(body, ensure_ascii=False).lower()
+        assert all(token.lower() not in blob for token in forbidden)
