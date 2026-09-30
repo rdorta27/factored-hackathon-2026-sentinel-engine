@@ -44,7 +44,7 @@ For agents:
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
 | [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
 | [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Natalia. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine. Chat and `POST /chat` are not in the folder yet. Owners in [team/plan.md](team/plan.md#folders). |
+| `sentinel-ai-core/` | One FastAPI process, chat included. Not created yet. Owners in [team/plan.md](team/plan.md#folders). |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).

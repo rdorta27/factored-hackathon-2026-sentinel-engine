@@ -31,7 +31,7 @@ flowchart LR
 
 The picture is the target system. **\*** In the demo these parts are mocks with the same contract: a trusted test session, an in-memory dispute record and a simulated advisor. Full list: [mocked components](demo-architecture.md#mocked-components).
 
-Legend: violet = component, blue = data store, grey = outside the system. Colours follow [`branding/`](../../branding/BRANDING.md). The picture is the design, not progress: **status on 9/29, the loop and the policy engine exist in `sentinel-ai-core/`; chat, session and `POST /chat` do not** ([folders](../../team/plan.md#folders)).
+Legend: violet = component, blue = data store, grey = outside the system. Colours follow [`branding/`](../../branding/BRANDING.md). The picture is the design, not progress: **status on 9/29, `sentinel-ai-core/` not started** ([folders](../../team/plan.md#folders)); update this line before recording the video.
 
 Key properties:
 
