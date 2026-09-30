@@ -80,7 +80,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Structured confirmation: confirm box and `confirmation_token` ([confirmation](../docs/architecture/specification.md#confirmation)) | Felix, Rubén | Pending |
 | Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Rubén | Done: `app/observability/` records + JSONL writer wired from `step()` and `/chat`, audit migrated off cleartext PII, acceptance test green (branch `feature/structured-log`) |
 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | Pending |
-| Adversarial set: prompt injection and unauthorized access | Felix | In progress: started Wed 9/30 (REQ-0021, REQ-0047) |
+| Adversarial set: prompt injection and unauthorized access | Felix | Done: 29 attacks in `tests/adversarial/`, measured `0/29` unsafe (`evidence/adversarial/20260930T214744Z/summary.json`); PII free-text `A9` stays `no_defense_yet` (REQ-0021, REQ-0047) |
 | Public link: Azure, or the free-host fallback of decision 13 | Felix | Pending |
 
 ## Fri 10/2
