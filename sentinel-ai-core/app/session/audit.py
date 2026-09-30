@@ -16,11 +16,11 @@ ANONYMOUS_ID = "anonymous"
 
 class AuditLogger:
     def __init__(self, recorder: Recorder) -> None:
-        self._recorder = recorder
+        self.recorder = recorder
 
     @property
     def records(self) -> list[StepRecord]:
-        return [record for record in self._recorder.records if record.step == "session"]
+        return [record for record in self.recorder.records if record.step == "session"]
 
     def emit(
         self,
@@ -33,11 +33,11 @@ class AuditLogger:
         """Record an auth event. Language and country default to the login
         defaults when the session is not known yet (failed or denied auth)."""
         ref_source = session_id if session_id is not None else ANONYMOUS_ID
-        self._recorder.emit(
+        self.recorder.emit(
             StepRecord(
                 ts=utc_now(),
                 trace_id=trace_id,
-                session_ref=self._recorder.session_ref(ref_source),
+                session_ref=self.recorder.session_ref(ref_source),
                 step="session",
                 tool=None,
                 outcome="ok",

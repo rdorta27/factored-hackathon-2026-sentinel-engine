@@ -110,6 +110,47 @@ def test_failing_turn_still_leaves_a_closing_record(tmp_path) -> None:
     assert closing[0].policy_rule == "unknownCharge"
 
 
+def test_full_turn_is_replayable_by_trace_id(tmp_path) -> None:
+    from fastapi.testclient import TestClient
+
+    from app.main import SESSION_COOKIE, create_app
+    from app.observability import Recorder
+
+    api = TestClient(create_app())
+    recorder = Recorder(path=tmp_path / "turns.jsonl", salt="acceptance")
+    api.app.state.recorder = recorder
+    api.app.state.audit.recorder = recorder
+    message = "no reconozco un cargo"
+    assert (
+        api.post("/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        == 200
+    )
+    assert api.post("/chat", json={"message": message}).status_code == 200
+    assert api.post("/chat", json={"selected_reference": "TXN-1001"}).status_code == 200
+    confirmed = api.post("/chat", json={"selected_reference": "TXN-1001"})
+    assert confirmed.json()["kind"] == "case_confirmation"
+
+    trace_id = confirmed.headers["X-Trace-Id"]
+    records = recorder.records_for(trace_id)
+    steps = {record.step for record in records}
+    assert {"decide", "act", "verify", "turn"} <= steps
+    assert any(
+        record.step == "decide" and record.policy_rule is not None for record in records
+    )
+    closing = next(record for record in records if record.step == "turn")
+    assert closing.outcome == "ok"
+    assert isinstance(closing.cost_usd, float)
+    assert isinstance(closing.latency_ms, float)
+
+    lines = (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()
+    replayed = [json.loads(line) for line in lines if json.loads(line)["trace_id"] == trace_id]
+    assert len(replayed) == len(records)
+    blob = "\n".join(lines)
+    token = api.cookies.get(SESSION_COOKIE)
+    for forbidden in ("CUST-0001", "Testpass-001", message, token):
+        assert forbidden not in blob
+
+
 def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.observability import Recorder
 
