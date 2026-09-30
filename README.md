@@ -47,15 +47,15 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 4 | 24 | 13 | 9% |
+| P0 | 41 | 5 | 23 | 13 | 12% |
 | P1 | 12 | 1 | 5 | 6 | 8% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 6 | 29 | 22 | 10% |
+| **Total** | **57** | 7 | 28 | 22 | 12% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
-| **In progress** | 29 requirements across the loop and policy, session/chat/listing, and data areas (breakdown per requirement below) |
+| **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0021 measured adversarial failure set ([evidence](evidence/adversarial/20260930T214744Z/summary.json)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
+| **In progress** | 28 requirements across the loop and policy, session/chat/listing, and data areas (breakdown per requirement below) |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
@@ -78,7 +78,7 @@ The [documentation index](docs/README.md) covers everything else.
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) |
-| [`evidence/`](evidence/) | Frozen, reproducible runs of the flow measurements (and later the evaluation), cited by the documentation |
+| [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md) and the [adversarial set](evidence/adversarial/20260930T214744Z/summary.json), cited by the documentation |
 | [`scripts/`](scripts/) | Repository scripts, such as the generator of the flow measurements page |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 
