@@ -47,6 +47,10 @@ def get_locale(locale: str) -> JSONResponse:
 
 
 def mount_ui(app) -> None:  # type: ignore[no-untyped-def]
-    """Serve the single-page frontend at / and /ui. API routes win."""
+    """Serve the single-page frontend under /ui. API routes stay unprefixed.
+
+    Mounting at "/" would shadow every API route declared after it, and the
+    page would request /ui/styles.css which only exists under this prefix.
+    """
     app.include_router(router)
-    app.mount("/", StaticFiles(directory=str(STATIC_DIR), html=True), name="ui")
+    app.mount("/ui", StaticFiles(directory=str(STATIC_DIR), html=True), name="ui")

@@ -1,33 +1,10 @@
-# chat Specification
+# Spec Delta
 
-## Purpose
-
-Gives the authenticated customer a chat endpoint that answers only from verified store reads and proves it, so a dispute confirmation is evidence instead of a promise.
-
-## Requirements
-
-### Requirement: Message-only chat request
-
-The system SHALL accept a chat request carrying the customer message and, optionally, an explicit transaction selection and SHALL derive the customer identity exclusively from the session. The selection field SHALL be validated for shape only; authorization SHALL come from resolving it inside the session customer's rows. Traces to REQ-0001 (P0, Pending) and REQ-0027 (P0, Pending).
-
-#### Scenario: Chat without session is rejected
-
-- **WHEN** an unauthenticated client posts to `/chat`
-- **THEN** the system returns 401 and records `access_denied`
-
-#### Scenario: Extra fields are rejected
-
-- **WHEN** a chat body contains any field besides the message and the documented selection
-- **THEN** the system returns 422 before running any business logic
-
-#### Scenario: Selection shape is format-neutral
-
-- **WHEN** the client selects a transaction whose identifier does not match the mock's format
-- **THEN** the request is still accepted and resolved by the session-scoped lookup
+## MODIFIED Requirements
 
 ### Requirement: Structured response variants
 
-Every chat answer SHALL use exactly one variant: `text`, `clarification`, `case_confirmation`, `handoff`, or `error`. Replies SHALL carry raw values and translation keys rather than authored prose, and the `error` variant SHALL carry a generic message key plus `trace_id`, never internal details. A `clarification` SHALL be able to carry the candidate transactions the customer can choose from. Traces to REQ-0002 (P0, Pending) and REQ-0006 (P0, Pending).
+Every chat answer SHALL use exactly one variant: `text`, `clarification`, `case_confirmation`, `handoff`, or `error`. The `error` variant SHALL carry a generic message plus `trace_id`, never internal details. A `clarification` SHALL be able to carry the candidate transactions the customer can choose from. Traces to REQ-0002 (P0, Pending) and REQ-0006 (P0, Pending).
 
 #### Scenario: Ambiguous request asks instead of guessing
 
@@ -37,21 +14,16 @@ Every chat answer SHALL use exactly one variant: `text`, `clarification`, `case_
 #### Scenario: Failure is generic with trace
 
 - **WHEN** the chat pipeline fails unexpectedly
-- **THEN** the system returns `error` with a generic message key and the request `trace_id`
+- **THEN** the system returns `error` with a generic message and the request `trace_id`
 
 #### Scenario: Candidates accompany the question
 
 - **WHEN** the customer's stated facts match no single transaction
 - **THEN** the clarification lists the candidate transactions with their date, amount, and merchant
 
-#### Scenario: Candidates are ranked, capped, and marked
-
-- **WHEN** candidates are returned
-- **THEN** they are ordered by similarity to the statement, limited to a small number, and each one states whether it is inside the dispute window
-
 ### Requirement: Verify-before-claim confirmations
 
-The system SHALL emit `case_confirmation` only after re-reading the created case from the store, and the confirmation SHALL include the case id, transaction facts, state, priority, the next step, the expected resolution date, `verified_at`, and `verified=true`. The system SHALL never present a merely registered case as resolved. Traces to REQ-0003 (P0, Pending) and REQ-0005 (P0, Pending).
+The system SHALL emit `case_confirmation` only after re-reading the created case from the store, and the confirmation SHALL include the case id, transaction facts, state, priority, next steps, expected timeline, `verified_at`, and `verified=true`. The system SHALL never present a merely registered case as resolved. Traces to REQ-0003 (P0, Pending) and REQ-0005 (P0, Pending).
 
 #### Scenario: Confirmation carries re-read proof
 
@@ -63,32 +35,9 @@ The system SHALL emit `case_confirmation` only after re-reading the created case
 - **WHEN** the re-read fails or contradicts the created case
 - **THEN** the system never emits `case_confirmation` for that case
 
-#### Scenario: Next step names the real deadline
-
-- **WHEN** the confirmation is rendered
-- **THEN** the next step describes what happens and by which date, rather than restating that the case is registered
-
-### Requirement: Bounded retries then handoff
-
-When creation or verification fails, the system SHALL retry a bounded number of times and then return `handoff` instead of failing silently or claiming success. Traces to REQ-0026 (P1, Pending) and REQ-0011 (P0, Pending).
-
-#### Scenario: Persistent failure becomes a handoff
-
-- **WHEN** retries are exhausted without a verified case
-- **THEN** the system returns `handoff` with the reason key and the advisor reference
-
-### Requirement: Agent request escalates
-
-When the customer asks to speak to a person, the system SHALL make a single offer to help and, if they insist, SHALL escalate immediately via `handoff`. Traces to REQ-0040 (P0, Pending).
-
-#### Scenario: Insistent customer reaches a human
-
-- **WHEN** the customer repeats the request for a person after one offer of help
-- **THEN** the system returns `handoff` without further persuasion attempts
-
 ### Requirement: Mock orchestrator scenarios
 
-The mock orchestrator SHALL reproduce four demo scenarios: normal (verified confirmation), ambiguous (`clarification`), high-risk (`handoff` that reaches the advisor queue), and failed verification (retry then `handoff`), and SHALL return only intent plus a transaction reference, never invented transaction facts or prose. Each scenario SHALL be labeled as mock-sourced. Traces to REQ-0032 (P1, Pending), REQ-0009 (P0, Pending), REQ-0010 (P0, Pending), and REQ-0011 (P0, Pending).
+The mock orchestrator SHALL reproduce four demo scenarios: normal (verified confirmation), ambiguous (`clarification`), high-risk (`handoff` that reaches the advisor queue), and failed verification (retry then `handoff`), and SHALL return only intent plus a transaction reference, never invented transaction facts. Each scenario SHALL be labeled as mock-sourced. Traces to REQ-0032 (P1, Pending), REQ-0009 (P0, Pending), REQ-0010 (P0, Pending), and REQ-0011 (P0, Pending).
 
 #### Scenario: Each demo path is reachable
 
@@ -99,6 +48,8 @@ The mock orchestrator SHALL reproduce four demo scenarios: normal (verified conf
 
 - **WHEN** the mock decides to open a case
 - **THEN** it supplies a transaction reference only, and every displayed fact still comes from the Gold row
+
+## ADDED Requirements
 
 ### Requirement: Transaction grounding before creation
 
@@ -138,6 +89,8 @@ The system SHALL open a case only when the customer's stated facts match one Gol
 
 - **WHEN** a Portuguese message matches more than one transaction, or none
 - **THEN** the system returns `clarification` with the candidates in the customer's language
+
+## ADDED Requirements
 
 ### Requirement: Reference date from configuration
 

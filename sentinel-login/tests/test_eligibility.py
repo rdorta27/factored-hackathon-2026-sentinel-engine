@@ -1,48 +1,61 @@
-"""Eligibility tests: each refusal reason plus the window boundary."""
+"""Eligibility tests: each refusal reason plus the 89/90/91 boundary."""
 
-from datetime import date
+from datetime import date, timedelta
 
-from app.disputes.policy import DEMO_TODAY, DisputePolicy, check_eligibility
+from app.disputes.policy import DisputePolicy, check_eligibility, reference_date
 from app.gold.store import GoldRow, MockGoldStore
 
 POLICY = DisputePolicy()
-AS_OF = "2026-06-20"
+REFERENCE = date(2026, 6, 17)
 
 
-def row(reference: str) -> GoldRow:
-    found = MockGoldStore(AS_OF).get(reference, "CUST-0001")
+def day_at(offset_days: int) -> str:
+    """ISO date exactly `offset_days` before the reference date."""
+    return (REFERENCE - timedelta(days=offset_days)).isoformat()
+
+
+def row(reference: str, day: str) -> GoldRow:
+    found = MockGoldStore(REFERENCE.isoformat()).get(reference, "CUST-0001")
     assert found is not None
-    return found
+    return GoldRow(**{**found.__dict__, "date": day})
 
 
 def test_eligible_row_passes() -> None:
-    ok, reason = check_eligibility(row("TXN-1001"), POLICY)
+    ok, reason = check_eligibility(row("TXN-1001", day_at(10)), POLICY, REFERENCE)
     assert ok and reason == ""
 
 
+def test_day_89_is_inside_the_window() -> None:
+    ok, reason = check_eligibility(row("TXN-1001", day_at(89)), POLICY, REFERENCE)
+    assert ok, reason
+
+
+def test_day_90_is_inside_the_window() -> None:
+    ok, reason = check_eligibility(row("TXN-1001", day_at(90)), POLICY, REFERENCE)
+    assert ok, reason
+
+
+def test_day_91_is_outside_the_window() -> None:
+    ok, reason = check_eligibility(row("TXN-1001", day_at(91)), POLICY, REFERENCE)
+    assert not ok
+    assert "91 days" in reason and "90-day" in reason
+
+
 def test_stale_row_refused() -> None:
-    ok, reason = check_eligibility(row("TXN-1002"), POLICY)
+    ok, reason = check_eligibility(row("TXN-1002", "2026-01-15"), POLICY, REFERENCE)
     assert not ok and "90-day" in reason
 
 
 def test_refunded_row_refused() -> None:
-    ok, reason = check_eligibility(row("TXN-1003"), POLICY)
+    ok, reason = check_eligibility(row("TXN-1003", day_at(5)), POLICY, REFERENCE)
     assert not ok and "refunded" in reason
 
 
 def test_prior_dispute_refused() -> None:
-    ok, reason = check_eligibility(row("TXN-1004"), POLICY)
+    ok, reason = check_eligibility(row("TXN-1004", day_at(5)), POLICY, REFERENCE)
     assert not ok and "already" in reason
 
 
-def test_window_boundary() -> None:
-    base = row("TXN-1001")
-    edge = GoldRow(**{**base.__dict__, "date": "2026-03-22"})  # exactly 90 days
-    assert check_eligibility(edge, POLICY, DEMO_TODAY)[0]
-    over = GoldRow(**{**base.__dict__, "date": "2026-03-21"})  # 91 days
-    ok, _ = check_eligibility(over, POLICY, DEMO_TODAY)
-    assert not ok
-
-
-def test_demo_today_is_after_data_end() -> None:
-    assert DEMO_TODAY == date(2026, 6, 20)
+def test_reference_date_defaults_to_dataset_end() -> None:
+    # No env var set: the dataset's last date keeps demo charges in-window.
+    assert reference_date() == REFERENCE

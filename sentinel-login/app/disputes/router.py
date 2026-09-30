@@ -46,16 +46,26 @@ def create_dispute(
     )
     if result.outcome == "created":
         assert result.case is not None and result.proof is not None
+        proof = result.proof
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
             content={
                 "case_id": result.case.case_id,
                 "state": result.case.state,
-                "hold": result.proof.hold,
-                "rule": result.proof.rule,
-                "sla_deadline": result.proof.sla_deadline.isoformat(),
-                "receipt_ref": result.proof.receipt_ref,
-                "queue_status": result.proof.queue_status,
+                # Raw values and keys only: the interface formats and translates.
+                "display": {
+                    "amount": proof.amount,
+                    "currency": proof.currency,
+                    "merchant": proof.merchant,
+                    "referenceDate": proof.reference_date,
+                    "slaDate": proof.sla_date,
+                },
+                "messages": {
+                    "nextStep": "nextStepAdvisorReview",
+                    "rule": proof.rule_key,
+                    "queue": proof.queue_key,
+                    "noFunds": proof.no_funds_key,
+                },
                 "verified": True,
                 "source": "mock",
             },
@@ -63,18 +73,18 @@ def create_dispute(
     if result.outcome == "refused":
         return JSONResponse(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content={"reason": result.reason, "estimated_time": "1 business day"},
+            content={
+                "reason_key": result.reason_key,
+                "reason_detail": result.reason_detail,
+            },
         )
     handoff_case = result.case
     assert handoff_case is not None
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         content={
-            "reason": result.reason,
-            "handoff": {
-                "reference": f"HO-{handoff_case.case_id}",
-                "estimated_time": "1 business day",
-            },
+            "reason_key": result.reason_key,
+            "handoff": {"reference": f"HO-{handoff_case.case_id}"},
         },
     )
 

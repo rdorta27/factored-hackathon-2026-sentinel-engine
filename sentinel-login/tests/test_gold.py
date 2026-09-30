@@ -1,6 +1,6 @@
 """Gold seam tests: matrix rows, freshness, per-customer isolation."""
 
-from app.gold.store import MockGoldStore
+from app.gold.store import MockGoldStore, profile_for
 
 AS_OF = "2026-06-20"
 
@@ -29,3 +29,24 @@ def test_matrix_flags_present() -> None:
     assert refunded is not None and refunded.refunded
     disputed = store.get("TXN-1004", "CUST-0001")
     assert disputed is not None and disputed.prior_dispute
+
+
+def test_each_country_reads_its_own_currency() -> None:
+    store = MockGoldStore(AS_OF)
+    assert {r.currency for r in store.list_for_customer("CUST-0001")} == {"MXN"}
+    assert {r.currency for r in store.list_for_customer("CUST-0002")} == {"COP"}
+    assert {r.currency for r in store.list_for_customer("CUST-0003")} == {"ARS"}
+
+
+def test_listing_is_ordered_and_isolated() -> None:
+    store = MockGoldStore(AS_OF)
+    rows = store.list_for_customer("CUST-0001")
+    assert rows == sorted(rows, key=lambda r: r.date, reverse=True)
+    assert all(row.customer_id == "CUST-0001" for row in rows)
+    assert all(r.reference != "TXN-9001" for r in rows)
+
+
+def test_profile_for_known_and_unknown_customers() -> None:
+    assert profile_for("CUST-0002").default_locale == "es-CO"
+    assert profile_for("ADV-0001").country == "MX"
+    assert profile_for("WHO-0001").customer_id == "WHO-0001"

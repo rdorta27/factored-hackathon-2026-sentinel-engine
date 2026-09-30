@@ -40,13 +40,23 @@
   </section>
 
   <section id="view-chat" class="card" hidden>
-    <h2 data-i18n="chatTitle">Chat</h2>
-    <div id="thread" aria-live="polite"></div>
-    <form id="chat-form">
-      <input id="chat-input" data-i18n-ph="chatPlaceholder" placeholder="Describe the charge" maxlength="2000" required>
-      <button type="submit" data-i18n="sendButton">Send</button>
-    </form>
-    <button id="agent" type="button" data-i18n="agentButton">Talk to an agent</button>
+    <div class="chat-layout">
+      <div class="chat-main">
+        <h2 data-i18n="chatTitle">Chat</h2>
+        <div id="thread" class="thread" aria-live="polite"></div>
+        <form id="chat-form" class="composer">
+          <input id="chat-input" data-i18n-ph="chatPlaceholder" placeholder="Describe the charge" maxlength="2000" required>
+          <button class="primary-button" type="submit" data-i18n="sendButton">Send</button>
+        </form>
+        <button id="agent" class="agent-button" type="button" data-i18n="agentButton">Talk to an agent</button>
+      </div>
+      <aside class="chat-side" aria-labelledby="tx-title">
+        <h3 id="tx-title" data-i18n="txTitle">Your recent charges</h3>
+        <p class="muted" data-i18n="txHint">Tap a charge to dispute it</p>
+        <div id="transactions"></div>
+        <p class="muted" id="reference-date"></p>
+      </aside>
+    </div>
   </section>
 
   <section id="view-queue" class="card" hidden>

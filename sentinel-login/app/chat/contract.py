@@ -12,15 +12,28 @@ class TextReply(BaseModel):
     model_config = StrictModel
 
     kind: Literal["text"] = "text"
-    text: str = Field(min_length=1, max_length=2000)
+    message_key: str = Field(min_length=1, max_length=64)
+
+
+class CandidateTransaction(BaseModel):
+    model_config = StrictModel
+
+    reference: str = Field(min_length=1, max_length=64)
+    amount: str = Field(min_length=1, max_length=64)
+    currency: str = Field(min_length=1, max_length=8)
+    merchant: str = Field(min_length=1, max_length=200)
+    date: str = Field(min_length=1, max_length=32)
+    eligible: bool
+    ineligibleKey: str | None = Field(default=None, max_length=64)
 
 
 class Clarification(BaseModel):
     model_config = StrictModel
 
     kind: Literal["clarification"] = "clarification"
-    text: str = Field(min_length=1, max_length=2000)
+    message_key: str = Field(min_length=1, max_length=64)
     missing: str = Field(min_length=1, max_length=200)
+    candidates: list[CandidateTransaction] = Field(default_factory=list, max_length=4)
 
 
 class TransactionFacts(BaseModel):
@@ -32,6 +45,29 @@ class TransactionFacts(BaseModel):
     date: str = Field(min_length=1, max_length=32)
 
 
+class ConfirmationDisplay(BaseModel):
+    """Locale-neutral values. The client formats; it never invents the currency."""
+
+    model_config = StrictModel
+
+    amount: str = Field(min_length=1, max_length=64)
+    currency: str = Field(min_length=1, max_length=8)
+    merchant: str = Field(min_length=1, max_length=200)
+    referenceDate: str = Field(min_length=1, max_length=32)
+    slaDate: str = Field(min_length=1, max_length=32)
+
+
+class MessageKeys(BaseModel):
+    """Translation keys, never prose. The client renders them in its locale."""
+
+    model_config = StrictModel
+
+    nextStep: str = Field(min_length=1, max_length=64)
+    rule: str = Field(min_length=1, max_length=64)
+    queue: str = Field(min_length=1, max_length=64)
+    noFunds: str = Field(min_length=1, max_length=64)
+
+
 class CaseConfirmation(BaseModel):
     model_config = StrictModel
 
@@ -40,15 +76,10 @@ class CaseConfirmation(BaseModel):
     transaction: TransactionFacts
     state: str = Field(min_length=1, max_length=64)
     priority: str = Field(min_length=1, max_length=32)
-    next_steps: list[str] = Field(min_length=1, max_length=8)
-    expected_timeline: str = Field(min_length=1, max_length=200)
     verified_at: datetime
     verified: Literal[True]
-    hold: str = Field(min_length=1, max_length=200)
-    eligibility: str = Field(min_length=1, max_length=500)
-    sla_deadline: datetime
-    receipt_ref: str = Field(min_length=1, max_length=64)
-    queue_status: str = Field(min_length=1, max_length=200)
+    display: ConfirmationDisplay
+    messages: MessageKeys
     source: Literal["mock", "live"] = "mock"
 
 
@@ -57,9 +88,9 @@ class Handoff(BaseModel):
 
     kind: Literal["handoff"] = "handoff"
     reference: str = Field(min_length=1, max_length=64)
-    reason: str = Field(min_length=1, max_length=500)
-    advisor_received: str = Field(min_length=1, max_length=1000)
-    estimated_time: str = Field(min_length=1, max_length=200)
+    reason_key: str = Field(min_length=1, max_length=64)
+    reason_detail: str | None = Field(default=None, max_length=500)
+    estimated_date: str | None = Field(default=None, max_length=32)
     source: Literal["mock", "live"] = "mock"
 
 
@@ -67,7 +98,7 @@ class ErrorReply(BaseModel):
     model_config = StrictModel
 
     kind: Literal["error"] = "error"
-    message: str = Field(min_length=1, max_length=500)
+    message_key: str = Field(min_length=1, max_length=64)
     trace_id: str = Field(min_length=1, max_length=64)
 
 
