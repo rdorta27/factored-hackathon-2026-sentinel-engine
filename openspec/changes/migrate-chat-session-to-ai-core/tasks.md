@@ -3,9 +3,9 @@
 ## 1. Test session and demo date
 
 - [x] 1.1 Declare runtime dependencies `fastapi`, `uvicorn`, and `pydantic`, dev dependencies `httpx` and `pytest`, and Python `>=3.12` in `sentinel-ai-core/pyproject.toml`. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify `requires-python` and the named packages are declared — evidence: `sentinel-ai-core/pyproject.toml`.
-- [ ] 1.2 Add `app/session/` with opaque cookie login, logout, and current-session routes (`POST /session/login`, `POST /session/logout`, `GET /session/me`), generic failure, lockout, and audit without passwords or tokens. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify 200, identical 401s, 422 on a body `customer_id`, expiry, and lockout — evidence: `sentinel-ai-core/tests/test_session.py`.
-- [ ] 1.3 Read `SENTINEL_REFERENCE_DATE` once at startup (default `2026-06-17`) and inject it as the demo date. Do not read the wall clock for the window. Decision: [003](../../../docs/build/decisions/003-disputes-flow.md). Verify the default and an override — evidence: `sentinel-ai-core/tests/test_session.py`.
-- [ ] 1.4 Document that `sentinel-ai-core` is the only submission server, that `sentinel-login/` stays as a reference, and how to set `SENTINEL_REFERENCE_DATE`. Area: [AI](../../../docs/build/areas/ai.md). Verify the documented command matches the startup read — evidence: `sentinel-ai-core/README.md`.
+- [x] 1.2 Add `app/session/` with opaque cookie login, logout, and current-session routes (`POST /session/login`, `POST /session/logout`, `GET /session/me`), generic failure, lockout, and audit without passwords or tokens. Decision: [005](../../../docs/build/decisions/005-backend.md). Verify 200, identical 401s, 422 on a body `customer_id`, expiry, and lockout — evidence: `sentinel-ai-core/tests/test_session.py`.
+- [x] 1.3 Read `SENTINEL_REFERENCE_DATE` once at startup (default `2026-06-17`) and inject it as the demo date. Do not read the wall clock for the window. Decision: [003](../../../docs/build/decisions/003-disputes-flow.md). Verify the default and an override — evidence: `sentinel-ai-core/tests/test_session.py`.
+- [x] 1.4 Document that `sentinel-ai-core` is the only submission server, that `sentinel-login/` stays as a reference, and how to set `SENTINEL_REFERENCE_DATE`. Area: [AI](../../../docs/build/areas/ai.md). Verify the documented command matches the startup read — evidence: `sentinel-ai-core/README.md`.
 
 ## 2. Gold adapter and listing
 
