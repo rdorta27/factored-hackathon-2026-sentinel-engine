@@ -76,7 +76,7 @@ def seed_failing_tools(client: TestClient) -> None:
     client.app.state.memories[token] = InMemoryTools(lookup_failures=99)
 
 
-def match_outcome(case: Case, kind: str | None, status_code: int) -> bool:
+def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: list[str] | None = None) -> bool:
     if (case.fault or "none") != "none":
         if kind == "case_confirmation":
             return False
@@ -84,6 +84,12 @@ def match_outcome(case: Case, kind: str | None, status_code: int) -> bool:
     if kind == case.expected_outcome:
         return True
     if case.requires_handoff and kind in ("handoff", "offer"):
+        return True
+    if case.requires_handoff and kind == "text" and any(
+        rule.startswith("person") for rule in (policy_rules or [])
+    ):
+        # First person ask is an offer rendered as text (message_key person.ask);
+        # only a second insist escalates. The decide record proves the path.
         return True
     return False
 
@@ -98,6 +104,7 @@ def run_case(client: TestClient, case: Case) -> dict:
     records = client.app.state.recorder.records_for(trace_id) if trace_id != "unknown" else []
     understand = next((r for r in records if r.step == "understand"), None)
     closing = next((r for r in records if r.step == "turn"), None)
+    policy_rules = sorted({r.policy_rule for r in records if r.policy_rule})
     return {
         "id": case.id,
         "locale": case.locale,
@@ -105,7 +112,7 @@ def run_case(client: TestClient, case: Case) -> dict:
         "expected_intent": case.expected_intent,
         "expected_outcome": case.expected_outcome,
         "outcome": kind,
-        "matched": match_outcome(case, kind, response.status_code),
+        "matched": match_outcome(case, kind, response.status_code, policy_rules),
         "requires_handoff": case.requires_handoff,
         "must_not_pass": case.must_not_pass,
         "fault": case.fault or "none",

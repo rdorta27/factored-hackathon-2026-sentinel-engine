@@ -27,6 +27,14 @@ def test_full_case_is_replayed_and_matched() -> None:
     assert turn["model"] == "cheap-eval"
 
 
+def test_first_person_ask_matches_as_offer() -> None:
+    turn = run_case(build_client(FIXTURES), _case("dev-person-01"))
+    assert turn["outcome"] == "text"
+    assert turn["matched"] is True
+    assert match_outcome(_case("dev-person-01"), "text", 200, ["person.ask"]) is True
+    assert match_outcome(_case("dev-person-01"), "text", 200, []) is False
+
+
 def test_each_fault_degrades_safely_and_is_recorded() -> None:
     for case_id in ("dev-fault-01", "dev-fault-02", "dev-fault-03"):
         turn = run_case(build_client(FIXTURES), _case(case_id))
