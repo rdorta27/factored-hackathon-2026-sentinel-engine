@@ -58,17 +58,21 @@ def data_dir() -> str:
          "subcategory": "Demora", "reception_channel": "Email", "description": "demora atencion",
          "claimed_amount": "", "currency": "", "priority": "Medium", "status": "Open"},
     ])
-    _write(tmp, "windows/2024Q4/interactions/day=01/a.csv", INTERACTION_FIELDS, [
+    _write(tmp, "call_center_interactions/year=2024/month=10/day=01/a.csv", INTERACTION_FIELDS, [
         {"interaction_id": "I1", "interaction_date": "2024-10-06", "process_date": "2024-10-06",
          "contact_reason": "Transaccional", "was_escalated": "True",
          "was_resolved": "True", "requires_followup": "False"},
+    ])
+    _write(tmp, "call_center_interactions/year=2024/month=11/day=01/a.csv", INTERACTION_FIELDS, [
         {"interaction_id": "I2", "interaction_date": "2024-11-06", "process_date": "2024-11-06",
          "contact_reason": "Reclamo", "was_escalated": "False",
          "was_resolved": "False", "requires_followup": "True"},
     ])
-    _write(tmp, "windows/2024Q4/transactions/day=01/a.csv", TRANSACTION_FIELDS, [
+    _write(tmp, "transactions/year=2024/month=10/day=01/a.csv", TRANSACTION_FIELDS, [
         {"transaction_id": "T1", "transaction_date": "2024-10-07", "process_date": "2024-10-07",
          "amount": "100.00", "currency": "MXN", "transaction_country": "MX", "fraud_score": "12"},
+    ])
+    _write(tmp, "transactions/year=2024/month=11/day=01/a.csv", TRANSACTION_FIELDS, [
         {"transaction_id": "T2", "transaction_date": "2024-11-07", "process_date": "2024-11-07",
          "amount": "200.00", "currency": "MXN", "transaction_country": "MX", "fraud_score": "80"},
     ])
@@ -115,7 +119,7 @@ def test_derive_records_provenance(data_dir: str, tmp_path, monkeypatch) -> None
     m.do_verify("2024Q4-v9")
     m.do_derive("2024Q4-v9")
     labels_path = os.path.join(
-        os.path.dirname(str(tmp_path)), "sentinel-ai-core", "eval", "labels.json"
+        os.path.dirname(os.path.dirname(str(tmp_path))), "sentinel-ai-core", "eval", "labels.json"
     )
     assert os.path.isfile(labels_path)
     body = json.loads(open(labels_path, encoding="utf-8").read())

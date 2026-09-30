@@ -184,26 +184,27 @@ def guard_summary(summary: dict) -> None:
 
 
 COMPLAINT_MONTH_PATS = ("complaints/year={y}/month={m:02d}/day=*/*.csv",)
-INTERACTION_PATS = (
-    "windows/{w}/interactions/*/*.csv",
-    "windows/{w}/interactions/day=*/*.csv",
-)
-TRANSACTION_PATS = (
-    "windows/{w}/transactions/*/*.csv",
-    "windows/{w}/transactions/day=*/*.csv",
-)
+# Raw event tables are partitioned by process_date, so the window is enforced
+# on event dates in code. September catches early-boundary rows and January
+# catches late arrivals dated 2025-01-01 (excluded and reported, by design).
+WINDOW_MONTHS = ((2024, 9), (2024, 10), (2024, 11), (2024, 12), (2025, 1))
+INTERACTION_TABLE = "call_center_interactions"
+TRANSACTION_TABLE = "transactions"
 SNAPSHOT_PRODUCTS = "snapshots/products.csv"
 
 
-def iter_patterns(patterns: tuple, data_dir: str, **fmt):  # type: ignore[no-untyped-def]
-    rows = None
-    for template in patterns:
+def scan_months(table: str, months: tuple, data_dir: str) -> list:  # type: ignore[no-untyped-def]
+    rows: list = []
+    found = 0
+    for year, month in months:
         try:
-            rows = list(scan(template.format(**fmt), data_dir))
-            return rows
-        except SystemExit:
-            continue
-    raise SystemExit(f"no files match any of {patterns} -- sync from S3 first")
+            rows.extend(scan(f"{table}/year={year}/month={month:02d}/day=*/*.csv", data_dir))
+            found += 1
+        except SystemExit as exc:
+            print(f"[scan] {table} {year}-{month:02d} missing ({exc}); continuing")
+    if found == 0:
+        raise SystemExit(f"no files for {table} in the window -- sync from S3 first")
+    return rows
 
 
 def compute_summary(data_dir: str, window: str) -> dict:
@@ -280,9 +281,9 @@ def compute_summary(data_dir: str, window: str) -> dict:
         if (row.get("currency") or "").strip():
             currencies[(row.get("currency") or "").strip()] += 1
 
-    # --- intent mix (interactions) ---
+    # --- intent mix (interactions, raw partitions filtered by event date) ---
     try:
-        interactions = iter_patterns(INTERACTION_PATS, data_dir, w=window)
+        interactions = scan_months(INTERACTION_TABLE, WINDOW_MONTHS, data_dir)
     except SystemExit:
         interactions = []
     interactions = in_window(interactions, "interaction_date", start, end, ":interactions")
@@ -295,9 +296,9 @@ def compute_summary(data_dir: str, window: str) -> dict:
         yes = sum(1 for r in interactions if (r.get(column) or "").strip().lower() in ("true", "1", "yes"))
         return {"count": yes, "denominator": len(interactions), "share": round(yes / denom, 4)}
 
-    # --- thresholds (transactions) ---
+    # --- thresholds (transactions, raw partitions filtered by event date) ---
     try:
-        transactions = iter_patterns(TRANSACTION_PATS, data_dir, w=window)
+        transactions = scan_months(TRANSACTION_TABLE, WINDOW_MONTHS, data_dir)
     except SystemExit:
         transactions = []
     transactions = in_window(transactions, "transaction_date", start, end, ":transactions")
@@ -387,9 +388,9 @@ def manifest_hashes(data_dir: str, window: str) -> list[dict]:
     patterns = [
         f"complaints/year={year}/month={m:02d}/day=*/*.csv" for m in range(first_month, first_month + 3)
     ] + [
-        f"windows/{window}/interactions/*/*.csv",
-        f"windows/{window}/transactions/*/*.csv",
-        SNAPSHOT_PRODUCTS,
+        f"{INTERACTION_TABLE}/year={y}/month={m:02d}/day=*/*.csv" for y, m in WINDOW_MONTHS
+    ] + [
+        f"{TRANSACTION_TABLE}/year={y}/month={m:02d}/day=*/*.csv" for y, m in WINDOW_MONTHS
     ]
     out = []
     for pattern in patterns:
@@ -475,7 +476,7 @@ def do_derive(run_id: str | None = None) -> None:
         raw = handle.read()
     summary = json.loads(raw)
     digest = hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
-    out_dir = os.path.join(os.path.dirname(BASE), "sentinel-ai-core", "eval")
+    out_dir = os.path.join(os.path.dirname(os.path.dirname(BASE)), "sentinel-ai-core", "eval")
     os.makedirs(out_dir, exist_ok=True)
     labels = {
         "run_id": chosen,
