@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import date
 from uuid import uuid4
 
 from app.ai.port import ModelPort, UnderstandKind
@@ -12,7 +13,8 @@ from app.orchestrator.types import (
     TurnInput,
     TurnOutput,
 )
-from app.policy.engine import PolicyFacts, PolicyOutcome, evaluate
+from app.policy.engine import HitOutcome, Intent, PolicyHit, PolicyRequest, evaluate
+from app.policy.load import load_country
 from app.tools.ports import ToolStatus, TransactionLookup
 
 MAX_ATTEMPTS = 3
@@ -24,6 +26,8 @@ class Ports:
     session_ref: str
     tools: TransactionLookup
     model: ModelPort
+    country: str = "MX"
+    today: date | None = None
 
 
 def step(turn: TurnInput, state: ConversationState, ports: Ports) -> TurnOutput:
@@ -48,35 +52,16 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
             reason="out_of_scope",
         )
     if understood.kind is UnderstandKind.PERSON:
-        return TurnOutput(kind=OutcomeKind.HANDOFF, language=state.language, reason="person")
+        state.person_asks += 1
+        hit = _hit(state, ports, Intent.PERSON, None)
+        return _from_hit(hit, state, None)
     candidates = ports.tools.lookup_transactions()
     state.candidates = candidates
     if not candidates:
         state.clarification_count += 1
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
     selected = candidates[0]
-    outcome = evaluate(PolicyFacts(status=selected.status))
-    if outcome is PolicyOutcome.EXPLAIN_STATUS:
-        return TurnOutput(
-            kind=OutcomeKind.EXPLAIN,
-            language=state.language,
-            candidate=selected,
-            reason=selected.status.value,
-        )
-    if outcome is PolicyOutcome.HANDOFF:
-        return TurnOutput(kind=OutcomeKind.HANDOFF, language=state.language, reason="policy")
-    category = ports.model.classify(turn.text)
-    state.pending_confirmation = PendingConfirmation(
-        candidate_id=selected.candidate_id,
-        action=OPEN_ACTION,
-        category=category,
-    )
-    return TurnOutput(
-        kind=OutcomeKind.CONFIRM_BOX,
-        language=state.language,
-        candidate=selected,
-        category=category,
-    )
+    return _after_policy(state, ports, Intent.CHARGE, selected, turn.text)
 
 
 def _confirm(
@@ -86,6 +71,10 @@ def _confirm(
     shown = {item.candidate_id for item in state.candidates}
     if pending is None or turn.candidate_id != pending.candidate_id or turn.candidate_id not in shown:
         return TurnOutput(kind=OutcomeKind.FAILURE, language=state.language, reason="unknown_candidate")
+    selected = shown_candidate(state, turn.candidate_id)
+    hit = _hit(state, ports, Intent.DISPUTE, selected)
+    if hit.outcome is not HitOutcome.ALLOW:
+        return _from_hit(hit, state, selected)
     token = uuid4().hex
     key = f"{ports.session_ref}:{pending.candidate_id}:{pending.action}"
     opened = ports.tools.open_dispute(
@@ -126,6 +115,69 @@ def _unverified(state: ConversationState, attempt: int) -> TurnOutput:
         language=state.language,
         reason="unverified",
         attempt=attempt,
+    )
+
+
+def _hit(
+    state: ConversationState,
+    ports: Ports,
+    intent: Intent,
+    candidate: Candidate | None,
+) -> PolicyHit:
+    policy = load_country(ports.country)
+    today = ports.today or (policy.demo_today if policy else date(2026, 6, 17))
+    return evaluate(
+        PolicyRequest(
+            intent=intent,
+            country=ports.country,
+            today=today,
+            candidate=candidate,
+            clarification_count=state.clarification_count,
+            person_asks=state.person_asks,
+            policy=policy,
+        )
+    )
+
+
+def _after_policy(
+    state: ConversationState,
+    ports: Ports,
+    intent: Intent,
+    selected: Candidate,
+    message: str,
+) -> TurnOutput:
+    hit = _hit(state, ports, intent, selected)
+    if hit.outcome is not HitOutcome.ALLOW:
+        return _from_hit(hit, state, selected)
+    category = ports.model.classify(message)
+    state.pending_confirmation = PendingConfirmation(
+        candidate_id=selected.candidate_id,
+        action=OPEN_ACTION,
+        category=category,
+    )
+    return TurnOutput(
+        kind=OutcomeKind.CONFIRM_BOX,
+        language=state.language,
+        candidate=selected,
+        category=category,
+        reason=hit.rule_id,
+    )
+
+
+def _from_hit(
+    hit: PolicyHit, state: ConversationState, candidate: Candidate | None
+) -> TurnOutput:
+    kind = {
+        HitOutcome.EXPLAIN: OutcomeKind.EXPLAIN,
+        HitOutcome.HANDOFF: OutcomeKind.HANDOFF,
+        HitOutcome.OFFER: OutcomeKind.OFFER,
+        HitOutcome.ALLOW: OutcomeKind.CONFIRM_BOX,
+    }[hit.outcome]
+    return TurnOutput(
+        kind=kind,
+        language=state.language,
+        candidate=candidate,
+        reason=hit.rule_id,
     )
 
 
