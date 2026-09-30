@@ -1,0 +1,88 @@
+/* Sentinel Engine brand variables — single source of truth.
+   Light theme in :root, dark theme in [data-theme="dark"].
+   Covers every var consumed by estilos/base.css plus chat extras.
+   Fonts: Newsreader (titles) + Source Sans 3 (body) + Source Code Pro (mono). */
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro&display=swap');
+
+:root {
+  --font-title: 'Newsreader', Georgia, serif;
+  --title-weight: 600;
+  --font-body: 'Source Sans 3', system-ui, sans-serif;
+  --font-mono: 'Source Code Pro', monospace;
+
+  /* Light (default, also forced for print/PDF) */
+  --bg: #fbfaff;
+  --slide-bg: #fbfaff;
+  --bg-elev: #ffffff;
+  --text: #3d3a4f;
+  --text-inv: #f3eeff;
+  --title: #1a1530;
+  --strong: #1a1530;
+  --muted: #a09cb5;
+  --accent: #6d4aff;
+  --accent-2: #ff4f8b;
+  --line: #e8e5f5;
+  --th-bg: #f1edff;
+  --th-text: #5b3fe0;
+  --row-alt: #f7f5ff;
+  --callout-bg: #f1edff;
+  --code-bg: #f1edff;
+  --code-text: #5b3fe0;
+  --ok: #6d4aff;
+  --warn: #ff8a3d;
+  --bad: #ff4f8b;
+  --info: #3d8bff;
+
+  /* Sizes consumed by base.css */
+  --fs-h2: clamp(44px, 4.4vw, 56px);
+  --fs-card: 22px;
+  --fs-nota: 21px;
+  --fs-table: 23px;
+  --fs-table-sm: 19px;
+
+  /* Cover */
+  --bar-w: 0px;
+  --cover-bg: linear-gradient(120deg, #6d4aff 0%, #a64dff 55%, #ff4f8b 100%);
+  --cover-title: #ffffff;
+  --cover-text: #f3eeff;
+  --cover-accent: #ffffff;
+
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #14121f;
+  --slide-bg: #1a1628;
+  --bg-elev: #221d36;
+  --text: #e6e2f5;
+  --text-inv: #1a1530;
+  --title: #ffffff;
+  --strong: #ffffff;
+  --muted: #8d88a8;
+  --accent: #9d86ff;
+  --accent-2: #ff7aa8;
+  --line: #322b52;
+  --th-bg: #262040;
+  --th-text: #c3b3ff;
+  --row-alt: #1e1930;
+  --callout-bg: #262040;
+  --code-bg: #262040;
+  --code-text: #c3b3ff;
+  --ok: #9d86ff;
+  --warn: #ffa25e;
+  --bad: #ff7aa8;
+  --info: #6aa5ff;
+
+  --cover-bg: linear-gradient(120deg, #4a2ec2 0%, #7a3fd4 55%, #d13a72 100%);
+  --cover-title: #ffffff;
+  --cover-text: #e6defc;
+  --cover-accent: #ffffff;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+  }
+}
