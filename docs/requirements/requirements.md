@@ -44,10 +44,10 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 3 | 9 | 29 | 7% |
-| P1 | 12 | 0 | 3 | 9 | 0% |
-| P2 | 4 | 0 | 1 | 3 | 0% |
-| **Total** | **57** | 3 | 13 | 41 | 5% |
+| P0 | 41 | 4 | 17 | 20 | 9% |
+| P1 | 12 | 1 | 4 | 7 | 8% |
+| P2 | 4 | 1 | 0 | 3 | 25% |
+| **Total** | **57** | 6 | 21 | 30 | 10% |
 
 ## Functional (F)
 
