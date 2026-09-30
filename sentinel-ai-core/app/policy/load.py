@@ -55,6 +55,8 @@ def _parse(text: str) -> dict:
             child: dict = {}
             parent[key] = child
             stack.append((indent, child))
+        elif value == "[]":
+            parent[key] = []
         else:
             parent[key] = value
     return root

@@ -13,7 +13,7 @@ def list_transactions(
     session: Session = Depends(require_session),
 ) -> dict:
     if "customer_id" in request.query_params:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="customer_id is not accepted")
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="customer_id is not accepted")
     gold: GoldTransactions = request.app.state.gold
     rows = gold.list_for_customer(session.customer_id)
     return {

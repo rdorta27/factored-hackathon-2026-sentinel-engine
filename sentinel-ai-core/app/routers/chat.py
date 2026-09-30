@@ -59,22 +59,33 @@ def _ports(request: Request, session: Session, tools: SessionBoundLookup) -> Por
     )
 
 
-def _eligible(candidate: Candidate, today) -> bool:
-    if candidate.status.value != "Approved" or candidate.is_disputed:
-        return False
+def _ineligible_key(candidate: Candidate, today) -> str | None:
+    if candidate.is_disputed:
+        return "candidateDisputed"
+    if candidate.status.value == "Reversed":
+        return "candidateReversed"
+    if candidate.status.value == "Declined":
+        return "candidateDeclined"
+    if candidate.status.value == "Pending":
+        return "candidatePending"
+    if candidate.status.value != "Approved":
+        return "candidateOutOfWindow"
     age = (today - datetime.fromisoformat(candidate.date).date()).days
-    return age <= 90
+    if age > 90:
+        return "candidateOutOfWindow"
+    return None
 
 
 def _candidate_payload(candidate: Candidate, today) -> dict:
+    reason = _ineligible_key(candidate, today)
     return {
         "reference": candidate.candidate_id,
         "amount": candidate.amount,
         "currency": candidate.currency,
         "merchant": candidate.merchant,
         "date": candidate.date,
-        "eligible": _eligible(candidate, today),
-        "ineligibleKey": None if _eligible(candidate, today) else "candidateOutOfWindow",
+        "eligible": reason is None,
+        "ineligibleKey": reason,
     }
 
 

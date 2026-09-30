@@ -27,6 +27,17 @@ def test_extra_field_is_422() -> None:
     assert response.status_code == 422
 
 
+def test_clarification_then_selection_shows_the_box() -> None:
+    api = client()
+    login(api)
+    asked = api.post("/chat", json={"message": "HOLA"})
+    assert asked.json()["kind"] == "clarification"
+    chosen = api.post("/chat", json={"selected_reference": "TXN-1006"})
+    body = chosen.json()
+    assert body["kind"] == "confirm_box"
+    assert "fields.missing" not in str(body)
+
+
 def test_selection_does_not_open() -> None:
     api = client()
     login(api)

@@ -80,7 +80,7 @@ function selectCandidate(candidate) {
 }
 
 function renderCandidates(box, candidates) {
-  const chips = el("div", "chips");
+  const chips = el("div", "chat-candidates");
   (candidates || []).forEach((candidate) => {
     const chip = el("button", "candidate", humanStatement(candidate));
     chip.type = "button";
