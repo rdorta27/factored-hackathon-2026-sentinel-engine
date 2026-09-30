@@ -2,7 +2,7 @@
 
 Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**
 
-A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Work in progress: decisions are recorded as they are made, and open ones are marked as such.
+A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Prototype under active development. Status per requirement is tracked in Requirements coverage below; open decisions are marked as such.
 
 ## What we are building
 
@@ -17,23 +17,43 @@ Two layers:
 
 The submission runs the same code with a few documented mocks (test session, in-memory dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
 
+## Quickstart
+
+Run the service (from the repository root):
+
+```bash
+cd sentinel-ai-core
+uvicorn app.main:app
+```
+
+Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`).
+
+Run the service tests:
+
+```bash
+cd sentinel-ai-core
+python3 -m pytest tests/ -q
+```
+
+The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README.md) and additionally needs its Python dependencies, Azure credentials in `.env` and the dataset under `data/` (all gitignored).
+
 ## Requirements coverage
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 4 | 23 | 14 | 9% |
+| P0 | 41 | 4 | 24 | 13 | 9% |
 | P1 | 12 | 1 | 5 | 6 | 8% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 6 | 28 | 23 | 10% |
+| **Total** | **57** | 6 | 29 | 22 | 10% |
 
 | Status | Requirements |
 |---|---|
 | **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
-| **In progress** | Loop and policy in `sentinel-ai-core/`: REQ-0001 context · 0002 clarify or abstain · 0004 safe tools · 0006 confirm and escalate · 0007 policy in code · 0009–0011 the three demo cases (tests, not the video) · 0040 person request · 0043 status and window · 0047 no identifiers to the model · 0032 mock tools. Session, chat and listing in `sentinel-ai-core/`: REQ-0003 verified records · 0012 es-419/pt-BR grounding · 0027 test session · 0038 chat page · 0039 reference date · 0041 own currency · 0042 candidates. Still design or data, not this folder: REQ-0008 handoff schema · 0015 pipeline · 0017 labels · 0025 observability · 0029 explanations from logs · 0030 limitations · 0052 path to production · 0053 sizing · 0056 trade-offs |
+| **In progress** | 29 requirements across the loop and policy, session/chat/listing, and data areas (breakdown per requirement below) |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
-## Start here (about 15 minutes)
+## Reading guide
 
 1. **[The Challenge](docs/understand/overview.md):** what we must build, how we are judged and what we submit.
 2. **[Architecture](docs/architecture/README.md):** the target system, the demo with its mocks, and the specification.
@@ -47,7 +67,7 @@ The [documentation index](docs/README.md) covers everything else.
 | Path | What it holds |
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine, with in-memory tool fakes. No chat page, session, or `POST /chat` yet. Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with chat (`POST /chat`), session-bound transactions (`GET /transactions`), policy engine, orchestrator and chat UI, with in-memory tool fakes. Owners in [team/plan.md](team/plan.md#folders). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
