@@ -1,4 +1,4 @@
-"""Same-process frontend: static files plus locale merging with fallback."""
+"""Same-process frontend: static files, brand assets, and locale merging."""
 
 import json
 import re
@@ -12,6 +12,9 @@ router = APIRouter(tags=["ui"])
 
 STATIC_DIR = Path(__file__).parent / "static"
 I18N_DIR = Path(__file__).parent / "i18n"
+# The team's branding folder is the single source of truth for color and type.
+# It is read and served as-is: never copied and never modified here.
+BRANDING_DIR = Path(__file__).resolve().parents[3] / "branding"
 LOCALE_PATTERN = re.compile(r"^[a-z]{2}-[A-Za-z0-9]{2,3}$")
 BASE_LOCALE = "es-419"
 
@@ -47,10 +50,16 @@ def get_locale(locale: str) -> JSONResponse:
 
 
 def mount_ui(app) -> None:  # type: ignore[no-untyped-def]
-    """Serve the single-page frontend under /ui. API routes stay unprefixed.
+    """Serve the single-page frontend under /ui and the brand folder under /branding.
 
     Mounting at "/" would shadow every API route declared after it, and the
     page would request /ui/styles.css which only exists under this prefix.
     """
     app.include_router(router)
+    if BRANDING_DIR.is_dir():
+        app.mount(
+            "/branding",
+            StaticFiles(directory=str(BRANDING_DIR)),
+            name="branding",
+        )
     app.mount("/ui", StaticFiles(directory=str(STATIC_DIR), html=True), name="ui")

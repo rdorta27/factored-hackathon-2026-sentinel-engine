@@ -135,6 +135,7 @@ async function loadSessionContext() {
     if (!res.ok) return;
     const context = await res.json();
     setReferenceDate(context.referenceDate);
+    setSessionUser(context);
     if (context.defaultLocale && context.defaultLocale !== state.locale) {
       document.getElementById("locale").value = context.defaultLocale;
       await loadLocale(context.defaultLocale);
@@ -147,6 +148,20 @@ async function loadSessionContext() {
 function setReferenceDate(iso) {
   const node = document.getElementById("reference-date");
   if (node) node.textContent = `${t("referenceDateLabel")}: ${formatDate(iso)}`;
+}
+
+/* Secure-session line: masked identity from the session context. */
+function setSessionUser(context) {
+  const node = document.getElementById("session-user");
+  if (!node) return;
+  node.textContent = context.displayName ? `· ${maskName(context.displayName)}` : "";
+}
+
+function maskName(name) {
+  return String(name)
+    .split(" ")
+    .map((part) => (part.length > 1 ? `${part[0]}${"•".repeat(part.length - 1)}` : part))
+    .join(" ");
 }
 
 /* --- Formatting: language changes presentation, never the value. -------- */
@@ -194,14 +209,15 @@ function merchantLabel(value) {
 
 function addBubble(cls, text) {
   const thread = document.getElementById("thread");
-  thread.append(el("div", `msg ${cls}`, text));
+  const variant = cls === "mine" ? "msg-user" : "msg-bot";
+  thread.append(el("div", `msg ${variant}`, text));
   thread.scrollTop = thread.scrollHeight;
 }
 
 function showTyping() {
   const thread = document.getElementById("thread");
-  const bubble = el("div", "msg system typing");
-  bubble.append(el("span", "muted", t("typingLabel")));
+  const bubble = el("div", "msg msg-audit typing");
+  bubble.append(el("span", "chat-sub", t("typingLabel")));
   thread.append(bubble);
   thread.scrollTop = thread.scrollHeight;
   return bubble;
@@ -211,16 +227,18 @@ function renderCandidates(box, candidates) {
   if (!candidates || !candidates.length) return;
   const chips = el("div", "chips");
   candidates.forEach((candidate) => {
-    const chip = el("button", "chip");
+    const chip = el("button", "candidate");
     chip.type = "button";
+    chip.setAttribute("aria-pressed", "false");
     chip.textContent = `${merchantLabel(candidate.merchant)} - ${formatAmount(
       candidate.amount,
       candidate.currency
     )} (${formatDate(candidate.date)})`;
     if (!candidate.eligible) {
-      chip.classList.add("chip-disabled");
       chip.disabled = true;
-      chip.append(el("span", "muted", ` · ${t(candidate.ineligibleKey || "candidateOutOfWindow")}`));
+      chip.append(
+        el("span", "chat-sub", ` · ${t(candidate.ineligibleKey || "candidateOutOfWindow")}`)
+      );
     } else {
       chip.addEventListener("click", () => selectCandidate(candidate));
     }
@@ -249,18 +267,18 @@ function renderReply(body) {
   } else if (body.kind === "handoff") {
     thread.append(handoffCard(body));
   } else if (body.kind === "clarification") {
-    const box = el("div", "msg system");
+    const box = el("div", "msg msg-audit");
     box.append(el("strong", "", `${t("clarTitle")}: `));
     box.append(el("span", "", t(body.message_key)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "error") {
-    const box = el("div", "msg system");
-    box.append(el("strong", "error", `${t("errorTitle")}: `));
+    const box = el("div", "msg msg-audit");
+    box.append(el("strong", "", `${t("errorTitle")}: `));
     box.append(el("span", "", `${t(body.message_key)} (${body.trace_id})`));
     thread.append(box);
   } else {
-    thread.append(el("div", "msg", t(body.message_key)));
+    thread.append(el("div", "msg msg-bot", t(body.message_key)));
   }
   thread.scrollTop = thread.scrollHeight;
 }
@@ -268,32 +286,32 @@ function renderReply(body) {
 /* One proof row: icon plus label plus value. Color is never the only cue. */
 function proofRow(icon, label, value) {
   const item = el("li", "");
-  item.append(el("span", "proof-icon", icon));
+  item.append(el("span", "receipt-check", icon));
   const body = el("div", "");
-  body.append(el("span", "proof-label", label));
+  body.append(el("span", "chat-sub", label));
   body.append(el("span", "proof-value", value));
   item.append(body);
   return item;
 }
 
 function receiptCard(body) {
-  const card = el("div", "msg receipt");
+  const card = el("div", "msg msg-audit");
   const head = el("div", "receipt-head");
   head.append(
-    el("h3", "", t("receiptOutcome")),
-    el("span", "badge badge-success", `${t("verifiedBadge")} (OK)`),
-    el("span", "badge badge-info", t("mockBadge"))
+    el("h3", "chat-title", t("receiptOutcome")),
+    el("span", "receipt-check", `✓ ${t("verifiedBadge")}`),
+    el("span", "chat-sub", t("mockBadge"))
   );
   card.append(head);
 
   const caseLine = el("div", "case-number");
-  caseLine.append(el("span", "proof-label", t("field_case")));
+  caseLine.append(el("span", "chat-sub", t("field_case")));
   caseLine.append(el("strong", "", body.case_id));
   card.append(caseLine);
 
   const tx = body.transaction;
   const display = body.display || {};
-  const facts = el("div", "muted");
+  const facts = el("div", "chat-sub");
   facts.textContent = `${merchantLabel(tx.merchant)} - ${formatAmount(
     display.amount || tx.amount,
     display.currency || tx.currency
@@ -316,11 +334,11 @@ function receiptCard(body) {
   card.append(
     el(
       "div",
-      "muted",
+      "chat-sub",
       `${t("field_referenceDate")}: ${formatDate(display.referenceDate)}`
     )
   );
-  card.append(el("div", "muted", `${t("field_sla")}: ${slaDate}`));
+  card.append(el("div", "chat-sub", `${t("field_sla")}: ${slaDate}`));
 
   const receipt = document.createElement("a");
   receipt.className = "receipt-link";
@@ -331,23 +349,23 @@ function receiptCard(body) {
 
   const steps = el("ul", "timeline");
   ["step_identity", "step_found", "step_rules", "step_created", "step_confirmed"].forEach(
-    (key) => steps.append(el("li", "", t(key)))
+    (key) => steps.append(el("li", "chat-sub", t(key)))
   );
   card.append(steps);
   return card;
 }
 
 function handoffCard(body) {
-  const card = el("div", "msg handoff");
+  const card = el("div", "msg msg-audit");
   const head = el("div", "receipt-head");
   head.append(
-    el("h3", "", t("handoffTitle")),
-    el("span", "badge badge-warning", t("badgeEscalated"))
+    el("h3", "chat-title", t("handoffTitle")),
+    el("span", "chat-sub", t("badgeEscalated"))
   );
   card.append(head);
   card.append(el("div", "", `${t("field_reason")}: ${t(body.reason_key)}`));
   if (body.reason_detail) {
-    card.append(el("div", "muted", body.reason_detail));
+    card.append(el("div", "chat-sub", body.reason_detail));
   }
   return card;
 }
@@ -384,15 +402,16 @@ async function loadTransactions() {
   const box = document.getElementById("transactions");
   box.textContent = "";
   if (!transactions.length) {
-    box.append(el("p", "muted", t("tx_empty")));
+    box.append(el("p", "chat-sub", t("tx_empty")));
     return;
   }
   transactions.forEach((tx) => {
-    const item = el("button", "tx-item");
+    const item = el("button", "candidate");
     item.type = "button";
+    item.setAttribute("aria-pressed", "false");
     item.append(el("strong", "", formatAmount(tx.amount, tx.currency)));
-    item.append(el("span", "muted", ` ${merchantLabel(tx.merchant)}`));
-    item.append(el("span", "muted", ` (${formatDate(tx.date)})`));
+    item.append(el("span", "chat-sub", ` ${merchantLabel(tx.merchant)}`));
+    item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
     item.addEventListener("click", () => {
       selectCandidate(tx);
     });
@@ -408,13 +427,13 @@ async function loadQueue() {
   const box = document.getElementById("queue");
   box.textContent = "";
   if (!cases.length) {
-    box.append(el("p", "muted", t("q_empty")));
+    box.append(el("p", "chat-sub", t("q_empty")));
     return;
   }
   cases.forEach((item) => {
-    const card = el("div", "queue-item");
-    card.append(el("h3", "", `${item.reference} (${item.case_id})`));
-    card.append(el("div", "muted", `${t("q_customer")}: ${item.customer_id}`));
+    const card = el("div", "queue-item msg msg-audit");
+    card.append(el("h3", "chat-title", `${item.reference} (${item.case_id})`));
+    card.append(el("div", "chat-sub", `${t("q_customer")}: ${item.customer_id}`));
     card.append(
       el(
         "div",
@@ -427,8 +446,8 @@ async function loadQueue() {
     );
     card.append(el("div", "", `${t("q_state")}: ${item.state}`));
     card.append(el("div", "", `${t("q_priority")}: ${item.priority}`));
-    card.append(el("div", "muted", `${t("q_reason")}: ${item.reason}`));
-    const claim = el("button", "primary-button", t("q_claim"));
+    card.append(el("div", "chat-sub", `${t("q_reason")}: ${item.reason}`));
+    const claim = el("button", "candidate", t("q_claim"));
     claim.addEventListener("click", async () => {
       await api(`/advisor/cases/${item.case_id}/claim`, { method: "POST" });
       loadQueue();
@@ -444,7 +463,7 @@ async function loadAdmin() {
   const metrics = await (await api("/admin/metrics")).json();
   const box = document.getElementById("metrics");
   box.textContent = "";
-  const table = el("table", "");
+  const table = el("table", "metrics-table msg msg-bot");
   Object.entries(metrics.metrics).forEach(([key, value]) => {
     const row = el("tr", "");
     const label = t(`m_${key}`);
