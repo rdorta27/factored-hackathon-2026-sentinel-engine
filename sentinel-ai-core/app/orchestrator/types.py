@@ -21,6 +21,7 @@ class OutcomeKind(StrEnum):
     CONFIRM_BOX = "confirm_box"
     CASE_NUMBER = "case_number"
     HANDOFF = "handoff"
+    OFFER = "offer"
     FAILURE = "failure"
 
 
@@ -33,6 +34,9 @@ class Candidate:
     merchant: str
     date: str
     as_of: str
+    fraud_score: float | None = None
+    is_disputed: bool = False
+    gold_eligible: bool | None = None
 
     def __post_init__(self) -> None:
         if not self.currency.strip():
@@ -53,6 +57,7 @@ class ConversationState:
     candidates: list[Candidate] = field(default_factory=list)
     pending_confirmation: PendingConfirmation | None = None
     clarification_count: int = 0
+    person_asks: int = 0
 
 
 @dataclass(frozen=True)

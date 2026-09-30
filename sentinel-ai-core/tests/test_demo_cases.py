@@ -1,3 +1,5 @@
+from datetime import date
+
 import pytest
 
 from app.ai.fake import FakeModel
@@ -28,7 +30,7 @@ def _candidate() -> Candidate:
 
 def _ports(model: FakeModel) -> tuple[InMemoryTools, Ports]:
     tools = InMemoryTools([_candidate()])
-    return tools, Ports(session_ref="s1", tools=tools, model=model)
+    return tools, Ports(session_ref="s1", tools=tools, model=model, today=date(2024, 12, 1))
 
 
 @pytest.mark.parametrize(
@@ -113,9 +115,11 @@ def test_human_case_hands_off_without_token(text: str, language: Language) -> No
     model = FakeModel()
     tools, ports = _ports(model)
     state = ConversationState(language=language)
+    first = step(TextInput(text), state, ports)
     result = step(TextInput(text), state, ports)
+    assert first.kind is OutcomeKind.OFFER
     assert result.kind is OutcomeKind.HANDOFF
-    assert result.reason == "person"
+    assert result.reason == "person.insist"
     assert result.case_number is None
     assert tools.open_calls == 0
     assert model.classify_calls == 0

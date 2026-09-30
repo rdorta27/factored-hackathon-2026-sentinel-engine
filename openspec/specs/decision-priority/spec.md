@@ -7,7 +7,7 @@ Keeps eligibility and escalation in code, and limits the learned component to th
 ## Requirements
 
 ### Requirement: Policy outcome is final
-Closed policy rules SHALL be evaluated in code before the learned component and before model wording. A policy hit SHALL NOT be overridden. Pending, Reversed, or Declined status SHALL block a dispute. A request for a person SHALL hand off. Suspected fraud and high amount SHALL hand off only when their country threshold is configured; otherwise those rules SHALL NOT fire. Traces to REQ-0007 (P0, Pending), REQ-0040 (P0, Pending), REQ-0043 (P1, Pending), and REQ-0048 (P0, Done). Decisions 005 and 008.
+Closed policy rules SHALL be evaluated in code before the learned component and before model wording. A policy hit SHALL NOT be overridden. Pending, Reversed, or Declined status SHALL block a dispute. The first request for a person SHALL offer help and SHALL NOT open a dispute. A repeated request SHALL hand off. Suspected fraud and high amount SHALL hand off only when their country threshold is configured; otherwise those rules SHALL NOT fire. Traces to REQ-0007 (P0, Pending), REQ-0040 (P0, Pending), REQ-0043 (P1, Pending), and REQ-0048 (P0, Done). Decisions 005 and 008.
 
 #### Scenario: Status rule blocks the model
 - **WHEN** the selected charge is Reversed and the model proposes opening a dispute
@@ -16,6 +16,29 @@ Closed policy rules SHALL be evaluated in code before the learned component and 
 #### Scenario: Missing threshold is not a rule
 - **WHEN** no high-amount threshold is configured for the account country
 - **THEN** amount alone does not force a handoff
+
+#### Scenario: First request offers help
+- **WHEN** the customer asks for a person and `person_asks` is 1
+- **THEN** the outcome is an offer to keep helping and no dispute is opened
+
+#### Scenario: Repeated request hands off
+- **WHEN** the customer asks for a person again and `person_asks` is at least 2
+- **THEN** the outcome is a handoff and the cited rule is `person.insist`
+
+### Requirement: Filing window is recomputed at request time
+A charge SHALL be disputable only when its age in days, from the injected demo date to the transaction date, is less than or equal to the country window. Day 90 SHALL allow a dispute. Day 91 SHALL NOT. The Gold flag `is_eligible_for_dispute` SHALL be a hint only. If it disagrees with the recomputed age, the recomputed age SHALL win. An expired window SHALL explain the rule and offer a handoff, and SHALL NOT open a dispute. Traces to REQ-0043 (P1, Pending) and decision 003.
+
+#### Scenario: Day 90 is inside the window
+- **WHEN** the selected charge is Approved and its age is 90 days
+- **THEN** the window rule does not block the dispute
+
+#### Scenario: Day 91 expires the window
+- **WHEN** the selected charge is Approved and its age is 91 days
+- **THEN** the outcome cites `window.expired`, explains the rule, offers a handoff, and does not open a dispute
+
+#### Scenario: Gold hint loses
+- **WHEN** Gold marks the charge eligible and the recomputed age is 91 days
+- **THEN** the outcome is `window.expired`
 
 ### Requirement: Learned component fills category only
 The learned component SHALL run only after policy has established that a dispute applies. It SHALL assign the category recorded on the dispute and SHALL NOT decide eligibility, confirmation, or escalation. The category set SHALL NOT be hard-coded to a single subcategory. Traces to REQ-0048 (P0, Done) and decision 007.

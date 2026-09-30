@@ -18,11 +18,15 @@ The loop SHALL accept either customer text or a structured candidate id. A free-
 - **THEN** the loop treats that field as the confirmation, not as customer text
 
 ### Requirement: Conversation state survives the turn
-The loop SHALL keep, for the life of the session, the bounded turns, the candidates shown, the pending confirmation, the detected language, and the clarification count. Language SHALL be `es-419` or `pt-BR`. The state SHALL NOT contain `customer_id`. Traces to REQ-0001 (P0, Pending) and REQ-0047 (P0, Pending).
+The loop SHALL keep, for the life of the session, the bounded turns, the candidates shown, the pending confirmation, the detected language, the clarification count, and `person_asks`. Language SHALL be `es-419` or `pt-BR`. The state SHALL NOT contain `customer_id`. The policy engine SHALL NOT store `person_asks`. Traces to REQ-0001 (P0, Pending), REQ-0040 (P0, Pending), and REQ-0047 (P0, Pending).
 
 #### Scenario: Next turn sees the candidates already shown
 - **WHEN** a turn shows candidate charges and a later turn arrives on the same session
 - **THEN** those candidates are still available and no customer identifier is in the state
+
+#### Scenario: Person asks survive the turn
+- **WHEN** the customer asks for a person and a later turn arrives on the same session
+- **THEN** `person_asks` is still the count from the previous turn
 
 ### Requirement: A turn stops when it cannot yet act
 The loop SHALL ask a clarifying question when the charge is missing, and SHALL abstain when the request is out of scope for charges and transactions. It SHALL NOT open a dispute in either case. Traces to REQ-0002 (P0, Pending) and decision 008.
@@ -36,12 +40,16 @@ The loop SHALL ask a clarifying question when the charge is missing, and SHALL a
 - **THEN** the loop says that is out of scope and offers a handoff
 
 ### Requirement: Demo outcomes are structural
-The three demo cases SHALL be distinguishable by outcome, in both `es-419` and `pt-BR`: a confirmed dispute yields a case number only after read-back, an ambiguous or unsupported request does not open a dispute, and a human request yields a handoff. Traces to REQ-0009, REQ-0010, and REQ-0011 (all P0, Pending).
+The three demo cases SHALL be distinguishable by outcome, in both `es-419` and `pt-BR`: a confirmed dispute yields a case number only after read-back, an ambiguous or unsupported request does not open a dispute, and a repeated request for a person yields a handoff. The first request SHALL offer help and SHALL NOT hand off. Traces to REQ-0009, REQ-0010, REQ-0011 (all P0, Pending), and REQ-0040 (P0, Pending).
 
 #### Scenario: Normal case in either reply language
 - **WHEN** policy allows a dispute and the caller confirms the shown candidate
 - **THEN** the outcome is a case number and the reply language is the detected `es-419` or `pt-BR`
 
 #### Scenario: Human case
-- **WHEN** the customer asks for a person
+- **WHEN** the customer asks for a person a second time on the same session
 - **THEN** the outcome is a handoff and no case number
+
+#### Scenario: First person request is not the human case
+- **WHEN** the customer asks for a person for the first time
+- **THEN** the outcome is an offer to keep helping and no handoff is opened
