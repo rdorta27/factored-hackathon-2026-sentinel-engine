@@ -34,7 +34,6 @@ from __future__ import annotations
 import json
 import logging
 from datetime import datetime, timezone
-from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
@@ -43,7 +42,7 @@ import pyarrow as pa
 from deltalake import write_deltalake
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from sentinel_data.catalog import QualityRule, TableDefinition, get_table
+from sentinel_data.catalog import QualityRule, RunMode, TableDefinition, get_table
 
 logger = logging.getLogger(__name__)
 
@@ -51,11 +50,6 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-
-
-class RunMode(str, Enum):
-    LOCAL = "local"
-    DATABRICKS = "databricks"
 
 
 class SilverTransformerConfig(BaseModel):

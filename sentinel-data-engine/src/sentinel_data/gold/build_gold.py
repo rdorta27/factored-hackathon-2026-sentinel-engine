@@ -42,7 +42,6 @@ Databricks mode : PySpark + Delta MERGE on Unity Catalog managed tables.
 from __future__ import annotations
 
 import logging
-from enum import Enum
 from pathlib import Path
 from typing import Optional
 
@@ -51,6 +50,8 @@ import pyarrow as pa
 from deltalake import write_deltalake
 from pydantic import BaseModel, ConfigDict, Field
 
+from sentinel_data.catalog import RunMode
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -58,11 +59,6 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _DISPUTE_ELIGIBILITY_DAYS = 90  # business rule: max days for dispute intake
-
-
-class RunMode(str, Enum):
-    LOCAL = "local"
-    DATABRICKS = "databricks"
 
 
 class GoldBuilderConfig(BaseModel):
