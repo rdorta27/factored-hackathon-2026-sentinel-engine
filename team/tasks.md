@@ -11,8 +11,8 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Day | Milestone | Tasks |
 |---|---|---|
 | Mon 9/28 | Decisions recorded; first data measurements | [See](#mon-928) |
-| Tue 9/29 | Flow confirmed; the skeleton answers end to end | [See](#tue-929) |
-| Wed 9/30 | One case works fully | [See](#wed-930) |
+| Tue 9/29 | Flow confirmed; architecture reviewed (skeleton not reached) | [See](#tue-929) |
+| Wed 9/30 | The skeleton answers end to end; one case works fully | [See](#wed-930) |
 | Thu 10/1 | 3 cases in es-419 and pt-BR, public link | [See](#thu-101) |
 | Fri 10/2 | Code and results frozen | [See](#fri-102) |
 | Sat 10/3 to Mon 10/5 | Presentation and video done; submitted | [See](#sat-103-to-mon-105) |
@@ -40,24 +40,31 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 |---|---|---|
 | Review [decision 003](../docs/build/decisions/003-disputes-flow.md): confirm the disputes flow or switch to cards, and set thresholds | Team | Done: disputes confirmed 9/29 ([flow selection](../docs/build/flows/03-flow-selection.md)) |
 | Pick the learned component | Team | Done: prompted LLM, 9/29 ([decision 007](../docs/build/decisions/007-learned-component.md)) |
-| Design the held-out set: labels (`category`), time split, locales | Rubén | Pending |
-| Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
-| JSON handoff schema (request, verified facts, transactions, actions, evidence, open questions, reason) | Unassigned | Pending |
-| Define the source and reviewer of the Portuguese test cases (decision 15) | Unassigned | Pending |
-| Backend skeleton: orchestrator and 4 mock tools with fixed contracts (open dispute idempotent) | Unassigned | Pending |
-| Simple chat with login and session, connected to the backend | Unassigned | Pending |
+| Architecture: system, demo and specification | Rubén | Done: [architecture](../docs/architecture/README.md), PR #9 |
+| Scope of the account inquiry | Rubén | Done: [decision 008](../docs/build/decisions/008-account-inquiry-scope.md) |
 | Minimal pipeline: ingestion, deduplication and quality checks | Natalia | In progress: Bronze, Silver and Gold code with tests in `sentinel-data-engine/`; not yet validated end to end |
-| Analysis backing the flow: contact reasons, demand and data quality | Unassigned | Pending |
+| Analysis backing the flow: contact reasons, demand and data quality | Rubén | Done: [flow selection](../docs/build/flows/03-flow-selection.md) |
+
+Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, the handoff schema, the held-out design and the Portuguese source.
 
 ## Wed 9/30
 
 | Task | Owner | Status |
 |---|---|---|
-| Normal case end to end with real data | Unassigned | Pending |
-| Action verification: the dispute exists after creation | Unassigned | Pending |
-| Handoff integrated into the flow | Unassigned | Pending |
+| Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | Pending |
+| Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Pending |
+| Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Pending |
+| JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | Pending |
+| Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |
+| Evidence run `2024Q4-v4` recording claim categories and subcategories with counts | Natalia, Rubén | Pending |
+| Design the held-out set: labels (from the v4 category list), locales | Rubén | Pending |
+| Define the source and reviewer of the Portuguese test cases (decision 15) | Rubén | Pending |
+| Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
+| Normal case end to end with real data | Rubén, Felix | Pending |
+| Action verification: the dispute exists after creation | Rubén | Pending |
+| Handoff integrated into the flow | Rubén | Pending |
 | Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
-| First evaluation cases | Unassigned | Pending |
+| First evaluation cases (JSONL) | Rubén | Pending |
 
 ## Thu 10/1
 
@@ -67,18 +74,22 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Start the video script | Rubén | Pending |
 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
 | Portuguese | Unassigned | Pending |
-| Failure handling: down tools, expired session, bounded retries | Unassigned | Pending |
+| Failure handling: down tools, expired session, bounded retries | Rubén | Pending |
+| Structured confirmation: confirm box and `confirmation_token` ([confirmation](../docs/architecture/specification.md#confirmation)) | Felix, Rubén | Pending |
+| Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Felix | Pending |
+| Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | Pending |
 | Adversarial set: prompt injection and unauthorized access | Unassigned | Pending |
-| Azure deployment with public link | Unassigned | Pending |
+| Public link: Azure, or the free-host fallback of decision 13 | Felix | Pending |
 
 ## Fri 10/2
 
 | Task | Owner | Status |
 |---|---|---|
-| Held-out evaluation and metrics (success, unsafe outcomes, handoff, latency, cost) | Unassigned | Pending |
+| Evaluation runner and held-out metrics (safe resolution, unsafe outcomes, handoff, latency, cost) | Rubén | Pending |
+| Metrics by language and country, cost per resolution, frozen in `evidence/` | Natalia | Pending |
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
-| Path to production write-up (REQ-0052) | Rubén | Pending |
+| Path to production write-up (REQ-0052) | Rubén | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
 | Validate the presentation outline with the group | Rubén, team | Pending |

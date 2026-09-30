@@ -36,7 +36,7 @@ The hackathon audience is technical (software, data). These contact-center and b
 | Advisor | Advisor | Agent (call center) | Human who receives the handoff; *asesor* in Spanish, *atendente* in Portuguese |
 | Tool | Query or operation | Tool | Function the orchestrator calls to read data or run actions, with access control |
 | Gold | (Simulated) banking core | — | Per-customer transactions the tools read, with their cutoff date; filled by the pipeline |
-| Disputes store | Dispute registry | — | Operational store where tools write disputes and read them back to verify; SQLite locally, Postgres on Azure |
+| Disputes store | Dispute registry | — | Record the tools write and read back before reporting a case number. Not Gold. The demo keeps it in memory; SQLite and Postgres are the production backend of the same contract |
 | Analytical store | — | — | Data for analysis, baseline and training |
 | Mask / unmask | — | — | **Mask:** replace a personal value (document, card number) with a token before it reaches the LLM or the logs. **Unmask:** code swaps the token back for the real value, only inside a tool, and never uses it as a lookup key. See [decision 004](../../build/decisions/004-pii-lifecycle.md) |
 | Token vault | — | — | Per-session, encrypted map from tokens to the masked values; discarded when the session ends |

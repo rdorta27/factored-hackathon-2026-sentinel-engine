@@ -35,14 +35,16 @@ For agents:
 
 | Path | What it holds |
 |---|---|
-| [`docs/understand/`](docs/understand/) | The challenge, the system and the data in one read |
+| [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture and their specification |
+| [`docs/understand/`](docs/understand/) | The challenge and the data in one read |
 | [`docs/requirements/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 | [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
 | [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
-| [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold) with its own `pyproject.toml`, tests and README |
+| [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Natalia. |
+| `sentinel-ai-core/` | One FastAPI process, chat included. Not created yet. Owners in [team/plan.md](team/plan.md#folders). |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).

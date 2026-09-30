@@ -105,50 +105,58 @@ Explain products and give a simulated eligibility outcome.
 
 ## Suggested flow
 
-"I don't recognize this charge" starts as an account inquiry and becomes a dispute only when it has to. The dashed box is what is built; the bank starts as mocks (simulated systems).
+"I don't recognize this charge" starts as an account inquiry about charges and becomes a dispute only when it has to. Balances, products, cards and credit are out of scope ([system: scope](../../architecture/specification.md#scope)). The steps are the loop the brief asks for: Understand → Decide → Act → Verify → Escalate. The full sequence and the tool contracts are in the [system](../../architecture/system-architecture.md#walkthrough-of-a-case); which boxes are mocked is in the [demo](../../architecture/demo-architecture.md#mocked-components).
 
 ```mermaid
 flowchart LR
     customer(["Customer<br/>'I don't recognize this charge'"])
-    subgraph system["The assistant (what is built)"]
+    subgraph system["The assistant"]
         direction LR
-        understand["1 · Understand<br/><b>LLM</b>: intent, language,<br/>missing details"]
-        lookup["2 · Look up<br/><b>Code</b>: customer's<br/>transactions and status"]
-        decide{"3 · Decide<br/><b>Policy</b> first,<br/>then <b>ML</b>"}
-        act["4 · Act<br/><b>Code</b>: confirm, open<br/>and verify the dispute"]
-        respond["5 · Respond<br/><b>LLM</b>: case number<br/>and next step"]
-        handoff["JSON handoff<br/>facts, evidence,<br/>open questions"]
+        understand["1 · Understand<br/><b>LLM</b>: intent, language,<br/>charge hints"]
+        lookup["Look up<br/><b>Code</b>: customer's charges,<br/>status, as-of date"]
+        decide{"2 · Decide<br/><b>Policy</b> first, then<br/>dispute <b>category</b>"}
+        act["3 · Act<br/><b>Code</b>: confirm and<br/>open the dispute"]
+        verify["4 · Verify<br/><b>Code</b>: read the<br/>dispute back"]
+        respond["Reply<br/><b>LLM</b>: explanation or<br/>case number"]
+        handoff["5 · Escalate<br/>JSON handoff: facts,<br/>evidence, open questions"]
     end
-    bank[("Bank<br/>transactions and disputes<br/>(mocks, then real data)")]
+    gold[("Gold<br/>charges")]
+    record[("Dispute record<br/>in memory in the demo")]
     advisor(["Human advisor"])
-    reply(["Customer gets<br/>the answer"])
 
     customer --> understand --> lookup --> decide
-    lookup <--> bank
-    decide -- "Pending or Reversed:<br/>explain, no dispute" --> respond
-    decide -- "dispute applies" --> act --> respond
-    act <--> bank
-    decide -- "fraud, high amount,<br/>asks for a person,<br/>missing info" --> handoff --> advisor
-    respond --> reply
+    lookup <--> gold
+    decide -- "Pending, Reversed<br/>or Declined: explain" --> respond
+    decide -- "dispute applies" --> act --> verify --> respond
+    act --> record
+    verify <--> record
+    verify -- "not verified" --> handoff
+    decide -- "suspected fraud, high amount,<br/>asks for a person, missing info" --> handoff --> advisor
+    respond --> customer
 
-    classDef ai fill:#dde3ff,stroke:#5b4fd6,stroke-width:2px,color:#1b1640
-    classDef code fill:#e3f4ea,stroke:#2f8a55,stroke-width:2px,color:#123a22
-    classDef dec fill:#ffe9c7,stroke:#c77d12,stroke-width:2px,color:#3a2a00
-    classDef ext fill:#ffffff,stroke:#77778a,stroke-width:1px,color:#26262f
+    classDef ai fill:#f1edff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
+    classDef code fill:#ffffff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
+    classDef dec fill:#fff0f5,stroke:#ff4f8b,stroke-width:2px,color:#1a1530
+    classDef store fill:#fbfaff,stroke:#3d8bff,stroke-width:2px,color:#1a1530
+    classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
     class understand,respond ai
-    class lookup,act,handoff code
+    class lookup,act,verify,handoff code
     class decide dec
-    class customer,advisor,bank,reply ext
-    style system fill:#f7f7fb,stroke:#5b4fd6,stroke-width:3px,stroke-dasharray:8 4
+    class gold,record store
+    class customer,advisor ext
+    style system fill:#fbfaff,stroke:#6d4aff,stroke-width:2px,stroke-dasharray:8 4
 ```
+
+Legend: violet fill = LLM, violet outline = code, rose = decision (policy and learned component), blue = data store, grey = outside the system. Colours follow [`branding/`](../../../branding/BRANDING.md).
 
 **Why this shape:** demand sits in inquiries (35% of calls), not in disputes (~3 a day); checking the status first avoids needless disputes (3% of transactions are Pending or Reversed); and opening, verifying and escalating with evidence is what the hackathon brief emphasizes.
 
 ## Consequences for the design
 
 - **Learned component:** a prompted LLM compared with a keyword baseline on the same held-out cases ([REQ-0016](../../requirements/requirements.md)), on Latin American Spanish (es-419) and Brazilian Portuguese (pt-BR) text written for the project and declared as such. Classifying `category` from `description` is ruled out by the leak.
-- **Entry point:** the flow starts as an account inquiry, so the demand of the first option carries the disputes flow.
-- **Suspected fraud** is a handoff rule in code, not a model.
+- **Entry point:** the flow starts as an account inquiry, so the demand of the first option carries the disputes flow. The inquiry is limited to charges and transactions: the demand behind balances and products is not served by this flow.
+- **Suspected fraud** is a handoff rule in code, not a model. It uses what exists at runtime (the customer's statement, `fraud_score`), never `is_fraud`, which is a label known after the fact. The threshold is open (decision 25).
+- **Learned component placement:** the category it assigns fills the dispute record; it does not decide whether a dispute applies.
 - **Evaluation set:** written for the project and labeled as simulation.
 
 ## Limitations

@@ -24,10 +24,10 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 | # | Slide | Source |
 |---|---|---|
 | 1 | Problem and chosen flow, backed by data | [flow selection](flows/03-flow-selection.md), [decisions](decisions/) |
-| 2 | Architecture (core principle and layers) | [architecture](../understand/architecture.md), [decisions](decisions/) |
+| 2 | Architecture (core principle and layers) | [architecture](../architecture/README.md), [decisions](decisions/) |
 | 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
 | 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
-| 5 | Limitations and path to production | [requirements](../requirements/requirements.md) (REQ-0030, what is missing) |
+| 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production) |
 
 - We show the 3 top metrics: safe resolution, unsafe outcomes, cost.
 - Each figure with n and measurement type (offline, simulation, projection).

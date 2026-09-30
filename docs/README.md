@@ -12,7 +12,7 @@ If you are new, read in this order (about 20 minutes):
 
 1. [The Challenge](understand/overview.md)
 2. [Team plan](../team/plan.md): schedule and ways of working
-3. [Architecture](understand/architecture.md)
+3. [Architecture](architecture/README.md): demo next to the target
 4. [Requirements](requirements/requirements.md): only the summary table and the P0s
 5. Your area's document in [build/areas/](build/areas/)
 
@@ -21,7 +21,10 @@ If you are new, read in this order (about 20 minutes):
 | Question | Document |
 |---|---|
 | What must be built and when is it due? | [Overview](understand/overview.md) |
-| How do the system pieces fit together? | [Architecture](understand/architecture.md) |
+| How do the system pieces fit together? | [Architecture](architecture/README.md), then [system](architecture/system-architecture.md) |
+| What does the submission actually run? | [Demo](architecture/demo-architecture.md) |
+| Which mocks become real, and when? | [Plan](../team/plan.md#schedule) |
+| What does the demo deployment cost? | [Cost](build/cost.md) |
 | What do CSAT (Customer Satisfaction Score), PQR (Peticiones, Quejas y Reclamos — requests, complaints, and claims), held-out… mean? | [Glossary](understand/glossary/) |
 | Which tables exist and what is each column for? | [Dataset](understand/dataset.md) |
 | What is mandatory and which criterion still lacks evidence? | [Requirements](requirements/requirements.md) |
@@ -38,6 +41,7 @@ If you are new, read in this order (about 20 minutes):
 
 | Folder or file | Purpose |
 |---|---|
-| [understand/](understand/) | Understand the challenge, the system, and the data without reading everything |
+| [architecture/](architecture/) | Picture, target and demo |
+| [understand/](understand/) | Understand the challenge and the data without reading everything |
 | [requirements/](requirements/) | What the system must satisfy, with priority, area, evidence, and status |
 | [build/](build/) | Areas, design rules, decisions, and delivery |
