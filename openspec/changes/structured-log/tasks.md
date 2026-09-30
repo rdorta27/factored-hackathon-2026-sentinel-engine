@@ -14,7 +14,7 @@
 ## 3. Session audit migration
 
 - [x] 3.1 Migrate `AuditLogger` to emit `step: session` records through the shared writer with salted `session_ref` and no IP, updating `service.py` and `router.py` call sites; verify the session suite passes on the new shape (evidence: `python3 -m pytest sentinel-ai-core/tests/test_session.py -q`; see `docs/build/decisions/008-pii-gold-handling.md`)
-- [ ] 3.2 Map the raw Gold status through the candidate adapter in `GET /transactions` and unmark the 2 strict xfail tests; verify the full service suite is green (evidence: `python3 -m pytest sentinel-ai-core/tests/ -q`; see `docs/build/areas/ai.md`)
+- [x] 3.2 Map the raw Gold status through the candidate adapter in `GET /transactions` and unmark the 2 strict xfail tests; verify the full service suite is green (evidence: `python3 -m pytest sentinel-ai-core/tests/ -q`; see `docs/build/areas/ai.md`)
 
 ## 4. Acceptance and traceability
 
