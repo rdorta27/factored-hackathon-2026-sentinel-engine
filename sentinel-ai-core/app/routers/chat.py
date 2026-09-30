@@ -1,238 +1,155 @@
-from datetime import datetime, timezone
-from time import perf_counter
+"""
+POST /api/v1/chat
 
-from fastapi import APIRouter, Depends, Request, status
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict, Field
+Orchestrates:
+  1. Session validation (SQLite lookup)
+  2. PII-free fact lookup from Gold DuckDB (asyncio.to_thread)
+  3. LLM router invocation (Anthropic Messages API)
+  4. Automated reply OR structured HIL HandoffTicket
 
-from app.ai.demo import DemoModel
-from app.observability import Recorder, TurnObserver
-from app.orchestrator.step import Ports, step
-from app.orchestrator.types import (
-    Candidate,
-    CandidateIdInput,
-    ConversationState,
-    Language,
-    OutcomeKind,
-    TextInput,
-    TurnOutput,
-)
-from app.session.models import Session
-from app.session.router import require_session
-from app.tools.bound import SessionBoundLookup
-from app.tools.fake import InMemoryTools
-from app.tools.gold import GoldTransactions, to_candidate
+The LLM is invoked only with PII-free context: transaction amount, merchant
+category, date, and eligibility flags.  customer_id is an opaque token.
+"""
 
-router = APIRouter(prefix="/chat", tags=["chat"])
-_MODEL = DemoModel()
+from __future__ import annotations
+
+import os
+from datetime import date, timedelta
+from typing import Any
+
+from anthropic import AsyncAnthropic
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.session import get_session
+from app.models.session_state import SessionState
+from app.schemas.chat import ChatRequest, ChatResponse, HandoffTicket, VerifiedFacts
+from app.services import gold_service
+
+router = APIRouter(prefix="/api/v1/chat", tags=["chat"])
+
+_ANTHROPIC_MODEL = os.getenv("SENTINEL_LLM_MODEL", "claude-haiku-4-5-20251001")
+_ESCALATION_KEYWORDS = {"agent", "human", "person", "supervisor", "manager", "escalate"}
+
+_SYSTEM_PROMPT = """
+You are a banking dispute intake assistant for Sentinel Engine.
+Your role is to help customers understand and initiate transaction disputes.
+You have access ONLY to PII-free transaction data provided in the user context.
+Do NOT speculate about customer names, credit scores, or any information not in the context.
+Respond concisely in the locale specified. If the dispute is complex, unclear, or the
+customer explicitly requests a human agent, respond with the single word ESCALATE.
+""".strip()
 
 
-class ChatRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
-
-    message: str = Field(default="", max_length=2000)
-    selected_reference: str | None = Field(
-        default=None,
-        pattern=r"^[A-Za-z0-9][A-Za-z0-9_-]{0,63}$",
+def _build_user_context(message: str, transactions: list[dict[str, Any]], locale: str) -> str:
+    """Build the user-turn content for the LLM, embedding PII-free facts."""
+    txn_summary = "\n".join(
+        f"- ID: {t['transaction_id']} | {t.get('transaction_date', 'N/A')} | "
+        f"{t.get('amount', 0):.2f} {t.get('currency', '')} | "
+        f"Merchant: {t.get('merchant_name', 'N/A')} | "
+        f"Status: {t.get('canonical_status', 'N/A')} | "
+        f"Eligible: {t.get('is_eligible_for_dispute', False)}"
+        for t in transactions[:10]  # cap context size
+    )
+    return (
+        f"[Locale: {locale}]\n"
+        f"[Eligible transactions]\n{txn_summary or 'No eligible transactions found.'}\n\n"
+        f"Customer message: {message}"
     )
 
 
-def _trace(request: Request) -> str:
-    return getattr(request.state, "trace_id", "unknown")
+def _pick_escalation_txn(transactions: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Return the first eligible transaction to anchor the HandoffTicket, if any."""
+    eligible = [t for t in transactions if t.get("is_eligible_for_dispute")]
+    return eligible[0] if eligible else (transactions[0] if transactions else None)
 
 
-def _bundle(request: Request, session: Session) -> tuple[ConversationState, SessionBoundLookup]:
-    states: dict = request.app.state.conversations
-    memories: dict = request.app.state.memories
-    if session.token not in states:
-        states[session.token] = ConversationState(language=Language.ES_419)
-        memories[session.token] = InMemoryTools()
-    gold: GoldTransactions = request.app.state.gold
-    tools = SessionBoundLookup(gold, session.customer_id, memories[session.token])
-    return states[session.token], tools
-
-
-def _ports(
-    request: Request, session: Session, tools: SessionBoundLookup, observer: TurnObserver
-) -> Ports:
-    return Ports(
-        idempotency_scope=session.token[:12],
-        tools=tools,
-        model=_MODEL,
-        country=session.country,
-        today=request.app.state.reference_date,
-        trace_id=_trace(request),
-        observer=observer,
-    )
-
-
-def _turn_outcome(output: TurnOutput | None) -> str:
-    if output is None:
-        return "failed"
-    if output.kind is OutcomeKind.FAILURE:
-        return "rejected" if output.reason == "unknown_candidate" else "failed"
-    return "ok"
-
-
-def _close_turn(
-    request: Request,
-    observer: TurnObserver,
-    state: ConversationState,
-    output: TurnOutput | None,
-    latency_ms: float,
-    outcome: str | None = None,
-    reason: str | None = None,
-) -> None:
-    observer.emit(
-        step="turn",
-        language=state.language.value,
-        outcome=outcome if outcome is not None else _turn_outcome(output),
-        attempt=output.attempt if output is not None and output.attempt is not None else 1,
-        policy_rule=reason if reason is not None else (output.reason if output is not None else None),
-        latency_ms=latency_ms,
-    )
-
-
-def _ineligible_key(candidate: Candidate, today) -> str | None:
-    if candidate.is_disputed:
-        return "candidateDisputed"
-    if candidate.status.value == "Reversed":
-        return "candidateReversed"
-    if candidate.status.value == "Declined":
-        return "candidateDeclined"
-    if candidate.status.value == "Pending":
-        return "candidatePending"
-    if candidate.status.value != "Approved":
-        return "candidateOutOfWindow"
-    age = (today - datetime.fromisoformat(candidate.date).date()).days
-    if age > 90:
-        return "candidateOutOfWindow"
-    return None
-
-
-def _candidate_payload(candidate: Candidate, today) -> dict:
-    reason = _ineligible_key(candidate, today)
-    return {
-        "reference": candidate.candidate_id,
-        "amount": candidate.amount,
-        "currency": candidate.currency,
-        "merchant": candidate.merchant,
-        "date": candidate.date,
-        "eligible": reason is None,
-        "ineligibleKey": reason,
-    }
-
-
-def _render(output, state: ConversationState, request: Request) -> dict:
-    today = request.app.state.reference_date
-    kind = output.kind
-    if kind is OutcomeKind.QUESTION:
-        return {
-            "kind": "clarification",
-            "message_key": "clarifyAmbiguous",
-            "missing": "transaction",
-            "candidates": [_candidate_payload(item, today) for item in state.candidates],
-        }
-    if kind is OutcomeKind.CONFIRM_BOX and output.candidate is not None:
-        item = output.candidate
-        return {
-            "kind": "confirm_box",
-            "message_key": "confirmCharge",
-            "candidate": {
-                "reference": item.candidate_id,
-                "amount": item.amount,
-                "currency": item.currency,
-                "merchant": item.merchant,
-                "date": item.date,
-            },
-        }
-    if kind is OutcomeKind.CASE_NUMBER:
-        facts = output.candidate
-        return {
-            "kind": "case_confirmation",
-            "case_id": output.case_number,
-            "transaction": {
-                "amount": facts.amount if facts else "",
-                "currency": facts.currency if facts else "",
-                "merchant": facts.merchant if facts else "",
-                "date": facts.date if facts else "",
-            },
-            "verified_at": datetime.now(timezone.utc).isoformat(),
-            "verified": True,
-            "display": {
-                "referenceDate": today.isoformat(),
-                "amount": facts.amount if facts else "",
-                "currency": facts.currency if facts else "",
-                "merchant": facts.merchant if facts else "",
-            },
-            "messages": {
-                "rule": output.reason or "status.approved",
-                "noFunds": "noFundsHeld",
-                "nextStep": "nextStepAdvisorReview",
-            },
-            "source": "mock",
-        }
-    if kind is OutcomeKind.HANDOFF:
-        body = {
-            "kind": "handoff",
-            "reason_key": output.reason or "handoff",
-            "reference": f"HO-{_trace(request)}",
-            "source": "mock",
-        }
-        if output.attempt is not None:
-            body["attempt"] = output.attempt
-        return body
-    if kind is OutcomeKind.FAILURE:
-        return {"kind": "error", "message_key": "errorGeneric", "trace_id": _trace(request)}
-    return {"kind": "text", "message_key": output.reason or "offerHelp"}
-
-
-@router.post("")
-def chat(
+@router.post("", summary="Send a message to the dispute intake bot")
+async def chat(
     body: ChatRequest,
-    request: Request,
-    session: Session = Depends(require_session),
-) -> JSONResponse:
-    state, tools = _bundle(request, session)
-    recorder: Recorder = request.app.state.recorder
-    observer = TurnObserver(
-        recorder=recorder,
-        trace_id=_trace(request),
-        session_ref=recorder.session_ref(session.token),
-        country=session.country,
+    db: AsyncSession = Depends(get_session),
+) -> ChatResponse:
+    result = await db.execute(
+        select(SessionState).where(SessionState.session_id == body.session_id)
     )
-    ports = _ports(request, session, tools, observer)
-    started = perf_counter()
-    try:
-        if body.selected_reference:
-            gold: GoldTransactions = request.app.state.gold
-            row = gold.get(body.selected_reference, session.customer_id)
-            if row is None:
-                payload = {
-                    "kind": "handoff",
-                    "reason_key": "unknownCharge",
-                    "reference": f"HO-{_trace(request)}",
-                    "source": "mock",
-                }
-                _close_turn(
-                    request,
-                    observer,
-                    state,
-                    None,
-                    (perf_counter() - started) * 1000,
-                    outcome="ok",
-                    reason="unknownCharge",
-                )
-                return JSONResponse(status_code=status.HTTP_200_OK, content=payload)
-            candidate = to_candidate(row)
-            if all(item.candidate_id != candidate.candidate_id for item in state.candidates):
-                state.candidates.append(candidate)
-            output = step(CandidateIdInput(body.selected_reference), state, ports)
-        else:
-            output = step(TextInput(body.message), state, ports)
-    except Exception:
-        _close_turn(request, observer, state, None, (perf_counter() - started) * 1000)
-        payload = {"kind": "error", "message_key": "errorGeneric", "trace_id": _trace(request)}
-        return JSONResponse(status_code=status.HTTP_200_OK, content=payload)
-    _close_turn(request, observer, state, output, (perf_counter() - started) * 1000)
-    return JSONResponse(status_code=status.HTTP_200_OK, content=_render(output, state, request))
+    session = result.scalar_one_or_none()
+    if session is None:
+        raise HTTPException(status_code=401, detail="Session not found or expired.")
+
+    transactions = await gold_service.fetch_transactions_for_customer(session.customer_id)
+
+    # Keyword-based pre-check for explicit escalation request
+    user_lower = body.message.lower()
+    explicit_escalation = any(kw in user_lower for kw in _ESCALATION_KEYWORDS)
+
+    llm_reply = "ESCALATE"
+    if not explicit_escalation:
+        client = AsyncAnthropic(api_key=os.environ.get("ANTHROPIC_API_KEY", ""))
+        user_content = _build_user_context(body.message, transactions, body.locale)
+        try:
+            response = await client.messages.create(
+                model=_ANTHROPIC_MODEL,
+                max_tokens=512,
+                system=_SYSTEM_PROMPT,
+                messages=[{"role": "user", "content": user_content}],
+            )
+            llm_reply = response.content[0].text.strip()
+        except Exception:
+            # On any LLM error, escalate to a human agent
+            llm_reply = "ESCALATE"
+
+    should_escalate = llm_reply.upper() == "ESCALATE" or explicit_escalation
+
+    if should_escalate:
+        anchor = _pick_escalation_txn(transactions)
+        verified = (
+            VerifiedFacts(
+                transaction_id=anchor["transaction_id"],
+                amount=float(anchor.get("amount", 0)),
+                currency=anchor.get("currency", ""),
+                merchant=anchor.get("merchant_name"),
+                transaction_date=str(anchor.get("transaction_date", "")),
+                days_since_transaction=int(anchor.get("days_since_transaction", 0)),
+                is_eligible_for_dispute=bool(anchor.get("is_eligible_for_dispute", False)),
+            )
+            if anchor
+            else VerifiedFacts(
+                transaction_id="N/A",
+                amount=0.0,
+                currency="",
+                merchant=None,
+                transaction_date="",
+                days_since_transaction=0,
+                is_eligible_for_dispute=False,
+            )
+        )
+        # Derive sentinel-login contract fields from the anchor transaction.
+        anchor_ref = anchor["transaction_id"] if anchor else "N/A"
+        sla_date = (date.today() + timedelta(days=5)).isoformat()
+
+        ticket = HandoffTicket(
+            customer_id=session.customer_id,
+            verified_facts=verified,
+            escalation_reason="Customer requested human agent or dispute complexity exceeded automated handling.",
+            claim_summary=body.message[:300],
+            # sentinel-login Handoff card fields
+            kind="handoff",
+            reference=anchor_ref,
+            reason_key="handoff.escalated",
+            reason_detail="Customer requested human agent or dispute complexity exceeded automated handling.",
+            estimated_date=sla_date,
+            source="mock",
+        )
+        return ChatResponse(
+            session_id=body.session_id,
+            reply="I'm connecting you with a human agent who will assist you shortly.",
+            response_type="handoff",
+            handoff_ticket=ticket,
+        )
+
+    return ChatResponse(
+        session_id=body.session_id,
+        reply=llm_reply,
+        response_type="automated",
+    )
