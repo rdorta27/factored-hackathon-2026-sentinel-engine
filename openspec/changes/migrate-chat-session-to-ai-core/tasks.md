@@ -29,4 +29,4 @@
 
 ## 6. Separate suites
 
-- [ ] 6.1 Run `sentinel-ai-core` tests and `sentinel-login` tests as separate commands. Do not delete `sentinel-login/`. Area: [AI](../../../docs/build/areas/ai.md). Verify both commands pass on their own — evidence: `sentinel-ai-core/tests/` and `sentinel-login/tests/`.
+- [x] 6.1 Run `sentinel-ai-core` tests and `sentinel-login` tests as separate commands. Do not delete `sentinel-login/`. Area: [AI](../../../docs/build/areas/ai.md). Verify both commands pass on their own — evidence: `sentinel-ai-core/tests/` and `sentinel-login/tests/`.
