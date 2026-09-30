@@ -44,7 +44,7 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 5 | 24 | 12 | 12% |
+| P0 | 41 | 5 | 26 | 10 | 12% |
 | P1 | 12 | 1 | 6 | 5 | 8% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
 | **Total** | **57** | 7 | 28 | 22 | 12% |
@@ -98,9 +98,9 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 |---|---|---|---|---|---|---|---|---|
 | REQ-0014 | Data-backed problem, with reproducible analysis justifying the flow | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 1 · Kickoff p. 13 | Reproducible analysis | Done |
 | REQ-0015 | Repeatable pipeline with strict contracts, quality, lineage, and freshness; handles the declared ~2% duplicates, ~5% nulls and orphaned records | P0 | All | Data Engineering | data | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Dataset summary · Dictionary | Pipeline + quality report | In progress |
-| REQ-0016 | At least one learned component compared against a baseline on held-out; a prompted or fine-tuned LLM counts if defined, evaluated and justified | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28) | Results table | Pending |
-| REQ-0017 | Valid labels with no data leakage; justify metrics, thresholds, and splits | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Split description | In progress |
-| REQ-0020 | Baseline and system on the same held-out, with realistic distribution | P0 | All | Machine Learning | ml | Problem statement: Evaluation evidence · Kickoff p. 12 | Set descriptions | Pending |
+| REQ-0016 | At least one learned component compared against a baseline on held-out; a prompted or fine-tuned LLM counts if defined, evaluated and justified | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28) | Frozen label universe `evidence/evaluation/2024Q4-v1/summary.json` + derived `sentinel-ai-core/eval/labels.json`; runner measures next | In progress |
+| REQ-0017 | Valid labels with no data leakage; justify metrics, thresholds, and splits | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Window 2024Q4 with held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `2024Q4-v1/summary.json` | In progress |
+| REQ-0020 | Baseline and system on the same held-out, with realistic distribution | P0 | All | Machine Learning | ml | Problem statement: Evaluation evidence · Kickoff p. 12 | Realistic Claim mix frozen in `evidence/evaluation/2024Q4-v1/summary.json` (month, country, channel, priority, status) | In progress |
 | REQ-0022 | Metrics with n, case mix, versions, and variability; include failures | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 5; Evaluation evidence | Metrics report | Pending |
 | REQ-0055 | Report the mandatory outcome metrics: safe automated resolution (plus share attempted), containment, escalation quality (missed and unnecessary transfers), unsafe outcomes with counts and denominators, p50/p95 latency, cost per attempted case and per successful resolution ("not defined" if none) | P0 | All | Data Analytics | analysis, ml | Problem statement: Evaluation evidence; What your solution should demonstrate 5 · Kickoff p. 12 | [Metrics](../build/metrics.md) report; router emits tokens and cost per turn (`tests/test_ai_router.py`) | In progress |
 | REQ-0053 | Sizing and its limits: disputes per day in the data, capacity the prototype is designed for, and what changes at real volume | P0 | All | Data Analytics | analysis | Help channel (9/28) | Sizing section | In progress |

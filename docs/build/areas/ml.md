@@ -63,6 +63,7 @@ Discarded as a learned component: customer segmentation (no valid labels to comp
 
 ## Evidence for evaluation
 
+- [x] Frozen label universe and case mix: `evidence/evaluation/2024Q4-v1/summary.json` (10 Claim combos, n=1383; full counter, never top-N) with the derived runner set `sentinel-ai-core/eval/labels.json` pinned by run id and summary hash
 - [ ] Component vs. baseline table on held-out data, with n
 - [ ] Error analysis
 - [ ] Experiment log
