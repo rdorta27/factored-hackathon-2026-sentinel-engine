@@ -4,7 +4,8 @@ from time import perf_counter
 from uuid import uuid4
 
 from app.ai.grounding import extract_facts, ground, rank_candidates
-from app.ai.port import ModelPort, UnderstandKind
+from app.ai.port import ModelInfo, ModelPort, UnderstandKind
+from app.ai.transport import ModelUnavailable
 from app.observability.observer import TurnObserver
 from app.orchestrator.types import (
     Candidate,
@@ -56,17 +57,61 @@ def step(turn: TurnInput, state: ConversationState, ports: Ports) -> TurnOutput:
     return _on_text(turn, state, ports)
 
 
+def _describe(model: ModelPort) -> ModelInfo:
+    describe = getattr(model, "describe", None)
+    if callable(describe):
+        return describe()  # type: ignore[no-any-return]
+    return ModelInfo(model="fake", route="mock", prompt_version="none")
+
+
+def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[no-untyped-def]
+    return {
+        "model": info.model,
+        "route": info.route,
+        "prompt_version": info.prompt_version,
+        "tokens_in": understood.tokens_in if understood is not None else 0,
+        "tokens_out": understood.tokens_out if understood is not None else 0,
+        "cost_usd": understood.cost_usd if understood is not None else 0.0,
+    }
+
+
+UNDERSTAND_RETRIES = 2
+
+
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
     state.turns.append(turn.text)
     if state.pending_confirmation is not None:
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language, text=turn.text)
     started = perf_counter()
-    understood = ports.model.understand(turn.text, state.turns)
+    understood = None
+    for _ in range(UNDERSTAND_RETRIES + 1):
+        try:
+            understood = ports.model.understand(turn.text, state.turns)
+            break
+        except ModelUnavailable:
+            continue
+    if understood is None:
+        _emit(
+            ports,
+            state.language.value,
+            step="understand",
+            outcome="failed",
+            latency_ms=(perf_counter() - started) * 1000,
+            **_identity_fields(_describe(ports.model)),
+        )
+        _emit(ports, state.language.value, step="escalate", policy_rule="model_unavailable")
+        return TurnOutput(
+            kind=OutcomeKind.HANDOFF,
+            language=state.language,
+            reason="model_unavailable",
+        )
+    info = _describe(ports.model)
     _emit(
         ports,
         state.language.value,
         step="understand",
         latency_ms=(perf_counter() - started) * 1000,
+        **_identity_fields(info, understood),
     )
     state.language = understood.language
     if understood.kind is UnderstandKind.MISSING:
