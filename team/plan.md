@@ -12,8 +12,8 @@ Tentative: we adjust it if anything slips.
 |---|---|---|---|
 | Sun | 9/27 | Prepare: data access, repository, readings | Everyone has access |
 | Mon | 9/28 | **Decide** flow, stack, owners and working method. First look at the data | Decisions recorded |
-| Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** |
-| Wed | 9/30 | Normal case with real data, JSON handoff, learned component vs baseline | **One case works fully** |
+| Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** · *not reached: moved to Wed 9/30* |
+| Wed | 9/30 | Skeleton (moved from Tue). Normal case with real data, JSON handoff, learned component vs baseline | **The skeleton answers end to end; one case works fully** |
 | Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script and slide outline start. P1 if time allows | **3 cases in es-419 and pt-BR, public link** |
 | Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Group validates the slide outline. Freeze code at night | **Code and results frozen** |
 | Sat to Mon | 10/3 to 10/5 | Presentation review and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
@@ -26,7 +26,7 @@ gantt
     tickInterval 1day
     todayMarker off
     Decisions recorded           :milestone, 2026-09-28, 0d
-    Skeleton answers end to end  :milestone, 2026-09-29, 0d
+    Skeleton answers end to end  :milestone, 2026-09-30, 0d
     One case works fully         :milestone, 2026-09-30, 0d
     3 cases, public link         :milestone, 2026-10-01, 0d
     Code and results frozen      :milestone, 2026-10-02, 0d
@@ -57,7 +57,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Tasks live in the repo; follow-up is in the team channel. Rubén reviews what is still pending (decision 6) | Accepted | [tasks](tasks.md) |
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
-| One public repository (decision 21). Git submodules are open (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
+| One public repository (decision 21), organised by folders; no git submodules (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
@@ -99,16 +99,16 @@ Evaluation lives inside `sentinel-ai-core/` because it drives `POST /chat`; it i
 
 We start with well-documented mocks and swap them for the real thing one by one, without touching their contracts. Shown here for the transaction-disputes flow.
 
-- **Tue 9/29, skeleton:** a test session and 4 in-memory mock tools with the contracts in [system](../docs/architecture/specification.md#tool-contracts): look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
+- **Wed 9/30, skeleton (planned for Tue 9/29; no mock was ready that day):** a test session and 4 in-memory mock tools with the contracts in [system](../docs/architecture/specification.md#tool-contracts): look up transactions, open dispute (idempotent from the start, so a retry never duplicates it), look up dispute to verify, and the handoff. Simple chat and Understand → Decide → Act → Verify → Escalate orchestrator. Policy lives in code and the JSON handoff exists from the skeleton: the LLM understands, drafts and picks which tool to call, but never decides permissions or confirms actions.
 - **When we swap each mock:** when the milestone asks for it, without changing the contract.
 
 | Milestone | Stays a mock | Becomes real | Not in this submission |
 |---|---|---|---|
-| Tue 9/29 | Four in-memory tools, test session, simple chat | — | Dispute database |
-| Wed 9/30 | Dispute write | Charge lookup moves to Gold if the serving path is up. If it is not, the fixture stays and we say so. Confirmation before the action | Dispute database |
-| Thu 10/1 | Whatever fixture is still in use | Bounded retries. Incremental pipeline, if it lands | Identity provider, Key Vault |
-| Fri 10/2 | Anything not reached, reported as a limitation | — | Production column in [path to production](../docs/architecture/specification.md#path-to-production) |
+| Tue 9/29 | Nothing was ready; the skeleton moves to Wed | — | — |
+| Wed 9/30 | Four tools in memory, test session, synthetic policy configuration, simulated advisor, `.env` | Chat and `POST /chat`, orchestrator loop, policy engine, JSON handoff | Identity provider, Key Vault |
+| Thu 10/1 | Dispute record (in memory) | Charge lookup on Gold if the read path is up, otherwise the fixture stays and we say so. Structured confirmation, bounded retries, structured logs | Dispute-record engine (not decided) |
+| Fri 10/2 | Anything not reached, reported as a limitation | Evaluation runner and results. Incremental pipeline, if it lands | Advisor delivery channel (decision 28) |
 
-SQLite and Postgres are not a milestone.
+The dispute-record engine is not a milestone: it stays in memory for the submission.
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
 - **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).
