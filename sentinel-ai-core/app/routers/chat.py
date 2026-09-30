@@ -56,7 +56,7 @@ def _ports(
     request: Request, session: Session, tools: SessionBoundLookup, observer: TurnObserver
 ) -> Ports:
     return Ports(
-        session_ref=session.token[:12],
+        idempotency_scope=session.token[:12],
         tools=tools,
         model=_MODEL,
         country=session.country,

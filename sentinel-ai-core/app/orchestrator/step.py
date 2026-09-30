@@ -26,7 +26,7 @@ OPEN_ACTION = "open_dispute"
 
 @dataclass
 class Ports:
-    session_ref: str
+    idempotency_scope: str
     tools: TransactionLookup
     model: ModelPort
     country: str = "MX"
@@ -117,7 +117,7 @@ def _confirm(
     if hit.outcome is not HitOutcome.ALLOW:
         return _from_hit(hit, state, selected, ports)
     token = uuid4().hex
-    key = f"{ports.session_ref}:{pending.candidate_id}:{pending.action}"
+    key = f"{ports.idempotency_scope}:{pending.candidate_id}:{pending.action}"
     started = perf_counter()
     opened = ports.tools.open_dispute(
         pending.candidate_id,
