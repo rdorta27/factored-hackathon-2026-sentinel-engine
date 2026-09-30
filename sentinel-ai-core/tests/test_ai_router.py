@@ -176,6 +176,12 @@ def test_router_rejects_forbidden_keys() -> None:
 
 
 def test_router_guard_greps_pii_columns() -> None:
+    """Structured PII columns never leave the process (adversarial A9 covers free text).
+
+    A9 stays no_defense_yet because raw free-text ids still travel inside the
+    message string; this guard covers the structured charge and request keys.
+    See evidence/adversarial/20260930T214744Z/summary.json.
+    """
     from app.ai.llm import build_messages
 
     pii_columns = ("customer_first_name", "customer_last_name", "customer_credit_score")
