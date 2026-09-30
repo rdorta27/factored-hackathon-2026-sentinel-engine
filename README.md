@@ -21,15 +21,15 @@ The submission runs the same code with a few documented mocks (test session, in-
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 4 | 17 | 20 | 9% |
-| P1 | 12 | 1 | 4 | 7 | 8% |
+| P0 | 41 | 4 | 23 | 14 | 9% |
+| P1 | 12 | 1 | 5 | 6 | 8% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 6 | 21 | 30 | 10% |
+| **Total** | **57** | 6 | 28 | 23 | 10% |
 
 | Status | Requirements |
 |---|---|
 | **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
-| **In progress** | Loop and policy in `sentinel-ai-core/`: REQ-0001 context · 0002 clarify or abstain · 0004 safe tools · 0006 confirm and escalate · 0007 policy in code · 0009–0011 the three demo cases (tests, not the video) · 0040 person request · 0043 status and window · 0047 no identifiers to the model · 0032 mock tools. Still design or data, not this folder: REQ-0008 handoff schema · 0015 pipeline · 0017 labels · 0025 observability · 0029 explanations from logs · 0030 limitations · 0052 path to production · 0053 sizing · 0056 trade-offs |
+| **In progress** | Loop and policy in `sentinel-ai-core/`: REQ-0001 context · 0002 clarify or abstain · 0004 safe tools · 0006 confirm and escalate · 0007 policy in code · 0009–0011 the three demo cases (tests, not the video) · 0040 person request · 0043 status and window · 0047 no identifiers to the model · 0032 mock tools. Session, chat and listing in `sentinel-ai-core/`: REQ-0003 verified records · 0012 es-419/pt-BR grounding · 0027 test session · 0038 chat page · 0039 reference date · 0041 own currency · 0042 candidates. Still design or data, not this folder: REQ-0008 handoff schema · 0015 pipeline · 0017 labels · 0025 observability · 0029 explanations from logs · 0030 limitations · 0052 path to production · 0053 sizing · 0056 trade-offs |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
