@@ -4,7 +4,7 @@
 |-------------|-------------------------------------|
 | Status      | Accepted                            |
 | Date        | 2026-09-30                          |
-| Author      | natalia.restrepo@globant.com        |
+| Author      |                                     |
 | Linked REQs | REQ-0021 (data privacy), REQ-0051   |
 
 ---
