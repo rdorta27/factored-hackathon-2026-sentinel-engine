@@ -5,7 +5,6 @@ from fastapi import APIRouter, Depends, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.ai.demo import DemoModel
 from app.observability import Recorder, TurnObserver
 from app.orchestrator.step import Ports, step
 from app.orchestrator.types import (
@@ -24,7 +23,6 @@ from app.tools.fake import InMemoryTools
 from app.tools.gold import GoldTransactions, to_candidate
 
 router = APIRouter(prefix="/chat", tags=["chat"])
-_MODEL = DemoModel()
 
 
 class ChatRequest(BaseModel):
@@ -58,7 +56,7 @@ def _ports(
     return Ports(
         idempotency_scope=session.token[:12],
         tools=tools,
-        model=_MODEL,
+        model=request.app.state.model,
         country=session.country,
         today=request.app.state.reference_date,
         trace_id=_trace(request),

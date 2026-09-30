@@ -3,6 +3,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, Request
 
+from app.ai.demo import DemoModel
+from app.ai.port import ModelPort
 from app.observability import Recorder
 from app.routers.chat import router as chat_router
 from app.routers.ui import mount_ui
@@ -18,8 +20,9 @@ from app.tools.gold import MockGoldStore
 FIXTURE_PATH = Path(__file__).parent / "session" / "fixtures" / "users.json"
 
 
-def create_app() -> FastAPI:
+def create_app(model: ModelPort | None = None) -> FastAPI:
     app = FastAPI(title="Sentinel Engine")
+    app.state.model = model if model is not None else DemoModel()
     app.state.recorder = Recorder()
     app.state.audit = AuditLogger(app.state.recorder)
     app.state.reference_date = reference_date()

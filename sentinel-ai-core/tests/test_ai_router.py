@@ -17,3 +17,19 @@ def test_baseline_understand_carries_zero_cost() -> None:
     assert result.tokens_in == 0
     assert result.tokens_out == 0
     assert result.cost_usd == 0.0
+
+
+def test_create_app_injects_fake_model() -> None:
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    api = TestClient(create_app(model=FakeModel()))
+    assert api.app.state.model.describe().model == "fake"
+    assert (
+        api.post("/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        == 200
+    )
+    response = api.post("/chat", json={"message": "no reconozco este cargo"})
+    assert response.status_code == 200
+    assert response.json()["kind"] in ("clarification", "confirm_box", "handoff", "text")
