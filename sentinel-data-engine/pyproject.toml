@@ -30,6 +30,10 @@ dev = [
     "mypy>=1.10.0",
     "numpy>=1.26.0",
     "pandas>=2.2.0",
+    # DuckDB's delta extension requires pytz to decode TIMESTAMP columns when
+    # scanning Delta tables locally.  Without it, delta_scan raises
+    # InvalidInputException: Required module 'pytz' failed to import.
+    "pytz>=2024.1",
 ]
 
 [tool.setuptools.packages.find]

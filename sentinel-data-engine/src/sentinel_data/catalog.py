@@ -29,6 +29,13 @@ from pydantic import BaseModel, Field
 # ---------------------------------------------------------------------------
 
 
+class RunMode(str, Enum):
+    """Execution engine selector shared across Bronze, Silver, and Gold pipeline stages."""
+
+    LOCAL = "local"
+    DATABRICKS = "databricks"
+
+
 class PartitionStrategy(str, Enum):
     """How the source table is partitioned on S3."""
 
