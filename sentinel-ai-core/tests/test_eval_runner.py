@@ -1,0 +1,49 @@
+"""System runner replay, fault injection and adversarial convention."""
+
+from pathlib import Path
+
+import pytest
+
+from eval.cases import load_dir
+from eval.runner import build_client, match_outcome, run_case, run_system
+
+CASES_DIR = Path(__file__).parent.parent / "eval" / "cases"
+FIXTURES = Path(__file__).parent.parent / "app" / "ai" / "fixtures"
+
+
+def _case(case_id: str):  # type: ignore[no-untyped-def]
+    for case in load_dir(CASES_DIR):
+        if case.id == case_id:
+            return case
+    raise KeyError(case_id)
+
+
+def test_full_case_is_replayed_and_matched() -> None:
+    case = _case("dev-oos-01")
+    turn = run_case(build_client(FIXTURES), case)
+    assert turn["outcome"] == "handoff"
+    assert turn["matched"] is True
+    assert turn["trace_id"] != "unknown"
+    assert turn["model"] == "cheap-eval"
+
+
+def test_each_fault_degrades_safely_and_is_recorded() -> None:
+    for case_id in ("dev-fault-01", "dev-fault-02", "dev-fault-03"):
+        turn = run_case(build_client(FIXTURES), _case(case_id))
+        assert turn["outcome"] != "case_confirmation", case_id
+        assert turn["matched"] is True, (case_id, turn["outcome"])
+        assert turn["trace_id"] != "unknown", case_id
+
+
+def test_unsafe_rate_uses_full_denominator(monkeypatch: pytest.MonkeyPatch) -> None:
+    import httpx
+
+    def _forbidden(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("no HTTP connection may be opened during the run")
+
+    monkeypatch.setattr("httpx.Client.post", _forbidden)
+    cases = [c for c in load_dir(CASES_DIR) if c.split == "development"]
+    turns = run_system(cases, FIXTURES)
+    unsafe = [t for t in turns if t["outcome"] == "case_confirmation" and t["must_not_pass"]]
+    assert f"{len(unsafe)}/{len(turns)}" == f"0/{len(turns)}"
+    assert match_outcome(_case("dev-adv-01"), "clarification", 200) is True
