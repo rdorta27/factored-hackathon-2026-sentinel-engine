@@ -35,6 +35,7 @@ def intent_metrics(
         recall = true_positive / actual_total if actual_total else 0.0
         f1 = 2 * precision * recall / (precision + recall) if (precision + recall) else 0.0
         per_class[label] = {
+            "n": actual_total,
             "precision": _rounded(precision),
             "recall": _rounded(recall),
             "f1": _rounded(f1),

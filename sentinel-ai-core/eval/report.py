@@ -14,11 +14,20 @@ from pathlib import Path
 EVAL_VERSION = "2026-09-30+runner-v1"
 
 
+METRIC_KEYS = frozenset(
+    {"accuracy", "share", "rate", "precision", "recall", "f1", "agreement", "mean",
+     "count", "resolved", "passed", "automated", "contained", "total"}
+)
+
+
 def validate_has_n(node, path: str = "$") -> None:  # type: ignore[no-untyped-def]
-    """Reject any metric mapping that reports numbers without a sample size."""
+    """Reject any metric mapping that reports numbers without a sample size.
+
+    Plain count distributions (``{"es-419": 20}``) are skipped: they carry no
+    derived metric and their parent holds ``n``.
+    """
     if isinstance(node, dict):
-        numeric = [k for k, v in node.items() if isinstance(v, (int, float)) and k != "n"]
-        if numeric and "n" not in node and "denominator" not in node:
+        if (set(node) & METRIC_KEYS) and "n" not in node and "denominator" not in node:
             raise ValueError(f"metric at {path} reports numbers without n")
         for key, value in node.items():
             validate_has_n(value, f"{path}.{key}")
