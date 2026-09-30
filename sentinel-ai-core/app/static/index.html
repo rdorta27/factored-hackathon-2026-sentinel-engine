@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es-419" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel Engine</title>
+<link rel="stylesheet" href="/branding/brand.css">
+<link rel="stylesheet" href="/branding/chat.css">
+<link rel="stylesheet" href="/ui/styles.css">
+<script src="/ui/app.js" defer></script>
+</head>
+<body>
+<div class="app">
+  <header class="chat-header">
+    <p class="chat-title" data-i18n="appTitle">Sentinel Engine</p>
+    <p class="chat-sub" id="reference-date"></p>
+    <label>
+      <select id="locale">
+        <option value="es-419">es-419</option>
+        <option value="es-MX">es-MX</option>
+        <option value="es-CO">es-CO</option>
+        <option value="es-AR">es-AR</option>
+        <option value="pt-BR">pt-BR</option>
+      </select>
+    </label>
+    <button id="logout" type="button" data-i18n="logoutButton" hidden>Log out</button>
+  </header>
+  <main>
+    <section id="view-login">
+      <form id="login-form">
+        <input id="login-user" autocomplete="username" required>
+        <input id="login-pass" type="password" autocomplete="current-password" required>
+        <button type="submit" data-i18n="loginButton">Log in</button>
+        <p id="login-error" role="alert"></p>
+      </form>
+    </section>
+    <section id="view-chat" hidden>
+      <div id="thread" class="chat-thread"></div>
+      <form id="chat-form">
+        <input id="chat-input" maxlength="2000" required>
+        <button type="submit" data-i18n="sendButton">Send</button>
+      </form>
+      <button id="agent" type="button" data-i18n="agentButton">Talk to an agent</button>
+      <aside>
+        <h3 data-i18n="txTitle">Your recent charges</h3>
+        <div id="transactions"></div>
+      </aside>
+    </section>
+  </main>
+</div>
+</body>
+</html>

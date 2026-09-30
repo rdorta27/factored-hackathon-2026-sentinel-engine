@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 
 from app.routers.chat import router as chat_router
+from app.routers.ui import mount_ui
 from app.routers.transactions import router as transactions_router
 from app.session.audit import AuditLogger
 from app.session.clock import reference_date
@@ -40,6 +41,7 @@ def create_app() -> FastAPI:
     app.include_router(session_router)
     app.include_router(transactions_router)
     app.include_router(chat_router)
+    mount_ui(app)
     return app
 
 

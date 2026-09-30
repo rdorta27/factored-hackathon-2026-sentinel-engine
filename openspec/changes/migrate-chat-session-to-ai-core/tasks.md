@@ -24,8 +24,8 @@
 
 ## 5. Customer page
 
-- [ ] 5.1 Serve the customer chat from `app/static/`: receipt without a download, chips, transaction panel, locales, reference-date line, and `.chat-confirm`. Read `branding/` as-is. A tap or chip posts `selected_reference` and does not open. Decision: [006](../../../docs/build/decisions/006-frontend.md). Verify the confirm box renders and the identifier is not visible text — evidence: `sentinel-ai-core/tests/test_ui.py`.
-- [ ] 5.2 Keep the agent control two-step, mask displayed identifiers, and do not store the session in browser storage. Decision: [004](../../../docs/build/decisions/004-pii-lifecycle.md). Verify the first press does not hand off and the second does — evidence: `sentinel-ai-core/tests/test_ui.py`.
+- [x] 5.1 Serve the customer chat from `app/static/`: receipt without a download, chips, transaction panel, locales, reference-date line, and `.chat-confirm`. Read `branding/` as-is. A tap or chip posts `selected_reference` and does not open. Decision: [006](../../../docs/build/decisions/006-frontend.md). Verify the confirm box renders and the identifier is not visible text — evidence: `sentinel-ai-core/tests/test_ui.py`.
+- [x] 5.2 Keep the agent control two-step, mask displayed identifiers, and do not store the session in browser storage. Decision: [004](../../../docs/build/decisions/004-pii-lifecycle.md). Verify the first press does not hand off and the second does — evidence: `sentinel-ai-core/tests/test_ui.py`.
 
 ## 6. Separate suites
 
