@@ -94,6 +94,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Path to production write-up (REQ-0052) | Rubén | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
+| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Pending |
 | Validate the presentation outline with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5
