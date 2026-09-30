@@ -19,4 +19,4 @@
 ## 4. Acceptance and traceability
 
 - [x] 4.1 Add the end-to-end acceptance test (login, chat, confirm box, confirmation to `case_number`) asserting a single `trace_id`, zero PII by grep, numeric cost and latency with a non-null `decide` policy rule, and a file replay by `trace_id`; verify it passes (evidence: `tests/test_observability.py`; see `docs/architecture/specification.md`, Evaluation section)
-- [ ] 4.2 Record REQ-0025 evidence in `docs/requirements/requirements.md` (stays In progress until the evaluation runner consumes the records) and mark the structured-logs row in `team/tasks.md`; verify the status counts recompute (evidence: requirements diff; see `docs/requirements/requirements.md`)
+- [x] 4.2 Record REQ-0025 evidence in `docs/requirements/requirements.md` (stays In progress until the evaluation runner consumes the records) and mark the structured-logs row in `team/tasks.md`; verify the status counts recompute (evidence: requirements diff; see `docs/requirements/requirements.md`)
