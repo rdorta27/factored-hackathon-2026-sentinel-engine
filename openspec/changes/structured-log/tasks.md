@@ -2,8 +2,8 @@
 
 ## 1. Record schema and writer
 
-- [ ] 1.1 Create `app/observability/records.py` with the step/turn record dataclass, JSON serialization, and constructor-level PII guards; verify with a unit test that forbids customer text, identifiers, tokens, and IPs (evidence: `sentinel-ai-core/tests/test_observability.py::test_record_rejects_pii`; see `docs/build/decisions/004-pii-lifecycle.md`)
-- [ ] 1.2 Create `app/observability/writer.py` with the dual sink (in-memory list plus JSONL append at a configurable path, default `var/turns.jsonl`) and salt handling (`SENTINEL_SESSION_SALT`, ephemeral plus warning when unset); verify records round-trip through both sinks in a unit test (evidence: same file; see `docs/build/areas/ai.md`)
+- [x] 1.1 Create `app/observability/records.py` with the step/turn record dataclass, JSON serialization, and constructor-level PII guards; verify with a unit test that forbids customer text, identifiers, tokens, and IPs (evidence: `sentinel-ai-core/tests/test_observability.py::test_record_rejects_pii`; see `docs/build/decisions/004-pii-lifecycle.md`)
+- [x] 1.2 Create `app/observability/writer.py` with the dual sink (in-memory list plus JSONL append at a configurable path, default `var/turns.jsonl`) and salt handling (`SENTINEL_SESSION_SALT`, ephemeral plus warning when unset); verify records round-trip through both sinks in a unit test (evidence: same file; see `docs/build/areas/ai.md`)
 - [ ] 1.3 Add `var/` to `.gitignore` and document `SENTINEL_SESSION_SALT` plus `SENTINEL_REFERENCE_DATE` in a new `.env.example` with no real values; verify `git check-ignore var/` passes and no secret lands in the repo (evidence: `.env.example`, `git status`; see `docs/architecture/specification.md`, Data retention section)
 
 ## 2. Loop and chat wiring
