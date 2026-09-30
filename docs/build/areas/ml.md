@@ -68,6 +68,18 @@ Discarded as a learned component: customer segmentation (no valid labels to comp
 - [ ] Experiment log
 - [ ] Adversarial set and its results (owner: ML; AI proposes the security cases, see [security](../security.md))
 
+## Prompted router (9/30)
+
+The loop runs behind `ModelPort` with two implementations: the keyword
+baseline (`DemoModel`) and `PromptedLLMRouter` (`sentinel-ai-core/app/ai/llm.py`).
+The router picks a model per route (cheap frequent turns, strong ambiguous or
+pt-BR turns) with a configured default fallback, reports `model`, `route`,
+`prompt_version`, tokens and cost on the `understand` record (REQ-0019,
+REQ-0055), and sends only the message plus a bounded turn window with
+Gold-aligned numeric charge fields and no PII (REQ-0047). Tests replay
+committed fixtures offline (`tests/test_ai_router.py`); decision 010 (which
+model per route) stays open.
+
 ## Pending decisions
 
 - Tracking tool
