@@ -57,17 +57,17 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 18 | 16 | 7 | 44% |
+| P0 | 41 | 17 | 17 | 7 | 41% |
 | P1 | 12 | 6 | 3 | 3 | 50% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 25 | 19 | 13 | 44% |
+| **Total** | **57** | 24 | 20 | 13 | 42% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0048 decision order. Demo: REQ-0009 normal · REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T130342Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) |
-| **In progress** | Learned component vs baseline and the outcome metrics (live model pending, decision 10) · pipeline end to end and Gold read on real data · thresholds for fraud and high amount (decisions 25, 26) · person request during a pending confirmation (REQ-0040) · pt-BR reviewer · PII typed by the customer (REQ-0047) · deliverables: public link, slides, video |
+| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0048 decision order. Demo: REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T130342Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) |
+| **In progress** | Normal demo case in Portuguese (REQ-0009, REQ-0012) · learned component vs baseline and the outcome metrics (live model pending, decision 10) · pipeline end to end and Gold read on real data · thresholds for fraud and high amount (decisions 25, 26) · person request during a pending confirmation (REQ-0040) · PII typed by the customer (REQ-0047) · deliverables: public link, slides, video |
 
-Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
+Status per requirement and per type: [requirements](docs/requirements/requirements.md#status-by-priority).
 
 ## Reading guide
 
@@ -87,7 +87,7 @@ The [documentation index](docs/README.md) covers everything else.
 | [`sentinel-login/`](sentinel-login/README.md) | Original demo page kept as a reference; not a backend and not served ([decision 009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
-| [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
+| [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material: an index with status and dependencies, and one file per type (frontend and backend, non-functional, data and ML, analytics, delivery) |
 | [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) |
 | [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md), the [label evidence](evidence/evaluation/2024Q4-v1/summary.json), the [latest eval run](evidence/evaluation-runs/2024Q4-eval-v5/summary.json) and the [latest adversarial run](evidence/adversarial/20261001T130342Z/summary.json), cited by the documentation |
 | [`scripts/`](scripts/) | Repository scripts, such as the generator of the flow measurements page |
