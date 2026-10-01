@@ -116,8 +116,8 @@ def evaluate(request: PolicyRequest) -> PolicyHit:
 def _fraud(request: PolicyRequest, policy: CountryPolicy) -> PolicyHit | None:
     threshold = policy.fraud_score
     candidate = request.candidate
-    if request.states_not_theirs and threshold.value is not None:
-        return PolicyHit(HitOutcome.HANDOFF, "fraud.score", threshold.provisional)
+    if request.states_not_theirs:
+        return PolicyHit(HitOutcome.HANDOFF, "fraud.claim")
     if candidate is None or candidate.fraud_score is None:
         return None
     limit = threshold.limit_for(candidate.currency, policy.currency)

@@ -58,6 +58,7 @@ class ConversationState:
     pending_confirmation: PendingConfirmation | None = None
     clarification_count: int = 0
     person_asks: int = 0
+    states_not_theirs: bool = False
 
 
 @dataclass(frozen=True)

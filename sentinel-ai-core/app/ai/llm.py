@@ -53,7 +53,9 @@ ALLOWED_CHARGE_KEYS = frozenset(
 SYSTEM_PROMPT = (
     "You route a bank dispute intake turn. Reply with JSON only: "
     '{"intent": "charge|missing|out_of_scope|person", "language": "es-419|pt-BR", '
-    '"amount": number|null}. '
+    '"amount": number|null, "not_mine": true|false}. '
+    "Set not_mine to true only when the customer explicitly says they did not make "
+    "the charge or someone else used their card; not recognizing a charge is false. "
     "Use ServiceDisputeEligibleTransaction field names with a numeric amount. "
     "Never ask for or repeat personal data."
 )
@@ -101,7 +103,7 @@ def build_messages(
     ]
 
 
-def parse_content(content: str) -> tuple[UnderstandKind, Language]:
+def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
     try:
         body = json.loads(content)
     except json.JSONDecodeError as exc:
@@ -122,7 +124,7 @@ def parse_content(content: str) -> tuple[UnderstandKind, Language]:
         lang = Language.ES_419
     else:
         raise ModelUnavailable(f"unknown language: {language!r}")
-    return kinds[intent], lang
+    return kinds[intent], lang, body.get("not_mine") is True
 
 
 @dataclass
@@ -176,7 +178,7 @@ class PromptedLLMRouter:
         response = self._transport.complete(
             model=model, messages=messages, temperature=self._config.temperature
         )
-        kind, language = parse_content(response.content)
+        kind, language, not_mine = parse_content(response.content)
         self._last_route = route
         self._last_model = model
         return UnderstandResult(
@@ -185,6 +187,7 @@ class PromptedLLMRouter:
             tokens_in=response.tokens_in,
             tokens_out=response.tokens_out,
             cost_usd=response.cost_usd,
+            not_mine=not_mine,
         )
 
     def classify(self, message: str) -> str:

@@ -14,7 +14,7 @@
 ## 3. Inputs to the rules
 
 - [x] 3.1 Carry `fraud_score` on Gold rows (mock and DuckDB adapter) and on the candidate; never in listings, replies or model requests. Area: [ai](../../../docs/build/areas/ai.md). Verify: `tests/test_gold_duckdb.py` and a test that the transactions listing and the router request whitelist exclude the score.
-- [ ] 3.2 Report the not-mine claim from the keyword baseline and the router output, pass it to the engine, and cite `fraud.claim` with its handoff mapping and es-419 and pt-BR texts. Decision 25. Verify: tests for "no fui yo", "não fui eu" (claim, `fraud.claim`) and "no reconozco este cargo" (no claim).
+- [x] 3.2 Report the not-mine claim from the keyword baseline and the router output, pass it to the engine, and cite `fraud.claim` with its handoff mapping and es-419 and pt-BR texts. Decision 25. Verify: tests for "no fui yo", "não fui eu" (claim, `fraud.claim`) and "no reconozco este cargo" (no claim).
 - [ ] 3.3 Give each demo customer a local-currency and a USD product, with charges above each configured value; the MX MXN product has no threshold and keeps the other rules. Area: [ai](../../../docs/build/areas/ai.md). Verify: test that every configured country and currency has a mock row above its value.
 
 ## 4. Evaluation and demo evidence

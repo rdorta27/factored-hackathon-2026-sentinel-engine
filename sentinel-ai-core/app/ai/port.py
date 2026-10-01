@@ -26,6 +26,8 @@ class UnderstandResult:
     tokens_in: int = 0
     tokens_out: int = 0
     cost_usd: float = 0.0
+    # The customer explicitly says the charge was not theirs. Reported, never decided here.
+    not_mine: bool = False
 
 
 class ModelPort(Protocol):
