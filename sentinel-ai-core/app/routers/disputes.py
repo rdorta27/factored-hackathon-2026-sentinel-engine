@@ -82,37 +82,39 @@ def _confirmation_from(row: CaseRow, reference_date: str) -> CaseConfirmation:
 @router.post("/preview")
 def preview(body: DisputePreviewInput, request: Request, session: Session = Depends(require_session)) -> JSONResponse:
     turn = open_turn(request, session)
+    turn_input = CandidateIdInput(candidate_id=body.reference)
     if select_charge(turn, body.reference) is None:
-        return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge")
+        return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge", turn_input=turn_input)
     # A preview never confirms: a box already pending for this charge is recomputed, not consumed.
     pending = turn.state.pending_confirmation
     if pending is not None and pending.candidate_id == body.reference:
         turn.state.pending_confirmation = None
-    output, reply = run_turn(turn, CandidateIdInput(candidate_id=body.reference))
+    output, reply = run_turn(turn, turn_input)
     pending = turn.state.pending_confirmation
     turn.stored.pending_reason = body.reason if pending is not None and pending.candidate_id == body.reference else None
-    return finish_turn(request, turn, reply, output)
+    return finish_turn(request, turn, reply, output, turn_input=turn_input)
 
 
 @router.post("")
 def create(body: DisputeCreateInput, request: Request, session: Session = Depends(require_session)) -> JSONResponse:
     turn = open_turn(request, session)
+    turn_input = CandidateIdInput(candidate_id=body.reference)
     pending = turn.state.pending_confirmation
     if pending is None or pending.candidate_id != body.reference:
         existing = _open_case(request, session, body.reference)
         if existing is not None and _facts(existing) is not None:
             # Read back from the store: the case exists, the call is answered, nothing is written.
             confirmation = _confirmation_from(existing, turn.ref_date.isoformat())
-            return finish_turn(request, turn, confirmation, policy_rule="already.open")
+            return finish_turn(request, turn, confirmation, policy_rule="already.open", turn_input=turn_input)
         raise HTTPException(status_code=409, detail="preview_required")
     if select_charge(turn, body.reference) is None:
-        return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge")
-    output, reply = run_turn(turn, CandidateIdInput(candidate_id=body.reference))
+        return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge", turn_input=turn_input)
+    output, reply = run_turn(turn, turn_input)
     created = output is not None and output.kind is OutcomeKind.CASE_NUMBER and isinstance(reply, CaseConfirmation)
     if created and turn.stored.pending_reason:
         request.app.state.cases.set_reason(reply.case_id, turn.stored.pending_reason)
     turn.stored.pending_reason = None
-    return finish_turn(request, turn, reply, output, status_code=201 if created else 200)
+    return finish_turn(request, turn, reply, output, status_code=201 if created else 200, turn_input=turn_input)
 
 
 @router.get("")

@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import asdict, dataclass
-from typing import Protocol
+from dataclasses import asdict, dataclass, field
+from typing import Any, Protocol
 
 from sqlalchemy import Engine, delete, select
 from sqlalchemy.orm import Session as DbSession
@@ -27,10 +27,17 @@ from app.orchestrator.types import (
 
 @dataclass
 class StoredConversation:
-    """The orchestrator state plus what the disputes API keeps between its two steps."""
+    """The orchestrator state plus what the service keeps across turns.
+
+    ``history`` is one structured entry per turn (intent, charge, reply, rule;
+    never the customer's words) and ``actions`` every step the system attempted,
+    tagged with its turn. Both feed the handoff package and die with the session.
+    """
 
     state: ConversationState
     pending_reason: str | None = None
+    history: list[dict[str, Any]] = field(default_factory=list)
+    actions: list[dict[str, Any]] = field(default_factory=list)
 
 
 def token_key(token: str) -> str:
@@ -39,6 +46,24 @@ def token_key(token: str) -> str:
 
 def to_json(state: ConversationState) -> str:
     return json.dumps(asdict(state))
+
+
+def _dump(conversation: StoredConversation) -> str:
+    return json.dumps(
+        {"state": asdict(conversation.state), "history": conversation.history, "actions": conversation.actions}
+    )
+
+
+def _load(raw: str, pending_reason: str | None) -> StoredConversation:
+    data = json.loads(raw)
+    if "state" not in data:  # rows written before history existed
+        return StoredConversation(from_json(raw), pending_reason)
+    return StoredConversation(
+        from_json(json.dumps(data["state"])),
+        pending_reason,
+        list(data.get("history", [])),
+        list(data.get("actions", [])),
+    )
 
 
 def from_json(raw: str) -> ConversationState:
@@ -88,7 +113,7 @@ class SqliteConversationStore:
             row = db.get(ConversationRecord, token_key(token))
             if row is None:
                 return None
-            return StoredConversation(from_json(row.state), row.pending_reason)
+            return _load(row.state, row.pending_reason)
 
     def save(self, token: str, conversation: StoredConversation) -> None:
         with DbSession(self._engine) as db, db.begin():
@@ -98,12 +123,12 @@ class SqliteConversationStore:
                 db.add(
                     ConversationRecord(
                         session_id=key,
-                        state=to_json(conversation.state),
+                        state=_dump(conversation),
                         pending_reason=conversation.pending_reason,
                     )
                 )
             else:
-                row.state = to_json(conversation.state)
+                row.state = _dump(conversation)
                 row.pending_reason = conversation.pending_reason
 
     def delete(self, token: str) -> None:

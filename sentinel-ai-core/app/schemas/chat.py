@@ -146,15 +146,28 @@ class VerifiedFacts(BaseModel):
 
 
 class HandoffAction(BaseModel):
-    """One step the system took during the turn, from the execution records."""
+    """One step the system attempted, from the execution records, failed ones included."""
 
     model_config = StrictModel
 
+    turn: int = Field(default=1, ge=1)
     step: str
     tool: Optional[str] = None
     outcome: str
     attempt: int = Field(ge=1)
     policy_rule: Optional[str] = None
+
+
+class ConversationTurn(BaseModel):
+    """One turn as the system understood it. Codes and references, never the customer's words."""
+
+    model_config = StrictModel
+
+    turn: int = Field(ge=1)
+    customer: str = Field(description="What the customer did, e.g. described_charge, asked_for_person")
+    charge: Optional[str] = Field(default=None, description="Charge reference involved, if any")
+    system: str = Field(description="Reply kind the system gave")
+    rule: Optional[str] = Field(default=None, description="Policy rule or message key behind the reply")
 
 
 class HandoffPackage(BaseModel):
@@ -163,8 +176,12 @@ class HandoffPackage(BaseModel):
     model_config = StrictModel
 
     request: str = Field(description="Intent the system understood, not the customer's words")
+    summary: str = Field(default="", description="Deterministic summary of the conversation, from the turns below")
+    conversation: list[ConversationTurn] = Field(default_factory=list)
     verified_facts: Optional[VerifiedFacts] = None
-    actions_taken: list[HandoffAction] = Field(default_factory=list)
+    actions_taken: list[HandoffAction] = Field(
+        default_factory=list, description="Every step attempted in the conversation, with its turn and outcome"
+    )
     evidence: dict[str, str] = Field(default_factory=dict)
     open_questions: list[str] = Field(default_factory=list)
     language: str

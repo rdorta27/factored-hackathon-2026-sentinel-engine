@@ -47,6 +47,7 @@ from app.schemas.chat import (
     Clarification,
     ConfirmationDisplay,
     ConfirmBox,
+    ConversationTurn,
     ErrorReply,
     Handoff,
     HandoffAction,
@@ -384,6 +385,80 @@ def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
     )
 
 
+_CUSTOMER_PHRASES = {
+    "described_charge": "described a charge",
+    "unclear_charge": "described a charge the system could not single out",
+    "selected_charge": "selected a charge",
+    "selected_unknown_charge": "selected a charge not in their account",
+    "asked_for_person": "asked for a person",
+    "out_of_scope": "asked for something outside disputes",
+    "not_understood": "sent a message the system could not understand",
+}
+
+
+def _turn_entry(
+    number: int,
+    turn_input: TextInput | CandidateIdInput | None,
+    reply: ChatReply,
+    output: TurnOutput | None,
+    policy_rule: str | None,
+) -> ConversationTurn:
+    """What happened in one turn, as codes and references (REQ-0008: no raw transcript)."""
+    reason = policy_rule or (output.reason if output is not None else None)
+    charge: str | None = None
+    if isinstance(turn_input, CandidateIdInput):
+        # An unverified reference (possibly another customer's) never enters the ticket.
+        known = reason not in ("unknownCharge", "unknown_candidate")
+        charge = turn_input.candidate_id if known else None
+        customer = "selected_charge" if known else "selected_unknown_charge"
+    elif reason and reason.startswith("person."):
+        customer = "asked_for_person"
+    elif reason == "out_of_scope":
+        customer = "out_of_scope"
+    elif reason == "model_unavailable":
+        customer = "not_understood"
+    elif isinstance(reply, Clarification):
+        customer = "unclear_charge"
+    else:
+        customer = "described_charge"
+    if charge is None and output is not None and output.candidate is not None:
+        charge = output.candidate.candidate_id
+    if isinstance(reply, (TextReply, Clarification, ConfirmBox, ErrorReply)):
+        rule = reason or reply.message_key
+    elif isinstance(reply, Handoff):
+        rule = reason or reply.reason_key
+    else:
+        rule = reason
+    return ConversationTurn(turn=number, customer=customer, charge=charge, system=reply.kind, rule=rule)
+
+
+def _system_phrase(entry: ConversationTurn) -> str:
+    if entry.rule == "person.ask":
+        return "offered help once (person.ask)"
+    rule = f" ({entry.rule})" if entry.rule else ""
+    return {
+        "text": f"explained{rule}",
+        "clarification": "asked which charge",
+        "confirm_box": "showed the confirm box",
+        "case_confirmation": "opened and verified a case",
+        "handoff": f"handed off{rule}",
+        "error": "failed with a generic error",
+    }.get(entry.system, entry.system)
+
+
+def summarize(turns: list[ConversationTurn]) -> str:
+    """Deterministic advisor summary built only from the structured turns."""
+    parts = []
+    for entry in turns:
+        charge = f" {entry.charge}" if entry.charge else ""
+        parts.append(
+            f"Turn {entry.turn}: customer {_CUSTOMER_PHRASES.get(entry.customer, entry.customer)}{charge}; "
+            f"system {_system_phrase(entry)}."
+        )
+    count = len(turns)
+    return f"{count} turn{'s' if count != 1 else ''}. " + " ".join(parts)
+
+
 def finish_turn(
     request: Request,
     turn: TurnContext,
@@ -392,9 +467,39 @@ def finish_turn(
     *,
     policy_rule: str | None = None,
     status_code: int = 200,
+    turn_input: TextInput | CandidateIdInput | None = None,
 ) -> JSONResponse:
-    """Persist the conversation, file a handoff ticket, close the turn record, reply."""
-    request.app.state.conversation_store.save(turn.token, turn.stored)
+    """Record the turn in the history, complete a handoff package with the whole
+    conversation, persist, file the ticket, close the turn record, reply."""
+    stored = turn.stored
+    number = len(stored.history) + 1
+    stored.history.append(_turn_entry(number, turn_input, reply, output, policy_rule).model_dump(mode="json"))
+    stored.actions.extend(
+        HandoffAction(
+            turn=number,
+            step=record.step,
+            tool=record.tool,
+            outcome=record.outcome,
+            attempt=record.attempt,
+            policy_rule=record.policy_rule,
+        ).model_dump(mode="json")
+        for record in turn.recorder.records_for(turn.trace_id)
+        if record.step in _ACTION_STEPS
+    )
+    if isinstance(reply, Handoff):
+        conversation = [ConversationTurn.model_validate(item) for item in stored.history]
+        reply = reply.model_copy(
+            update={
+                "package": reply.package.model_copy(
+                    update={
+                        "summary": summarize(conversation),
+                        "conversation": conversation,
+                        "actions_taken": [HandoffAction.model_validate(item) for item in stored.actions],
+                    }
+                )
+            }
+        )
+    request.app.state.conversation_store.save(turn.token, stored)
     if isinstance(reply, Handoff):
         _save_ticket(request, turn, reply)
     if isinstance(reply, ErrorReply):
@@ -428,11 +533,13 @@ def chat(
     turn = open_turn(request, session)
 
     if body.selected_reference is not None:
-        if select_charge(turn, body.selected_reference) is None:
-            return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge")
         turn_input: TextInput | CandidateIdInput = CandidateIdInput(candidate_id=body.selected_reference)
+        if select_charge(turn, body.selected_reference) is None:
+            return finish_turn(
+                request, turn, unknown_charge(turn), policy_rule="unknownCharge", turn_input=turn_input
+            )
     else:
         turn_input = TextInput(text=body.message or "")
 
     output, reply = run_turn(turn, turn_input)
-    return finish_turn(request, turn, reply, output)
+    return finish_turn(request, turn, reply, output, turn_input=turn_input)
