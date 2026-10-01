@@ -13,7 +13,7 @@ The guiding principle: **AI understands; code executes and verifies.** The loop 
 Two layers:
 
 - **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold, with DuckDB locally and Azure Databricks in production, both running the same `sentinel_data` package.
-- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM classifies the dispute category and is measured against a keyword baseline.
+- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM router classifies intent behind one model port and is measured against the keyword baseline on team-written cases (mirrored fixtures until a live model is configured).
 
 The submission runs the same code with a few documented mocks (test session, in-memory dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
 
@@ -47,15 +47,15 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 5 | 23 | 13 | 12% |
-| P1 | 12 | 1 | 5 | 6 | 8% |
+| P0 | 41 | 5 | 28 | 8 | 12% |
+| P1 | 12 | 1 | 8 | 3 | 8% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 7 | 28 | 22 | 12% |
+| **Total** | **57** | 7 | 36 | 14 | 12% |
 
 | Status | Requirements |
 |---|---|
 | **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0021 measured adversarial failure set ([evidence](evidence/adversarial/20260930T214744Z/summary.json)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
-| **In progress** | 28 requirements across the loop and policy, session/chat/listing, and data areas (breakdown per requirement below) |
+| **In progress** | 36 requirements across the loop and policy, session/chat/listing, data and evaluation areas (breakdown per requirement below) |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
@@ -73,12 +73,12 @@ The [documentation index](docs/README.md) covers everything else.
 | Path | What it holds |
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with chat (`POST /chat`), session-bound transactions (`GET /transactions`), policy engine, orchestrator and chat UI, with in-memory tool fakes. Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with chat (`POST /chat`), session-bound transactions (`GET /transactions`), policy engine, orchestrator and chat UI, with in-memory tool fakes; prompted router with fixtures plus the offline evaluation harness (`eval/`, 35 team-written cases). Owners in [team/plan.md](team/plan.md#folders). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) |
-| [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md) and the [adversarial set](evidence/adversarial/20260930T214744Z/summary.json), cited by the documentation |
+| [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md), the [label evidence](evidence/evaluation/2024Q4-v1/summary.json), the [frozen eval run](evidence/evaluation-runs/2024Q4-eval-v1/summary.json) and the [adversarial set](evidence/adversarial/20260930T214744Z/summary.json), cited by the documentation |
 | [`scripts/`](scripts/) | Repository scripts, such as the generator of the flow measurements page |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 

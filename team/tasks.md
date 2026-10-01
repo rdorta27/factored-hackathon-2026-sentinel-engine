@@ -51,35 +51,35 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 
 | Task | Owner | Status |
 |---|---|---|
-| Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | In progress: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff is not a tool yet; chat is not connected |
+| Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | Done: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff stays an outcome by design; chat connected |
 | Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Done: chat page, test session, `POST /chat` and confirm box verified end to end (web session to case `D-1` + `test_full_turn_is_replayable_by_trace_id`) |
-| Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/` |
-| JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | Pending |
+| Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/`; reference percentiles frozen in `evidence/evaluation/2024Q4-v1/summary.json`, thresholds still provisional |
+| JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | In progress: handoff outcome rendered with reference and reason; full package schema still open |
 | Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |
-| Evidence run `2024Q4-v4` recording claim categories and subcategories with counts | Natalia, Rubén | Pending |
-| Design the held-out set: labels (from the v4 category list), locales | Rubén | Pending |
-| Define the source and reviewer of the Portuguese test cases (decision 15) | Rubén | Pending |
-| Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Pending |
-| Normal case end to end with real data | Rubén, Felix | Pending |
-| Action verification: the dispute exists after creation | Rubén | Pending |
-| Handoff integrated into the flow | Rubén | Pending |
-| Few-shot LLM classifier vs keyword/TF-IDF and zero-shot baselines, with cost and latency | Rubén | Pending |
-| First evaluation cases (JSONL) | Rubén | Pending |
+| Evidence run recording claim categories and subcategories with counts | Natalia, Rubén | Done: `evidence/evaluation/2024Q4-v1/summary.json` (10 Claim combos, full counter) + derived `sentinel-ai-core/eval/labels.json` |
+| Design the held-out set: labels (from the v4 category list), locales | Rubén | Done: dev/held_out splits with no shared ids in `sentinel-ai-core/eval/cases/` |
+| Define the source and reviewer of the Portuguese test cases (decision 15) | Rubén | Done (source): 13 team-written pt-BR cases declared simulation; reviewer still open (decision 15) |
+| Look for a justified external source of pt-BR complaints (license, no PII) | Unassigned | Dropped: covered by team-written cases; reopen only if decision 15 requires it |
+| Normal case end to end with real data | Rubén, Felix | Done: charge inquiry against the mock Gold store verified end to end |
+| Action verification: the dispute exists after creation | Rubén | Done: read-back verification with `lookup_dispute` and `verify` record |
+| Handoff integrated into the flow | Rubén | Done: out-of-scope, person-insist and failure paths hand off with reason keys |
+| Prompted LLM router vs keyword baseline, with cost and latency | Rubén | Done (mirrored fixtures, delta zero by construction): `openspec/specs/llm-router/spec.md`; live-model comparison pending decision 10 |
+| First evaluation cases (JSONL) | Rubén | Done: 35 cases in `sentinel-ai-core/eval/cases/` |
 
 ## Thu 10/1
 
 | Task | Owner | Status |
 |---|---|---|
-| Ambiguous and human cases | Unassigned | Pending |
+| Ambiguous and human cases | Rubén | Done: missing/person/out-of-scope cases in `sentinel-ai-core/eval/cases/` replayed green |
 | Decide advisor queue + role landing + admin scope (pending decision 29): implement, JSON-only, or counts-only | Rubén | Pending |
 | PII review of the advisor summary before any queue UI (REQ-0047, REQ-0008) | Rubén | Pending |
 | Start the video script | Rubén | Pending |
 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
-| Portuguese | Unassigned | Pending |
-| Failure handling: down tools, expired session, bounded retries | Rubén | Pending |
-| Structured confirmation: confirm box and `confirmation_token` ([confirmation](../docs/architecture/specification.md#confirmation)) | Felix, Rubén | Pending |
-| Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Rubén | Done: `app/observability/` records + JSONL writer wired from `step()` and `/chat`, audit migrated off cleartext PII, acceptance test green (branch `feature/structured-log`) |
-| Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | Pending |
+| Portuguese | Rubén | Done: 13 team-written pt-BR cases; router detection covered in `tests/test_ai_router.py` |
+| Failure handling: down tools, expired session, bounded retries | Rubén | Done: `ModelUnavailable` fallback plus runner fault injection, all degrading safely |
+| Structured confirmation: confirm box and `confirmation_token` ([confirmation](../docs/architecture/specification.md#confirmation)) | Felix, Rubén | Done: confirm box verified end to end; token stays server-side, never rendered |
+| Structured logs with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)) | Rubén | Done: `app/observability/` records + JSONL writer wired from `step()` and `/chat`, audit migrated off cleartext PII, acceptance test green; `var/` anchored to the package |
+| Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | Pending: mock store stays, declared |
 | Adversarial set: prompt injection and unauthorized access | Felix | Done: 29 attacks in `tests/adversarial/`, measured `0/29` unsafe (`evidence/adversarial/20260930T214744Z/summary.json`); PII free-text `A9` stays `no_defense_yet` (REQ-0021, REQ-0047) |
 | Public link: Azure, or the free-host fallback of decision 13 | Felix | Pending |
 
@@ -87,8 +87,8 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 
 | Task | Owner | Status |
 |---|---|---|
-| Evaluation runner and held-out metrics (safe resolution, unsafe outcomes, handoff, latency, cost) | Rubén | Pending |
-| Metrics by language and country, cost per resolution, frozen in `evidence/` | Natalia | Pending |
+| Evaluation runner and held-out metrics (safe resolution, unsafe outcomes, handoff, latency, cost) | Rubén | Done early 9/30: frozen run `evidence/evaluation-runs/2024Q4-eval-v1/` (0 failures, unsafe `0/35`) |
+| Metrics by language and country, cost per resolution, frozen in `evidence/` | Natalia, Rubén | Done: by-locale/by-country metrics with small-sample limits in the frozen run; cost per resolution "not defined" (no resolutions by design) |
 | Failure analysis and limitations | Unassigned | Pending |
 | Sizing: disputes per day and prototype capacity (REQ-0053) | Natalia | Pending |
 | Path to production write-up (REQ-0052) | Rubén | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
@@ -122,8 +122,8 @@ Need information, not a decision. Ordered by date.
 | Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | In progress: one snapshot, `last_updated` up to 2027; `is_repeat_complainer` still open |
 | How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/understand/dataset.md#measured-issues-q4-2024)) |
 | Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
-| How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Pending |
-| Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | Pending |
+| How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Done: team-written simulation cases (`requires_handoff` marks human cases) plus frozen data labels in `evidence/evaluation/2024Q4-v1/summary.json` |
+| Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | In progress: measured fixture cost per turn in the frozen run; advisor cost and live-model prices still open (decision 10) |
 
 ## Done
 
@@ -137,3 +137,7 @@ Need information, not a decision. Ordered by date.
 | Analysis of the challenge documents (datathon kickoff and hackathon brief); commit on Sunday | Rubén | Sat 9/26 |
 | Session-bound charge lookup (`GET /transactions` + `lookup_transactions`) with isolation, currency and canary tests | Felix | Wed 9/30 |
 | Adversarial set: 29 attacks measured, `0/29` unsafe, frozen in [evidence](../evidence/adversarial/20260930T214744Z/summary.json) | Felix | Wed 9/30 |
+| Prompted LLM router with route table, fixtures and safe fallback (`openspec/specs/llm-router/spec.md`, change archived) | Rubén | Wed 9/30 |
+| Evaluation evidence frozen: label universe, mix and thresholds (`evidence/evaluation/2024Q4-v1/`, change archived) | Rubén | Wed 9/30 |
+| Evaluation runner frozen: bench + system replay, 0 failures, unsafe `0/35` (`evidence/evaluation-runs/2024Q4-eval-v1/`, change archived) | Rubén | Wed 9/30 |
+| Runtime `var/` anchored to the app package (`SENTINEL_VAR_DIR` override); stale root `var/` removed | Rubén | Wed 9/30 |
