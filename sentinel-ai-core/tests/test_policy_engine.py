@@ -167,9 +167,12 @@ def test_per_currency_value_equal_does_not_fire() -> None:
 def test_loader_reads_per_currency_values(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.policy.load import CONFIG_DIR, load_country
 
-    text = (CONFIG_DIR / "mx.yaml").read_text(encoding="utf-8").replace(
-        "  high_amount:\n    value: null\n",
-        '  high_amount:\n    values:\n      USD: "5000"\n      MXN: null\n    source: "Bank policy X v3"\n',
+    import re
+
+    text = re.sub(
+        r"  high_amount:\n(    .*\n)+",
+        '  high_amount:\n    values:\n      USD: "5000"\n      MXN: null\n    source: "Bank policy X v3"\n    decision: 26\n',
+        (CONFIG_DIR / "mx.yaml").read_text(encoding="utf-8"),
     )
     (tmp_path / "mx.yaml").write_text(text, encoding="utf-8")
     policy = load_country("MX", tmp_path)

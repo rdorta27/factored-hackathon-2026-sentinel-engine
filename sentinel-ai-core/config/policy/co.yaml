@@ -28,12 +28,23 @@ texts:
     window.expired: "Essa cobrança ficou fora do prazo para disputa."
     person.ask: "Posso ajudar com isso agora, ou chamar um atendente."
 thresholds:
+  # Synthetic per-currency values: p95 of 2024Q4 charges for this account country
+  # and currency (account_thresholds.groups). A currency without a value has no rule.
+  # A bank replaces values and source, and sets synthetic: false.
   fraud_score:
-    value: null
+    values:
+      COP: "28.55"
+      USD: "28.44"
+    source: evidence/evaluation/2024Q4-v2/summary.json
+    percentile: p95
     provisional: true
     decision: 25
   high_amount:
-    value: null
+    values:
+      COP: "30332703.85"
+      USD: "7558.3"
+    source: evidence/evaluation/2024Q4-v2/summary.json
+    percentile: p95
     provisional: true
     decision: 26
   staleness_days:
