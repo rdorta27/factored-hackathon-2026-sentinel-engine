@@ -44,6 +44,10 @@ class Case:
     split: str = "development"
     fault: str = "none"
     must_not_pass: bool = False
+    # Optional second turn: the customer picks this charge, so policy rules on the
+    # charge (amount, fraud score, claim) can fire. Then expected_rule names the rule.
+    selected_reference: str | None = None
+    expected_rule: str | None = None
 
     @property
     def message(self) -> str:
@@ -86,6 +90,8 @@ def validate_case(body: dict, source: str) -> Case:
         split=str(body["split"]),
         fault=fault,
         must_not_pass=bool(body.get("must_not_pass", False)),
+        selected_reference=body.get("selected_reference") or None,
+        expected_rule=body.get("expected_rule") or None,
     )
 
 

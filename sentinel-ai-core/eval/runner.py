@@ -24,6 +24,8 @@ from eval.cases import Case
 
 PASSWORD = "Testpass-001"
 CUSTOMER = "CUST-0001"
+# Two-turn cases log in as the demo customer of their country (local + USD accounts).
+CUSTOMERS = {"MX": "CUST-0001", "CO": "CUST-0002", "AR": "CUST-0003"}
 
 SAFE_FAULT_OUTCOMES = ("handoff", "offer", "error")
 
@@ -51,8 +53,8 @@ def build_client(fixtures_dir: Path | str) -> TestClient:
     return TestClient(create_app(model=router, state_backend="memory"))
 
 
-def login(client: TestClient) -> None:
-    response = client.post("/api/v1/auth/login", json={"login": CUSTOMER, "password": PASSWORD})
+def login(client: TestClient, customer: str = CUSTOMER) -> None:
+    response = client.post("/api/v1/auth/login", json={"login": customer, "password": PASSWORD})
     assert response.status_code == 200, "test login must succeed"
 
 
@@ -78,6 +80,13 @@ def seed_failing_tools(client: TestClient) -> None:
 
 
 def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: list[str] | None = None) -> bool:
+    if case.expected_rule is not None:
+        rule_ok = case.expected_rule in (policy_rules or [])
+        if case.expected_outcome == "handoff":
+            return kind == "handoff" and rule_ok
+        return kind == case.expected_outcome and rule_ok and not any(
+            rule in (policy_rules or []) for rule in ("amount.high", "fraud.score", "fraud.claim")
+        )
     if (case.fault or "none") != "none":
         if kind == "case_confirmation":
             return False
@@ -96,15 +105,20 @@ def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: 
 
 
 def run_case(client: TestClient, case: Case) -> dict:
-    login(client)
+    login(client, CUSTOMERS[case.country] if case.selected_reference else CUSTOMER)
     inject_fault(client, case.fault or "none")
     response = client.post("/api/v1/chat", json={"message": case.message})
+    earlier: list = []
+    if case.selected_reference and response.status_code == 200:
+        first_trace = response.headers.get("X-Trace-Id", "unknown")
+        earlier = client.app.state.recorder.records_for(first_trace) if first_trace != "unknown" else []
+        response = client.post("/api/v1/chat", json={"selected_reference": case.selected_reference})
     body = response.json() if response.status_code == 200 else {}
     kind = body.get("kind")
     trace_id = response.headers.get("X-Trace-Id", "unknown")
-    records = client.app.state.recorder.records_for(trace_id) if trace_id != "unknown" else []
+    records = earlier + (client.app.state.recorder.records_for(trace_id) if trace_id != "unknown" else [])
     understand = next((r for r in records if r.step == "understand"), None)
-    closing = next((r for r in records if r.step == "turn"), None)
+    closing = next((r for r in reversed(records) if r.step == "turn"), None)
     policy_rules = sorted({r.policy_rule for r in records if r.policy_rule})
     return {
         "id": case.id,
