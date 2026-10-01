@@ -195,3 +195,37 @@ def test_var_dir_ignores_process_cwd(tmp_path, monkeypatch) -> None:
     monkeypatch.delenv("SENTINEL_VAR_DIR", raising=False)
     assert var_dir().parent.name == "sentinel-ai-core"
     assert var_dir().name == "var"
+
+
+def test_decide_records_the_policy_version(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import shutil
+
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+    from app.observability import Recorder
+    from app.orchestrator import step as step_module
+    from app.policy.load import CONFIG_DIR, load_country
+
+    policy_dir = tmp_path / "policy"
+    shutil.copytree(CONFIG_DIR, policy_dir)
+    monkeypatch.setattr(step_module, "load_country", lambda country: load_country(country, policy_dir))
+
+    api = TestClient(create_app())
+    recorder = Recorder(path=tmp_path / "turns.jsonl", salt="policy-version")
+    api.app.state.recorder = recorder
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code == 200
+
+    def decide_versions(response):  # type: ignore[no-untyped-def]
+        records = recorder.records_for(response.headers["X-Trace-Id"])
+        return {(r.policy_version, r.policy_synthetic) for r in records if r.step == "decide"}
+
+    first = decide_versions(api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"}))
+    mx = policy_dir / "mx.yaml"
+    mx.write_text(mx.read_text(encoding="utf-8") + "# value changed\n", encoding="utf-8")
+    second = decide_versions(api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"}))
+
+    assert len(first) == 1 and len(second) == 1
+    (old_version, old_synthetic), (new_version, _) = first.pop(), second.pop()
+    assert old_version and new_version and old_version != new_version
+    assert old_synthetic is True

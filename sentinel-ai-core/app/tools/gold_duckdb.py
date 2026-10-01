@@ -37,7 +37,15 @@ def to_gold_row(record: dict[str, Any], as_of: str) -> GoldRow:
         as_of=as_of,
         refunded=refunded,
         prior_dispute=bool(record.get("is_disputed", False)),
+        fraud_score=_score(record.get("fraud_score")),
     )
+
+
+def _score(raw: Any) -> float | None:
+    try:
+        return None if raw is None or str(raw).strip() == "" else float(raw)
+    except (TypeError, ValueError):
+        return None
 
 
 class DuckDbGoldStore:

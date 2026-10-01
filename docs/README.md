@@ -28,6 +28,7 @@ If you are new, read in this order (about 20 minutes):
 | What do CSAT (Customer Satisfaction Score), PQR (Peticiones, Quejas y Reclamos — requests, complaints, and claims), held-out… mean? | [Glossary](understand/glossary/) |
 | Which tables exist and what is each column for? | [Dataset](understand/dataset.md) |
 | What is mandatory and which criterion still lacks evidence? | [Requirements](requirements/requirements.md) |
+| Why is it built this way, and what do we say on each slide? | [Rationale](rationale/README.md) |
 | What does the assistant say in each situation? | [Conversation](build/conversation.md) |
 | What can the LLM see? How do we prevent unauthorized access? | [Security](build/security.md) |
 | How do we handle Portuguese? | [Conversation: languages](build/conversation.md#languages) |

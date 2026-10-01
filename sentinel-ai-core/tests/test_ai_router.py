@@ -155,7 +155,7 @@ def test_router_request_carries_no_identifiers_and_numeric_amount() -> None:
     messages = build_messages(
         "no reconozco un cargo",
         [],
-        {"transaction_id": "TXN-1", "amount": 1000.0, "fraud_score": 0.2},
+        {"transaction_id": "TXN-1", "amount": 1000.0},
     )
     blob = str(messages)
     assert "CUST-" not in blob
@@ -248,3 +248,13 @@ def test_model_unavailable_falls_back_to_handoff() -> None:
     assert output.kind is OutcomeKind.HANDOFF
     assert output.reason == "model_unavailable"
     assert output.case_number is None
+
+
+def test_router_request_never_carries_the_fraud_score() -> None:
+    import pytest
+
+    from app.ai.llm import SYSTEM_PROMPT, build_messages
+
+    with pytest.raises(ValueError, match="not allowed"):
+        build_messages("no reconozco un cargo", [], {"transaction_id": "TXN-1", "amount": 1.0, "fraud_score": 29.0})
+    assert "fraud" not in SYSTEM_PROMPT

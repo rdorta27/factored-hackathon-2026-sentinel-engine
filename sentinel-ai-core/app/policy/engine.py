@@ -23,9 +23,27 @@ class Intent(StrEnum):
 
 @dataclass(frozen=True)
 class Threshold:
+    """One rule's limit. ``values`` maps a charge currency to its limit.
+
+    A currency missing from ``values`` has no limit, so the rule does not fire
+    for it. ``value`` is a single limit that applies to the file's own currency
+    (used by staleness, which has no currency). ``source`` names where the
+    numbers come from: an evidence run or a bank policy reference.
+    """
+
     value: str | None
     provisional: bool
     decision: int | None = None
+    values: tuple[tuple[str, str], ...] = ()
+    source: str | None = None
+
+    def limit_for(self, currency: str, file_currency: str) -> str | None:
+        for code, limit in self.values:
+            if code == currency:
+                return limit
+        if self.value is not None and currency == file_currency:
+            return self.value
+        return None
 
 
 @dataclass(frozen=True)
@@ -40,6 +58,8 @@ class CountryPolicy:
     staleness_days: Threshold
     mandatory_fields: tuple[str, ...] = ()
     synthetic: bool = True
+    # Content hash of the country file, recorded on each decision for audit.
+    version: str | None = None
 
 
 @dataclass(frozen=True)
@@ -95,23 +115,24 @@ def evaluate(request: PolicyRequest) -> PolicyHit:
 
 def _fraud(request: PolicyRequest, policy: CountryPolicy) -> PolicyHit | None:
     threshold = policy.fraud_score
-    if threshold.value is None:
+    candidate = request.candidate
+    if request.states_not_theirs:
+        return PolicyHit(HitOutcome.HANDOFF, "fraud.claim")
+    if candidate is None or candidate.fraud_score is None:
         return None
-    score = None if request.candidate is None else request.candidate.fraud_score
-    if request.states_not_theirs or (score is not None and score > float(threshold.value)):
+    limit = threshold.limit_for(candidate.currency, policy.currency)
+    if limit is not None and candidate.fraud_score > float(limit):
         return PolicyHit(HitOutcome.HANDOFF, "fraud.score", threshold.provisional)
     return None
 
 
 def _amount(request: PolicyRequest, policy: CountryPolicy) -> PolicyHit | None:
-    threshold = policy.high_amount
     candidate = request.candidate
-    if threshold.value is None or candidate is None:
+    if candidate is None:
         return None
-    if candidate.currency != policy.currency:
-        return None
-    if Decimal(candidate.amount) > Decimal(threshold.value):
-        return PolicyHit(HitOutcome.HANDOFF, "amount.high", threshold.provisional)
+    limit = policy.high_amount.limit_for(candidate.currency, policy.currency)
+    if limit is not None and Decimal(candidate.amount) > Decimal(limit):
+        return PolicyHit(HitOutcome.HANDOFF, "amount.high", policy.high_amount.provisional)
     return None
 
 

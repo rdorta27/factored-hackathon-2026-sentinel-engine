@@ -93,8 +93,8 @@ Policy rules for this flow. Thresholds are country configuration (REQ-0049); the
 | Charge is Pending or Reversed | `transaction_status` | Explain the status; no dispute (REQ-0043). |
 | Charge is Declined | `transaction_status` | Explain; nothing to dispute. |
 | Customer asks for a person | Intent | One offer to help, then handoff (REQ-0040). |
-| Suspected fraud | Customer states the charge was not theirs, and/or `fraud_score` above a threshold. `is_fraud` is never used: it is a label known after the fact. | Handoff (decision 25, open). |
-| High amount | Charge amount above a per-country threshold, in the original currency | Handoff (decision 26, open). |
+| Suspected fraud | Customer states the charge was not theirs (`fraud.claim`), or `fraud_score` above the threshold of the account country and charge currency (`fraud.score`). `is_fraud` is never used: it is a label known after the fact. | Handoff ([010](../build/decisions/010-fraud-handoff-rule.md)). |
+| High amount | Charge amount above the threshold of the account country and charge currency, in the original currency; a currency without a value does not fire | Handoff ([011](../build/decisions/011-high-amount-threshold.md)). |
 | Mandatory information missing after clarification | Country field validation | Handoff with open questions. |
 3. **LLM.** Wording the reply and proposing the next tool call. The orchestrator validates every proposed call against policy before executing it; the LLM never chooses which customer's data to read.
 
@@ -102,15 +102,16 @@ Policy rules for this flow. Thresholds are country configuration (REQ-0049); the
 
 **PII** (personally identifiable information) is any data that identifies a customer or is sensitive about them: name, national id, account or card numbers, income, credit score, IP address. The rule (REQ-0047) is that the LLM never receives it, and that no restricted data goes to an external model.
 
-The target enforces this with **data minimisation at three boundaries**, all in code:
+The target enforces this with **data minimisation at four boundaries**, all in code:
 
 | Boundary | Control | Status |
 |---|---|---|
-| Gold → service | The service reads a serving view without personal columns. Names and credit score stay in the data layer. | Built: the pipeline writes `v_service_dispute_eligible_transactions`, and the DuckDB adapter reads only that view; not yet run on local data |
+| Gold → service | The service reads a serving view without personal columns. Names and credit score stay in the data layer. | Built: the pipeline writes `v_service_dispute_eligible_transactions` and has run end to end locally; the DuckDB adapter reads only that view |
+| Customer text → service | Personal identifiers typed by the customer (documents, cards, CLABE, CPF, CUIT, RFC, email, phone near a trigger word) are replaced by typed markers at the API boundary, before the orchestrator, the model, the logs or the stored conversation (`app/privacy/`). | Built: `tests/privacy/`; adversarial `A9` blocked |
 | Tools → LLM | Tools return only the fields the reply needs (amount, currency, merchant, date, status, opaque candidate id). `customer_id` is injected by the orchestrator and never returned. | Target contract |
 | Logs | No customer text and no `customer_id` in clear; the session is a salted hash. | Target contract |
 
-What the customer types is the remaining gap: if they write their national id in the chat, it reaches the LLM. Masking free text before the LLM (a token vault) and static masking in Silver are **proposed, not built** ([decision 004](../build/decisions/004-pii-lifecycle.md)); the demo states this as a limitation. Rules: [security](../build/security.md).
+Masking is irreversible in the demo: no tool needs the original value, so no token vault is built. Static masking in Silver stays proposed ([decision 004](../build/decisions/004-pii-lifecycle.md)). The fraud score is not personal data but never goes to the model either ([what the model never receives](../rationale/model-data-minimization.md)). Rules: [security](../build/security.md).
 
 
 ## Failure handling
@@ -147,7 +148,7 @@ Context is kept per session by the orchestrator, not by the LLM (REQ-0001).
 
 Rules are evaluated in code, in the policy engine (`app/policy/`), which also applies the [decision priority](#decision-priority). Their parameters (status explanations, per-country fields, deadlines and thresholds) live in one versioned configuration file per country (`config/policy/`), not in code and not in prompts (REQ-0007, REQ-0049). Adding a country changes configuration only.
 
-- **Contents:** meaning of each transaction status and whether it is disputable; mandatory dispute fields; filing deadlines; handoff thresholds (decisions 25, 26, 27).
+- **Contents:** meaning of each transaction status and whether it is disputable; mandatory dispute fields; filing deadlines; handoff thresholds per account country and charge currency, each citing its source ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md); staleness, decision 27, stays off).
 - **Traceability:** each entry has an id. Replies that explain a rule cite it, and the log records it as `policy_rule` (REQ-0029).
 - **Labelling:** the dataset ships no bank policy, so the file is a **synthetic policy** written by the team and labelled as such (REQ-0031).
 
@@ -159,7 +160,7 @@ Rules are evaluated in code, in the policy engine (`app/policy/`), which also ap
 - **Eligibility columns computed in Gold:** `is_disputed`, `days_since_transaction`, `is_eligible_for_dispute` (90-day window). `days_since_transaction` is computed when Gold is built, so it ages between runs; the policy engine recomputes the window from the transaction date at request time and treats the Gold flag as a hint.
 - **Not exposed to the service:** customer name and credit score, which the source table carries (see [personal data](#personal-data)). The view still carries `is_fraud` and segment; the adapter does not read them and `is_fraud` is never used as a signal.
 - **As-of date:** the latest processed `process_date` in Gold, returned with every read (REQ-0039).
-- **Update correctness:** a labelled fixture with late arrivals, duplicates and a schema change proves incremental processing (REQ-0018).
+- **Update correctness:** a labelled two-batch fixture with a late arrival, a duplicate and a new column proves incremental processing (REQ-0018, `sentinel-data-engine/tests/test_incremental_fixture.py`).
 
 ## Observability
 
@@ -231,16 +232,16 @@ REQ-0056. Where AI is used and where it is not.
 
 ## Path to production
 
-REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code; which components it mocks is listed once, in [mocked components](demo-architecture.md#mocked-components). This table lists only what has to change or be decided before operating.
+REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code; which components it mocks is listed once, in [mocked components](demo-architecture.md#mocked-components). This table lists only what has to change or be decided before operating. Volumes, prototype capacity and the scaling plan are in the [sizing and capacity specification](../sizing_capacity.md) (REQ-0053).
 
 | Area | Work before production |
 |---|---|
 | Identity | Replace the test session with an identity provider; move secrets to Azure Key Vault |
 | Case store, sessions and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
-| Policy | Replace the synthetic configuration with the bank's approved policy, same format; set thresholds (decisions 25–27) |
+| Policy | Replace the synthetic configuration with the bank's approved policy, same format: per-currency values, `source` pointing to the bank policy, `synthetic: false`; decide staleness (decision 27). Each decision already records the policy file version |
 | Handoff | Decide how the JSON package reaches advisors: queue, CRM ticket or similar (decision 28); routing by language and specialty is REQ-0046 (P2) |
-| Personal data | Serving view without personal columns; masking of free text and of Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
+| Personal data | Serving view without personal columns and free-text masking (built); a token vault if a tool ever needs the original value, and static masking in Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
 | Serving | Container Apps with autoscaling (decision 13) |
 | LLM | Per-route quotas and a model per route (decision 10) |
 | Observability | Centralised logs and traces, alerts by country (REQ-0050) |

@@ -55,3 +55,19 @@ def test_unsafe_rate_uses_full_denominator(monkeypatch: pytest.MonkeyPatch) -> N
     unsafe = [t for t in turns if t["outcome"] == "case_confirmation" and t["must_not_pass"]]
     assert f"{len(unsafe)}/{len(turns)}" == f"0/{len(turns)}"
     assert match_outcome(_case("dev-adv-01"), "clarification", 200) is True
+
+
+def test_two_turn_case_checks_the_rule() -> None:
+    import dataclasses
+
+    case = _case("dev-rule-03")
+    turn = run_case(build_client(FIXTURES), case)
+    assert (turn["outcome"], turn["matched"]) == ("handoff", True)
+    assert turn["model"] != "unknown"
+    wrong = dataclasses.replace(case, expected_rule="fraud.score")
+    assert run_case(build_client(FIXTURES), wrong)["matched"] is False
+
+
+def test_untriggered_rule_case_fails_if_a_rule_fires() -> None:
+    assert match_outcome(_case("dev-rule-09"), "confirm_box", 200, ["status.approved"]) is True
+    assert match_outcome(_case("dev-rule-09"), "confirm_box", 200, ["amount.high"]) is False

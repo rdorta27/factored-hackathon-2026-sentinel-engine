@@ -7,13 +7,13 @@ Data preparation, sources and freshness, and the learned component with its labe
 | [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | In progress |
 | [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | In progress |
 | [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | In progress |
-| [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Pending |
+| [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
 | [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | In progress |
 | [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | In progress |
 | [REQ-0023](#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](#req-0016) | Pending |
-| [REQ-0031](#req-0031) | Approved data, labeled by origin | P0 | data | — | Pending |
+| [REQ-0031](#req-0031) | Approved data, labeled by origin | P0 | data | — | Done |
 | [REQ-0039](#req-0039) | Declare data freshness | P0 | ai, data | [REQ-0015](#req-0015) | Done |
-| [REQ-0054](#req-0054) | Justified external data | P1 | data, ml | [REQ-0031](#req-0031) | Pending |
+| [REQ-0054](#req-0054) | Justified external data | P1 | data, ml | [REQ-0031](#req-0031) | Done |
 
 <a id="req-0015"></a>
 ### REQ-0015 · Repeatable pipeline with contracts
@@ -26,9 +26,9 @@ A data preparation pipeline (Bronze, Silver, Gold) that runs the same way every 
 
 **Depends on:** [REQ-0031](#req-0031). The pipeline ingests approved, labeled data.
 
-**Evidence:** Proven by: pipeline code with tests in `sentinel-data-engine/`.
+**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`, with its [quality report](../../sentinel-data-engine/data_quality_report.md); a second local run reproduced the same report. Silver normalizes `Mexico` to `México` and the Gold service view is PII-free.
 
-Missing: an end-to-end run and its quality report.
+Missing: the report does not yet count nulls, orphaned records or late arrivals, and omits Bronze counts for partitioned tables, so the drop from the declared volumes (for example transactions) is not explained.
 
 <a id="req-0016"></a>
 ### REQ-0016 · Learned component vs baseline
@@ -65,13 +65,13 @@ Missing: one written justification of metrics, thresholds and splits, confirmed 
 
 Show the pipeline updates correctly when data arrives late, is duplicated or changes schema. The data is static, so the brief accepts a clearly labeled test fixture as proof.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Data Engineering · **Area:** data
+**Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
 **Source:** Problem statement: Architecture freedom · Dataset summary
 
 **Depends on:** [REQ-0015](#req-0015). Incremental processing extends the pipeline.
 
-**Evidence:** Missing: the labeled fixture and its test.
+**Evidence:** Proven by: a labeled two-batch fixture covering a late arrival, an exact duplicate and a new column, with Silver and Gold checked after each batch (`sentinel-data-engine/tests/test_incremental_fixture.py`).
 
 <a id="req-0019"></a>
 ### REQ-0019 · Experiment tracking
@@ -121,11 +121,11 @@ Only applies if a model judges the answers: its rubric must be documented and ch
 
 Use only organizer-approved data and label every input as real, de-identified, synthetic or team-generated. The organizer's dataset is fully synthetic (dataset summary: "no real customer information is included").
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Data Engineering · **Area:** data
+**Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
 **Source:** Problem statement: Data and execution boundaries
 
-**Evidence:** Missing: the source inventory.
+**Evidence:** Proven by: the [source inventory](../data_inventory.md): every input labeled by origin (organizer synthetic dataset, team-written fixtures and evaluation cases), with no external or real customer data.
 
 <a id="req-0039"></a>
 ### REQ-0039 · Declare data freshness
@@ -145,10 +145,10 @@ Every answer about data says how current it is ("updated through ...") and never
 
 External data is allowed only if justified: source, license, why it is needed, no personal data, and labeled as external.
 
-**Priority:** P1 · **Status:** Pending · **Criterion:** Data Engineering · **Area:** data, ml
+**Priority:** P1 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data, ml
 
 **Source:** Help channel (9/28)
 
 **Depends on:** [REQ-0031](#req-0031). Same source inventory.
 
-**Evidence:** Missing: none is used; declare it in the source inventory (REQ-0031).
+**Evidence:** Proven by: no external data is used, declared in the [source inventory](../data_inventory.md) (section 3.3).

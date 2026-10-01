@@ -114,6 +114,8 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         **_identity_fields(info, understood),
     )
     state.language = understood.language
+    if understood.not_mine:
+        state.states_not_theirs = True
     if understood.kind is UnderstandKind.MISSING:
         state.clarification_count += 1
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
@@ -254,6 +256,7 @@ def _hit(
             candidate=candidate,
             clarification_count=state.clarification_count,
             person_asks=state.person_asks,
+            states_not_theirs=state.states_not_theirs,
             policy=policy,
         )
     )
@@ -263,6 +266,8 @@ def _hit(
         step="decide",
         policy_rule=hit.rule_id,
         latency_ms=(perf_counter() - started) * 1000,
+        policy_version=None if policy is None else policy.version,
+        policy_synthetic=None if policy is None else policy.synthetic,
     )
     return hit
 

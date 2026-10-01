@@ -8,7 +8,7 @@ Analysis that justifies the flow and the metrics that prove the system works. Ba
 | [REQ-0022](#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055) | In progress |
 | [REQ-0024](#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022) | In progress |
 | [REQ-0050](#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
-| [REQ-0053](#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](#req-0014) | In progress |
+| [REQ-0053](#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](#req-0014) | Done |
 | [REQ-0055](#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | In progress |
 | [REQ-0057](#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](#req-0055) | In progress |
 
@@ -73,13 +73,13 @@ Monitor latency, failures, escalations and complaints per country.
 
 How many disputes per day appear in the data, what capacity the prototype is designed for, and what changes at real volume (help channel, 9/28).
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Data Analytics · **Area:** analysis
+**Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Help channel (9/28)
 
 **Depends on:** [REQ-0014](#req-0014). Sizing uses the dispute volumes from the analysis.
 
-**Evidence:** Missing: the sizing section.
+**Evidence:** Proven by: the [sizing and capacity specification](../sizing_capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics

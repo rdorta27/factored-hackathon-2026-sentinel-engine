@@ -21,7 +21,7 @@ def test_listing_is_session_scoped_and_ordered() -> None:
     assert "TXN-9001" not in ids
     assert "TXN-2001" not in ids
     assert dates == sorted(dates, reverse=True)
-    assert body["transactions"][0]["currency"] == "MXN"
+    assert {row["currency"] for row in body["transactions"]} == {"MXN", "USD"}
 
 
 def test_customer_identifier_is_rejected() -> None:
@@ -36,7 +36,8 @@ def test_listing_requires_a_session() -> None:
     assert api.get("/api/v1/transactions").status_code == 401
 
 
-# --- Point 1: every country customer reads only their own charges, own currency
+# --- Point 1: every country customer reads only their own charges, in the local
+# currency or USD (currency belongs to the product; gold-layer spec)
 
 
 def test_cop_customer_sees_only_cop_charges() -> None:
@@ -44,7 +45,7 @@ def test_cop_customer_sees_only_cop_charges() -> None:
     login(api, "CUST-0002")
     body = api.get("/api/v1/transactions").json()
     assert body["transactions"], "CUST-0002 must have charges"
-    assert {row["currency"] for row in body["transactions"]} == {"COP"}
+    assert {row["currency"] for row in body["transactions"]} == {"COP", "USD"}
     ids = {row["reference"] for row in body["transactions"]}
     assert "TXN-1001" not in ids, "MXN customer rows must not leak into COP listing"
     assert "TXN-9001" not in ids
@@ -55,7 +56,7 @@ def test_ars_customer_sees_only_ars_charges() -> None:
     login(api, "CUST-0003")
     body = api.get("/api/v1/transactions").json()
     assert body["transactions"], "CUST-0003 must have charges"
-    assert {row["currency"] for row in body["transactions"]} == {"ARS"}
+    assert {row["currency"] for row in body["transactions"]} == {"ARS", "USD"}
     ids = {row["reference"] for row in body["transactions"]}
     assert "TXN-1001" not in ids
     assert "TXN-2001" not in ids

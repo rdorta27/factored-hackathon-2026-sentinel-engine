@@ -78,6 +78,7 @@ def from_json(raw: str) -> ConversationState:
         ],
         pending_confirmation=PendingConfirmation(**pending) if pending else None,
         clarification_count=int(data.get("clarification_count", 0)),
+        states_not_theirs=bool(data.get("states_not_theirs", False)),
         person_asks=int(data.get("person_asks", 0)),
     )
 
