@@ -52,7 +52,7 @@ def build_client(fixtures_dir: Path | str) -> TestClient:
 
 
 def login(client: TestClient) -> None:
-    response = client.post("/api/v1/session/login", json={"login": CUSTOMER, "password": PASSWORD})
+    response = client.post("/api/v1/auth/login", json={"login": CUSTOMER, "password": PASSWORD})
     assert response.status_code == 200, "test login must succeed"
 
 

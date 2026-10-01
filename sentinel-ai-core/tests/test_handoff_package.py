@@ -13,7 +13,7 @@ PASSWORD = "Testpass-001"
 
 def logged_in(api: TestClient | None = None) -> TestClient:
     api = api or TestClient(create_app())
-    assert api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
     return api
 
 
@@ -89,5 +89,5 @@ def test_history_survives_a_restart_and_dies_with_the_session(monkeypatch, tmp_p
     package = chat(second, message="quiero una persona")["package"]
     assert [t["turn"] for t in package["conversation"]] == [1, 2]
 
-    second.post("/api/v1/session/logout")
+    second.post("/api/v1/auth/logout")
     assert second.app.state.conversation_store.count() == 0

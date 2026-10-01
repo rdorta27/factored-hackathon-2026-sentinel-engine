@@ -4,9 +4,10 @@ Canonical contract for ``/api/v1/chat`` and ``/api/v1/transactions``.
 Every chat answer is exactly one variant: ``text``, ``clarification``,
 ``confirm_box``, ``case_confirmation``, ``handoff`` or ``error`` (spec ``chat``).
 Replies carry raw values and translation keys, never authored prose; the
-client renders the keys in its locale. Shapes follow the reference contract
-in ``sentinel-login/app/chat/contract.py``, trimmed to the spec: no priority,
-service-level date, queue status or receipt on a confirmation.
+client renders the keys in its locale. Shapes follow the former
+``sentinel-login`` chat contract (backend removed by decision 009), trimmed to
+the spec: no priority, service-level date, queue status or receipt on a
+confirmation.
 
 The same models serve the mock and the real adapters: only the ``source``
 field says which one produced a confirmation.
@@ -248,3 +249,25 @@ class CaseSummary(BaseModel):
     reason_key: Optional[str] = None
     created_at: datetime
     source: Source = "mock"
+
+
+# --- /api/v1/handoffs (advisor) -----------------------------------------------
+
+
+class AdvisorTicket(BaseModel):
+    """An escalated case as the advisor reads it: why it came, what was verified and tried.
+
+    Role ``advisor`` only. Carries the customer id and country so the advisor knows
+    whom to serve; never names or the profile (decision 009).
+    """
+
+    model_config = StrictModel
+
+    case_id: str
+    status: str
+    created_at: datetime
+    customer_id: str
+    country: str
+    reason_key: Optional[str] = None
+    reason_detail: Optional[str] = None
+    package: HandoffPackage

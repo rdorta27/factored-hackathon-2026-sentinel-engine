@@ -21,7 +21,7 @@ from app.policy.engine import _expired
 from app.policy.load import load_country
 from app.schemas.chat import CandidateTransaction, TransactionList
 from app.session.models import Session
-from app.session.router import require_session
+from app.session.router import require_customer
 from app.tools.gold import to_candidate
 
 router = APIRouter(prefix="/api/v1", tags=["transactions"])
@@ -60,7 +60,7 @@ def candidate_view(candidate: Candidate, country: str, today: date) -> Candidate
 @router.get("/transactions")
 def list_transactions(
     request: Request,
-    session: Session = Depends(require_session),
+    session: Session = Depends(require_customer),
 ) -> TransactionList:
     if "customer_id" in request.query_params:
         raise HTTPException(status_code=422, detail="customer_id is not an accepted parameter")

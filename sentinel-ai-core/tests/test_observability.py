@@ -78,7 +78,7 @@ def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     api.app.state.recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
     assert (
-        api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
         == 200
     )
     return api
@@ -122,7 +122,7 @@ def test_full_turn_is_replayable_by_trace_id(tmp_path) -> None:
     api.app.state.audit.recorder = recorder
     message = "no reconozco un cargo"
     assert (
-        api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
         == 200
     )
     assert api.post("/api/v1/chat", json={"message": message}).status_code == 200

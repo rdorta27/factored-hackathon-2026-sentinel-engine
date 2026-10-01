@@ -13,7 +13,7 @@ PASSWORD = "Testpass-001"
 
 def logged_in(api: TestClient | None = None, name: str = "CUST-0001") -> TestClient:
     api = api or TestClient(create_app())
-    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": name, "password": PASSWORD}).status_code == 200
     return api
 
 
@@ -88,7 +88,7 @@ def test_cases_are_isolated_per_customer() -> None:
     api = logged_in()
     api.post("/api/v1/disputes/preview", json={"reference": "TXN-1006"})
     case_id = api.post("/api/v1/disputes", json={"reference": "TXN-1006"}).json()["case_id"]
-    api.post("/api/v1/session/logout")
+    api.post("/api/v1/auth/logout")
     logged_in(api, "CUST-0002")
     assert api.get("/api/v1/disputes").json() == []
     assert api.get(f"/api/v1/disputes/{case_id}").status_code == 404
@@ -100,7 +100,7 @@ def test_second_session_cannot_dispute_the_same_charge_again() -> None:
     api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"})
     first = api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()
     assert first["kind"] == "case_confirmation"
-    api.post("/api/v1/session/logout")
+    api.post("/api/v1/auth/logout")
 
     logged_in(api)
     again = api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()

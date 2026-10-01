@@ -58,7 +58,7 @@ from app.schemas.chat import (
     VerifiedFacts,
 )
 from app.session.models import Session
-from app.session.router import SESSION_COOKIE, require_session
+from app.session.router import SESSION_COOKIE, require_customer
 from app.state.cases import ESCALATED, CaseRow, CaseTools
 from app.state.conversation import StoredConversation
 from app.tools.bound import SessionBoundLookup
@@ -488,17 +488,19 @@ def finish_turn(
     )
     if isinstance(reply, Handoff):
         conversation = [ConversationTurn.model_validate(item) for item in stored.history]
-        reply = reply.model_copy(
-            update={
-                "package": reply.package.model_copy(
-                    update={
-                        "summary": summarize(conversation),
-                        "conversation": conversation,
-                        "actions_taken": [HandoffAction.model_validate(item) for item in stored.actions],
-                    }
-                )
-            }
-        )
+        update: dict = {
+            "summary": summarize(conversation),
+            "conversation": conversation,
+            "actions_taken": [HandoffAction.model_validate(item) for item in stored.actions],
+        }
+        if reply.package.verified_facts is None:
+            # The escalating turn named no charge (e.g. "a person, please"): hand over
+            # the last charge verified earlier in the session, if any.
+            last = next((entry.charge for entry in reversed(conversation) if entry.charge), None)
+            candidate = next((item for item in turn.state.candidates if item.candidate_id == last), None)
+            if candidate is not None:
+                update["verified_facts"] = _verified_facts(candidate, turn.session.country, turn.ref_date)
+        reply = reply.model_copy(update={"package": reply.package.model_copy(update=update)})
     request.app.state.conversation_store.save(turn.token, stored)
     if isinstance(reply, Handoff):
         _save_ticket(request, turn, reply)
@@ -528,7 +530,7 @@ def finish_turn(
 def chat(
     body: ChatInput,
     request: Request,
-    session: Session = Depends(require_session),
+    session: Session = Depends(require_customer),
 ) -> JSONResponse:
     turn = open_turn(request, session)
 

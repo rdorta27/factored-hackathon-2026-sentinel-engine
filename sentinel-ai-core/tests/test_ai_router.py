@@ -30,7 +30,7 @@ def test_create_app_injects_fake_model() -> None:
     api = TestClient(create_app(model=FakeModel()))
     assert api.app.state.model.describe().model == "fake"
     assert (
-        api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
         == 200
     )
     response = api.post("/api/v1/chat", json={"message": "no reconozco este cargo"})

@@ -22,7 +22,7 @@ def sqlite_env(monkeypatch, tmp_path):  # type: ignore[no-untyped-def]
 
 
 def login(api: TestClient) -> None:
-    assert api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
 
 
 def restarted(api: TestClient) -> TestClient:
@@ -66,7 +66,7 @@ def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no
     api.post("/api/v1/chat", json={"message": "no reconozco un cargo de Cafe Central"})
     store = api.app.state.conversation_store
     assert store.count() == 1
-    api.post("/api/v1/session/logout")
+    api.post("/api/v1/auth/logout")
     assert store.count() == 0
 
 

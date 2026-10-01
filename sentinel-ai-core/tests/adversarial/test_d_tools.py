@@ -109,7 +109,7 @@ def test_a_new_session_cannot_open_a_duplicate_dispute(logged_in) -> None:
     logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1006"})
     first = logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()
     assert first["kind"] == "case_confirmation"
-    logged_in.post("/api/v1/session/logout")
+    logged_in.post("/api/v1/auth/logout")
     login_as(logged_in, CUSTOMER)
     preview = logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-1006"}).json()
     assert preview == {"kind": "text", "message_key": "already.disputed"}

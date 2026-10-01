@@ -1,8 +1,9 @@
 """
 Sentinel AI Core – FastAPI application entry point.
 
-One app, one API under ``/api/v1``: session, transactions, chat and health,
-plus the chat page at ``/ui/``. The business path is always orchestrator →
+One app, one API under ``/api/v1``: auth, transactions, chat, disputes,
+handoffs (advisor) and health, plus the page at ``/ui/`` (customer chat and
+advisor view). The business path is always orchestrator →
 policy → session-bound tools; only the adapters behind the ports change:
 
   - Gold: DuckDB view when readable, in-memory mock otherwise
@@ -49,6 +50,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     from app.observability import Recorder
     from app.routers.demo_chat import router as chat_router
     from app.routers.disputes import router as disputes_router
+    from app.routers.handoffs import router as handoffs_router
     from app.routers.demo_transactions import router as txn_router
     from app.routers.ui import mount_ui
     from app.session.audit import AuditLogger
@@ -73,7 +75,8 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     recorder = Recorder()
     ref_date = get_reference_date()
     audit = AuditLogger(recorder)
-    users = JsonUserRepository(Path(os.environ.get("SENTINEL_USERS_PATH") or _FIXTURE_PATH))
+    demo_auth = os.environ.get("SENTINEL_DEMO_AUTH", "0") == "1"
+    users = JsonUserRepository(Path(os.environ.get("SENTINEL_USERS_PATH") or _FIXTURE_PATH), demo_roles=demo_auth)
     state_backend = (state_backend or os.environ.get("SENTINEL_STATE_BACKEND", "sqlite")).lower()
     if state_backend == "memory":
         sessions = InMemorySessionStore()
@@ -122,6 +125,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     application.include_router(txn_router)
     application.include_router(chat_router)
     application.include_router(disputes_router)
+    application.include_router(handoffs_router)
     application.include_router(ops)
     mount_ui(application)
 

@@ -45,7 +45,7 @@ def test_revoked_token_cannot_be_replayed_in_chat(api) -> None:
     """C3. Logout must kill the token for every route, not only /session/me."""
     login_as(api, CUSTOMER)
     token = api.cookies.get(SESSION_COOKIE)
-    assert api.post("/api/v1/session/logout").status_code == 200
+    assert api.post("/api/v1/auth/logout").status_code == 200
 
     replayed = TestClient(api.app)
     replayed.cookies.set(SESSION_COOKIE, token)
@@ -66,7 +66,7 @@ def test_conversation_state_does_not_leak_between_customers(api) -> None:
     api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     assert len(api.app.state.conversations) == 1, "one live session, one thread"
 
-    api.post("/api/v1/session/logout")
+    api.post("/api/v1/auth/logout")
     assert len(api.app.state.conversations) == 0, "logout deletes the thread"
     login_as(api, "CUST-0002")
     reply = api.post("/api/v1/chat", json={"message": "no reconozco un cargo"}).json()

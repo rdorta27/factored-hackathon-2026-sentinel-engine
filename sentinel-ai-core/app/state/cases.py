@@ -60,6 +60,8 @@ class CaseRepository(Protocol):
 
     def set_reason(self, case_id: str, reason: str) -> None: ...
 
+    def handoffs(self) -> list[CaseRow]: ...
+
 
 class InMemoryCaseRepository:
     def __init__(self) -> None:
@@ -82,6 +84,10 @@ class InMemoryCaseRepository:
         row = self._rows.get(case_id)
         if row is not None:
             self._rows[case_id] = replace(row, reason=reason)
+
+    def handoffs(self) -> list[CaseRow]:
+        rows = [row for row in self._rows.values() if row.kind == "handoff"]
+        return sorted(rows, key=lambda row: row.created_at, reverse=True)
 
 
 def _to_row(record: DisputeCase) -> CaseRow:
@@ -155,6 +161,13 @@ class SqliteCaseRepository:
     def set_reason(self, case_id: str, reason: str) -> None:
         with DbSession(self._engine) as db, db.begin():
             db.execute(update(DisputeCase).where(DisputeCase.dispute_id == case_id).values(reason=reason))
+
+    def handoffs(self) -> list[CaseRow]:
+        with DbSession(self._engine) as db:
+            records = db.scalars(
+                select(DisputeCase).where(DisputeCase.kind == "handoff").order_by(DisputeCase.created_at.desc())
+            ).all()
+            return [_to_row(record) for record in records]
 
 
 class CaseTools:

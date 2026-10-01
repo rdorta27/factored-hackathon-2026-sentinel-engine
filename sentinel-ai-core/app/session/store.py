@@ -26,8 +26,12 @@ class SessionStore(Protocol):
 
 
 class JsonUserRepository:
-    def __init__(self, fixture_path: str | Path) -> None:
+    """Test users from a fixture. Non-customer roles (the demo advisor) load only
+    when ``demo_roles`` is true (``SENTINEL_DEMO_AUTH=1``); a password is always required."""
+
+    def __init__(self, fixture_path: str | Path, demo_roles: bool = False) -> None:
         raw = json.loads(Path(fixture_path).read_text(encoding="utf-8"))
+        entries = [entry for entry in raw["users"] if demo_roles or entry.get("role", "customer") == "customer"]
         self._users = {
             entry["login"]: UserRecord(
                 customer_id=entry["customer_id"],
@@ -37,7 +41,7 @@ class JsonUserRepository:
                 hash_hex=entry["hash_hex"],
                 role=entry.get("role", "customer"),
             )
-            for entry in raw["users"]
+            for entry in entries
         }
 
     def get_by_login(self, login: str) -> UserRecord | None:

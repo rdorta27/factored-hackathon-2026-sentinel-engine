@@ -14,7 +14,7 @@ from app.session.service import (
 )
 
 SESSION_COOKIE = "sentinel_session"
-router = APIRouter(prefix="/api/v1/session", tags=["session"])
+router = APIRouter(prefix="/api/v1/auth", tags=["session"])
 
 _GENERIC = {"detail": "Invalid credentials"}
 _LOCKED = {"detail": "Too many failed attempts. Try again later."}
@@ -62,6 +62,22 @@ def require_session(request: Request) -> Session:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
     except UnknownSession:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+
+
+def require_role(role: str):  # type: ignore[no-untyped-def]
+    """Dependency: a live session whose stored role is ``role``; otherwise 403 and ``access_denied``."""
+
+    def dependency(request: Request, session: Session = Depends(require_session)) -> Session:
+        if session.role != role:
+            request.app.state.audit.emit("access_denied", _trace(request))
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+        return session
+
+    return dependency
+
+
+require_customer = require_role("customer")
+require_advisor = require_role("advisor")
 
 
 @router.post("/login")

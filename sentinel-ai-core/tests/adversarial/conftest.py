@@ -105,14 +105,14 @@ def api() -> TestClient:
 @pytest.fixture
 def logged_in(api: TestClient) -> TestClient:
     assert api.post(
-        "/api/v1/session/login", json={"login": CUSTOMER, "password": PASSWORD}
+        "/api/v1/auth/login", json={"login": CUSTOMER, "password": PASSWORD}
     ).status_code == 200
     return api
 
 
 def login_as(api: TestClient, name: str) -> None:
     assert api.post(
-        "/api/v1/session/login", json={"login": name, "password": PASSWORD}
+        "/api/v1/auth/login", json={"login": name, "password": PASSWORD}
     ).status_code == 200
 
 

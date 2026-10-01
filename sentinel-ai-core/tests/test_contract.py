@@ -25,7 +25,7 @@ LOCALES = {name: json.loads((I18N / f"{name}.json").read_text(encoding="utf-8"))
 
 def logged_in(model=None) -> TestClient:  # type: ignore[no-untyped-def]
     api = TestClient(create_app(model=model))
-    assert api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
     return api
 
 
@@ -54,7 +54,7 @@ def test_served_app_is_the_full_app() -> None:
     api = TestClient(app)
     assert api.get("/ui/").status_code == 200
     assert api.get("/api/v1/health").json()["status"] == "ok"
-    assert api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
     assert api.get("/api/v1/transactions").status_code == 200
     assert api.post("/api/v1/chat", json={"message": "hola"}).status_code == 200
 
@@ -66,7 +66,8 @@ def test_served_app_is_the_full_app() -> None:
         ("get", "/transactions"),
         ("post", "/session/login"),
         ("post", "/auth/login"),
-        ("post", "/api/v1/auth/login"),
+        ("post", "/api/v1/session/login"),
+        ("get", "/api/v1/session/me"),
         ("get", "/health"),
     ],
 )
@@ -86,7 +87,7 @@ def test_listing_matches_the_contract() -> None:
 
 
 def test_me_never_returns_the_customer_id() -> None:
-    assert logged_in().get("/api/v1/session/me").json() == {"role": "customer", "country": "MX"}
+    assert logged_in().get("/api/v1/auth/me").json() == {"role": "customer", "country": "MX"}
 
 
 def test_normal_case_variants_match_the_contract() -> None:

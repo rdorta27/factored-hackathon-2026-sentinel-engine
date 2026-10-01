@@ -31,7 +31,7 @@ from app.schemas.chat import (
     TransactionFacts,
 )
 from app.session.models import Session
-from app.session.router import require_session
+from app.session.router import require_customer
 from app.state.cases import OPEN, CaseRow
 
 router = APIRouter(prefix="/api/v1/disputes", tags=["disputes"])
@@ -80,7 +80,7 @@ def _confirmation_from(row: CaseRow, reference_date: str) -> CaseConfirmation:
 
 
 @router.post("/preview")
-def preview(body: DisputePreviewInput, request: Request, session: Session = Depends(require_session)) -> JSONResponse:
+def preview(body: DisputePreviewInput, request: Request, session: Session = Depends(require_customer)) -> JSONResponse:
     turn = open_turn(request, session)
     turn_input = CandidateIdInput(candidate_id=body.reference)
     if select_charge(turn, body.reference) is None:
@@ -96,7 +96,7 @@ def preview(body: DisputePreviewInput, request: Request, session: Session = Depe
 
 
 @router.post("")
-def create(body: DisputeCreateInput, request: Request, session: Session = Depends(require_session)) -> JSONResponse:
+def create(body: DisputeCreateInput, request: Request, session: Session = Depends(require_customer)) -> JSONResponse:
     turn = open_turn(request, session)
     turn_input = CandidateIdInput(candidate_id=body.reference)
     pending = turn.state.pending_confirmation
@@ -118,14 +118,14 @@ def create(body: DisputeCreateInput, request: Request, session: Session = Depend
 
 
 @router.get("")
-def list_cases(request: Request, session: Session = Depends(require_session)) -> list[CaseSummary]:
+def list_cases(request: Request, session: Session = Depends(require_customer)) -> list[CaseSummary]:
     if "customer_id" in request.query_params:
         raise HTTPException(status_code=422, detail="customer_id is not an accepted parameter")
     return [_summary(row) for row in request.app.state.cases.for_customer(session.customer_id)]
 
 
 @router.get("/{case_id}")
-def get_case(case_id: str, request: Request, session: Session = Depends(require_session)) -> CaseSummary:
+def get_case(case_id: str, request: Request, session: Session = Depends(require_customer)) -> CaseSummary:
     row = request.app.state.cases.get(case_id)
     if row is None or row.customer_id != session.customer_id:
         # Another customer's case is indistinguishable from a missing one.

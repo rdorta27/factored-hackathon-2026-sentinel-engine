@@ -74,7 +74,7 @@ def test_replayed_bearer_cookie_still_works_by_design(api) -> None:
       * `SameSite` — a cross-site form post does not carry the cookie.
       * Short TTL — the window in which a stolen token is useful is small.
     """
-    api.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    api.post("/api/v1/auth/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     copied = api.cookies.get(SESSION_COOKIE)
     assert copied, "the session cookie must exist to replay it"
 
@@ -85,7 +85,7 @@ def test_replayed_bearer_cookie_still_works_by_design(api) -> None:
     )
 
     # The mitigation that does hold: the cookie is not script-accessible.
-    response = api.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    response = api.post("/api/v1/auth/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     assert "HttpOnly" in response.headers.get("set-cookie", "")
 
 
@@ -98,15 +98,15 @@ def test_logout_does_not_invalidate_other_customers_sessions(api) -> None:
     original client's cookie jar cannot mask which session is being checked.
     """
     first_client = TestClient(api.app)
-    first_client.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    first_client.post("/api/v1/auth/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     first = first_client.cookies.get(SESSION_COOKIE)
 
     second_client = TestClient(api.app)
-    second_client.post("/api/v1/session/login", json={"login": "CUST-0002", "password": "Testpass-001"})
+    second_client.post("/api/v1/auth/login", json={"login": "CUST-0002", "password": "Testpass-001"})
     second = second_client.cookies.get(SESSION_COOKIE)
     assert first != second
 
-    first_client.post("/api/v1/session/logout")
+    first_client.post("/api/v1/auth/logout")
 
     revoked = TestClient(api.app)
     revoked.cookies.set(SESSION_COOKIE, first)
@@ -136,7 +136,7 @@ def test_disputes_api_never_reaches_another_customers_charge_or_case(logged_in) 
 
     logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-1006"})
     case_id = logged_in.post("/api/v1/disputes", json={"reference": "TXN-1006"}).json()["case_id"]
-    logged_in.post("/api/v1/session/logout")
+    logged_in.post("/api/v1/auth/logout")
     login_as(logged_in, "CUST-0002")
     assert logged_in.get(f"/api/v1/disputes/{case_id}").status_code == 404
     assert logged_in.get("/api/v1/disputes").json() == []
@@ -149,3 +149,45 @@ def test_disputes_api_rejects_a_client_supplied_identity(logged_in) -> None:
     assert logged_in.post("/api/v1/disputes/preview", json=body).status_code == 422
     assert logged_in.post("/api/v1/disputes", json=body).status_code == 422
     assert logged_in.get("/api/v1/disputes", params={"customer_id": "CUST-0002"}).status_code == 422
+
+
+# --- advisor endpoint: the most sensitive read, every customer's tickets ---
+
+
+@pytest.mark.attack("B11", "blocked_verified")
+def test_customer_cannot_read_the_advisor_tickets(logged_in) -> None:
+    """B11. A customer session asking for `/api/v1/handoffs` gets 403, never tickets.
+
+    blocked (verified): the role stored on the server-side session is checked
+    in code (`require_advisor`); the denial is audited as `access_denied`.
+    Another customer's escalation exists, so a leak would be visible.
+    """
+    logged_in.post("/api/v1/auth/logout")
+    login_as(logged_in, "CUST-0002")
+    logged_in.post("/api/v1/chat", json={"message": "quiero una persona"})
+    logged_in.post("/api/v1/chat", json={"message": "quiero una persona"})
+    logged_in.post("/api/v1/auth/logout")
+
+    login_as(logged_in, CUSTOMER)
+    for path in ("/api/v1/handoffs", "/api/v1/handoffs/HO-00000000"):
+        response = logged_in.get(path)
+        assert response.status_code == 403
+        assert "CUST-0002" not in response.text and "package" not in response.text
+    assert logged_in.app.state.audit.records[-1].event == "access_denied"
+
+
+@pytest.mark.attack("B12", "blocked_verified")
+def test_advisor_login_does_not_exist_outside_demo_auth(api, monkeypatch) -> None:
+    """B12. Without `SENTINEL_DEMO_AUTH=1` the advisor credential is an unknown user.
+
+    blocked (verified): non-customer fixture users load only under the flag,
+    and the failure is the same generic 401 as any unknown login.
+    """
+    monkeypatch.delenv("SENTINEL_DEMO_AUTH", raising=False)
+    from app.main import create_app
+
+    fresh = TestClient(create_app())
+    response = fresh.post("/api/v1/auth/login", json={"login": "ADV-0001", "password": "Advisor-001"})
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Invalid credentials"}
+    assert fresh.get("/api/v1/handoffs").status_code == 401

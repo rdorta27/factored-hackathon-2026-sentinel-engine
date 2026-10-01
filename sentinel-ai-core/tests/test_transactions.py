@@ -6,7 +6,7 @@ PASSWORD = "Testpass-001"
 
 
 def login(api: TestClient, name: str = "CUST-0001") -> None:
-    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": name, "password": PASSWORD}).status_code == 200
 
 
 def test_listing_is_session_scoped_and_ordered() -> None:

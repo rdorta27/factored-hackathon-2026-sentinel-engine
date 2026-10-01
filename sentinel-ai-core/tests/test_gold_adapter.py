@@ -14,7 +14,7 @@ STATIC = Path(__file__).parent.parent / "app" / "static"
 
 
 def login(api: TestClient, name: str = "CUST-0001") -> None:
-    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": name, "password": PASSWORD}).status_code == 200
 
 
 def test_lookup_is_bound_and_hides_foreign_rows() -> None:

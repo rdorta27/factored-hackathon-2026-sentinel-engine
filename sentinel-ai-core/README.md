@@ -26,14 +26,18 @@ SENTINEL_REFERENCE_DATE=2026-06-17 python3 -m uvicorn app.main:app --port 8000
 | `CUST-0001` | `Testpass-001` | MX |
 | `CUST-0002` | `Testpass-001` | CO |
 | `CUST-0003` | `Testpass-001` | AR |
+| `ADV-0001` | `Advisor-001` | advisor (only with `SENTINEL_DEMO_AUTH=1`) |
 
-Login is `POST /api/v1/session/login` with `login` and `password`. Do not send
-`customer_id` in the body.
+Login is `POST /api/v1/auth/login` with `login` and `password`, always; there is
+no login by customer number alone. Do not send `customer_id` in the body.
+Customers land on the chat; the advisor lands on the escalated tickets
+(`GET /api/v1/handoffs`, role `advisor` only).
 
 ## API
 
-One app, one API under `/api/v1`: `session/{login,logout,me}`, `transactions`,
-`chat`, `disputes` (`POST preview`, `POST`, `GET`, `GET {case_id}`), `health`. The chat page is at `/ui/`. Replies are the typed models in
+One app, one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`,
+`chat`, `disputes` (`POST preview`, `POST`, `GET`, `GET {case_id}`),
+`handoffs` (advisor), `health`. The chat page is at `/ui/`. Replies are the typed models in
 `app/schemas/chat.py`.
 
 Gold is read through `GoldTransactions`: the DuckDB view

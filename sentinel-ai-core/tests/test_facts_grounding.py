@@ -51,7 +51,7 @@ def verified_for(api: TestClient, customer_id: str) -> set[Fact]:
 def unverified_facts(reply: dict, verified: set[Fact]) -> set[Fact]:
     """What a reply shows beyond the verified facts (empty means grounded)."""
     shown = set(facts_in(reply))
-    if reply.get("kind") == "handoff":
+    if reply.get("kind") == "handoff" and "package" in reply:
         package_facts = reply.get("package", {}).get("verified_facts")
         allowed = set(facts_in(package_facts)) if package_facts else set()
         return shown - allowed
@@ -67,7 +67,7 @@ def assert_grounded(api: TestClient, customer_id: str, reply: dict) -> None:
 
 def logged_in(name: str) -> TestClient:
     api = TestClient(create_app())
-    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/auth/login", json={"login": name, "password": PASSWORD}).status_code == 200
     return api
 
 
