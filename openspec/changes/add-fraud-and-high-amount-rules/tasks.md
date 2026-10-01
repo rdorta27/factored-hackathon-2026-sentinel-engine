@@ -20,7 +20,7 @@
 ## 4. Evaluation and demo evidence
 
 - [x] 4.1 Add eval cases: one per rule and shown currency, plus the not-mine claim in es-419 and pt-BR, in `sentinel-ai-core/eval/cases/`; extend the runner with an optional second turn (`selected_reference`), the demo customer of the case country, and an `expected_rule` check, with mirror fixtures for the new messages. Area: [ml](../../../docs/build/areas/ml.md). Verify: the runner replays them with the expected handoff outcome.
-- [ ] 4.2 Freeze a new evaluation run and a new adversarial run (`SENTINEL_WRITE_EVIDENCE=1`) as soon as groups 1 to 3 are done, without waiting for decision 10. Verify: new folders under `evidence/evaluation-runs/` and `evidence/adversarial/`, unsafe outcomes still zero.
+- [x] 4.2 Freeze a new evaluation run and a new adversarial run (`SENTINEL_WRITE_EVIDENCE=1`) as soon as groups 1 to 3 are done, without waiting for decision 10. Verify: new folders under `evidence/evaluation-runs/` and `evidence/adversarial/`, unsafe outcomes still zero.
 
 ## 5. Documentation and decisions
 
