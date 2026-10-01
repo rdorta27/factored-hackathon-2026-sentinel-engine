@@ -36,7 +36,11 @@ def _ip(request: Request) -> str:
 
 
 def _trace(request: Request) -> str:
-    return getattr(request.state, "trace_id", "unknown")
+    tid = getattr(request.state, "trace_id", None)
+    if tid and len(tid) == 16:
+        return tid
+    import secrets
+    return secrets.token_hex(8)
 
 
 def get_service(request: Request) -> SessionService:
