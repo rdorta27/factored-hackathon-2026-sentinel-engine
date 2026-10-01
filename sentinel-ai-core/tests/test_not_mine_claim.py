@@ -55,3 +55,30 @@ def test_unrecognized_charge_keeps_the_dispute_path() -> None:
     api.post("/api/v1/chat", json={"message": "no reconozco este cargo"})
     raw = api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"}).json()
     assert raw["kind"] != "handoff"
+
+
+@pytest.mark.parametrize(
+    ("login", "reference", "rule"),
+    [
+        ("CUST-0001", "TXN-1101", "amount.high"),
+        ("CUST-0001", "TXN-1102", "fraud.score"),
+        ("CUST-0002", "TXN-2002", "amount.high"),
+        ("CUST-0002", "TXN-2102", "fraud.score"),
+        ("CUST-0003", "TXN-3101", "amount.high"),
+        ("CUST-0003", "TXN-3003", "fraud.score"),
+    ],
+)
+def test_demo_rows_hand_off_with_their_rule(login: str, reference: str, rule: str) -> None:
+    api = TestClient(create_app())
+    assert api.post("/api/v1/auth/login", json={"login": login, "password": "Testpass-001"}).status_code == 200
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    raw = api.post("/api/v1/chat", json={"selected_reference": reference}).json()
+    assert raw["kind"] == "handoff"
+    assert Handoff.model_validate(raw).package.conversation[-1].rule == rule
+
+
+def test_mexican_mxn_charge_is_not_escalated_by_amount() -> None:
+    api = _logged_in()
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    raw = api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"}).json()
+    assert raw["kind"] != "handoff"

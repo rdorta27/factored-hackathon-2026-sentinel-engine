@@ -48,3 +48,21 @@ def test_mexican_mxn_has_no_threshold() -> None:
     assert mx.fraud_score.limit_for("MXN", mx.currency) is None
     assert mx.high_amount.limit_for("MXN", mx.currency) is None
     assert mx.high_amount.limit_for("USD", mx.currency) is not None
+
+
+def test_every_configured_threshold_has_a_demo_row_above_it() -> None:
+    from app.tools.gold import MockGoldStore
+
+    rows = MockGoldStore("2026-06-17")._rows.values()
+    customers = {"MX": "CUST-0001", "CO": "CUST-0002", "AR": "CUST-0003"}
+    for code, customer in customers.items():
+        policy = load_country(code)
+        assert policy is not None
+        own = [row for row in rows if row.customer_id == customer]
+        for currency, limit in policy.high_amount.values:
+            assert any(r.currency == currency and float(r.amount) > float(limit) for r in own), (code, currency)
+        for currency, limit in policy.fraud_score.values:
+            assert any(
+                r.currency == currency and r.fraud_score is not None and r.fraud_score > float(limit) for r in own
+            ), (code, currency)
+        assert {r.currency for r in own} == {policy.currency, "USD"}
