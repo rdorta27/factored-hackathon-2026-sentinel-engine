@@ -22,7 +22,7 @@ Both thresholds are set per account country **and** per charge currency. They ar
 
 ## Alternatives rejected
 
-- **One USD threshold on `amount_usd`:** the column may be empty, a USD figure is not what the customer sees, and it does not cover the score.
+- **One USD threshold on `amount_usd`:** a USD figure is not what the customer sees, it rests on the dataset's fixed synthetic exchange rates, it is empty in about 5% of ARS and COP charges, and it does not cover the score.
 - **The dictionary's 0-100 scale (for example 50):** observed scores sit below about 30, so such a threshold would never fire.
 - **p90 or p99:** p90 doubles the advisor load; p99 would almost never show in the demo.
 

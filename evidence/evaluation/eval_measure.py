@@ -86,7 +86,8 @@ def account_thresholds(db_path: str, start: str, end: str) -> dict:
 
     Charges are joined to their customer's country (customers.country), never
     grouped by transaction_country, and currencies are never pooled. Groups
-    under MIN_GROUP charges report their count and no percentiles.
+    under MIN_GROUP charges report their count and no percentiles. amount_usd is
+    not read: thresholds are per currency, and Silver does not carry it.
     """
     import duckdb  # optional: only the v2 account thresholds need it
 
@@ -94,7 +95,7 @@ def account_thresholds(db_path: str, start: str, end: str) -> dict:
     try:
         charges = con.execute(
             """
-            SELECT c.country, t.currency, t.amount, t.fraud_score, t.amount_usd
+            SELECT c.country, t.currency, t.amount, t.fraud_score
             FROM silver_transactions t
             JOIN silver_customers c USING (customer_id)
             WHERE CAST(t.transaction_date AS DATE) >= CAST(? AS DATE)
@@ -130,8 +131,7 @@ def account_thresholds(db_path: str, start: str, end: str) -> dict:
     amounts: dict[tuple[str, str], list[float]] = {}
     scores: dict[tuple[str, str], list[float]] = {}
     normalized = 0
-    usd_empty = 0
-    for country, currency, amount, score, amount_usd in charges:
+    for country, currency, amount, score in charges:
         if str(country or "").strip() in COUNTRY_CANON:
             normalized += 1
         key = (canon(country), str(currency or "").strip() or "unknown")
@@ -142,8 +142,6 @@ def account_thresholds(db_path: str, start: str, end: str) -> dict:
         fraud = to_float(score)
         if fraud is not None:
             scores.setdefault(key, []).append(fraud)
-        if to_float(amount_usd) is None:
-            usd_empty += 1
 
     groups: dict[str, dict] = {}
     for (country, currency), values in sorted(amounts.items()):
@@ -168,7 +166,6 @@ def account_thresholds(db_path: str, start: str, end: str) -> dict:
         "n_charges": len(charges),
         "unmatched_customer": int(unmatched),
         "country_normalized": normalized,
-        "amount_usd_empty": {"count": usd_empty, "denominator": len(charges)},
         "groups": groups,
         "product_currency": {k: product_share[k] for k in sorted(product_share)},
     }

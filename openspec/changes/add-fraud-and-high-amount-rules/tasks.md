@@ -2,7 +2,7 @@
 
 ## 1. Evidence: thresholds by account country and currency
 
-- [x] 1.1 Extend `evidence/evaluation/eval_measure.py` (new script version) to read `silver_transactions`, `silver_customers` and `silver_products` from the pipeline DuckDB file (`SENTINEL_EVIDENCE_DUCKDB`), join charges to the customer's country, normalize `Mexico` to `México` as a guard, and report amount and fraud-score percentiles per country and charge currency, product share per country and currency, empty `amount_usd` count and a minimum group size. Area: [data](../../../docs/build/areas/data.md), [ml](../../../docs/build/areas/ml.md). Verify: unit test on a synthetic in-memory sample shows two currencies of one country reported as separate groups.
+- [x] 1.1 Extend `evidence/evaluation/eval_measure.py` (new script version) to read `silver_transactions`, `silver_customers` and `silver_products` from the pipeline DuckDB file (`SENTINEL_EVIDENCE_DUCKDB`), join charges to the customer's country, normalize `Mexico` to `México` as a guard, and report amount and fraud-score percentiles per country and charge currency, product share per country and currency and a minimum group size. Area: [data](../../../docs/build/areas/data.md), [ml](../../../docs/build/areas/ml.md). Verify: unit test on a synthetic in-memory sample shows two currencies of one country reported as separate groups.
 - [ ] 1.2 Run it on the local `gold_bank.duckdb` (gitignored) and freeze `evidence/evaluation/2024Q4-v2/summary.json` (aggregates only, held-out rows 0). Decisions 25, 26. Verify: `verify` mode passes on the new run and v1 is unchanged (`git diff evidence/evaluation/2024Q4-v1` empty).
 
 ## 2. Policy configuration per currency

@@ -9,7 +9,7 @@ The data dictionary settles two facts the rules depend on. Accounts belong only 
 ## What Changes
 
 - Thresholds for both rules are set per account country **and per charge currency**: `fraud_score` and `high_amount` each hold one value per currency (for example MX: MXN and USD). A currency without a value does not fire that rule. **BREAKING** for the policy file format (`thresholds.*.value` becomes a per-currency map).
-- A new write-once evidence run, `evidence/evaluation/2024Q4-v2/`, reports percentiles by account country and charge currency, product currency shares and empty `amount_usd` counts. Country names are normalized to the canonical `México`, `Colombia`, `Argentina`.
+- A new write-once evidence run, `evidence/evaluation/2024Q4-v2/`, reports percentiles by account country and charge currency and product currency shares. Country names are normalized to the canonical `México`, `Colombia`, `Argentina`.
 - Values are synthetic, from the development window (p95, at least 100 charges per group), cite their source, and a bank replaces them by configuration; decisions 25 and 26 are closed in `docs/build/decisions/`.
 - `fraud_score` travels from Gold (mock and DuckDB) to the candidate the engine reads.
 - The understanding step reports an explicit "not mine" claim (for example "no fui yo", "não fui eu"; ordinary "no reconozco este cargo" is not one) and the engine hands it off as `fraud.claim`.

@@ -136,7 +136,7 @@ Facts the system relies on, taken from the [data dictionary](reference/) and che
 - **Currency belongs to the product, not the country.** `products.currency` takes MXN, COP, ARS or USD, so a customer may hold a local and a USD product. In 2024Q4, Colombian and Argentine charges come in their local currency and in USD; every Mexican charge is in USD and none in MXN.
 - **`transaction_country` is where a purchase happened**, not the account country. It includes Brazil, Spain and the USA: customers of the three countries buying abroad, often in their local currency. Account statistics group by `customers.country`.
 - **Canonical spelling is `México`.** The source also writes `Mexico`; Silver normalizes it (`sentinel-data-engine`, REQ-0015). In `customers` there was nothing to fix; in `transactions` the variant names purchases made in Mexico.
-- **`amount_usd` is often empty** (57% of 2024Q4 transactions), so it cannot carry a rule on its own.
+- **`amount_usd` is empty by design in USD charges** (it would repeat the amount) and filled in about 95% of ARS and COP charges, from fixed synthetic exchange rates. Silver does not carry it; the rules do not need it.
 - **The data is fully synthetic and Spanish only.** Portuguese is served without Portuguese data (REQ-0012, REQ-0013).
 
 ## Relationships between tables

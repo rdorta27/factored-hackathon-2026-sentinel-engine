@@ -159,7 +159,6 @@ def test_account_thresholds_split_currencies(tmp_path) -> None:  # type: ignore[
     assert out["country_normalized"] == 1
     assert out["groups"]["Colombia"]["COP"]["n"] == 120
     assert "Brazil" not in out["groups"]
-    assert out["amount_usd_empty"]["denominator"] == 242
     assert out["product_currency"]["México"]["by_currency"] == {"USD": 1, "MXN": 1}
     m.guard_summary(out)
 
