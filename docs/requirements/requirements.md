@@ -2,7 +2,7 @@
 
 What the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`) that the rest of the documentation cites, and this table doubles as the traceability matrix: every requirement is tied to the official document it comes from, the evaluation criterion it serves, the area that owns it, the evidence that will prove it, and its status.
 
-**Purpose:** prioritize the work and spot evaluation criteria that still lack evidence. **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
+**Purpose:** prioritize the work, spot evaluation criteria that still lack evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
 
 ## Hackathon material
 
@@ -125,6 +125,72 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | REQ-0013 | Report data and language-coverage limitations, including that the dataset has no Portuguese text and covers only MX, CO and AR | P0 | All | Rationale | analysis | Problem statement: Scope · Kickoff p. 15 · Dataset summary | Limitations section | Pending |
 | REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28) | Limitations section | In progress |
 | REQ-0052 | Credible path to production: how it deploys, scales, is monitored and secured, and what changes from the prototype | P0 | All | AI Engineering / Rationale | ai, all | Help channel (9/28) · Kickoff p. 15 | [Path to production](../architecture/specification.md#path-to-production) | In progress |
+
+## Dependencies
+
+A requirement depends on another when it cannot be met, or its evidence cannot be produced, until the other one is met. Only direct dependencies are listed; requirements not listed (REQ-0025, REQ-0027, REQ-0031, REQ-0032, REQ-0049) depend on none. Update this table when a requirement is added or its evidence changes.
+
+| Requirement | Depends on | Why |
+|---|---|---|
+| REQ-0001 | REQ-0027 | Context is kept per authenticated session |
+| REQ-0002 | REQ-0001, REQ-0003 | Clarifying needs the conversation so far and the verified candidates |
+| REQ-0003 | REQ-0015, REQ-0032 | Verified facts come from Gold through the tool contracts |
+| REQ-0004 | REQ-0005, REQ-0007, REQ-0032 | Safe tool use needs read-back, permissions in code and documented mock tools |
+| REQ-0006 | REQ-0007, REQ-0033 | The answer/confirm/escalate split is policy in code |
+| REQ-0008 | REQ-0003, REQ-0029, REQ-0047 | The package carries verified facts, rule-based evidence and no PII |
+| REQ-0009 | REQ-0003, REQ-0004, REQ-0006, REQ-0012 | The normal case uses verified data, safe tools and policy, in both languages |
+| REQ-0010 | REQ-0002 | Demo of the clarify-or-abstain behaviour |
+| REQ-0011 | REQ-0008, REQ-0040 | Demo of the handoff and the person request |
+| REQ-0012 | REQ-0001 | Language is detected and kept in the conversation state |
+| REQ-0033 | REQ-0048 | Applies the decision order |
+| REQ-0038 | REQ-0027 | The page runs on the test session |
+| REQ-0039 | REQ-0015 | Freshness comes from the pipeline's as-of date |
+| REQ-0040 | REQ-0006 | A person request is one of the escalation rules |
+| REQ-0041 | REQ-0003 | Currency is a verified fact of the transaction |
+| REQ-0042 | REQ-0003, REQ-0038 | Candidates are verified charges shown in the page |
+| REQ-0043 | REQ-0003, REQ-0015 | Charge status is a verified Gold field |
+| REQ-0044 | REQ-0012 | Extends the Spanish support |
+| REQ-0045 | REQ-0001 | App-error context is offered inside the conversation |
+| REQ-0046 | REQ-0008, REQ-0012 | Routes the package by language |
+| REQ-0005 | REQ-0032 | Read-back uses the tool contracts |
+| REQ-0007 | REQ-0027 | Roles and per-customer checks need the session |
+| REQ-0021 | REQ-0007, REQ-0012, REQ-0026, REQ-0027 | The attacks test permissions, languages, fallback and the session |
+| REQ-0026 | REQ-0005 | Retries are safe only when success is verified |
+| REQ-0028 | REQ-0015, REQ-0019 | Reproducible pipeline and versioned runs |
+| REQ-0029 | REQ-0025 | Explanations cite the logged rules and sources |
+| REQ-0047 | REQ-0027 | Tools filter by the session customer |
+| REQ-0048 | REQ-0016 | The order needs a learned component in between |
+| REQ-0056 | REQ-0016, REQ-0055 | Trade-offs are argued with the measured metrics |
+| REQ-0014 | REQ-0031 | The analysis uses approved, labelled data |
+| REQ-0015 | REQ-0031 | The pipeline ingests approved, labelled data |
+| REQ-0016 | REQ-0017, REQ-0020 | Comparison needs valid labels and a shared held-out |
+| REQ-0017 | REQ-0015 | Labels come from the pipeline output |
+| REQ-0018 | REQ-0015 | Incremental processing extends the pipeline |
+| REQ-0019 | REQ-0016 | Tracks the learned component's versions |
+| REQ-0020 | REQ-0017 | Held-out built on valid labels |
+| REQ-0022 | REQ-0020, REQ-0055 | Reports the held-out metrics with n and failures |
+| REQ-0023 | REQ-0016 | Only applies to an LLM component being judged |
+| REQ-0024 | REQ-0012, REQ-0022 | Breakdown of the reported metrics by language and country |
+| REQ-0050 | REQ-0024, REQ-0025 | Country monitoring reads the logs and the breakdown |
+| REQ-0053 | REQ-0014 | Sizing uses the dispute volumes from the analysis |
+| REQ-0054 | REQ-0031 | Same source inventory |
+| REQ-0055 | REQ-0020, REQ-0025 | Metrics on the held-out, latency and cost from the logs |
+| REQ-0057 | REQ-0055 | ROI uses cost per resolution |
+| REQ-0013 | REQ-0012, REQ-0024 | Coverage limits come from the language support and the breakdown |
+| REQ-0030 | REQ-0013, REQ-0053 | Gathers the data, language and capacity limits |
+| REQ-0034 | REQ-0031 | No restricted data in the public repo |
+| REQ-0035 | REQ-0027, REQ-0034 | A public link needs the session and a clean repo |
+| REQ-0036 | REQ-0055, REQ-0056 | Slides present metrics and trade-offs |
+| REQ-0037 | REQ-0009, REQ-0010, REQ-0011, REQ-0035 | The video shows the three demo cases on the deployed tool |
+| REQ-0051 | REQ-0036, REQ-0037 | Language check covers the slides and video script |
+| REQ-0052 | REQ-0025, REQ-0050 | Path to production includes monitoring |
+
+Chains that still block P0 work:
+
+- **Data:** REQ-0031 (Pending) → REQ-0015 (In progress) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0018 also waits on REQ-0015.
+- **Deployment and video:** REQ-0034 → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
+- **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
+- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 → REQ-0030.
 
 ## Future work (not requirements)
 
