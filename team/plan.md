@@ -83,6 +83,8 @@ Two hackathon rules are non-negotiable: no secrets or data in the repo (credenti
 
 Two code folders. `sentinel-ai-core/` is the whole FastAPI process, including the chat, its policy configuration and the evaluation runner. It is not a separate AI service. No web package and no infrastructure folder.
 
+That process serves two apps from `sentinel-ai-core/app/main.py`: the measured demo (`create_app()`: cookie sessions, orchestrator loop, mock Gold, `POST /chat`) and the production track (module-level `app`: SQLite sessions, DuckDB Gold view, Anthropic LLM, `POST /api/v1/chat`, `/api/v1/disputes`, `/api/v1/transactions`). The demo is the measured submission path; `/api/v1` is the production track and is not covered by the frozen runs.
+
 | Path | Who | What | Status |
 |---|---|---|---|
 | `sentinel-data-engine/` | Natalia | Medallion pipeline. Gold table and columns of the [data contract](../docs/architecture/specification.md#data-contract), as-of date, labelled incremental fixture. | Partial: pipeline, quarantine and `gold_dispute_eligible_transactions` in Gold with the contract columns exist; incremental fixture and as-of read not confirmed |
@@ -94,6 +96,8 @@ Two code folders. `sentinel-ai-core/` is the whole FastAPI process, including th
 | `sentinel-ai-core/app/observability/` | Rubén | Structured log records with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)). | Done: records + JSONL writer wired from `step()` and `/chat`, `var/` anchored to the package; acceptance replay test green |
 | `sentinel-ai-core/eval/` | Rubén | [Evaluation](../docs/architecture/specification.md#evaluation) cases (JSONL) and runner, system vs baseline, with fault injection. | Done: 35 team-written cases (dev/held_out), bench + system runner with fault injection, frozen run `evidence/evaluation-runs/2024Q4-eval-v1/` (0 failures, 0/35 unsafe) |
 | `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Done: label universe `evidence/evaluation/2024Q4-v1/` and runner output `evidence/evaluation-runs/2024Q4-eval-v1/` frozen with verify |
+| `sentinel-ai-core/app/routers/` (production: `chat`, `disputes`, `transactions`, `auth_compat`) | Felix, Natalia | Production track: async `/api/v1/*` endpoints with SQLite sessions, DuckDB Gold view and Anthropic LLM, plus login aliases for the frontend contract. | Partial: wired with tests (`test_endpoints.py`, `test_status.py`); needs subscription, keys and deployment (decision 13); not covered by frozen runs |
+| `sentinel-ai-core/app/services/`, `db/`, `models/`, `schemas/` | Natalia, Felix | Production support: PII-free Gold view reader, SQLite session/dispute persistence, request/response contracts. | Partial: implemented with tests; persistence is SQLite locally, Postgres only in production |
 | Infrastructure as code | Nobody yet | Do not create the folder unless decision 13 lands. | Not started |
 
 Evaluation lives inside `sentinel-ai-core/` because it drives `POST /chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.

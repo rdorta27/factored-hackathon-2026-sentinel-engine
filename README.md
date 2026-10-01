@@ -13,7 +13,7 @@ The guiding principle: **AI understands; code executes and verifies.** The loop 
 Two layers:
 
 - **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold, with DuckDB locally and Azure Databricks in production, both running the same `sentinel_data` package.
-- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM router classifies intent behind one model port and is measured against the keyword baseline on team-written cases (mirrored fixtures until a live model is configured).
+- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM router classifies intent behind one model port and is measured against the keyword baseline on team-written cases (mirrored fixtures until a live model is configured). The process serves two apps: the measured demo (`create_app()`: cookie sessions, mock Gold, `POST /chat`) and the production track (SQLite sessions, DuckDB Gold view, Anthropic LLM: `POST /api/v1/chat`, `/api/v1/disputes`, `/api/v1/transactions`).
 
 The submission runs the same code with a few documented mocks (test session, in-memory dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
 
@@ -73,7 +73,7 @@ The [documentation index](docs/README.md) covers everything else.
 | Path | What it holds |
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with chat (`POST /chat`), session-bound transactions (`GET /transactions`), policy engine, orchestrator and chat UI, with in-memory tool fakes; prompted router with fixtures plus the offline evaluation harness (`eval/`, 35 team-written cases). Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with demo chat (`POST /chat`), session-bound transactions, policy engine, orchestrator and chat UI, with in-memory tool fakes; prompted router with fixtures plus the offline evaluation harness (`eval/`, 35 team-written cases); production track with async `/api/v1/*` endpoints, DuckDB Gold reader and SQLite sessions. Owners in [team/plan.md](team/plan.md#folders). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
