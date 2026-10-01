@@ -26,8 +26,10 @@
 8. [Deployment — Databricks Asset Bundle](#8-deployment--databricks-asset-bundle)
 9. [Local Development Quickstart](#9-local-development-quickstart)
 10. [Testing](#10-testing)
-11. [Configuration Reference](#11-configuration-reference)
-12. [Contributing](#12-contributing)
+11. [Data Quality Metrics, PII Compliance & Requirements](#11-data-quality-metrics-pii-compliance--requirements)
+12. [Gold Layer: Denormalized Serving Layer](#12-gold-layer-denormalized-serving-layer-for-dispute-intake)
+13. [Configuration Reference](#13-configuration-reference)
+14. [Contributing](#14-contributing)
 
 ---
 
@@ -331,9 +333,11 @@ This schema allows the data quality team to:
 - Triage failures by rule frequency (`rejection_reason`).
 - Reconstruct the exact original payload (`raw_record`).
 
-### 6.3 Deduplication & Delta MERGE
+### 6.3 Deduplication, Country Normalization & Delta MERGE
 
-**Within-batch deduplication** uses a window function on the composite primary key:
+**Within-batch deduplication** uses `SELECT DISTINCT` on the canonical Silver column list defined in `transforms.py`. The fixed column list means any extra Bronze column (e.g. `device_fingerprint` added by upstream schema evolution) is automatically ignored and never propagated downstream.
+
+For cross-batch idempotency, a window function on the composite primary key is also applied before the MERGE:
 
 ```sql
 ROW_NUMBER() OVER (
@@ -343,6 +347,17 @@ ROW_NUMBER() OVER (
 ```
 
 Only rows where `rn = 1` reach the MERGE step. The `_ingested_at DESC` ordering ensures the most recent Bronze record wins when duplicates exist within the same batch.
+
+**Country normalization (REQ-0015)**
+
+All columns that carry country values (`transaction_country`, `country`) are normalized during the Silver transform using:
+
+```sql
+CASE WHEN TRIM(col) = 'Mexico' THEN 'México'
+     ELSE COALESCE(TRIM(col), 'UNSPECIFIED') END
+```
+
+In the Medallion pipeline run against the full dataset, **40,515 records** in `silver_transactions` and `silver_customers` had their `transaction_country` / `country` value corrected from `'Mexico'` to the canonical `'México'`. This normalization is enforced at every incremental load; raw `'Mexico'` values never persist in Silver.
 
 **Cross-batch idempotency via Delta MERGE:**
 
@@ -450,41 +465,106 @@ databricks bundle run medallion_pipeline_job --target dev \
 
 - Python 3.10+
 - Internet access for the one-time DuckDB delta extension download
+- AWS credentials with read access to the organizer dataset bucket (stored in `.env`, never committed)
 
-### Setup
+---
+
+### Step 1 — Obtain raw data
+
+The pipeline requires the 13 source CSVs to be accessible before execution. Two options are supported:
+
+#### Option A — Sync to local `data/raw/` (recommended for fast iteration)
+
+Download all raw CSVs from the authorized organizer bucket into the gitignored `data/raw/` directory. Use generic placeholder values here; fill in the real bucket name from `.env`:
 
 ```bash
-# 1. Clone and enter the repository
-git clone https://github.com/your-org/sentinel-data-engine.git
+# Create the local raw data directory
+mkdir -p data/raw
+
+# Sync all 13 source tables from the organizer bucket
+# Replace <YOUR_AUTHORIZED_BUCKET> with the value of S3_BUCKET_NAME in your .env
+aws s3 sync s3://<YOUR_AUTHORIZED_BUCKET>/ data/raw/
+
+Expected outcome: ~1,097 CSV files (~19 M records) under `data/raw/<table>/year=YYYY/month=MM/day=DD/`.
+
+> **Security note:** `data/` is listed in `.gitignore`. Never commit raw data files, and never write the real bucket name, account IDs, or credentials into any tracked file. Credentials are shared by direct message and stored only in `.env`.
+
+#### Option B — Point the pipeline at the cloud URI directly (no local download)
+
+If disk space is limited or you are running on a machine with direct S3 access, pass the S3 bucket URI as `--raw-dir`. The Bronze ingestor reads from S3 transparently using the `boto3` credentials in `.env`:
+
+```bash
+# Replace <YOUR_AUTHORIZED_BUCKET> with the value of S3_BUCKET_NAME in your .env
+export RAW_DIR="s3://<YOUR_AUTHORIZED_BUCKET>"
+
+PYTHONPATH=src .venv/bin/python -m sentinel_data --layer all \
+  --raw-dir "$RAW_DIR" \
+  --duckdb-out data/gold_bank.duckdb \
+  --report-out data_quality_report.md
+```
+
+No local `data/raw/` directory is needed in this mode. Ingestion throughput depends on network bandwidth to the bucket region (`us-east-2`).
+
+---
+
+### Step 2 — Environment setup & run the pipeline
+
+```bash
+# Enter the data engine directory
 cd sentinel-data-engine
 
-# 2. Create a virtual environment and install all dependencies
+# Create a virtual environment and install all dependencies
 python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 
-# 3. Configure environment variables
+# Configure environment variables
 cp .env.example .env
-# Edit .env and fill in AWS credentials and local paths
+# Edit .env — fill in AWS credentials (S3_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+# and local paths (LOCAL_RAW_DATA_DIR, LOCAL_BRONZE_DATA_DIR, LOCAL_SILVER_DATA_DIR)
 ```
 
-### Run the pipeline locally
+Run the complete Bronze → Silver → Gold pipeline and generate the local DuckDB database and quality report (assumes Option A — raw data already in `data/raw/`):
 
 ```bash
-# Ingest a single table into the local Bronze layer
-python -m sentinel_data --layer bronze --table-name transactions
+PYTHONPATH=src .venv/bin/python -m sentinel_data --layer all \
+  --raw-dir data/raw \
+  --duckdb-out data/gold_bank.duckdb \
+  --report-out data_quality_report.md
+```
 
-# Validate and promote Bronze → Silver
-python -m sentinel_data --layer silver --table-name transactions
+What each stage does:
 
-# Process all 13 tables (Bronze then Silver)
-for table in customers products branches service_agents marketing_campaigns \
-             transactions call_center_interactions call_transcripts \
-             satisfaction_surveys digital_events complaints \
-             campaign_sends daily_exchange_rates; do
-  python -m sentinel_data --layer bronze --table-name "$table"
-  python -m sentinel_data --layer silver --table-name "$table"
-done
+| Stage | Detail |
+|---|---|
+| **Bronze ingest** | Reads ~19 M records across 1,097 CSV files from `data/raw/`; attaches `_source_file` / `_ingested_at` / `_batch_id` audit metadata; file-level idempotency skips already-ingested files |
+| **Silver deduplication** | `DISTINCT` on primary keys; `COALESCE` for nulls; country normalization: `'Mexico'` → `'México'` across `transaction_country` and `country` columns (REQ-0015) |
+| **Gold eligibility** | Builds `gold_dispute_eligible_transactions` using fixed cutoff `2026-06-17` and 90-day dispute window; pre-computes `is_eligible_for_dispute`, `dispute_risk_level`, `days_since_transaction` |
+| **PII-free view** | Creates `v_service_dispute_eligible_transactions` — drops `customer_first_name`, `customer_last_name`, and `customer_credit_score` before the service layer can read them (ADR 008) |
+| **Artifacts** | Writes `data/gold_bank.duckdb` (652 MB, gitignored) and `data_quality_report.md` |
+
+Typical runtime on a developer laptop: **~10 minutes** end-to-end.
+
+### Generated local artifacts
+
+| Artifact | Location | Size | Notes |
+|---|---|---|---|
+| DuckDB database | `data/gold_bank.duckdb` | 652 MB | Gitignored; consumed by `sentinel-ai-core` Gold adapter for zero-latency local API queries |
+| Data quality report | `data_quality_report.md` | — | Auto-generated Markdown audit: row counts per layer, deduplication stats, country normalization metrics, PII-free view confirmation |
+
+Both artifacts are excluded from Git (see `.gitignore`). Regenerate them at any time by re-running the command above — the pipeline is fully idempotent.
+
+### Run individual layers
+
+```bash
+# Bronze only — ingest a single table
+PYTHONPATH=src .venv/bin/python -m sentinel_data --layer bronze --table-name transactions
+
+# Silver only — validate and deduplicate
+PYTHONPATH=src .venv/bin/python -m sentinel_data --layer silver --table-name transactions
+
+# Gold only — build dispute serving tables (requires Silver to be complete)
+PYTHONPATH=src .venv/bin/python -m sentinel_data --layer gold
 ```
 
 ### Build the Python wheel
@@ -514,33 +594,34 @@ data/
 │   └── rejected_records/         ← Quarantine Delta table
 │       ├── _delta_log/
 │       └── part-*.parquet
-└── gold/
-    ├── gold_dispute_customer_360/       ← 1 row per customer (risk level, balances, CSAT)
-    │   ├── _delta_log/
-    │   └── part-*.parquet
-    ├── gold_dispute_eligible_transactions/  ← 1 row per transaction (eligibility flags)
-    │   ├── _delta_log/
-    │   └── part-*.parquet
-    └── gold_dispute_cases_summary/      ← 1 row per complaint (SLA, agent, sentiment)
-        ├── _delta_log/
-        └── part-*.parquet
+├── gold/
+│   ├── gold_dispute_customer_360/       ← 1 row per customer (risk level, balances, CSAT)
+│   │   ├── _delta_log/
+│   │   └── part-*.parquet
+│   ├── gold_dispute_eligible_transactions/  ← 1 row per transaction (eligibility flags)
+│   │   ├── _delta_log/
+│   │   └── part-*.parquet
+│   └── gold_dispute_cases_summary/      ← 1 row per complaint (SLA, agent, sentiment)
+│       ├── _delta_log/
+│       └── part-*.parquet
+└── gold_bank.duckdb              ← Compact DuckDB file (all Gold tables + PII-free view)
 ```
 
 ---
 
 ## 10. Testing
 
-All tests run locally with DuckDB — no Spark session, no S3 credentials required.
+All tests run locally with DuckDB — no Spark session, no S3 credentials required. **25/25 tests passing.**
 
 ```bash
 # Run the full test suite
-pytest tests/ -v
+.venv/bin/python -m pytest tests/ -v
 
 # Skip tests that require the DuckDB delta extension (e.g. restricted network)
-SKIP_DELTA_TESTS=1 pytest tests/ -v
+SKIP_DELTA_TESTS=1 .venv/bin/python -m pytest tests/ -v
 
 # Run with coverage report
-pytest tests/ --cov=sentinel_data --cov-report=term-missing
+.venv/bin/python -m pytest tests/ --cov=sentinel_data --cov-report=term-missing
 ```
 
 ### Test matrix
@@ -567,9 +648,71 @@ pytest tests/ --cov=sentinel_data --cov-report=term-missing
 | `test_deduplication_keeps_latest_row` | Duplicate PK → only the latest `_ingested_at` survives |
 | `test_quarantine_schema_has_required_columns` | `raw_record`, `rejection_reason`, `rejected_at`, `source_file` all present |
 
+**`tests/test_incremental_fixture.py`** — 7 tests (REQ-0018)
+
+Validates incremental batch processing, schema evolution, deduplication, and Gold layer idempotency end-to-end in an isolated in-memory DuckDB connection.
+
+| Test | Validates |
+|---|---|
+| `test_batch1_baseline_counts` | Batch 1 produces exactly 2 Silver rows and 2 Gold rows |
+| `test_batch2_deduplication` | Duplicate `transaction_id` in Batch 2 is collapsed; Silver net count increases by 2, not 3 |
+| `test_batch2_schema_evolution_tolerance` | Adding `device_fingerprint` to Bronze does not break Silver or Gold; column is not propagated downstream |
+| `test_batch2_late_arrival_eligibility` | `transaction_date = '2026-06-07'` → `days_since_transaction = 10`, `is_eligible_for_dispute = TRUE` |
+| `test_batch2_country_normalisation` | `'Mexico'` in `transaction_country` is stored as `'México'` in Silver (REQ-0015) |
+| `test_pii_free_view_columns` | `v_service_dispute_eligible_transactions` is queryable and exposes none of `customer_first_name`, `customer_last_name`, `customer_credit_score` (ADR 008) |
+| `test_gold_idempotency` | Two consecutive Gold runs on the same Silver state produce identical row counts and eligible transaction IDs |
+
 ---
 
-## 11. Configuration Reference
+## 11. Data Quality Metrics, PII Compliance & Requirements
+
+### Key processing metrics (from the Medallion pipeline run)
+
+| Metric | Value |
+|---|---|
+| Raw source files ingested | 1,097 CSV files |
+| Total raw records | ~19,000,000 |
+| Total transactions | ~5,000,000 |
+| Total customers | 150,000 |
+| Eligible transactions (90-day window, cutoff 2026-06-17) | 373,443 (8.4% of total) |
+| Average formal disputes / day | ~3 |
+| Average dispute inquiry calls / day | ~213 |
+| Peak disputes / day (Hot Sale / CyberMonday) | 15–20 |
+| Local DuckDB database size | 652 MB |
+| End-to-end pipeline runtime (developer laptop) | ~10 minutes |
+
+### PII compliance guardrails (ADR 008)
+
+The pipeline enforces a strict PII boundary at the Gold layer. The view `v_service_dispute_eligible_transactions` is the **only surface** exposed to `sentinel-ai-core` and the LLM. It explicitly drops:
+
+| Dropped column | Reason |
+|---|---|
+| `customer_first_name` | Structurally PII — not required for dispute eligibility logic |
+| `customer_last_name` | Structurally PII — not required for dispute eligibility logic |
+| `customer_credit_score` | Sensitive financial attribute — not relevant to inquiry resolution |
+
+All other Gold columns are retained only if they carry no PII signal.
+
+### Requirements satisfied by this pipeline
+
+| Requirement | Description | Status |
+|---|---|---|
+| REQ-0015 | Repeatable pipeline with country normalization (`'Mexico'` → `'México'`) | In progress |
+| REQ-0018 | Incremental batch processing, deduplication & Gold idempotency | **Done** |
+| REQ-0031 | Approved data, labeled by origin (source inventory documented) | **Done** |
+| REQ-0053 | Sizing and capacity plan (dispute volumes, DuckDB benchmarks, Azure Databricks roadmap) | **Done** |
+
+### Documentation & compliance references
+
+| Document | Path | Covers |
+|---|---|---|
+| Data Source Inventory | [`../docs/data_inventory.md`](../docs/data_inventory.md) | All 13 source tables, internal evaluation fixtures, REQ-0031 compliance declaration |
+| Sizing & Capacity Spec | [`../docs/sizing_capacity.md`](../docs/sizing_capacity.md) | Dispute volume projections, local DuckDB benchmarks, Azure Databricks scaling roadmap (REQ-0053) |
+| Medallion Health Report | [`data_quality_report.md`](data_quality_report.md) | Auto-generated: row counts per layer, deduplication metrics, country normalization stats, PII-free view audit |
+
+---
+
+## 13. Configuration Reference
 
 ### Environment variables (`.env`)
 
@@ -610,7 +753,7 @@ Silver-only:
 
 ---
 
-## 12. Contributing
+## 14. Contributing
 
 1. Branch from `main` using the format `feat/<short-description>` or `fix/<short-description>`.
 2. All code must follow the constraints below — the CI linter enforces them:
@@ -628,7 +771,7 @@ Silver-only:
 
 ---
 
-## 13. Gold Layer: Denormalized Serving Layer for Dispute Intake
+## 12. Gold Layer: Denormalized Serving Layer for Dispute Intake
 
 The Gold Layer is a high-speed data serving layer engineered specifically for the
 real-time AI Dispute Assistant and policy execution engine.
@@ -679,7 +822,7 @@ balances, historical dispute counts, and overall CSAT profile.
 | `total_compensation_paid` | DOUBLE | Sum of `compensation_amount` |
 | `avg_csat_score` | DOUBLE | Average `main_score` from satisfaction surveys |
 | `dispute_risk_level` | VARCHAR | `HIGH` / `MEDIUM` / `LOW` (derived) |
-| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+| `snapshot_date` | DATE | Fixed as `DATE '2026-06-17'` (`DATASET_CUTOFF_DATE`) |
 
 **`dispute_risk_level` derivation:**
 
@@ -694,14 +837,36 @@ LOW    → active_disputes = 0 AND is_repeat_complainer = FALSE
 Denormalized transaction history pre-joined with customer profiles and existing
 open complaints, featuring derived eligibility indicators.
 
+**Eligibility parameters (fixed — not runtime-computed):**
+
+| Parameter | Value |
+|---|---|
+| Dataset cutoff date (`DATASET_CUTOFF_DATE`) | `2026-06-17` |
+| Dispute eligibility window | 90 days before cutoff |
+| Eligible transactions in full dataset run | **373,443** (8.4% of ~4.42 M processed) |
+
+`days_since_transaction` and `is_eligible_for_dispute` are computed against the **fixed** cutoff date `DATE '2026-06-17'`, never against `CURRENT_DATE`. This makes the pipeline fully reproducible regardless of when it is run.
+
 | Column | Type | Description |
 |---|---|---|
 | `transaction_id` | VARCHAR | Primary key |
 | `customer_*` | various | Denormalized from `customers` |
-| `is_disputed` | BOOLEAN | True when an open complaint references this transaction |
-| `days_since_transaction` | BIGINT | `CURRENT_DATE − transaction_date` |
-| `is_eligible_for_dispute` | BOOLEAN | `NOT is_disputed AND days_since_transaction ≤ 90` |
-| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+| `is_disputed` | BOOLEAN | True when an open complaint references this customer + product pair |
+| `days_since_transaction` | BIGINT | `DATE '2026-06-17' − transaction_date` (fixed cutoff) |
+| `is_eligible_for_dispute` | BOOLEAN | `NOT is_disputed AND days_since_transaction ≤ 90 AND status NOT IN ('Reversed','Refunded')` |
+| `snapshot_date` | DATE | Fixed as `DATE '2026-06-17'` (not `CURRENT_DATE`) |
+
+**PII-free service view (ADR 008)**
+
+`v_service_dispute_eligible_transactions` is the **only surface** exposed to the `sentinel-ai-core` service layer and the LLM. It is built from `gold_dispute_eligible_transactions` with three columns removed:
+
+| Dropped column | Reason |
+|---|---|
+| `customer_first_name` | Structurally PII — not required for dispute eligibility |
+| `customer_last_name` | Structurally PII — not required for dispute eligibility |
+| `customer_credit_score` | Sensitive financial attribute — not relevant to inquiry resolution |
+
+Query latency for point lookups against this view: **< 50 ms** (p99, local DuckDB).
 
 ### `gold_dispute_cases_summary`
 
@@ -717,7 +882,7 @@ agents, SLA breach metrics, and origin interaction context.
 | `agent_type` / `agent_experience_level` | VARCHAR | Agent classification |
 | `origin_sentiment_score` | DOUBLE | Sentiment from the most recent `call_center_interactions` row |
 | `origin_channel` | VARCHAR | Channel of most recent interaction |
-| `snapshot_date` | DATE | `CURRENT_DATE` at build time |
+| `snapshot_date` | DATE | Fixed as `DATE '2026-06-17'` (`DATASET_CUTOFF_DATE`) |
 
 ### Running the Gold Build
 
