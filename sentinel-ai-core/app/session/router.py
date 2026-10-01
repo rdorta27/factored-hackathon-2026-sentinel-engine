@@ -14,7 +14,7 @@ from app.session.service import (
 )
 
 SESSION_COOKIE = "sentinel_session"
-router = APIRouter(prefix="/session", tags=["session"])
+router = APIRouter(prefix="/api/v1/auth", tags=["session"])
 
 _GENERIC = {"detail": "Invalid credentials"}
 _LOCKED = {"detail": "Too many failed attempts. Try again later."}
@@ -57,9 +57,27 @@ def require_session(request: Request) -> Session:
     try:
         return get_service(request).validate(token, trace_id, ip)
     except SessionExpired:
+        # Retention: the conversation (customer turns included) dies with the session.
+        request.app.state.conversation_store.delete(token)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
     except UnknownSession:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+
+
+def require_role(role: str):  # type: ignore[no-untyped-def]
+    """Dependency: a live session whose stored role is ``role``; otherwise 403 and ``access_denied``."""
+
+    def dependency(request: Request, session: Session = Depends(require_session)) -> Session:
+        if session.role != role:
+            request.app.state.audit.emit("access_denied", _trace(request))
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
+        return session
+
+    return dependency
+
+
+require_customer = require_role("customer")
+require_advisor = require_role("advisor")
 
 
 @router.post("/login")
@@ -94,11 +112,15 @@ def login(body: LoginRequest, request: Request) -> JSONResponse:
 
 @router.post("/logout")
 def logout(request: Request, response: Response) -> JSONResponse:
-    get_service(request).logout(request.cookies.get(SESSION_COOKIE), _trace(request), _ip(request))
+    token = request.cookies.get(SESSION_COOKIE)
+    get_service(request).logout(token, _trace(request), _ip(request))
+    if token is not None:
+        request.app.state.conversation_store.delete(token)
     response.delete_cookie(SESSION_COOKIE, path="/")
     return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "Logged out"})
 
 
 @router.get("/me")
 def me(session: Session = Depends(require_session)) -> dict[str, str]:
-    return {"customer_id": session.customer_id, "country": session.country}
+    # The browser never needs the customer identifier; identity stays server-side.
+    return {"role": session.role, "country": session.country}

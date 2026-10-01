@@ -45,7 +45,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | [cost](../docs/build/cost.md) |
-| Dispute record: in-memory for the submission; SQLite locally and Postgres on Azure only as the production backend of the same tool contract. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
+| Case store (disputes and handoff tickets), sessions and conversation state: SQLite for the submission (updated 10/1, mentor feedback: externalize conversation state), Postgres on Azure as the production backend of the same models; in memory only for tests and the offline eval. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [stack](../docs/architecture/system-architecture.md#stack-and-deployment) |
 | Flow: transaction disputes, entered through an account inquiry (confirmed 9/29) | Accepted | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
@@ -61,6 +61,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
 | One public repository (decision 21), organised by folders; no git submodules (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
+| Demo UI with role landing and a read-only advisor view in the ai-core page; `sentinel-login/` backend removed; no admin panel (closes decision 29) | Accepted | [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
 
@@ -83,24 +84,24 @@ Two hackathon rules are non-negotiable: no secrets or data in the repo (credenti
 
 Two code folders. `sentinel-ai-core/` is the whole FastAPI process, including the chat, its policy configuration and the evaluation runner. It is not a separate AI service. No web package and no infrastructure folder.
 
-That process serves two apps from `sentinel-ai-core/app/main.py`: the measured demo (`create_app()`: cookie sessions, orchestrator loop, mock Gold, `POST /chat`) and the production track (module-level `app`: SQLite sessions, DuckDB Gold view, Anthropic LLM, `POST /api/v1/chat`, `/api/v1/disputes`, `/api/v1/transactions`). The demo is the measured submission path; `/api/v1` is the production track and is not covered by the frozen runs.
+That process serves one app from `sentinel-ai-core/app/main.py` (`app = create_app()`), with one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`, `chat`, `disputes`, `handoffs` (advisor), `health`. The demo and the later service share it; only the adapters behind the ports change (Gold: DuckDB view or mock; state: SQLite or memory; model: baseline or prompted router). Disputes also have their own two-step API (`/api/v1/disputes/preview`, `/api/v1/disputes`, plus a read-only listing) running the chat's turn cycle.
 
 | Path | Who | What | Status |
 |---|---|---|---|
 | `sentinel-data-engine/` | Natalia | Medallion pipeline. Gold table and columns of the [data contract](../docs/architecture/specification.md#data-contract), as-of date, labelled incremental fixture. | Partial: pipeline, quarantine and `gold_dispute_eligible_transactions` in Gold with the contract columns exist; incremental fixture and as-of read not confirmed |
-| `sentinel-ai-core/app/static/`, `routers/` | Felix | Chat page with the confirm box, `POST /chat` with the structured confirmation field ([confirmation](../docs/architecture/specification.md#confirmation)). | Done: chat page, test session, `POST /chat` and confirm box verified end to end |
-| `sentinel-ai-core/app/session/` | Felix | Test session and [conversation state](../docs/architecture/specification.md#conversation-state), deleted on expiry. | Done: test session with per-customer isolation, conversation state keyed by session token |
+| `sentinel-ai-core/app/static/`, `routers/` | Felix | Chat page with the confirm box, `POST /api/v1/chat` with the structured confirmation field ([confirmation](../docs/architecture/specification.md#confirmation)). | Done: chat page, test session, `POST /api/v1/chat` and confirm box verified end to end; role landing and read-only advisor view of `GET /api/v1/handoffs` ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
+| `sentinel-ai-core/app/session/` | Felix | Test session and [conversation state](../docs/architecture/specification.md#conversation-state), deleted on expiry. | Done: password login on `/api/v1/auth/*` with roles (customer, demo advisor behind `SENTINEL_DEMO_AUTH`); sessions and conversation in SQLite keyed by a token hash, deleted on logout and expiry |
 | `sentinel-ai-core/app/orchestrator/`, `policy/`, `ai/` | Rubén | Loop, policy engine (evaluates the rules and the decision priority), `confirmation_token`, router, learned component. | Done: loop and policy engine with tests; prompted router behind `ModelPort` with route table and fixtures; learned component measured vs baseline (mirrored fixtures, live comparison pending decision 10) |
 | `sentinel-ai-core/config/policy/` | Rubén | Policy parameters, not code: synthetic [policy source](../docs/architecture/specification.md#policy-source), one file per country (MX, CO, AR), thresholds of decisions 25–27. Read by the engine in `app/policy/`. | Partial: MX, CO and AR files exist. Thresholds are null and marked provisional; reference percentiles frozen in `evidence/evaluation/2024Q4-v1/summary.json` |
-| `sentinel-ai-core/app/tools/` | Felix and Rubén | The four tool contracts. Natalia owns what Gold returns. | Partial: session-bound `lookup_transactions` done with isolation, currency and canary tests (PR #16); open and read-back in-memory fakes; Gold stays a mock store (no real read yet). Handoff is an outcome, not a tool yet. |
+| `sentinel-ai-core/app/tools/` | Felix and Rubén | The four tool contracts. Natalia owns what Gold returns. | Partial: `lookup_transactions` done with isolation, currency and canary tests (PR #16); open and read-back on the SQLite case store with one open dispute per charge; handoff filed as a ticket; Gold on the mock store or the DuckDB adapter, not yet run on real data |
 | `sentinel-ai-core/app/observability/` | Rubén | Structured log records with `trace_id`, latency, tokens and cost ([observability](../docs/architecture/specification.md#observability)). | Done: records + JSONL writer wired from `step()` and `/chat`, `var/` anchored to the package; acceptance replay test green |
-| `sentinel-ai-core/eval/` | Rubén | [Evaluation](../docs/architecture/specification.md#evaluation) cases (JSONL) and runner, system vs baseline, with fault injection. | Done: 35 team-written cases (dev/held_out), bench + system runner with fault injection, frozen run `evidence/evaluation-runs/2024Q4-eval-v1/` (0 failures, 0/35 unsafe) |
-| `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Done: label universe `evidence/evaluation/2024Q4-v1/` and runner output `evidence/evaluation-runs/2024Q4-eval-v1/` frozen with verify |
-| `sentinel-ai-core/app/routers/` (production: `chat`, `disputes`, `transactions`, `auth_compat`) | Felix, Natalia | Production track: async `/api/v1/*` endpoints with SQLite sessions, DuckDB Gold view and Anthropic LLM, plus login aliases for the frontend contract. | Partial: wired with tests (`test_endpoints.py`, `test_status.py`); needs subscription, keys and deployment (decision 13); not covered by frozen runs |
-| `sentinel-ai-core/app/services/`, `db/`, `models/`, `schemas/` | Natalia, Felix | Production support: PII-free Gold view reader, SQLite session/dispute persistence, request/response contracts. | Partial: implemented with tests; persistence is SQLite locally, Postgres only in production |
+| `sentinel-ai-core/eval/` | Rubén | [Evaluation](../docs/architecture/specification.md#evaluation) cases (JSONL) and runner, system vs baseline, with fault injection. | Done: 35 team-written cases (dev/held_out), bench + system runner with fault injection; latest frozen run `evidence/evaluation-runs/2024Q4-eval-v5/` (0 failures, `0/35` unsafe) |
+| `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Done: label universe `evidence/evaluation/2024Q4-v1/` and runner output frozen per run (latest `evidence/evaluation-runs/2024Q4-eval-v5/`) with verify |
+| `sentinel-ai-core/app/services/`, `tools/gold_duckdb.py`, `schemas/`, `db/`, `models/` | Natalia, Felix | PII-free Gold view reader behind `GoldTransactions` (fallback to the mock), the typed API contract (`schemas/chat.py`), and the SQLite models and stores for sessions, conversation and cases (`db/`, `models/`, `state/`). | Partial: contract, SQLite state and Gold adapter with tests; Gold not yet read from local data |
+| `sentinel-login/` | Felix | Original demo page kept as a reference; backend removed, not served ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)). | Reference only |
 | Infrastructure as code | Nobody yet | Do not create the folder unless decision 13 lands. | Not started |
 
-Evaluation lives inside `sentinel-ai-core/` because it drives `POST /chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.
+Evaluation lives inside `sentinel-ai-core/` because it drives `POST /api/v1/chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.
 
 ## Mocks
 
@@ -113,9 +114,9 @@ We start with well-documented mocks and swap them for the real thing one by one,
 |---|---|---|---|
 | Tue 9/29 | Nothing was ready; the skeleton moves to Wed | — | — |
 | Wed 9/30 | Four tools in memory, test session, synthetic policy configuration, simulated advisor, `.env` | Chat and `POST /chat`, orchestrator loop, policy engine, JSON handoff | Identity provider, Key Vault |
-| Thu 10/1 | Dispute record (in memory) | Charge lookup on Gold if the read path is up, otherwise the fixture stays and we say so. Structured confirmation, bounded retries, structured logs | Dispute-record engine (not decided) |
+| Thu 10/1 | Test session with false credentials, synthetic policy, demo advisor user, Gold mock when the DuckDB view is absent | Case store, sessions and conversation out of the process (SQLite); DuckDB Gold adapter; advisor ticket view; structured confirmation, bounded retries, structured logs | PostgreSQL and more than one instance |
 | Fri 10/2 | Anything not reached, reported as a limitation | Evaluation runner and results. Incremental pipeline, if it lands | Advisor delivery channel (decision 28) |
 
-The dispute-record engine is not a milestone: it stays in memory for the submission.
+The dispute-record engine is SQLite for the submission; Postgres is the production step (URL change, same models).
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
 - **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).

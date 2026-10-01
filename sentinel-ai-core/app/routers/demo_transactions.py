@@ -1,73 +1,75 @@
 """
-GET /transactions
-GET /api/v1/transactions  (compatibility alias for the sentinel-login frontend)
+GET /api/v1/transactions
 
-Cookie-session-scoped listing of the customer's transactions from the in-memory
-Gold store.  Used by the demo/test application created via create_app().
+Cookie-session-scoped listing of the customer's transactions from the Gold
+store on ``app.state.gold`` (DuckDB view or in-memory mock, same contract).
 
-Field-name conventions exposed in the response body follow the sentinel-login
-frontend contract:
-  - "reference"   (Gold: transaction_id)
-  - "merchant"    (Gold: merchant_name)
-  - "referenceDate" is included alongside "as_of" so app.js can read the
-    cutoff date with either key.
+Each row is a ``CandidateTransaction``: the same object the chat uses for
+clarification chips and the confirm box, so the interface renders one shape.
+``eligible`` and ``ineligibleKey`` come from the country policy, never from
+the client.
 """
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import JSONResponse
+from datetime import date
 
+from fastapi import APIRouter, Depends, HTTPException, Request
+
+from app.orchestrator.types import Candidate
+from app.policy.engine import _expired
+from app.policy.load import load_country
+from app.schemas.chat import CandidateTransaction, TransactionList
 from app.session.models import Session
-from app.session.router import require_session
+from app.session.router import require_customer
 from app.tools.gold import to_candidate
 
-router = APIRouter(tags=["transactions"])
+router = APIRouter(prefix="/api/v1", tags=["transactions"])
+
+_STATUS_KEYS = {
+    "Reversed": "candidateReversed",
+    "Declined": "candidateDeclined",
+    "Pending": "candidatePending",
+}
 
 
-def _build_response(request: Request, session: Session) -> JSONResponse:
-    """Build the transaction listing response shared by both route paths."""
-    if "customer_id" in request.query_params:
-        raise HTTPException(status_code=422, detail="customer_id is not an accepted parameter")
-
-    gold = request.app.state.gold
-    ref_date = request.app.state.reference_date
-    ref_iso = ref_date.isoformat()
-    rows = gold.list_for_customer(session.customer_id)
-    transactions = [
-        {
-            "reference": row.reference,              # sentinel-login key (Gold: transaction_id)
-            "date": row.date,
-            "currency": row.currency,
-            "amount": row.amount,
-            "merchant": row.merchant,                # sentinel-login key (Gold: merchant_name)
-            # Map raw Gold status through the candidate adapter so "Refunded"
-            # becomes "Reversed" — raw Gold vocabulary never reaches the API.
-            "status": to_candidate(row).status.value,
-        }
-        for row in rows
-    ]
-    return JSONResponse(
-        content={
-            "as_of": ref_iso,            # original key (kept for backward compat)
-            "referenceDate": ref_iso,    # sentinel-login frontend key
-            "transactions": transactions,
-        }
+def candidate_view(candidate: Candidate, country: str, today: date) -> CandidateTransaction:
+    """Project an orchestrator candidate onto the interface contract."""
+    policy = load_country(country)
+    key: str | None = None
+    if policy is None:
+        key = "candidateOutOfWindow"
+    elif not policy.disputable.get(candidate.status.value, False):
+        key = _STATUS_KEYS.get(candidate.status.value, "candidatePending")
+    elif _expired(candidate, today, policy.window_days):
+        key = "candidateOutOfWindow"
+    elif candidate.is_disputed:
+        key = "candidateDisputed"
+    return CandidateTransaction(
+        reference=candidate.candidate_id,
+        amount=candidate.amount,
+        currency=candidate.currency,
+        merchant=candidate.merchant,
+        date=candidate.date,
+        status=candidate.status.value,
+        eligible=key is None,
+        ineligibleKey=key,
     )
 
 
 @router.get("/transactions")
 def list_transactions(
     request: Request,
-    session: Session = Depends(require_session),
-) -> JSONResponse:
-    return _build_response(request, session)
+    session: Session = Depends(require_customer),
+) -> TransactionList:
+    if "customer_id" in request.query_params:
+        raise HTTPException(status_code=422, detail="customer_id is not an accepted parameter")
 
-
-@router.get("/api/v1/transactions")
-def list_transactions_v1(
-    request: Request,
-    session: Session = Depends(require_session),
-) -> JSONResponse:
-    """Compatibility alias — the sentinel-login app.js calls this path."""
-    return _build_response(request, session)
+    gold = request.app.state.gold
+    ref_date = request.app.state.reference_date
+    rows = gold.list_for_customer(session.customer_id)
+    return TransactionList(
+        as_of=ref_date.isoformat(),
+        # Raw Gold vocabulary never reaches the API: rows go through the candidate adapter.
+        transactions=[candidate_view(to_candidate(row), session.country, ref_date) for row in rows],
+    )

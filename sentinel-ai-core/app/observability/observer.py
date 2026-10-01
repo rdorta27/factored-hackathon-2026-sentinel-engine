@@ -39,6 +39,7 @@ class TurnObserver:
         tokens_out: int = 0,
         cost_usd: float = 0.0,
         event: str | None = None,
+        handoff: dict | None = None,
     ) -> None:
         self.recorder.emit(
             StepRecord(
@@ -60,5 +61,6 @@ class TurnObserver:
                 language=language,
                 country=self.country,
                 event=event,
+                handoff=handoff,
             )
         )

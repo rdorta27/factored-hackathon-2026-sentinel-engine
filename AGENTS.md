@@ -44,7 +44,8 @@ For agents:
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
 | [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
 | [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Natalia. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine. Chat and `POST /chat` are not in the folder yet. Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop, policy engine, the page (customer chat and advisor view) and the API under `/api/v1`. Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-login/`](sentinel-login/) | Original demo page kept as a reference; not a backend and not served ([009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 The reading order for someone arriving new is in [`docs/README.md`](docs/README.md).
@@ -58,7 +59,7 @@ Accepted decisions that code must follow:
   in code; no orchestrator ever sees `customer_id`. See
   [005](docs/build/decisions/005-backend.md).
 - **Frontend:** a one-page chat (HTML and a little JavaScript) served by the
-  same FastAPI process, talking to `POST /chat`. See
+  same FastAPI process, talking to `POST /api/v1/chat`. See
   [006](docs/build/decisions/006-frontend.md).
 - **Platform:** Azure; locally it runs on Linux. See
   [001](docs/build/decisions/001-azure-platform.md).

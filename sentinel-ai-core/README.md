@@ -26,9 +26,31 @@ SENTINEL_REFERENCE_DATE=2026-06-17 python3 -m uvicorn app.main:app --port 8000
 | `CUST-0001` | `Testpass-001` | MX |
 | `CUST-0002` | `Testpass-001` | CO |
 | `CUST-0003` | `Testpass-001` | AR |
+| `ADV-0001` | `Advisor-001` | advisor (only with `SENTINEL_DEMO_AUTH=1`) |
 
-Login is `POST /session/login` with `login` and `password`. Do not send
-`customer_id` in the body.
+Login is `POST /api/v1/auth/login` with `login` and `password`, always; there is
+no login by customer number alone. Do not send `customer_id` in the body.
+Customers land on the chat; the advisor lands on the escalated tickets
+(`GET /api/v1/handoffs`, role `advisor` only).
+
+## API
+
+One app, one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`,
+`chat`, `disputes` (`POST preview`, `POST`, `GET`, `GET {case_id}`),
+`handoffs` (advisor), `health`. The chat page is at `/ui/`. Replies are the typed models in
+`app/schemas/chat.py`.
+
+Gold is read through `GoldTransactions`: the DuckDB view
+`v_service_dispute_eligible_transactions` under `SENTINEL_GOLD_DIR` when it is
+readable, the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`, see the repo
+`.env.example`). `GET /api/v1/health` reports which one is active. Real Gold
+needs logins mapped to real customer ids: point `SENTINEL_USERS_PATH` at a users
+file under the gitignored `data/`.
+
+Sessions, conversation state and cases live in SQLite at `SENTINEL_DB_PATH`
+(default `var/sentinel.db`, gitignored), so a restart keeps them; set
+`SENTINEL_STATE_BACKEND=memory` for a throwaway run. Conversation state is
+deleted on logout and on expiry. Login-attempt counters are per process.
 
 ## Model seam
 

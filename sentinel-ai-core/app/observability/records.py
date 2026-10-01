@@ -43,6 +43,7 @@ class StepRecord:
     language: str
     country: str
     event: str | None = None
+    handoff: dict | None = None
 
     def __post_init__(self) -> None:
         if not HEX16.match(self.trace_id):
@@ -71,6 +72,8 @@ class StepRecord:
             value = getattr(self, field)
             if value is not None:
                 _reject_pii(field, value)
+        if self.handoff is not None:
+            _reject_pii("handoff", json.dumps(self.handoff))
 
     def to_json(self) -> str:
         return json.dumps(asdict(self))

@@ -105,22 +105,22 @@ def api() -> TestClient:
 @pytest.fixture
 def logged_in(api: TestClient) -> TestClient:
     assert api.post(
-        "/session/login", json={"login": CUSTOMER, "password": PASSWORD}
+        "/api/v1/auth/login", json={"login": CUSTOMER, "password": PASSWORD}
     ).status_code == 200
     return api
 
 
 def login_as(api: TestClient, name: str) -> None:
     assert api.post(
-        "/session/login", json={"login": name, "password": PASSWORD}
+        "/api/v1/auth/login", json={"login": name, "password": PASSWORD}
     ).status_code == 200
 
 
 def session_memory(api: TestClient):
-    """The per-session `InMemoryTools`, keyed by the session token.
+    """The write-side tools (`CaseTools`) of the logged-in customer.
 
-    Conversation state and tool memory are keyed by `session.token`
-    (`app/routers/chat.py::_bundle`), never by the customer id.
+    Keyed by an opaque salted hash of the customer, so a dispute opened in one
+    session is visible to the next; conversation state stays per session.
     """
     return next(iter(api.app.state.memories.values()))
 

@@ -29,9 +29,9 @@ def test_agent_control_is_two_step_and_session_is_not_stored() -> None:
     assert "sessionStorage" not in APP_JS
     assert "quiero una persona" in APP_JS
     api = TestClient(create_app())
-    assert api.post("/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
-    first = api.post("/chat", json={"message": "quiero una persona"})
-    second = api.post("/chat", json={"message": "quiero una persona"})
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    first = api.post("/api/v1/chat", json={"message": "quiero una persona"})
+    second = api.post("/api/v1/chat", json={"message": "quiero una persona"})
     assert first.json()["kind"] == "text"
     assert second.json()["kind"] == "handoff"
 

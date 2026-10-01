@@ -46,9 +46,24 @@ async function api(path, options) {
 }
 
 function show(id) {
-  document.getElementById("view-login").hidden = id !== "view-login";
-  document.getElementById("view-chat").hidden = id !== "view-chat";
-  document.getElementById("logout").hidden = id !== "view-chat";
+  ["view-login", "view-chat", "view-queue"].forEach((view) => {
+    document.getElementById(view).hidden = id !== view;
+  });
+  document.getElementById("logout").hidden = id === "view-login";
+}
+
+/* The session country picks the starting language; the selector can change it. */
+const COUNTRY_LOCALES = { MX: "es-MX", CO: "es-CO", AR: "es-AR" };
+
+async function loadContext() {
+  const response = await api("/api/v1/auth/me");
+  if (!response.ok) return;
+  const me = await response.json();
+  const locale = COUNTRY_LOCALES[me.country];
+  if (locale) {
+    document.getElementById("locale").value = locale;
+    await loadLocale(locale);
+  }
 }
 
 function humanStatement(candidate) {
@@ -63,7 +78,7 @@ async function postChat(payload) {
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
   try {
-    const response = await api("/chat", {
+    const response = await api("/api/v1/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -122,7 +137,13 @@ function renderReply(body) {
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
-    thread.append(el("div", "msg msg-audit", t(body.reason_key)));
+    const card = el("div", "msg msg-audit");
+    card.append(el("h3", "chat-title", t("handoffTitle")));
+    card.append(el("p", "", `${t("field_reason")}: ${t(body.reason_key)}`));
+    if (body.estimated_date) {
+      card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
+    }
+    thread.append(card);
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
   } else {
@@ -131,7 +152,7 @@ function renderReply(body) {
 }
 
 async function loadTransactions() {
-  const response = await api("/transactions");
+  const response = await api("/api/v1/transactions");
   const payload = await response.json();
   document.getElementById("reference-date").textContent = `${t("field_referenceDate")}: ${formatDate(payload.as_of)}`;
   const box = document.getElementById("transactions");
@@ -147,9 +168,45 @@ async function loadTransactions() {
   });
 }
 
+/* Advisor view: the escalated tickets with why they came and what was tried. */
+function ticketCard(ticket) {
+  const pkg = ticket.package;
+  const card = el("div", "msg msg-audit");
+  card.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
+  card.append(el("p", "chat-sub", `${t("q_customer")}: ${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
+  const rule = pkg.evidence && pkg.evidence.policy_rule ? ` (${pkg.evidence.policy_rule})` : "";
+  card.append(el("p", "", `${t("q_reason")}: ${t(ticket.reason_key)}${rule}`));
+  card.append(el("p", "", `${t("q_summary")}: ${pkg.summary}`));
+  const facts = pkg.verified_facts;
+  if (facts) {
+    card.append(
+      el("p", "", `${t("q_transaction")}: ${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`)
+    );
+  }
+  const actions = el("ul", "chat-sub");
+  pkg.actions_taken.forEach((action) => {
+    const parts = [`#${action.turn}`, action.step, action.tool, action.outcome, action.policy_rule].filter(Boolean);
+    actions.append(el("li", "", `${parts.join(" · ")} (${action.attempt})`));
+  });
+  card.append(el("p", "", t("q_actions")));
+  card.append(actions);
+  card.append(el("p", "", `${t("q_openQuestions")}: ${pkg.open_questions.join(", ")}`));
+  return card;
+}
+
+async function loadQueue() {
+  const response = await api("/api/v1/handoffs");
+  if (!response.ok) return;
+  const tickets = await response.json();
+  const box = document.getElementById("queue");
+  box.textContent = "";
+  if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
+  tickets.forEach((ticket) => box.append(ticketCard(ticket)));
+}
+
 document.getElementById("login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const response = await fetch("/session/login", {
+  const response = await fetch("/api/v1/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -161,7 +218,14 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     document.getElementById("login-error").textContent = t("loginFailed");
     return;
   }
+  const { role } = await response.json();
+  if (role === "advisor") {
+    show("view-queue");
+    loadQueue();
+    return;
+  }
   show("view-chat");
+  await loadContext();
   loadTransactions();
 });
 
@@ -183,7 +247,7 @@ document.getElementById("agent").addEventListener("click", () => {
 });
 
 document.getElementById("logout").addEventListener("click", async () => {
-  await fetch("/session/logout", { method: "POST" });
+  await fetch("/api/v1/auth/logout", { method: "POST" });
   show("view-login");
 });
 
