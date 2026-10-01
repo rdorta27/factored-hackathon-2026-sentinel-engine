@@ -29,13 +29,22 @@ def load_country(country: str, directory: Path = CONFIG_DIR) -> CountryPolicy | 
     )
 
 
-def _threshold(item: dict[str, str]) -> Threshold:
+def _threshold(item: dict) -> Threshold:
     raw = item.get("value")
     value = None if raw in (None, "null", "") else raw
+    per_currency = item.get("values") or {}
+    if not isinstance(per_currency, dict):
+        raise ValueError("threshold values must be a currency map")
+    values = tuple(
+        sorted((code, limit) for code, limit in per_currency.items() if limit not in (None, "null", ""))
+    )
+    source = item.get("source")
     return Threshold(
         value=value,
         provisional=item.get("provisional") == "true",
         decision=int(item["decision"]) if item.get("decision") else None,
+        values=values,
+        source=None if source in (None, "null", "") else source,
     )
 
 
