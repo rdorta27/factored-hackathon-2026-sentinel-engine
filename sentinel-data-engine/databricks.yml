@@ -65,13 +65,14 @@ resources:
   jobs:
 
     # =========================================================================
-    # Medallion Pipeline – Bronze → Silver (sequential tasks, single workflow)
+    # Medallion Pipeline – Bronze → Silver → Gold (sequential tasks)
     # =========================================================================
     medallion_pipeline_job:
-      name: "[Sentinel] Medallion Pipeline – Bronze → Silver"
+      name: "[Sentinel] Medallion Pipeline – Bronze → Silver → Gold"
       description: >
         End-to-end Medallion ingestion: ingests raw S3 data into Bronze,
-        then validates, deduplicates, and merges into Silver.
+        validates, deduplicates, and merges into Silver, then builds the
+        three Gold serving tables for the Dispute Intake use case.
 
       # Cost-optimised single-node cluster reused across tasks
       job_clusters:
@@ -150,6 +151,25 @@ resources:
             parameters:
               - "--layer=silver"
               - "--table-name=digital_events"
+              - "--run-mode=databricks"
+              - "--databricks-catalog=${var.databricks_catalog}"
+              - "--databricks-schema-bronze=${var.schema_bronze}"
+              - "--databricks-schema-silver=${var.schema_silver}"
+          libraries:
+            - whl: ./dist/*.whl
+
+        # ── Gold: all tables (depends on all Silver tasks) ───────────────────
+        - task_key: gold_all
+          depends_on:
+            - task_key: silver_transactions
+            - task_key: silver_digital_events
+          job_cluster_key: medallion_cluster
+          python_wheel_task:
+            package_name: sentinel_data
+            entry_point: sentinel_data.__main__
+            parameters:
+              - "--layer=gold"
+              - "--table-name=all"
               - "--run-mode=databricks"
               - "--databricks-catalog=${var.databricks_catalog}"
               - "--databricks-schema-bronze=${var.schema_bronze}"

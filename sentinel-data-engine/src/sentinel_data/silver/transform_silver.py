@@ -188,6 +188,18 @@ class SilverTransformer:
             f"CREATE OR REPLACE VIEW bronze_raw AS SELECT * FROM delta_scan('{bronze_path}');"
         )
 
+        # Step 1b – apply country standardisation before validation.
+        # Raw Bronze contains "Mexico" (no accent, ~3.4 k rows) alongside the
+        # canonical "México".  Normalise here so Silver is 100 % clean.
+        normalization_sql = self._build_country_normalization_sql(con)
+        con.execute(
+            f"""
+            CREATE OR REPLACE VIEW bronze_normalized AS
+            SELECT {normalization_sql}
+            FROM bronze_raw;
+            """
+        )
+
         # Step 2 – validate rows and compute rejection_reason per row
         validation_sql = self._build_validation_sql()
         con.execute(
@@ -196,7 +208,7 @@ class SilverTransformer:
             SELECT
                 *,
                 {validation_sql} AS rejection_reason
-            FROM bronze_raw;
+            FROM bronze_normalized;
             """
         )
 
@@ -284,6 +296,36 @@ class SilverTransformer:
             silver_path,
             quarantine_path,
         )
+
+    def _build_country_normalization_sql(self, con: duckdb.DuckDBPyConnection) -> str:
+        """
+        Return a SELECT column list that standardises country values.
+
+        The raw Bronze dataset contains "Mexico" (without accent) alongside the
+        canonical "México".  This method replaces the relevant country column(s)
+        with an explicit CASE expression so all downstream Silver tables carry
+        only the canonical spelling.
+
+        Affected tables / columns
+        -------------------------
+        customers    : country
+        transactions : transaction_country
+        """
+        all_cols = [
+            desc[0]
+            for desc in con.execute("SELECT * FROM bronze_raw LIMIT 0").description
+        ]
+
+        _MEXICO_FIX = "CASE WHEN {col} = 'Mexico' THEN 'México' ELSE {col} END AS {col}"
+
+        country_cols = {"country", "transaction_country"}
+        parts = []
+        for col in all_cols:
+            if col in country_cols:
+                parts.append(_MEXICO_FIX.format(col=col))
+            else:
+                parts.append(f'"{col}"')
+        return ", ".join(parts)
 
     def _build_validation_sql(self) -> str:
         """
