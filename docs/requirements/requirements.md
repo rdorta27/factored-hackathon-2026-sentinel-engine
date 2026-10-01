@@ -161,10 +161,13 @@ A requirement depends on another when it cannot be met, or its evidence cannot b
 
 Chains that still block P0 work:
 
-- **Data:** REQ-0031 (Pending) → REQ-0015 (In progress) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0018 also waits on REQ-0015.
-- **Deployment and video:** REQ-0034 → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
+- **Data:** REQ-0015 (In progress: quality metrics) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0031 and REQ-0018 are done.
+- **Learned component:** decision 10 (live model) → REQ-0016 (In progress) → REQ-0019, REQ-0056.
+- **Deployment and video:** REQ-0034 (In progress) → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
 - **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
-- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 → REQ-0030.
+- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 (In progress) → REQ-0030. REQ-0053 is done.
+
+Statuses in these chains are written by hand: update them when a requirement changes status.
 
 ## Future work (not requirements)
 
