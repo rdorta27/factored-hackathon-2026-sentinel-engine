@@ -30,6 +30,7 @@ from fastapi.responses import JSONResponse
 
 from app.observability import Recorder, TurnObserver
 from app.orchestrator.step import Ports, step
+from app.privacy import mask
 from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
@@ -541,7 +542,12 @@ def chat(
                 request, turn, unknown_charge(turn), policy_rule="unknownCharge", turn_input=turn_input
             )
     else:
-        turn_input = TextInput(text=body.message or "")
+        # REQ-0047: this is the single place free customer text enters the
+        # system. It is masked here, at the boundary, so the orchestrator, the
+        # model and the conversation state never hold a raw identifier.
+        # `tests/privacy/test_masking.py` fails if another TextInput is built
+        # without going through `mask`.
+        turn_input = TextInput(text=mask(body.message or ""))
 
     output, reply = run_turn(turn, turn_input)
     return finish_turn(request, turn, reply, output, turn_input=turn_input)

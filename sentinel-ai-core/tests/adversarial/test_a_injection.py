@@ -163,16 +163,14 @@ def test_model_does_not_follow_injection_instructions(logged_in) -> None:
     assert body.get("injection_detected") is True
 
 
-@pytest.mark.attack("A9", "no_defense_yet")
-@pytest.mark.xfail(
-    strict=True,
-    reason="free-text PII masking not built (decision 004, proposed only)",
-)
+@pytest.mark.attack("A9", "blocked_verified")
 def test_national_id_in_the_message_never_reaches_the_model(logged_in, monkeypatch) -> None:
-    """PII in free text: the spec calls this gap out explicitly.
+    """PII in free text is masked before the model sees it (REQ-0047).
 
-    Fails on purpose: nothing masks free text today, so the message the model
-    receives still contains the raw id. Goes green when the token vault lands.
+    blocked (verified): the message carries the trigger "DNI", so
+    `app/privacy/mask.py` replaces the number with `[DOC_ID]` at the router —
+    the single point where free text enters the system. The assertion is
+    unchanged from the xfail version: the id must not be what the model gets.
     """
     captured: dict[str, str] = {}
 
@@ -198,3 +196,4 @@ def test_national_id_in_the_message_never_reaches_the_model(logged_in, monkeypat
     assert "1098234" not in captured.get("message", "1098234"), (
         "the raw id must not be what the model receives"
     )
+    assert "[DOC_ID]" in captured["message"], "the marker replaced it instead"
