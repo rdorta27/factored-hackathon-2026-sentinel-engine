@@ -13,9 +13,10 @@ The guiding principle: **AI understands; code executes and verifies.** The loop 
 Two layers:
 
 - **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold, with DuckDB locally and Azure Databricks in production, both running the same `sentinel_data` package.
-- **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM router classifies intent behind one model port and is measured against the keyword baseline on team-written cases (mirrored fixtures until a live model is configured). The process serves one app and one API under `/api/v1` (`session`, `transactions`, `chat`, `health`); the demo is that app with mock adapters. Gold is read from the DuckDB view when it is available and from the labelled mock otherwise.
+- **Service:** one FastAPI process with the page, the orchestrator, the policy engine and four session-bound tools, and one API under `/api/v1`: `auth`, `transactions`, `chat`, `disputes` (two-step), `handoffs` (advisor) and `health`. Sessions, conversation state, disputes and handoff tickets live in SQLite, so a restart keeps them. Gold is read from the DuckDB view when it is available and from the labelled mock otherwise. The demo serves the keyword baseline behind one model port; a prompted LLM router behind the same port is measured against it offline (mirrored fixtures until a live model is configured).
+- **Human in the loop:** every handoff is filed as a ticket with the reason, a summary of the conversation, the verified facts and every action the system attempted; the advisor reads it in a read-only view of the same page.
 
-The submission runs the same code with a few documented mocks (test session, SQLite dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
+The submission runs the same code with a few documented mocks (test session, SQLite instead of PostgreSQL, a demo advisor user, synthetic policy). See the [architecture](docs/architecture/README.md).
 
 ## Quickstart
 
@@ -26,7 +27,16 @@ cd sentinel-ai-core
 uvicorn app.main:app
 ```
 
-Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`).
+Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`). These credentials are false and test-only.
+
+To see the advisor side, start it with the demo roles enabled and log in as `ADV-0001` (password `Advisor-001`) after a customer has asked for a person twice:
+
+```bash
+cd sentinel-ai-core
+SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
+```
+
+State lives in `sentinel-ai-core/var/sentinel.db` (gitignored); delete it for a clean demo.
 
 Watch the structured turn log while you chat (from the repository root):
 
@@ -47,15 +57,15 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 5 | 28 | 8 | 12% |
-| P1 | 12 | 1 | 8 | 3 | 8% |
+| P0 | 41 | 18 | 16 | 7 | 44% |
+| P1 | 12 | 6 | 3 | 3 | 50% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 7 | 36 | 14 | 12% |
+| **Total** | **57** | 25 | 19 | 13 | 44% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | REQ-0005 verified actions · REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0021 measured adversarial failure set ([evidence](evidence/adversarial/20260930T214744Z/summary.json)) · REQ-0026 bounded retries and idempotent open · REQ-0033 policy decides, the LLM converses · REQ-0048 decision order ([specification](docs/architecture/specification.md#decision-priority)) · REQ-0049 country as configuration |
-| **In progress** | 36 requirements across the loop and policy, session/chat/listing, data and evaluation areas (breakdown per requirement below) |
+| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0048 decision order. Demo: REQ-0009 normal · REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T130342Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) |
+| **In progress** | Learned component vs baseline and the outcome metrics (live model pending, decision 10) · pipeline end to end and Gold read on real data · thresholds for fraud and high amount (decisions 25, 26) · person request during a pending confirmation (REQ-0040) · pt-BR reviewer · PII typed by the customer (REQ-0047) · deliverables: public link, slides, video |
 
 Status per requirement: [requirements](docs/requirements/requirements.md#status-by-priority).
 
@@ -79,7 +89,7 @@ The [documentation index](docs/README.md) covers everything else.
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |
 | [`docs/build/`](docs/build/) | How we build it: [areas](docs/build/areas/), [conversation](docs/build/conversation.md), [security](docs/build/security.md), [metrics](docs/build/metrics.md), [decisions](docs/build/decisions/), [delivery](docs/build/delivery.md) |
-| [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md), the [label evidence](evidence/evaluation/2024Q4-v1/summary.json), the [frozen eval run](evidence/evaluation-runs/2024Q4-eval-v1/summary.json) and the [adversarial set](evidence/adversarial/20260930T214744Z/summary.json), cited by the documentation |
+| [`evidence/`](evidence/) | Frozen, reproducible runs: the [flow measurements](evidence/flows/README.md), the [label evidence](evidence/evaluation/2024Q4-v1/summary.json), the [latest eval run](evidence/evaluation-runs/2024Q4-eval-v5/summary.json) and the [latest adversarial run](evidence/adversarial/20261001T130342Z/summary.json), cited by the documentation |
 | [`scripts/`](scripts/) | Repository scripts, such as the generator of the flow measurements page |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 

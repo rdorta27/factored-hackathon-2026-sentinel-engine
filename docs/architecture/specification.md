@@ -6,6 +6,22 @@ The contracts and rules behind the [System Architecture](system-architecture.md)
 
 The entry point is an **account inquiry about charges and transactions**: what a charge is, why it is Declined, Pending or Reversed, and whether it can be disputed. Balances, product details, cards and credit are out of scope; the assistant says so and offers a handoff (REQ-0002). This keeps one coherent workflow with a single read tool ([decision 24](../../team/pending-decisions.md#decided)).
 
+## Service API
+
+One process, one API under `/api/v1`, typed replies in `sentinel-ai-core/app/schemas/chat.py`. Identity comes only from the session cookie; no body or query accepts `customer_id` (REQ-0007, REQ-0027, REQ-0047).
+
+| Route | Role | What it does |
+|---|---|---|
+| `POST /api/v1/auth/login` · `logout` · `GET me` | — | Password login against test credentials; the role is stored on the server-side session. `me` returns role and country only |
+| `GET /api/v1/transactions` | customer | The session customer's charges with the as-of date; each marked eligible or not, with the reason key |
+| `POST /api/v1/chat` | customer | One turn of the loop. Body: `message` or `selected_reference`. Reply: `text`, `clarification`, `confirm_box`, `case_confirmation`, `handoff` or `error` |
+| `POST /api/v1/disputes/preview` · `POST /api/v1/disputes` | customer | The [confirmation](#confirmation) in two calls on the same turn cycle as the chat: preview returns the confirm box and writes nothing; create opens only the previewed charge (409 otherwise) |
+| `GET /api/v1/disputes` · `/{id}` | customer | Own cases (disputes and handoff tickets); another customer's case is a 404 |
+| `GET /api/v1/handoffs` · `/{id}` | advisor | Escalated tickets with the full package, plus customer id and country ([009](../build/decisions/009-demo-ui-and-advisor-view.md)) |
+| `GET /api/v1/health` | — | Liveness, active Gold source and state backend |
+
+A role failure is a 403 recorded as `access_denied`. The page at `/ui/` is the only client in the demo.
+
 ## Orchestrator loop
 
 The loop comes from the hackathon brief: **Understand → Decide → Act → Verify → Escalate** ([flow candidates](../build/flows/01-flow-candidates.md)). Each step has one owner.
@@ -27,7 +43,7 @@ Four tools. Each is bound to the session's `customer_id`, which the orchestrator
 | `lookup_transactions` | Optional filters: date range, merchant hint, amount hint | Candidate charges, each with an opaque candidate id, status (Approved, Declined, Pending, Reversed), amount in the original currency, merchant, date, and the data as-of date | Only the session customer's charges. Never fabricates a charge (REQ-0003, REQ-0041). |
 | `open_dispute` | Candidate id, `confirmation_token`, dispute category (from the [learned component](system-architecture.md#learned-component)), customer statement, idempotency key | Dispute id and write status | Validates the mandatory fields for the account's country, from configuration (REQ-0049); a missing field is asked for, not invented. Rejects the call without a valid `confirmation_token` for that candidate and session. One record per idempotency key: a retry with the same key returns the existing case (REQ-0026). |
 | `lookup_dispute` | Dispute id | The stored record, or not found | The case number reaches the customer only when this read succeeds (REQ-0005). |
-| `handoff` | Reason for escalation | JSON package: request, verified facts, actions taken, evidence, open questions, language, country | No raw transcript, no identifiers beyond what the advisor is authorised to see (REQ-0008, REQ-0046). |
+| `handoff` | Reason for escalation | JSON package: request, deterministic summary and per-turn conversation, verified facts, every action attempted in the session, evidence, open questions, language, country | No raw transcript and no unverified references; no identifiers beyond what the advisor is authorised to see (REQ-0008, REQ-0046). Filed as an escalated case. |
 
 The JSON package is the handoff. It is filed as an escalated case, and the advisor reads it at `GET /api/v1/handoffs` (role `advisor`) in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 
@@ -39,6 +55,8 @@ State-changing actions need an explicit, structured confirmation (REQ-0006). A f
 2. The customer presses confirm. The page sends the candidate id back to `POST /api/v1/chat` as a structured field, not as text.
 3. The orchestrator issues a single-use `confirmation_token` bound to session, candidate and action, with a short expiry.
 4. `open_dispute` accepts only that token. The LLM never sees, creates or forwards it.
+
+The disputes API follows the same steps: `POST /api/v1/disputes/preview` is the confirm box and `POST /api/v1/disputes` is the confirmation; a create without a pending preview is refused (409) and writes nothing.
 
 ## Decision priority
 
@@ -88,7 +106,7 @@ The target enforces this with **data minimisation at three boundaries**, all in 
 
 | Boundary | Control | Status |
 |---|---|---|
-| Gold → service | The service reads a serving view with only the [data contract](#data-contract) columns. Names, credit score and `is_fraud` stay in the data layer. | Proposed to the data owner; today `gold_dispute_eligible_transactions` also carries customer name and credit score |
+| Gold → service | The service reads a serving view without personal columns. Names and credit score stay in the data layer. | Built: the pipeline writes `v_service_dispute_eligible_transactions`, and the DuckDB adapter reads only that view; not yet run on local data |
 | Tools → LLM | Tools return only the fields the reply needs (amount, currency, merchant, date, status, opaque candidate id). `customer_id` is injected by the orchestrator and never returned. | Target contract |
 | Logs | No customer text and no `customer_id` in clear; the session is a salted hash. | Target contract |
 
@@ -120,7 +138,9 @@ Failures degrade to a safe answer or a handoff, never to an unverified claim (RE
 Context is kept per session by the orchestrator, not by the LLM (REQ-0001).
 
 - **Contents:** the last turns (bounded window), candidates shown, pending confirmation, detected language, clarification count.
-- **Lifetime:** tied to the session. When the session expires the state is deleted and the next message requires a new session (REQ-0027).
+- **Storage:** outside the process, in the relational store (SQLite in the demo), keyed by a hash of the session token; a restart keeps it.
+- **History:** one structured entry per turn (what the customer did, the verified charge, the reply, the rule) and every attempted step; it feeds the handoff summary and never contains the customer's words (only the bounded turn window does, for the model).
+- **Lifetime:** tied to the session. On logout or expiry the state is deleted and the next message requires a new session (REQ-0027).
 - **What the LLM gets:** the bounded window of turns and the tool results, never the session or candidate internals.
 
 ## Policy source
@@ -133,11 +153,11 @@ Rules are evaluated in code, in the policy engine (`app/policy/`), which also ap
 
 ## Data contract
 
-`lookup_transactions` reads one Gold table, `gold_dispute_eligible_transactions`, through a serving view limited to the columns below. The pipeline in `sentinel-data-engine/` owns schema contracts, quality checks, deduplication and lineage (REQ-0015); details in [data](../build/areas/data.md).
+`lookup_transactions` reads one Gold serving view, `v_service_dispute_eligible_transactions` (the PII-free projection of `gold_dispute_eligible_transactions`), through the `GoldTransactions` seam: a DuckDB adapter, or the labelled mock when the view is not readable. The pipeline in `sentinel-data-engine/` owns schema contracts, quality checks, deduplication and lineage (REQ-0015); details in [data](../build/areas/data.md).
 
 - **Columns consumed:** transaction id, customer id (filter only, never returned to the LLM), date, amount, currency, merchant, status, `fraud_score`.
 - **Eligibility columns computed in Gold:** `is_disputed`, `days_since_transaction`, `is_eligible_for_dispute` (90-day window). `days_since_transaction` is computed when Gold is built, so it ages between runs; the policy engine recomputes the window from the transaction date at request time and treats the Gold flag as a hint.
-- **Not exposed to the service:** customer name, segment, credit score and `is_fraud`, which the current table also carries (see [personal data](#personal-data)).
+- **Not exposed to the service:** customer name and credit score, which the source table carries (see [personal data](#personal-data)). The view still carries `is_fraud` and segment; the adapter does not read them and `is_fraud` is never used as a signal.
 - **As-of date:** the latest processed `process_date` in Gold, returned with every read (REQ-0039).
 - **Update correctness:** a labelled fixture with late arrivals, duplicates and a schema change proves incremental processing (REQ-0018).
 
@@ -186,16 +206,16 @@ REQ-0027. Proposed; confirm with [security](../build/security.md#data).
 |---|---|---|
 | Conversation state | SQLite, deleted on logout and on session expiry; orphans purged at login | Deleted on session expiry |
 | Log records | Local files, no customer text | Centralized, 90 days, no customer text |
-| Dispute records | SQLite | Kept per the bank's regulatory retention |
-| Handoff packages | Response, log and the case table (`kind=handoff`) | With the dispute record |
+| Dispute records (case store) | SQLite | Kept per the bank's regulatory retention |
+| Handoff packages | Response, log and the case store (`kind=handoff`) | With the case |
 | LLM provider | No retention, no training use | Same, contractual |
 
 ## Capacity
 
 REQ-0053. Demand in the development window: `disputes.unrecognized_claim` and `accounts.reason_transaccional` in the [flow measurements](../build/flows/02-flow-measurements.md) (per-day figures derived there). The prototype is sized for that order of magnitude.
 
-- **Prototype limit:** one process; throughput bound by the LLM provider's rate limit and usage cap, and dispute state lost on restart. To be measured by the evaluation runner under concurrency.
-- **At real volume:** horizontal replicas of the same process (state moved out of the process to the relational store), per-route LLM quotas, and Gold served from Databricks SQL.
+- **Prototype limit:** one process on one SQLite file; throughput bound by the LLM provider's rate limit and usage cap. State survives a restart, but more than one instance needs PostgreSQL and shared login-attempt counters. To be measured by the evaluation runner under concurrency.
+- **At real volume:** horizontal replicas of the same process on PostgreSQL (state is already out of the process), per-route LLM quotas, and Gold served from Databricks SQL.
 
 ## Trade-offs
 
@@ -216,7 +236,7 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Area | Work before production |
 |---|---|
 | Identity | Replace the test session with an identity provider; move secrets to Azure Key Vault |
-| Dispute record and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
+| Case store, sessions and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
 | Policy | Replace the synthetic configuration with the bank's approved policy, same format; set thresholds (decisions 25–27) |
 | Handoff | Decide how the JSON package reaches advisors: queue, CRM ticket or similar (decision 28); routing by language and specialty is REQ-0046 (P2) |

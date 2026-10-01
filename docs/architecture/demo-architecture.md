@@ -17,15 +17,15 @@ flowchart LR
         s3[("S3 raw data<br/>13 tables · MX · CO · AR")] --> bronze["Bronze<br/>append-only, audit columns"]
         bronze --> silver["Silver<br/>schema and quality rules,<br/>deduplicated"]
         silver --> quarantine[("Quarantine<br/>rejected_records")]
-        silver --> gold[("Gold on DuckDB<br/>or fixture, same fields")]
+        silver --> gold[("Gold on DuckDB<br/>or labelled mock, same seam")]
     end
     subgraph service["Service layer · one FastAPI process · local or one container"]
         direction TB
         client(["Customer"]) <--> chat["One-page chat"]
         chat --> orch["Orchestrator<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
         orch --> tools["Session-bound tools"]
-        tools -- "write · read back" --> disputes[("Dispute record<br/>SQLite")]
-        tools -- "JSON handoff" --> advisor(["Advisor<br/>simulated"])
+        tools -- "write · read back" --> disputes[("Case store<br/>SQLite")]
+        disputes -- "read-only view" --> advisor(["Advisor<br/>demo user"])
     end
     tools -- "read minimal view" --> gold
 
@@ -39,20 +39,22 @@ flowchart LR
     class client ext
 ```
 
-- **Data layer.** The same pipeline, run locally on DuckDB. If Gold is not connected to the service in time, `lookup_transactions` reads a fixture with the same fields, and the demo says which source it used.
+- **Data layer.** The same pipeline, run locally on DuckDB. The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active.
 - **Service layer.** The same single process, run locally or in one container behind the public link.
-- **Dispute record.** SQLite file, one open dispute per charge (idempotency scoped to an opaque customer hash). Sessions and conversation state live in the same file, so a restart keeps them; one instance only.
+- **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only.
 
 ## Components
 
 ```mermaid
 flowchart TB
     client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
-    chat --> session["Test session<br/>and conversation state"]
+    client --> dapi["Disputes API<br/>preview → create · list"]
+    chat --> session["Test session<br/>and conversation state · SQLite"]
+    dapi --> session
     session --> orch["Orchestrator<br/>U → D → A → V → E"]
 
     subgraph understand["Understanding · LLM"]
-        router["LLM router<br/>usage caps"]
+        router["Model port<br/>keyword baseline served ·<br/>prompted router measured offline"]
         learned["Learned component<br/>dispute-category classifier"]
     end
     subgraph control["Control · code"]
@@ -69,10 +71,12 @@ flowchart TB
 
     orch --> router & learned & policy
     orch --> lookup & open & verify & handoff
-    lookup --> gold[("Gold on DuckDB<br/>or fixture")]
-    open --> disputes[("Dispute record<br/>SQLite")]
+    lookup --> gold[("Gold on DuckDB<br/>or labelled mock")]
+    open --> disputes[("Case store<br/>SQLite · disputes · tickets")]
     verify --> disputes
-    handoff --> advisor(["Advisor<br/>simulated"])
+    handoff --> disputes
+    disputes --> aview["Advisor view<br/>GET /api/v1/handoffs"]
+    aview --> advisor(["Advisor<br/>demo user"])
     orch -.-> logs[("Structured logs<br/>local files")]
     evalr["Evaluation runner"] -.-> chat
     evalr -.-> logs
@@ -81,7 +85,7 @@ flowchart TB
     classDef store fill:#fbfaff,stroke:#3d8bff,stroke-width:2px,color:#1a1530
     classDef mock fill:#fff0f5,stroke:#ff4f8b,stroke-width:2px,stroke-dasharray:5 3,color:#1a1530
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class chat,orch,router,learned,policy,lookup,open,verify,handoff,evalr comp
+    class chat,dapi,orch,router,learned,policy,lookup,open,verify,handoff,aview,evalr comp
     class gold,logs store
     class session,config,disputes,advisor mock
     class client ext
@@ -91,22 +95,22 @@ flowchart TB
 
 | Component | Target | Demo mock | Limitation stated in the demo |
 |---|---|---|---|
-| Session | Identity provider | Trusted test session | No real authentication |
-| Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; open thresholds (decisions 25–27) use placeholder values |
-| Dispute record | Relational store (Postgres) | SQLite file, same models | One instance only |
-| Advisor | Human advisor; delivery channel not decided (decision 28) | Customer is told a person takes over; the package is returned and logged | Nothing is queued |
+| Session | Identity provider | Test session: password login against a fixture of false credentials, role stored, cookie | No real identity; the advisor user exists only with `SENTINEL_DEMO_AUTH=1` |
+| Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; the fraud, high-amount and staleness thresholds (decisions 25–27) are null, so those rules do not fire yet |
+| Case store | PostgreSQL | SQLite file, same models (disputes, tickets, sessions, conversation) | One instance only; login-attempt counters per process |
+| Advisor | Human advisor; delivery channel not decided (decision 28) | Demo advisor user reads the filed tickets in a read-only view | No claim, routing or state change |
 | Secrets | Azure Key Vault | `.env`, gitignored | — |
-| Gold (fallback only) | Gold on Databricks | Fixture with the same fields | Used only if Gold is not connected; declared |
+| Gold (fallback) | Gold on Databricks | Labelled in-memory mock behind the same seam | Used when the DuckDB view is not readable; reported by `/api/v1/health` |
 
 Everything else in the diagrams runs the target code.
 
 ## Walkthrough of a case
 
-Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-case). In the demo, *Dispute record* is a SQLite file and *Advisor* is simulated; the steps, the confirmation and the read-back do not change.
+Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-case). In the demo, the *Case store* is a SQLite file and the *Advisor* is a demo user with a read-only view; the steps, the confirmation and the read-back do not change.
 
 ## Learned component
 
-Identical to the target: a prompted LLM that classifies the dispute category, compared with a keyword baseline and the same LLM zero-shot on the same held-out conversations. Until that comparison exists, the keyword rule fills the category and then remains as the baseline. Evaluation conversations are team-written in `es-419` and `pt-BR` and labelled as simulation.
+Identical to the target: a prompted LLM that classifies the dispute category, compared with a keyword baseline and the same LLM zero-shot on the same held-out conversations. The served demo runs the keyword baseline behind the model port; the prompted router is measured offline by the evaluation runner, replaying recorded fixtures that mirror the baseline until a live model is configured (decision 10), so the measured delta is zero by construction. Serving the router needs only `create_app(model=...)`, no code change in the loop. Evaluation conversations are team-written in `es-419` and `pt-BR` and labelled as simulation.
 
 ## Stack and deployment
 
@@ -114,12 +118,12 @@ Identical to the target: a prompted LLM that classifies the dispute category, co
 |---|---|
 | Platform | Local Linux; optional public link on Azure Container Apps with a spend cap (decisions 13, 16) |
 | Backend | Python and FastAPI, one process |
-| Frontend | One-page chat served by the same process, styled with the `branding/` files |
+| Frontend | One page served by the same process (customer chat and read-only advisor view), styled with the `branding/` files |
 | Data pipeline | The same `sentinel_data` package on DuckDB |
-| Gold serving | DuckDB, or the fixture |
-| Dispute record | SQLite |
-| LLM | Hybrid router with usage caps; model per route not decided |
-| Identity and secrets | Test session; `.env` |
+| Gold serving | DuckDB view, or the labelled mock |
+| Case store | SQLite |
+| LLM | Keyword baseline served; prompted router behind the same port, measured offline; model per route not decided (decision 10) |
+| Identity and secrets | Test session with password; `.env` |
 | Serving | One process, no autoscaling |
 | Observability | Structured logs in local files |
 
@@ -129,7 +133,7 @@ The same repository and folders as the target. Owners and progress per folder ar
 
 ## Out of scope for the submission
 
-- A decided dispute-record engine or schema.
+- PostgreSQL and more than one instance (the SQLite file serves one).
 - Masking of free customer text before the LLM and static masking in Silver (proposed, [decision 004](../build/decisions/004-pii-lifecycle.md)). If a customer types their national id, it reaches the LLM; the demo states this.
 - A separate web app, an admin panel, advisor actions (claim, state change), a proof-of-work card, a charge pause or an SLA timer. The advisor has a read-only ticket view ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - Balances, products, cards and credit: out of the flow's scope ([decision 008](../build/decisions/008-account-inquiry-scope.md)).
