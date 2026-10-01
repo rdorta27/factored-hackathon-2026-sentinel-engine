@@ -29,6 +29,7 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 | 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
 | 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production) |
 
+- The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
 - We show the 3 top metrics: safe resolution, unsafe outcomes, cost.
 - Each figure with n and measurement type (offline, simulation, projection).
 - We include failures and limitations; hiding them counts against us.
