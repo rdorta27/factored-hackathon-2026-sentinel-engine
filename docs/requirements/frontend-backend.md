@@ -193,15 +193,15 @@ A simple way to use the system, such as a chat page. A dashboard is not required
 
 When the customer asks for a person, the system makes one offer to help and, if they insist, escalates at once.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** AI Engineering · **Area:** ai
+**Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering · **Area:** ai
 
 **Source:** Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person)
 
 **Depends on:** [REQ-0006](#req-0006). A person request is one of the escalation rules.
 
-**Evidence:** Proven by: one offer, then handoff (`tests/test_ui.py::test_agent_control_is_two_step_and_session_is_not_stored`).
+**Evidence:** Proven by: one offer, then handoff (`tests/test_person_asks.py::test_first_ask_offers_and_second_hands_off_without_classify`); the same rule with the confirm box open, in es-419 and pt-BR and for the three countries, with no case opened (`tests/test_person_while_confirming.py`); the agent control (`tests/test_ui.py::test_agent_control_is_two_step_and_session_is_not_stored`).
 
-Missing: while a confirm box is pending, a person request gets a clarification instead of escalating.
+The person-request rule lives in one helper, `app/orchestrator/step.py::_person_request`, used by both paths: a plain message and a message arriving while the confirm box is open. Escalation clears the pending confirmation, so a case cannot be opened while an advisor is taking over.
 
 <a id="req-0041"></a>
 ### REQ-0041 · Original currency, customer's language

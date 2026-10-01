@@ -81,7 +81,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0012](frontend-backend.md#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](frontend-backend.md#req-0001) | In progress |
 | [REQ-0033](frontend-backend.md#req-0033) | Policy decides, the LLM converses | P0 | ai, ml | [REQ-0048](non-functional.md#req-0048) | Done |
 | [REQ-0038](frontend-backend.md#req-0038) | Simple frontend | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
-| [REQ-0040](frontend-backend.md#req-0040) | Request for a person | P0 | ai | [REQ-0006](frontend-backend.md#req-0006) | In progress |
+| [REQ-0040](frontend-backend.md#req-0040) | Request for a person | P0 | ai | [REQ-0006](frontend-backend.md#req-0006) | Done |
 | [REQ-0041](frontend-backend.md#req-0041) | Original currency, customer's language | P0 | ai | [REQ-0003](frontend-backend.md#req-0003) | Done |
 | [REQ-0042](frontend-backend.md#req-0042) | Minimum-effort dispute opening | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0038](frontend-backend.md#req-0038) | Done |
 | [REQ-0043](frontend-backend.md#req-0043) | Check charge status first | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0015](data-ml.md#req-0015) | Done |
