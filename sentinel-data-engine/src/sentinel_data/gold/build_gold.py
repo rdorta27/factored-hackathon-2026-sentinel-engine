@@ -59,6 +59,10 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 _DISPUTE_ELIGIBILITY_DAYS = 90  # business rule: max days for dispute intake
+# Synthetic dataset ends on this date; use it as the fixed "today" so that
+# dispute-eligibility calculations are reproducible regardless of when the
+# pipeline runs (using CURRENT_DATE would mark almost all transactions expired).
+_DATASET_CUTOFF_DATE = "2026-06-17"
 
 
 class GoldBuilderConfig(BaseModel):
@@ -277,8 +281,9 @@ class GoldBuilder:
         Derived flags
         -------------
         is_disputed              : True when an open complaint references this transaction
-        days_since_transaction   : CURRENT_DATE − transaction_date
-        is_eligible_for_dispute  : NOT is_disputed AND days_since_transaction <= 90
+        days_since_transaction   : dataset cutoff (2026-06-17) − transaction_timestamp
+        is_eligible_for_dispute  : days_since_transaction <= 90
+                                   AND transaction_status NOT IN ('Reversed', 'Refunded')
         """
         out_path = str(gold / "gold_dispute_eligible_transactions")
         eligible_arrow: pa.Table = con.execute(
@@ -312,15 +317,25 @@ class GoldBuilder:
                 c.country             AS customer_country,
                 c.credit_score        AS customer_credit_score,
                 -- Derived flags
-                (dt.transaction_id IS NOT NULL)                        AS is_disputed,
-                DATE_DIFF('day', t.transaction_date::DATE, CURRENT_DATE) AS days_since_transaction,
+                -- days_since_transaction is evaluated against the fixed dataset
+                -- cutoff date ({_DATASET_CUTOFF_DATE}) instead of CURRENT_DATE so
+                -- that eligibility is reproducible regardless of run time.
+                (dt.transaction_id IS NOT NULL) AS is_disputed,
+                DATEDIFF(
+                    'day',
+                    t.transaction_timestamp,
+                    CAST('{_DATASET_CUTOFF_DATE}' AS TIMESTAMP)
+                )                               AS days_since_transaction,
                 (
-                    dt.transaction_id IS NULL
-                    AND DATE_DIFF('day', t.transaction_date::DATE, CURRENT_DATE)
-                        <= {_DISPUTE_ELIGIBILITY_DAYS}
-                )                                                       AS is_eligible_for_dispute,
+                    DATEDIFF(
+                        'day',
+                        t.transaction_timestamp,
+                        CAST('{_DATASET_CUTOFF_DATE}' AS TIMESTAMP)
+                    ) <= {_DISPUTE_ELIGIBILITY_DAYS}
+                    AND t.transaction_status NOT IN ('Reversed', 'Refunded')
+                )                               AS is_eligible_for_dispute,
                 -- Snapshot metadata
-                CURRENT_DATE AS snapshot_date
+                DATE '{_DATASET_CUTOFF_DATE}'   AS snapshot_date
             FROM silver_transactions t
             LEFT JOIN silver_customers  c  ON c.customer_id    = t.customer_id
             LEFT JOIN disputed_txns     dt ON dt.transaction_id = t.transaction_id
