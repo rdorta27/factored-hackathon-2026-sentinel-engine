@@ -58,3 +58,24 @@ def test_unreadable_view_falls_back_to_the_mock(monkeypatch, tmp_path) -> None: 
 def test_mock_can_be_forced(monkeypatch) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setenv("SENTINEL_GOLD_SOURCE", "mock")
     assert select_gold(AS_OF)[1] == "mock"
+
+
+def test_fraud_score_reaches_the_candidate() -> None:
+    row = to_gold_row(view_row(fraud_score=29.4), AS_OF)
+    assert to_candidate(row).fraud_score == 29.4
+    assert to_candidate(to_gold_row(view_row(fraud_score=None), AS_OF)).fraud_score is None
+    assert to_candidate(to_gold_row(view_row(fraud_score=""), AS_OF)).fraud_score is None
+
+
+def test_fraud_score_stays_out_of_listings_and_replies() -> None:
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    api = TestClient(create_app())
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code == 200
+    listing = api.get("/api/v1/transactions")
+    reply = api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    for response in (listing, reply):
+        assert response.status_code == 200
+        assert "fraud" not in response.text.lower()

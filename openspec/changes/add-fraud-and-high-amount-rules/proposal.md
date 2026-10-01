@@ -27,7 +27,7 @@ None.
 - `decision-priority`: suspected fraud also fires on the "not mine" claim; thresholds are looked up by the charge currency.
 - `evaluation-evidence`: reference thresholds are grouped by account country and charge currency.
 - `gold-layer`: rows carry `fraud_score`; demo customers may hold charges in USD besides their local currency.
-- `llm-router`: the understanding output carries the "not mine" claim.
+- `llm-router`: the understanding output carries the "not mine" claim; the fraud score never goes to the model.
 - `observability`: decisions record the policy file version.
 
 ## Impact

@@ -16,6 +16,8 @@ class GoldRow:
     as_of: str
     refunded: bool = False
     prior_dispute: bool = False
+    # Dataset fraud score; read by the policy engine only, never shown or sent to the model.
+    fraud_score: float | None = None
 
 
 class GoldTransactions(Protocol):
@@ -60,5 +62,6 @@ def to_candidate(row: GoldRow) -> Candidate:
         merchant=row.merchant,
         date=row.date,
         as_of=row.as_of,
+        fraud_score=row.fraud_score,
         is_disputed=row.prior_dispute,
     )

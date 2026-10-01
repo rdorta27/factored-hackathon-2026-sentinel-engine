@@ -34,12 +34,12 @@ FORBIDDEN_KEYS = frozenset(
 )
 
 # Charge fields the model may see, named as in ServiceDisputeEligibleTransaction
-# with numeric amount and fraud_score. No name, document or credit score.
+# with a numeric amount. No name, document or credit score, and no fraud_score:
+# the policy engine reads the score from Gold; the model never needs it.
 ALLOWED_CHARGE_KEYS = frozenset(
     {
         "transaction_id",
         "amount",
-        "fraud_score",
         "merchant_name",
         "merchant_category",
         "transaction_type",
@@ -53,9 +53,9 @@ ALLOWED_CHARGE_KEYS = frozenset(
 SYSTEM_PROMPT = (
     "You route a bank dispute intake turn. Reply with JSON only: "
     '{"intent": "charge|missing|out_of_scope|person", "language": "es-419|pt-BR", '
-    '"amount": number|null, "fraud_score": number|null}. '
-    "Use ServiceDisputeEligibleTransaction field names with numeric amount and "
-    "fraud_score. Never ask for or repeat personal data."
+    '"amount": number|null}. '
+    "Use ServiceDisputeEligibleTransaction field names with a numeric amount. "
+    "Never ask for or repeat personal data."
 )
 
 
@@ -91,9 +91,6 @@ def build_messages(
         amount = charge.get("amount", None)
         if amount is not None and not isinstance(amount, (int, float)):
             raise ValueError("charge amount must be numeric")
-        fraud = charge.get("fraud_score", None)
-        if fraud is not None and not isinstance(fraud, (int, float)):
-            raise ValueError("fraud_score must be numeric")
         user_body["charge"] = {key: charge[key] for key in sorted(charge)}
     assert_no_forbidden(user_body)
     content = json.dumps(user_body, ensure_ascii=False)
