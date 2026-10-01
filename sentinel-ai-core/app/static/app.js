@@ -63,7 +63,7 @@ async function postChat(payload) {
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
   try {
-    const response = await api("/chat", {
+    const response = await api("/api/v1/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -131,7 +131,7 @@ function renderReply(body) {
 }
 
 async function loadTransactions() {
-  const response = await api("/transactions");
+  const response = await api("/api/v1/transactions");
   const payload = await response.json();
   document.getElementById("reference-date").textContent = `${t("field_referenceDate")}: ${formatDate(payload.as_of)}`;
   const box = document.getElementById("transactions");
@@ -149,7 +149,7 @@ async function loadTransactions() {
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
-  const response = await fetch("/session/login", {
+  const response = await fetch("/api/v1/session/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -183,7 +183,7 @@ document.getElementById("agent").addEventListener("click", () => {
 });
 
 document.getElementById("logout").addEventListener("click", async () => {
-  await fetch("/session/logout", { method: "POST" });
+  await fetch("/api/v1/session/logout", { method: "POST" });
   show("view-login");
 });
 

@@ -78,7 +78,7 @@ def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     api.app.state.recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
     assert (
-        api.post("/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
         == 200
     )
     return api
@@ -86,7 +86,7 @@ def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]
 
 def test_text_turn_leaves_a_complete_trace(tmp_path) -> None:
     api = _logged_in_client(tmp_path)
-    response = api.post("/chat", json={"message": "no reconozco un cargo"})
+    response = api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     assert response.status_code == 200
     trace_id = response.headers["X-Trace-Id"]
 
@@ -100,7 +100,7 @@ def test_text_turn_leaves_a_complete_trace(tmp_path) -> None:
 
 def test_failing_turn_still_leaves_a_closing_record(tmp_path) -> None:
     api = _logged_in_client(tmp_path)
-    response = api.post("/chat", json={"selected_reference": "TXN-9999"})
+    response = api.post("/api/v1/chat", json={"selected_reference": "TXN-9999"})
     assert response.status_code == 200
     trace_id = response.headers["X-Trace-Id"]
 
@@ -122,12 +122,12 @@ def test_full_turn_is_replayable_by_trace_id(tmp_path) -> None:
     api.app.state.audit.recorder = recorder
     message = "no reconozco un cargo"
     assert (
-        api.post("/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
         == 200
     )
-    assert api.post("/chat", json={"message": message}).status_code == 200
-    assert api.post("/chat", json={"selected_reference": "TXN-1001"}).status_code == 200
-    confirmed = api.post("/chat", json={"selected_reference": "TXN-1001"})
+    assert api.post("/api/v1/chat", json={"message": message}).status_code == 200
+    assert api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"}).status_code == 200
+    confirmed = api.post("/api/v1/chat", json={"selected_reference": "TXN-1001"})
     assert confirmed.json()["kind"] == "case_confirmation"
 
     trace_id = confirmed.headers["X-Trace-Id"]

@@ -51,7 +51,7 @@ def build_client(fixtures_dir: Path | str) -> TestClient:
 
 
 def login(client: TestClient) -> None:
-    response = client.post("/session/login", json={"login": CUSTOMER, "password": PASSWORD})
+    response = client.post("/api/v1/session/login", json={"login": CUSTOMER, "password": PASSWORD})
     assert response.status_code == 200, "test login must succeed"
 
 
@@ -97,7 +97,7 @@ def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: 
 def run_case(client: TestClient, case: Case) -> dict:
     login(client)
     inject_fault(client, case.fault or "none")
-    response = client.post("/chat", json={"message": case.message})
+    response = client.post("/api/v1/chat", json={"message": case.message})
     body = response.json() if response.status_code == 200 else {}
     kind = body.get("kind")
     trace_id = response.headers.get("X-Trace-Id", "unknown")

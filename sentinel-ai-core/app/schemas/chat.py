@@ -1,28 +1,140 @@
 """
-Pydantic v2 schemas for the /api/v1/chat endpoint.
+Canonical contract for ``/api/v1/chat`` and ``/api/v1/transactions``.
+
+Every chat answer is exactly one variant: ``text``, ``clarification``,
+``confirm_box``, ``case_confirmation``, ``handoff`` or ``error`` (spec ``chat``).
+Replies carry raw values and translation keys, never authored prose; the
+client renders the keys in its locale. Shapes follow the reference contract
+in ``sentinel-login/app/chat/contract.py``, trimmed to the spec: no priority,
+service-level date, queue status or receipt on a confirmation.
+
+The same models serve the mock and the real adapters: only the ``source``
+field says which one produced a confirmation.
 """
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional
+from datetime import datetime
+from typing import Literal, Optional, Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+StrictModel = ConfigDict(extra="forbid", str_strip_whitespace=True)
+Source = Literal["mock", "live"]
 
 
-class ChatRequest(BaseModel):
-    """Incoming message from the front-end chat widget."""
+class ChatInput(BaseModel):
+    """Body of ``POST /api/v1/chat``. Identity comes from the session cookie only."""
 
-    session_id: str = Field(..., description="Active session token")
-    message: str = Field(..., min_length=1, description="User's natural-language message")
-    locale: str = Field(
-        default="es-419",
-        description="BCP 47 locale tag for the response language",
-        pattern=r"^[a-z]{2,3}(-[A-Z]{2,})?$",
+    model_config = ConfigDict(extra="forbid")
+
+    message: Optional[str] = Field(default=None, max_length=2000)
+    selected_reference: Optional[str] = Field(
+        default=None,
+        min_length=1,
+        max_length=64,
+        pattern=r"^[A-Za-z0-9\-]+$",
     )
 
 
+class CandidateTransaction(BaseModel):
+    """One charge as the interface shows it: listing, chips and confirm box."""
+
+    model_config = StrictModel
+
+    reference: str = Field(min_length=1, max_length=64)
+    amount: str = Field(min_length=1, max_length=64)
+    currency: str = Field(min_length=1, max_length=8)
+    merchant: str = Field(min_length=1, max_length=200)
+    date: str = Field(min_length=1, max_length=32)
+    status: str = Field(min_length=1, max_length=16)
+    eligible: bool
+    ineligibleKey: Optional[str] = Field(default=None, max_length=64)
+
+
+class TransactionList(BaseModel):
+    """Response of ``GET /api/v1/transactions``."""
+
+    model_config = StrictModel
+
+    as_of: str = Field(min_length=1, max_length=32)
+    transactions: list[CandidateTransaction]
+
+
+class TextReply(BaseModel):
+    model_config = StrictModel
+
+    kind: Literal["text"] = "text"
+    message_key: str = Field(min_length=1, max_length=64)
+
+
+class Clarification(BaseModel):
+    model_config = StrictModel
+
+    kind: Literal["clarification"] = "clarification"
+    message_key: str = Field(min_length=1, max_length=64)
+    missing: str = Field(min_length=1, max_length=200)
+    candidates: list[CandidateTransaction] = Field(default_factory=list, max_length=4)
+
+
+class ConfirmBox(BaseModel):
+    """Shown before any write; the confirmation turn sends ``candidate.reference`` back."""
+
+    model_config = StrictModel
+
+    kind: Literal["confirm_box"] = "confirm_box"
+    message_key: str = Field(min_length=1, max_length=64)
+    candidate: CandidateTransaction
+
+
+class TransactionFacts(BaseModel):
+    model_config = StrictModel
+
+    amount: str = Field(min_length=1, max_length=64)
+    currency: str = Field(min_length=1, max_length=8)
+    merchant: str = Field(min_length=1, max_length=200)
+    date: str = Field(min_length=1, max_length=32)
+
+
+class ConfirmationDisplay(BaseModel):
+    """Locale-neutral values. The client formats; it never invents the currency."""
+
+    model_config = StrictModel
+
+    amount: str = Field(min_length=1, max_length=64)
+    currency: str = Field(min_length=1, max_length=8)
+    merchant: str = Field(min_length=1, max_length=200)
+    referenceDate: str = Field(min_length=1, max_length=32)
+
+
+class MessageKeys(BaseModel):
+    """Translation keys, never prose."""
+
+    model_config = StrictModel
+
+    nextStep: str = Field(min_length=1, max_length=64)
+    rule: str = Field(min_length=1, max_length=64)
+    noFunds: str = Field(min_length=1, max_length=64)
+
+
+class CaseConfirmation(BaseModel):
+    """Emitted only after the created case was read back from the store."""
+
+    model_config = StrictModel
+
+    kind: Literal["case_confirmation"] = "case_confirmation"
+    case_id: str = Field(min_length=1, max_length=64)
+    transaction: TransactionFacts
+    verified: Literal[True] = True
+    verified_at: datetime
+    display: ConfirmationDisplay
+    messages: MessageKeys
+    attempt: int = Field(ge=1)
+    source: Source = "mock"
+
+
 class VerifiedFacts(BaseModel):
-    """Transaction facts extracted from the Gold layer and confirmed by the session."""
+    """Transaction facts read from Gold for the session customer."""
 
     transaction_id: str
     amount: float
@@ -33,68 +145,53 @@ class VerifiedFacts(BaseModel):
     is_eligible_for_dispute: bool
 
 
-class HandoffTicket(BaseModel):
-    """
-    Structured HIL (Human-In-the-Loop) escalation payload.
+class HandoffAction(BaseModel):
+    """One step the system took during the turn, from the execution records."""
 
-    Returned inside ``ChatResponse`` when the orchestrator determines the case
-    requires a human agent.  Never contains PII fields (first/last name,
-    credit score) – those live in the Gold PII-full table accessible only to
-    authorized agents.
+    model_config = StrictModel
 
-    Fields marked "sentinel-login contract" align with the Handoff schema in
-    sentinel-login so its i18n card component can render the escalation without
-    any frontend changes.
-    """
-
-    # ── Core fields (original schema) ───────────────────────────────────────
-    customer_id: str = Field(..., description="Opaque customer token (no PII)")
-    verified_facts: VerifiedFacts
-    escalation_reason: str = Field(
-        ..., description="Plain-English explanation of why human intervention is required"
-    )
-    claim_summary: str = Field(
-        ..., description="Short summary of the dispute claim for the receiving agent"
-    )
-
-    # ── sentinel-login contract fields ───────────────────────────────────────
-    kind: str = Field(
-        default="handoff",
-        description="sentinel-login card discriminator — always 'handoff'",
-    )
-    reference: str = Field(
-        default="",
-        description="Transaction or dispute reference shown on the handoff card",
-    )
-    reason_key: str = Field(
-        default="handoff.escalated",
-        description="i18n key used by the sentinel-login card (e.g. 'handoff.high_value_dispute')",
-    )
-    reason_detail: Optional[str] = Field(
-        default=None,
-        description="Optional free-text detail rendered below the i18n reason",
-    )
-    estimated_date: Optional[str] = Field(
-        default=None,
-        description="ISO-8601 estimated SLA resolution date shown to the customer",
-    )
-    source: str = Field(
-        default="mock",
-        description="'mock' for demo runs, 'live' when backed by a real dispute service",
-    )
+    step: str
+    tool: Optional[str] = None
+    outcome: str
+    attempt: int = Field(ge=1)
+    policy_rule: Optional[str] = None
 
 
-class ChatResponse(BaseModel):
-    """Response returned by POST /api/v1/chat."""
+class HandoffPackage(BaseModel):
+    """What the advisor receives (REQ-0008). No customer identifier, no raw transcript."""
 
-    session_id: str
-    reply: str = Field(..., description="Natural-language response to show the user")
-    response_type: Literal["automated", "handoff"] = Field(
-        default="automated",
-        description="'automated' = bot handled it; 'handoff' = escalated to a human agent",
-    )
-    handoff_ticket: Optional[HandoffTicket] = Field(
-        default=None,
-        description="Populated only when response_type == 'handoff'",
-    )
-    metadata: dict[str, Any] = Field(default_factory=dict)
+    model_config = StrictModel
+
+    request: str = Field(description="Intent the system understood, not the customer's words")
+    verified_facts: Optional[VerifiedFacts] = None
+    actions_taken: list[HandoffAction] = Field(default_factory=list)
+    evidence: dict[str, str] = Field(default_factory=dict)
+    open_questions: list[str] = Field(default_factory=list)
+    language: str
+    country: str
+
+
+class Handoff(BaseModel):
+    """Escalation card for the customer plus the structured package for the advisor."""
+
+    model_config = StrictModel
+
+    kind: Literal["handoff"] = "handoff"
+    reference: str = Field(min_length=1, max_length=64)
+    reason_key: str = Field(min_length=1, max_length=64)
+    reason_detail: Optional[str] = Field(default=None, max_length=500)
+    estimated_date: Optional[str] = Field(default=None, max_length=32)
+    attempt: Optional[int] = Field(default=None, ge=1)
+    source: Source = "mock"
+    package: HandoffPackage
+
+
+class ErrorReply(BaseModel):
+    model_config = StrictModel
+
+    kind: Literal["error"] = "error"
+    message_key: str = Field(min_length=1, max_length=64)
+    trace_id: str = Field(min_length=1, max_length=64)
+
+
+ChatReply = Union[TextReply, Clarification, ConfirmBox, CaseConfirmation, Handoff, ErrorReply]

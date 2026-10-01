@@ -23,15 +23,15 @@ from .conftest import CUSTOMER, facts_travel_nowhere
 def test_forged_session_token_is_rejected(api) -> None:
     """B3. An invented token has no server-side session behind it."""
     api.cookies.set(SESSION_COOKIE, "forged-token-value")
-    assert api.get("/transactions").status_code == 401
-    assert api.post("/chat", json={"message": "hola"}).status_code == 401
+    assert api.get("/api/v1/transactions").status_code == 401
+    assert api.post("/api/v1/chat", json={"message": "hola"}).status_code == 401
 
 
 @pytest.mark.attack("B6", "blocked_verified")
 def test_reference_with_path_shapes_is_rejected(logged_in) -> None:
     """B6. The selection pattern is format-neutral but bounded."""
     for payload in ("../../etc/passwd", "TXN 1001", "x" * 65, ""):
-        response = logged_in.post("/chat", json={"selected_reference": payload})
+        response = logged_in.post("/api/v1/chat", json={"selected_reference": payload})
         assert response.status_code == 422, payload
 
 
@@ -42,14 +42,14 @@ def test_selection_cannot_name_another_customers_row(logged_in) -> None:
     blocked (verified): even if the id were guessable, `gold.get(...)` is
     scoped to the session customer and returns nothing.
     """
-    response = logged_in.post("/chat", json={"selected_reference": "TXN-9001"})
+    response = logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-9001"})
     assert response.status_code == 200
     assert facts_travel_nowhere(response.json())
 
 
 @pytest.mark.attack("B7", "blocked_verified")
 def test_foreign_rows_are_absent_from_the_listing(logged_in) -> None:
-    listing = logged_in.get("/transactions").json()["transactions"]
+    listing = logged_in.get("/api/v1/transactions").json()["transactions"]
     ids = {row["reference"] for row in listing}
     assert "TXN-9001" not in ids
     assert "TXN-2001" not in ids
@@ -74,18 +74,18 @@ def test_replayed_bearer_cookie_still_works_by_design(api) -> None:
       * `SameSite` — a cross-site form post does not carry the cookie.
       * Short TTL — the window in which a stolen token is useful is small.
     """
-    api.post("/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    api.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     copied = api.cookies.get(SESSION_COOKIE)
     assert copied, "the session cookie must exist to replay it"
 
     attacker = type(api)(api.app)
     attacker.cookies.set(SESSION_COOKIE, copied)
-    assert attacker.get("/transactions").status_code == 200, (
+    assert attacker.get("/api/v1/transactions").status_code == 200, (
         "a copied bearer cookie is expected to work; this is the limitation"
     )
 
     # The mitigation that does hold: the cookie is not script-accessible.
-    response = api.post("/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    response = api.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     assert "HttpOnly" in response.headers.get("set-cookie", "")
 
 
@@ -98,20 +98,20 @@ def test_logout_does_not_invalidate_other_customers_sessions(api) -> None:
     original client's cookie jar cannot mask which session is being checked.
     """
     first_client = TestClient(api.app)
-    first_client.post("/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
+    first_client.post("/api/v1/session/login", json={"login": CUSTOMER, "password": "Testpass-001"})
     first = first_client.cookies.get(SESSION_COOKIE)
 
     second_client = TestClient(api.app)
-    second_client.post("/session/login", json={"login": "CUST-0002", "password": "Testpass-001"})
+    second_client.post("/api/v1/session/login", json={"login": "CUST-0002", "password": "Testpass-001"})
     second = second_client.cookies.get(SESSION_COOKIE)
     assert first != second
 
-    first_client.post("/session/logout")
+    first_client.post("/api/v1/session/logout")
 
     revoked = TestClient(api.app)
     revoked.cookies.set(SESSION_COOKIE, first)
-    assert revoked.get("/transactions").status_code == 401, "the logged-out session is dead"
+    assert revoked.get("/api/v1/transactions").status_code == 401, "the logged-out session is dead"
 
     survivor = TestClient(api.app)
     survivor.cookies.set(SESSION_COOKIE, second)
-    assert survivor.get("/transactions").status_code == 200, "the other session survives"
+    assert survivor.get("/api/v1/transactions").status_code == 200, "the other session survives"

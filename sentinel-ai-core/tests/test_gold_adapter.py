@@ -14,7 +14,7 @@ STATIC = Path(__file__).parent.parent / "app" / "static"
 
 
 def login(api: TestClient, name: str = "CUST-0001") -> None:
-    assert api.post("/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
 
 
 def test_lookup_is_bound_and_hides_foreign_rows() -> None:
@@ -41,9 +41,9 @@ def test_lookup_transactions_takes_no_customer_argument() -> None:
 
 def confirm(api: TestClient, reference: str = "TXN-1001") -> dict:
     """Drive the real two-step confirmation: select, then confirm the box."""
-    api.post("/chat", json={"message": "no reconozco un cargo"})
-    api.post("/chat", json={"selected_reference": reference})
-    return api.post("/chat", json={"selected_reference": reference}).json()
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    api.post("/api/v1/chat", json={"selected_reference": reference})
+    return api.post("/api/v1/chat", json={"selected_reference": reference}).json()
 
 
 # --- Point 5: canary. Displayed facts follow the Gold, not generated text.
@@ -87,7 +87,7 @@ def test_rendered_facts_follow_gold_not_generated_text() -> None:
     """
     api = TestClient(app_with_canary("9876.54", "Centinela XYZ"))
     login(api)
-    listing = api.get("/transactions").json()["transactions"]
+    listing = api.get("/api/v1/transactions").json()["transactions"]
     assert len(listing) == 1
     assert listing[0]["amount"] == "9876.54"
     assert listing[0]["merchant"] == "Centinela XYZ"
@@ -125,7 +125,7 @@ def test_rendered_facts_change_when_gold_changes() -> None:
 
 def _share_one_reference_date(api: TestClient) -> None:
     login(api)
-    listing = api.get("/transactions").json()
+    listing = api.get("/api/v1/transactions").json()
     confirmation = confirm(api)
     display = confirmation.get("display") or {}
     engine_dates = {listing["as_of"], display.get("referenceDate"), confirmation.get("as_of")}
@@ -172,6 +172,6 @@ def test_listing_exposes_reference_for_the_structured_selection() -> None:
     """The id must travel, because picking a charge sends it back."""
     api = TestClient(create_app())
     login(api)
-    rows = api.get("/transactions").json()["transactions"]
+    rows = api.get("/api/v1/transactions").json()["transactions"]
     assert all(row["reference"].startswith("TXN-") for row in rows)
     assert all("merchant" in row and "amount" in row and "date" in row for row in rows)

@@ -19,7 +19,7 @@ from .conftest import EmptyGold, RaisingGold, facts_travel_nowhere, session_memo
 def test_gold_that_raises_degrades_to_a_safe_answer(logged_in) -> None:
     """D3. An exploding Gold must not leak internals or invent a charge."""
     logged_in.app.state.gold = RaisingGold(RuntimeError("gold exploded: /var/lib/secret"))
-    response = logged_in.post("/chat", json={"message": "no reconozco un cargo"})
+    response = logged_in.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     assert response.status_code == 200
     body = response.json()
     assert body["kind"] in ("error", "handoff", "clarification", "text")
@@ -32,7 +32,7 @@ def test_gold_that_raises_degrades_to_a_safe_answer(logged_in) -> None:
 def test_gold_that_knows_nothing_never_confirms(logged_in) -> None:
     """D2. A reference that resolves to nothing cannot produce a case."""
     logged_in.app.state.gold = EmptyGold()
-    response = logged_in.post("/chat", json={"selected_reference": "TXN-1001"})
+    response = logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1001"})
     assert response.status_code == 200
     assert response.json()["kind"] != "case_confirmation"
     assert facts_travel_nowhere(response.json())
@@ -47,11 +47,11 @@ def test_failed_read_back_never_becomes_a_case_number(logged_in) -> None:
     structured selections — the first opens the confirm box, the second opens
     the dispute — so the failing read-back is actually reached.
     """
-    logged_in.post("/chat", json={"selected_reference": "TXN-1001"})
+    logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1001"})
     memory = session_memory(logged_in)
     memory.lookup_failures_left = 99
 
-    response = logged_in.post("/chat", json={"selected_reference": "TXN-1001"})
+    response = logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1001"})
     body = response.json()
     assert body["kind"] == "handoff"
     assert "case_id" not in body
@@ -87,7 +87,7 @@ def test_slow_gold_does_not_hang_the_request(logged_in) -> None:
 
     logged_in.app.state.gold = SlowGold()
     start = time.monotonic()
-    response = logged_in.post("/chat", json={"message": "no reconozco un cargo"})
+    response = logged_in.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     elapsed = time.monotonic() - start
     assert response.status_code == 200
     assert elapsed < 0.05, "a slow tool must not hold the request open"

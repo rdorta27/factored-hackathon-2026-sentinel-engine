@@ -15,7 +15,7 @@ def client() -> TestClient:
 
 
 def login(api: TestClient, name: str = LOGIN, password: str = PASSWORD):
-    return api.post("/session/login", json={"login": name, "password": password})
+    return api.post("/api/v1/session/login", json={"login": name, "password": password})
 
 
 def test_login_sets_cookie_and_me_returns_customer_and_country() -> None:
@@ -25,9 +25,9 @@ def test_login_sets_cookie_and_me_returns_customer_and_country() -> None:
     cookie = response.headers.get("set-cookie", "")
     assert SESSION_COOKIE in cookie
     assert "HttpOnly" in cookie
-    me = api.get("/session/me")
+    me = api.get("/api/v1/session/me")
     assert me.status_code == 200
-    assert me.json() == {"customer_id": "CUST-0001", "country": "MX"}
+    assert me.json() == {"role": "customer", "country": "MX"}
 
 
 def test_wrong_password_and_unknown_user_are_identical() -> None:
@@ -44,7 +44,7 @@ def test_wrong_password_and_unknown_user_are_identical() -> None:
 def test_customer_id_in_login_body_is_rejected() -> None:
     api = client()
     response = api.post(
-        "/session/login",
+        "/api/v1/session/login",
         json={"login": LOGIN, "password": PASSWORD, "customer_id": "CUST-9999"},
     )
     assert response.status_code == 422
@@ -60,7 +60,7 @@ def test_expired_session_is_cleared() -> None:
     store._sessions[token] = session.__class__(
         **{**session.__dict__, "expires_at": datetime.now(timezone.utc) - timedelta(seconds=1)}
     )
-    response = api.get("/session/me")
+    response = api.get("/api/v1/session/me")
     assert response.status_code == 401
     assert api.app.state.audit.records[-1].event == "session_expired"
     assert token not in store._sessions
@@ -69,8 +69,8 @@ def test_expired_session_is_cleared() -> None:
 def test_logout_revokes_the_token() -> None:
     api = client()
     login(api)
-    assert api.post("/session/logout").status_code == 200
-    assert api.get("/session/me").status_code == 401
+    assert api.post("/api/v1/session/logout").status_code == 200
+    assert api.get("/api/v1/session/me").status_code == 401
     assert api.app.state.audit.records[-1].event == "access_denied"
 
 

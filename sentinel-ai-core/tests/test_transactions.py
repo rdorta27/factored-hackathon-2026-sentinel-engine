@@ -6,13 +6,13 @@ PASSWORD = "Testpass-001"
 
 
 def login(api: TestClient, name: str = "CUST-0001") -> None:
-    assert api.post("/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
+    assert api.post("/api/v1/session/login", json={"login": name, "password": PASSWORD}).status_code == 200
 
 
 def test_listing_is_session_scoped_and_ordered() -> None:
     api = TestClient(create_app())
     login(api)
-    response = api.get("/transactions")
+    response = api.get("/api/v1/transactions")
     assert response.status_code == 200
     body = response.json()
     assert body["as_of"] == "2026-06-17"
@@ -27,13 +27,13 @@ def test_listing_is_session_scoped_and_ordered() -> None:
 def test_customer_identifier_is_rejected() -> None:
     api = TestClient(create_app())
     login(api)
-    response = api.get("/transactions", params={"customer_id": "CUST-9999"})
+    response = api.get("/api/v1/transactions", params={"customer_id": "CUST-9999"})
     assert response.status_code == 422
 
 
 def test_listing_requires_a_session() -> None:
     api = TestClient(create_app())
-    assert api.get("/transactions").status_code == 401
+    assert api.get("/api/v1/transactions").status_code == 401
 
 
 # --- Point 1: every country customer reads only their own charges, own currency
@@ -42,7 +42,7 @@ def test_listing_requires_a_session() -> None:
 def test_cop_customer_sees_only_cop_charges() -> None:
     api = TestClient(create_app())
     login(api, "CUST-0002")
-    body = api.get("/transactions").json()
+    body = api.get("/api/v1/transactions").json()
     assert body["transactions"], "CUST-0002 must have charges"
     assert {row["currency"] for row in body["transactions"]} == {"COP"}
     ids = {row["reference"] for row in body["transactions"]}
@@ -53,7 +53,7 @@ def test_cop_customer_sees_only_cop_charges() -> None:
 def test_ars_customer_sees_only_ars_charges() -> None:
     api = TestClient(create_app())
     login(api, "CUST-0003")
-    body = api.get("/transactions").json()
+    body = api.get("/api/v1/transactions").json()
     assert body["transactions"], "CUST-0003 must have charges"
     assert {row["currency"] for row in body["transactions"]} == {"ARS"}
     ids = {row["reference"] for row in body["transactions"]}
@@ -81,7 +81,7 @@ def test_foreign_access_attempts_are_blocked_8_of_8() -> None:
     for customer in customers:
         api = TestClient(create_app())
         login(api, customer)
-        listing = api.get("/transactions").json()["transactions"]
+        listing = api.get("/api/v1/transactions").json()["transactions"]
         ids = {row["reference"] for row in listing}
         for peer in customers:
             if peer == customer:
@@ -97,12 +97,12 @@ def test_foreign_access_attempts_are_blocked_8_of_8() -> None:
     api = TestClient(create_app())
     login(api)
     attempts += 1
-    if api.get("/transactions", params={"customer_id": "CUST-9999"}).status_code == 422:
+    if api.get("/api/v1/transactions", params={"customer_id": "CUST-9999"}).status_code == 422:
         blocked += 1
 
     # One session-less attempt.
     attempts += 1
-    if TestClient(create_app()).get("/transactions").status_code == 401:
+    if TestClient(create_app()).get("/api/v1/transactions").status_code == 401:
         blocked += 1
 
     assert (attempts, blocked) == (8, 8), f"{blocked} of {attempts} blocked"
@@ -119,13 +119,13 @@ def test_raw_gold_status_never_appears_in_any_response() -> None:
     """
     api = TestClient(create_app())
     login(api)
-    listing = api.get("/transactions")
+    listing = api.get("/api/v1/transactions")
     assert "Refunded" not in listing.text
 
-    chat = api.post("/chat", json={"message": "no reconozco un cargo"})
+    chat = api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     assert "Refunded" not in chat.text
 
-    confirmation = api.post("/chat", json={"selected_reference": "TXN-1003"})
+    confirmation = api.post("/api/v1/chat", json={"selected_reference": "TXN-1003"})
     assert "Refunded" not in confirmation.text
 
 
@@ -133,8 +133,8 @@ def test_chat_never_emits_raw_gold_status() -> None:
     """The chat path already maps status; only the listing leaks (see above)."""
     api = TestClient(create_app())
     login(api)
-    api.post("/chat", json={"message": "no reconozco un cargo"})
-    confirmation = api.post("/chat", json={"selected_reference": "TXN-1003"})
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    confirmation = api.post("/api/v1/chat", json={"selected_reference": "TXN-1003"})
     assert "Refunded" not in confirmation.text
 
 
@@ -145,5 +145,5 @@ def test_transactions_status_is_mapped() -> None:
     """The listing status is normalized through to_candidate; 'Refunded' → 'Reversed'."""
     api = TestClient(create_app())
     login(api)
-    rows = {row["reference"]: row for row in api.get("/transactions").json()["transactions"]}
+    rows = {row["reference"]: row for row in api.get("/api/v1/transactions").json()["transactions"]}
     assert rows["TXN-1003"]["status"] == "Reversed"

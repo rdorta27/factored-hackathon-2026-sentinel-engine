@@ -14,7 +14,7 @@ from app.session.service import (
 )
 
 SESSION_COOKIE = "sentinel_session"
-router = APIRouter(prefix="/session", tags=["session"])
+router = APIRouter(prefix="/api/v1/session", tags=["session"])
 
 _GENERIC = {"detail": "Invalid credentials"}
 _LOCKED = {"detail": "Too many failed attempts. Try again later."}
@@ -101,4 +101,5 @@ def logout(request: Request, response: Response) -> JSONResponse:
 
 @router.get("/me")
 def me(session: Session = Depends(require_session)) -> dict[str, str]:
-    return {"customer_id": session.customer_id, "country": session.country}
+    # The browser never needs the customer identifier; identity stays server-side.
+    return {"role": session.role, "country": session.country}
