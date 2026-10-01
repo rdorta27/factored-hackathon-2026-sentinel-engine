@@ -16,7 +16,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 <a id="req-0013"></a>
 ### REQ-0013 · Report data and language limits
 
-State openly what the data cannot support: the dataset is synthetic, Spanish only, and covers only Mexico, Colombia and Argentina, so Portuguese and other countries are untested against real material.
+State openly what the data cannot support: the dataset is synthetic, Spanish only, and covers only Mexico, Colombia and Argentina, so Portuguese and other countries are untested against real material. The assumptions are listed once in the [dataset assumptions](../understand/dataset.md#assumptions).
 
 **Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** analysis
 

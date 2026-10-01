@@ -27,7 +27,7 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 | 2 | Architecture (core principle and layers) | [architecture](../architecture/README.md), [decisions](decisions/) |
 | 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
 | 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
-| 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production) |
+| 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production), [data assumptions](../rationale/data-assumptions.md) |
 
 - The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
 - We show the 3 top metrics: safe resolution, unsafe outcomes, cost.

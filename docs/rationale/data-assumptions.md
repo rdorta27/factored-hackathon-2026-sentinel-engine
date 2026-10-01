@@ -12,7 +12,9 @@ The data dictionary states both facts ([reference](../understand/reference/)):
 - `products.currency`: "Currency (MXN, COP, ARS, USD)", NOT NULL. Currency is per product; nothing ties a country to one currency.
 - `transactions.transaction_country`: "Country where transaction occurred". It names where a purchase happened, so it includes foreign countries such as Brazil, Spain or the USA. Those are customers of the three countries buying abroad, not foreign accounts.
 
-The dataset is fully synthetic ("no real customer information is included") and its text is Spanish only. The source spells the country both `México` and `Mexico`; we normalize to `México`.
+The dataset is fully synthetic ("no real customer information is included") and its text is Spanish only. The source spells the country both `México` and `Mexico`; the pipeline's Silver layer normalizes to `México`. The `Mexico` variant appears in `transaction_country` for purchases made in Mexico, not in the account country.
+
+Checked on the 2024Q4 transactions: Colombian and Argentine charges come in local currency and in USD, while every Mexican charge is in USD and none in MXN, so the MXN group has no data to set a threshold from ([dataset assumptions](../understand/dataset.md#assumptions)).
 
 ## Consequences
 

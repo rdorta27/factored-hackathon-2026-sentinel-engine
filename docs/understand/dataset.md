@@ -128,6 +128,17 @@ We first explore the tables linked to the flow and sample the large ones; at sca
 - **IP country different from the account country:** a risk signal, not a verdict (travel, family, VPN). Useful for the fraud component or for requesting extra verification in sensitive actions; never block or discriminate by origin.
 - 10-million-row table: sample it for exploration.
 
+## Assumptions
+
+Facts the system relies on, taken from the [data dictionary](reference/) and checked against the 2024Q4 transactions. The reasons and what they change are in [rationale: data assumptions](../rationale/data-assumptions.md).
+
+- **Account countries are México, Colombia and Argentina only.** `customers.country` is NOT NULL with those three values. There is no Brazilian account.
+- **Currency belongs to the product, not the country.** `products.currency` takes MXN, COP, ARS or USD, so a customer may hold a local and a USD product. In 2024Q4, Colombian and Argentine charges come in their local currency and in USD; every Mexican charge is in USD and none in MXN.
+- **`transaction_country` is where a purchase happened**, not the account country. It includes Brazil, Spain and the USA: customers of the three countries buying abroad, often in their local currency. Account statistics group by `customers.country`.
+- **Canonical spelling is `México`.** The source also writes `Mexico`; Silver normalizes it (`sentinel-data-engine`, REQ-0015). In `customers` there was nothing to fix; in `transactions` the variant names purchases made in Mexico.
+- **`amount_usd` is often empty** (57% of 2024Q4 transactions), so it cannot carry a rule on its own.
+- **The data is fully synthetic and Spanish only.** Portuguese is served without Portuguese data (REQ-0012, REQ-0013).
+
 ## Relationships between tables
 
 - `customer_id` links 8 tables to `customers`. It is the **mandatory filter** of every tool that reads customer data: always the authenticated session's customer, never chosen by the LLM.
