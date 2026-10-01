@@ -4,7 +4,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
-| [REQ-0013](#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | Pending |
+| [REQ-0013](#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | In progress |
 | [REQ-0030](#req-0030) | Declare what is missing | P0 | all | [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
 | [REQ-0034](#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | In progress |
 | [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Pending |
@@ -18,13 +18,15 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 
 State openly what the data cannot support: the dataset is synthetic, Spanish only, and covers only Mexico, Colombia and Argentina, so Portuguese and other countries are untested against real material. The assumptions are listed once in the [dataset assumptions](../understand/dataset.md#assumptions).
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** analysis
+**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** analysis
 
 **Source:** Problem statement: Scope · Kickoff p. 15 · Dataset summary
 
 **Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024). Coverage limits come from the language support and the breakdown.
 
-**Evidence:** Missing: the limitations section.
+**Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD.
+
+Missing: the limitations section in the README and the slides.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
@@ -37,7 +39,7 @@ An honest list of what the prototype lacks before real use: capacity, data, lang
 
 **Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). Gathers the data, language and capacity limits.
 
-**Evidence:** Missing: the limitations section, which gathers REQ-0013 and REQ-0053.
+**Evidence:** Missing: the limitations section, which gathers REQ-0013 and the [sizing](../sizing_capacity.md) (REQ-0053).
 
 <a id="req-0034"></a>
 ### REQ-0034 · Clean public repository

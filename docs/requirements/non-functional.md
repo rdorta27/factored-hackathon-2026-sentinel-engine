@@ -10,10 +10,10 @@ How the system behaves: security, privacy, reliability, observability and reprod
 | [REQ-0025](#req-0025) | Observability | P1 | ai | — | Done |
 | [REQ-0026](#req-0026) | Bounded retries and safe fallback | P1 | ai | [REQ-0005](#req-0005) | Done |
 | [REQ-0027](#req-0027) | Authentication, isolation and retention | P0 | ai, data | — | Done |
-| [REQ-0028](#req-0028) | Reproducible setup | P0 | all | [REQ-0015](data-ml.md#req-0015), [REQ-0019](data-ml.md#req-0019) | In progress |
+| [REQ-0028](#req-0028) | Reproducible setup | P0 | all | [REQ-0015](data-ml.md#req-0015), [REQ-0019](data-ml.md#req-0019) | Done |
 | [REQ-0029](#req-0029) | Explanations from sources and rules | P1 | ai | [REQ-0025](#req-0025) | Done |
 | [REQ-0032](#req-0032) | Documented mock tools | P1 | ai | — | Done |
-| [REQ-0047](#req-0047) | No personal data to the LLM | P0 | ai | [REQ-0027](#req-0027) | In progress |
+| [REQ-0047](#req-0047) | No personal data to the LLM | P0 | ai | [REQ-0027](#req-0027) | Done |
 | [REQ-0048](#req-0048) | Decision order | P0 | ai, ml | [REQ-0016](data-ml.md#req-0016) | Done |
 | [REQ-0049](#req-0049) | Country as configuration | P2 | ai | — | Done |
 | [REQ-0056](#req-0056) | Explicit trade-offs | P0 | all | [REQ-0016](data-ml.md#req-0016), [REQ-0055](analytics.md#req-0055) | In progress |
@@ -55,7 +55,7 @@ Test the cases the brief names explicitly: bad or missing data, expired session,
 
 **Depends on:** [REQ-0007](#req-0007), [REQ-0012](frontend-backend.md#req-0012), [REQ-0026](#req-0026), [REQ-0027](#req-0027). The attacks test permissions, languages, fallback and the session.
 
-**Evidence:** Proven by: 36 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/36` in [`evidence/adversarial/20261001T130342Z/summary.json`](../../evidence/adversarial/20261001T130342Z/summary.json); runner fault injection (Gold, session, tool) degrading safely in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: 36 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/36` (29 `blocked_verified`, 3 `no_defense_yet`: A3, A4b, D4) in [`evidence/adversarial/20261001T222341Z/summary.json`](../../evidence/adversarial/20261001T222341Z/summary.json); runner fault injection (Gold, session, tool) degrading safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
 
 <a id="req-0025"></a>
 ### REQ-0025 · Observability
@@ -97,15 +97,13 @@ A trusted test session proves identity (a customer number alone does not), each 
 
 Anyone can set the project up, rerun the evaluation and get the same results, with versioned code and data runs.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Problem statement: What your solution should demonstrate 6 · Kickoff p. 15
 
 **Depends on:** [REQ-0015](data-ml.md#req-0015), [REQ-0019](data-ml.md#req-0019). Reproducible pipeline and versioned runs.
 
-**Evidence:** Proven by: stdlib evidence scripts with `verify` (`evidence/evaluation/eval_measure.py`), write-once frozen runs, and an offline replayable harness (`python3 -m eval.freeze`).
-
-Missing: the data-sync setup note.
+**Evidence:** Proven by: stdlib evidence scripts with `verify` (`evidence/evaluation/eval_measure.py`, which also verifies against the pipeline DuckDB hash), write-once frozen runs, an offline replayable harness (`python3 -m eval.freeze`), and the data setup: sync the raw tables and run the pipeline in two steps ([`sentinel-data-engine/README.md`](../../sentinel-data-engine/README.md#9-local-development-quickstart)); a local run reproduced the committed quality report.
 
 <a id="req-0029"></a>
 ### REQ-0029 · Explanations from sources and rules
@@ -136,15 +134,13 @@ Mock banking tools are allowed if their contracts and limitations are documented
 
 The model never receives identifiers or personal data, and no restricted data goes into external model requests. Tools filter by the session customer instead.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** AI Engineering · **Area:** ai
+**Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering · **Area:** ai
 
 **Source:** Problem statement: Data and execution boundaries · Own: [security](../build/security.md#llm-visibility)
 
 **Depends on:** [REQ-0027](#req-0027). Tools filter by the session customer.
 
-**Evidence:** Proven by: session-bound lookup that takes no customer argument plus the 8/8 denial test; auth events stored as salted `session_ref` records with no IP (`test_audit_session_ref_is_a_hash_not_the_customer`); router request whitelist (`tests/test_ai_router.py`); the orchestrator sees an opaque customer hash, never the id ([`evidence/adversarial/20261001T130342Z/summary.json`](../../evidence/adversarial/20261001T130342Z/summary.json)).
-
-Missing: personal data typed in free text still reaches the model (attack `A9`, `no_defense_yet`); masking is decision 004.
+**Evidence:** Proven by: session-bound lookup that takes no customer argument plus the 8/8 denial test; auth events stored as salted `session_ref` records with no IP (`test_audit_session_ref_is_a_hash_not_the_customer`); router request whitelist that also keeps the fraud score out (`tests/test_ai_router.py`); the orchestrator sees an opaque customer hash, never the id; personal identifiers typed in free text are masked before the model (`app/privacy/`, `tests/privacy/`), so attack `A9` is `blocked_verified` in [`evidence/adversarial/20261001T222341Z/summary.json`](../../evidence/adversarial/20261001T222341Z/summary.json).
 
 <a id="req-0048"></a>
 ### REQ-0048 · Decision order
