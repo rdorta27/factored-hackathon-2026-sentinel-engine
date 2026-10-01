@@ -1,6 +1,6 @@
 # Policy thresholds
 
-Status: values pending the evidence run `evidence/evaluation/2024Q4-v2/` (OpenSpec change `add-fraud-and-high-amount-rules`, decisions 25 and 26). The method below is settled.
+Decisions [010](../build/decisions/010-fraud-handoff-rule.md) and [011](../build/decisions/011-high-amount-threshold.md); OpenSpec change `add-fraud-and-high-amount-rules`.
 
 ## Choice
 
@@ -20,9 +20,19 @@ Both thresholds are set per account country **and** per charge currency. They ar
 - **Two rule ids for fraud,** so the advisor and the logs show whether the customer's words or the charge's score escalated the case (REQ-0029). The customer never sees the word fraud or the score.
 - **The score is the dataset's own column.** `is_fraud` is never used: it is known only after an investigation, so using it would leak the answer.
 
+## What the data showed
+
+Values live in `sentinel-ai-core/config/policy/{mx,co,ar}.yaml`, read from `evidence/evaluation/2024Q4-v2/summary.json` (`account_thresholds.groups.<country>.<currency>`). Cite those fields for any number on a slide; a test fails if a configured value drifts from them.
+
+- **Five groups had enough data:** Argentina ARS and USD, Colombia COP and USD, México USD. Every one is above the 100-charge minimum (`.n`).
+- **The score threshold barely moves** across groups (`.fraud_score.p95`): the score does not depend on currency in this dataset.
+- **The USD amount threshold is almost the same in all three countries** (`.amount.p95` for USD): the currency explains the amount, not the country. That is the argument for per-currency rules.
+- **México has no MXN at all.** No MXN product or transaction exists in 2023-2026, while Mexican `estimated_monthly_income` is on an MXN scale: a dataset inconsistency we report and asked the organizers about. The demo's Mexican MXN account is invented and has no threshold; its charges never escalate on score or amount.
+- **Evaluation:** one development case per rule and shown currency, plus the not-mine claim in es-419 and pt-BR, replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`; unsafe outcomes stay at zero there and in `evidence/adversarial/20261001T215949Z/summary.json`.
+
 ## Alternatives rejected
 
-- **One USD threshold on `amount_usd`:** a USD figure is not what the customer sees, it rests on the dataset's fixed synthetic exchange rates, it is empty in about 5% of ARS and COP charges, and it does not cover the score.
+- **One USD threshold on `amount_usd`:** a USD figure is not what the customer sees, it rests on the dataset's fixed synthetic exchange rates, it is empty in about 5% of ARS and COP charges, the pipeline's Silver layer does not carry it, and it does not cover the score.
 - **The dictionary's 0-100 scale (for example 50):** observed scores sit below about 30, so such a threshold would never fire.
 - **p90 or p99:** p90 doubles the advisor load; p99 would almost never show in the demo.
 
