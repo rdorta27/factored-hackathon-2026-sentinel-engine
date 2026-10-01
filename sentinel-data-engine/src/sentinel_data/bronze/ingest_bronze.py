@@ -188,14 +188,49 @@ class BronzeIngestor:
             )
             return set()
 
+    def _resolve_local_csv_files(self) -> list[Path]:
+        """
+        Locate all CSV files for this table under local_raw_dir.
+
+        Discovery order (first match wins):
+        1. Sub-directory ``<raw_dir>/<table>/``       → ``**/*.csv``
+        2. Flat file ``<raw_dir>/<table>.csv``
+        3. Sub-directory ``<raw_dir>/data/<table>/``  → ``**/*.csv``
+        4. Flat file ``<raw_dir>/data/<table>.csv``
+
+        Matching is case-insensitive on directory/file names.
+        """
+        table = self.cfg.table_name
+        raw_dir = self.cfg.local_raw_dir
+        search_roots: list[Path] = [raw_dir]
+        nested = raw_dir / "data"
+        if nested.is_dir():
+            search_roots.append(nested)
+
+        for root in search_roots:
+            try:
+                entries = {p.name.lower(): p for p in root.iterdir()}
+            except PermissionError:
+                continue
+
+            # Sub-directory
+            subdir = entries.get(table.lower())
+            if subdir and subdir.is_dir():
+                files = sorted(subdir.rglob("*.csv"))
+                if files:
+                    return files
+
+            # Flat file
+            flat = entries.get(f"{table.lower()}.csv")
+            if flat and flat.is_file():
+                return [flat]
+
+        return []
+
     def _run_local(self) -> None:
         """
-        Read all CSV files under data/raw/<table>/ with DuckDB and append only
-        previously unseen files to the Bronze Delta table at data/bronze/<table>/.
-
-        Partition sub-directories produced by the synthetic data generator
-        (year/month/day/ for daily tables, year/month/ for snapshots) are
-        traversed automatically via the ``**/*.csv`` glob.
+        Read all CSV files for this table (flat or Hive-partitioned) and append
+        only previously unseen files to the Bronze Delta table.
 
         Idempotency
         -----------
@@ -206,15 +241,15 @@ class BronzeIngestor:
         Requires DuckDB >= 0.10 with the delta extension:
             INSTALL delta; LOAD delta;
         """
-        raw_dir = self.cfg.local_raw_dir / self.cfg.table_name
         bronze_dir = self.cfg.local_bronze_dir / self.cfg.table_name
 
-        csv_files = sorted(raw_dir.glob("**/*.csv"))
+        csv_files = self._resolve_local_csv_files()
         if not csv_files:
             logger.warning(
-                "No CSV files found under %s – skipping. "
+                "No CSV files found for table '%s' under %s – skipping. "
                 "Expected partition strategy: %s",
-                raw_dir,
+                self.cfg.table_name,
+                self.cfg.local_raw_dir,
                 self._table_def.partition_strategy,
             )
             return

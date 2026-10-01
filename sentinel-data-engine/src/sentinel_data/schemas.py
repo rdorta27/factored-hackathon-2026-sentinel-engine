@@ -74,7 +74,7 @@ class GoldDisputeCustomer360(BaseModel):
     total_complaints: int = Field(..., ge=0)
     active_disputes: int = Field(..., ge=0, description="Open/pending complaints")
     is_repeat_complainer: bool
-    total_compensation_paid: float = Field(..., ge=0)
+    total_claimed_amount: float = Field(..., ge=0, description="Sum of claimed_amount across complaints")
 
     # Survey aggregates
     avg_csat_score: Optional[float] = Field(None, ge=0, le=10)
@@ -231,8 +231,8 @@ class GoldDisputeCasesSummary(BaseModel):
     status: str = Field(..., description="OPEN | IN_PROGRESS | RESOLVED | CLOSED")
     sla_breached: bool
     resolution_notes: Optional[str] = None
-    compensation_amount: Optional[float] = Field(None, ge=0)
-    referenced_transaction_id: Optional[str] = None
+    claimed_amount: Optional[float] = Field(None, ge=0, description="Amount claimed by customer")
+    compensation_granted: Optional[bool] = Field(None, description="Whether compensation was granted")
     is_repeat_complainer: bool
 
     # Customer context (denormalized)
