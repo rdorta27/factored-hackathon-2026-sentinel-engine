@@ -82,11 +82,11 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | Natalia, Rubén | In progress: DuckDB adapter behind `GoldTransactions` with fallback to the labelled mock (`app/tools/gold_duckdb.py`, `tests/test_gold_duckdb.py`); not yet run on local Gold data |
 | Adversarial set: prompt injection and unauthorized access | Felix | Done: 36 attacks in `tests/adversarial/` (chat, disputes API, advisor endpoint), `0/36` unsafe (`evidence/adversarial/20261001T130342Z/summary.json`); PII free-text `A9` stays `no_defense_yet` (REQ-0021, REQ-0047) |
 | Public link: Azure, or the free-host fallback of decision 13 | Felix | Pending |
-| Integrate PR #20 and align one API: one app at `app.main:app`, everything under `/api/v1`, typed chat replies the page renders | Rubén | Done: `tests/test_contract.py`; OpenSpec change `align-canonical-api-v1` |
-| Persist sessions, conversation and cases in SQLite (mentor feedback); delete conversation on logout and expiry | Rubén | Done: `tests/test_state_sqlite.py`; OpenSpec change `persist-state-and-dispute-api` |
-| Two-step disputes API and one open dispute per charge across sessions | Rubén | Done: `tests/test_disputes_api.py`, adversarial B9, B10, C6, D6, D7 |
-| Handoff ticket with conversation summary and every attempted action | Rubén | Done: `tests/test_handoff_package.py` |
-| Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Rubén | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
+| Integrate PR #20 and align one API: one app at `app.main:app`, everything under `/api/v1`, typed chat replies the page renders | Natalia (Rubén integrated) | Done: `tests/test_contract.py`; OpenSpec change `align-canonical-api-v1` |
+| Persist sessions, conversation and cases in SQLite (mentor feedback); delete conversation on logout and expiry | Natalia (Rubén integrated) | Done: `tests/test_state_sqlite.py`; OpenSpec change `persist-state-and-dispute-api` |
+| Two-step disputes API and one open dispute per charge across sessions | Natalia, Felix (Rubén integrated) | Done: `tests/test_disputes_api.py`, adversarial B9, B10, C6, D6, D7 |
+| Handoff ticket with conversation summary and every attempted action | Natalia (Rubén integrated; summary and attempted actions added by Rubén) | Done: `tests/test_handoff_package.py` |
+| Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 | Test that no reply shows amounts or merchants outside the verified facts | Rubén | Done: `tests/test_facts_grounding.py` (mutation-checked) |
 | A person request while a confirm box is pending must escalate like any other (REQ-0040) | Unassigned | Pending |
 | Serve the prompted router in the demo when decision 10 lands (today the served model is the keyword baseline) | Rubén | Pending |
@@ -152,7 +152,7 @@ Need information, not a decision. Ordered by date.
 | Evaluation evidence frozen: label universe, mix and thresholds (`evidence/evaluation/2024Q4-v1/`, change archived) | Rubén | Wed 9/30 |
 | Evaluation runner frozen: bench + system replay, 0 failures, unsafe `0/35` (`evidence/evaluation-runs/2024Q4-eval-v1/`, change archived) | Rubén | Wed 9/30 |
 | Runtime `var/` anchored to the app package (`SENTINEL_VAR_DIR` override); stale root `var/` removed | Rubén | Wed 9/30 |
-| One app and one API under `/api/v1`; PR #20 integrated | Rubén | Thu 10/1 |
-| Sessions, conversation and cases in SQLite with retention | Rubén | Thu 10/1 |
-| Disputes API, handoff tickets with summary, advisor view and roles | Rubén | Thu 10/1 |
+| One app and one API under `/api/v1`; PR #20 integrated | Natalia (Rubén integrated) | Thu 10/1 |
+| Sessions, conversation and cases in SQLite with retention | Natalia (Rubén integrated) | Thu 10/1 |
+| Disputes API, handoff tickets with summary, advisor view and roles | Natalia, Felix (Rubén integrated) | Thu 10/1 |
 | Adversarial set at 36 attacks, `0/36` unsafe ([evidence](../evidence/adversarial/20261001T130342Z/summary.json)) | Rubén, Felix | Thu 10/1 |
