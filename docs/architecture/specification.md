@@ -29,7 +29,7 @@ Four tools. Each is bound to the session's `customer_id`, which the orchestrator
 | `lookup_dispute` | Dispute id | The stored record, or not found | The case number reaches the customer only when this read succeeds (REQ-0005). |
 | `handoff` | Reason for escalation | JSON package: request, verified facts, actions taken, evidence, open questions, language, country | No raw transcript, no identifiers beyond what the advisor is authorised to see (REQ-0008, REQ-0046). |
 
-There is no advisor UI. The JSON package is the handoff.
+The JSON package is the handoff. It is filed as an escalated case, and the advisor reads it at `GET /api/v1/handoffs` (role `advisor`) in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 
 ### Confirmation
 

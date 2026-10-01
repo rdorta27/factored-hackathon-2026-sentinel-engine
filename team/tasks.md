@@ -71,8 +71,8 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Task | Owner | Status |
 |---|---|---|
 | Ambiguous and human cases | Rubén | Done: missing/person/out-of-scope cases in `sentinel-ai-core/eval/cases/` replayed green |
-| Decide advisor queue + role landing + admin scope (pending decision 29): implement, JSON-only, or counts-only | Rubén | Pending |
-| PII review of the advisor summary before any queue UI (REQ-0047, REQ-0008) | Rubén | Pending |
+| Decide advisor queue + role landing + admin scope (pending decision 29): implement, JSON-only, or counts-only | Rubén | Done: [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md), read-only advisor view, no admin panel |
+| PII review of the advisor summary before any queue UI (REQ-0047, REQ-0008) | Rubén | Done: package has no names, no raw text, no unverified references; advisor sees customer id and country only (`tests/test_handoffs_api.py`, `tests/test_handoff_package.py`) |
 | Start the video script | Rubén | Pending |
 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | Rubén | Pending |
 | Portuguese | Rubén | Done: 13 team-written pt-BR cases; router detection covered in `tests/test_ai_router.py` |
@@ -94,7 +94,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Path to production write-up (REQ-0052) | Rubén | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
-| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | In progress: ai-core serves the demo alone on `/api/v1` with the `sentinel-login` reply contract; removal itself pending |
+| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Done: backend, tests and packaging removed; only the original page remains as a reference ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
 | Validate the presentation outline with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5

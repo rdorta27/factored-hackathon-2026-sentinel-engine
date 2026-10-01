@@ -38,7 +38,7 @@ flowchart LR
 ```
 
 - **Data layer.** Batch medallion pipeline. Bronze keeps the files as received; Silver enforces the schema contracts and quality rules and sends invalid rows to quarantine instead of dropping them; Gold holds denormalised tables ready to serve. The service reads Gold and never writes to it.
-- **Service layer.** One process serves the chat page and `POST /api/v1/chat`; there is no second app and no advisor screen.
+- **Service layer.** One process serves the page and the API (`/api/v1`); there is no second app. The advisor reads escalated tickets in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - **Two stores, two jobs.** Charges are read from Gold, which the pipeline refreshes in batches. Disputes are written to an operational dispute record and read back at once, so the customer only hears a case number that exists.
 
 ## Components

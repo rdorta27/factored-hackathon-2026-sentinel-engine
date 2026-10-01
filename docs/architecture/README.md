@@ -35,7 +35,7 @@ Legend: violet = component, blue = data store, grey = outside the system. Colour
 
 Key properties:
 
-- **One process.** FastAPI serves the chat page and the API. No second app, no advisor UI.
+- **One process.** FastAPI serves the page and the API. No second app; the advisor reads tickets in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - **Session-bound tools.** The LLM never sees or chooses `customer_id`.
 - **Verified actions only.** A case number is given after the dispute is read back; a timeout is not success.
 - **Mocks keep the contract.** Each mock has the same contract as the real component, so moving to production replaces a backend, not code.

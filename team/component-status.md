@@ -30,7 +30,7 @@ flowchart TB
     lookup --> goldmock[("Gold mock store<br/>no real read yet")]
     open --> disputes[("Dispute record<br/>in-memory")]
     verify --> disputes
-    orch --> handoff(["Advisor handoff<br/>mock, no queue UI"])
+    orch --> handoff(["Advisor handoff<br/>ticket + read-only advisor view"])
     orch -.-> logs[("Structured logs<br/>traces, latency, cost")]
     evalr["Evaluation runner<br/>35 cases, 0 failures"] -.-> chat
     evalr -.-> logs
@@ -54,7 +54,7 @@ flowchart TB
 ## Reading it
 
 - **Done (14):** the full demo path works — chat, session, loop, policy with per-country files, the three tools against fakes, the in-memory dispute record with read-back verification, the structured log with its JSONL file, the measured [adversarial set](../evidence/adversarial/20260930T214744Z/summary.json) (29 attacks, `0/29` unsafe), the prompted router with fixtures and safe fallback, and the [frozen evaluation run](../evidence/evaluation-runs/2024Q4-eval-v1/summary.json) (35 cases, 0 failures, unsafe `0/35`).
-- **Partial (4):** Gold is a mock store on the demo path (the pipeline code exists with tests but never ran end to end); the advisor handoff is a stub with no queue UI; the router-vs-baseline delta is zero by construction (mirrored fixtures — the live-model comparison needs decision 010); the DuckDB Gold adapter is wired behind the same seam with fallback to the mock, but no local Gold data has been read through it yet.
+- **Partial (4):** Gold is a mock store on the demo path (the pipeline code exists with tests but never ran end to end); the advisor handoff is a filed ticket with a read-only view (no claim or routing yet); the router-vs-baseline delta is zero by construction (mirrored fixtures — the live-model comparison needs decision 010); the DuckDB Gold adapter is wired behind the same seam with fallback to the mock, but no local Gold data has been read through it yet.
 - **Missing (2):** the S3-to-service real read path and the public deployment.
 
 ## What unblocks what

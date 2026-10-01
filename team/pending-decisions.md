@@ -39,7 +39,7 @@ Postponed from 9/28 and 9/29. Until then the demo runs locally; the Azure servic
 |---|---|---|---|
 | 23 | `team/` in the submission | The repo stays public (decided). Open: keep `team/` in the submission or remove it before submitting. Does not block the skeleton | [Security](../docs/build/security.md#public-repository-and-deployment) |
 | 28 | Handoff delivery in production | How the JSON package reaches advisors in production: queue, CRM ticket or similar. Not needed for the demo (the package is returned and logged). Routing by language and specialty is REQ-0046 (P2, simulated). Presented as remaining deployment work | [Specification: path to production](../docs/architecture/specification.md#path-to-production) |
-| 29 | Advisor queue, admin panel and role landing (deferred from the chat-session migration) | (a) Implement advisor queue + role landing for the demo; (b) keep JSON-only handoff with no advisor UI; (c) admin counts only, no panel. Depends on PII review of the advisor summary vs REQ-0047/REQ-0008. Owner: Rubén | [Handoff](../docs/architecture/specification.md#tool-contracts), [roles spec](../openspec/specs/roles/spec.md), decision 28 |
+| 29 (closed 10/1 by [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md): option (a) read-only, no admin panel) | Advisor queue, admin panel and role landing (deferred from the chat-session migration) | (a) Implement advisor queue + role landing for the demo; (b) keep JSON-only handoff with no advisor UI; (c) admin counts only, no panel. Depends on PII review of the advisor summary vs REQ-0047/REQ-0008. Owner: Rubén | [Handoff](../docs/architecture/specification.md#tool-contracts), [roles spec](../openspec/specs/roles/spec.md), decision 28 |
 
 ## Decided
 
@@ -58,6 +58,7 @@ Postponed from 9/28 and 9/29. Until then the demo runs locally; the Azure servic
 | 12 | Data storage and pipeline | Delta Lakehouse: DuckDB with the Delta extension locally, Azure Databricks with PySpark and Delta Lake on ADLS Gen2 in production. Bronze, Silver and Gold live in `sentinel-data-engine/` ([stack](../docs/architecture/system-architecture.md#stack-and-deployment)) | 9/29 |
 | 17 | Repository visibility | Public from the start, and it stays public | 9/28 |
 | 18 | OpenSpec spec language | English, since specs are submitted | 9/28 |
+| 29 | Advisor queue, admin panel, role landing | Role landing and a read-only advisor view of escalated tickets (`GET /api/v1/handoffs`) in the ai-core page; demo advisor only with `SENTINEL_DEMO_AUTH=1`; admin panel out; `sentinel-login/` backend removed ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) | 10/1 |
 | 19 | Language of `docs/` and `team/` | Everything in English, including folder and file names | 9/28 |
 | 20 | Video and slides | Rubén. Script starts Thursday 10/1. Slides: Rubén; outline on Thursday 10/1, validated by the group on Friday 10/2, reviewed from Friday to Monday with the results; frozen Monday 10/5 | 9/29 |
 | 21 | Repositories | One public repo. Git submodules are decision 22 | 9/29 |

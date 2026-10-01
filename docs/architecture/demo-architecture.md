@@ -131,7 +131,7 @@ The same repository and folders as the target. Owners and progress per folder ar
 
 - A decided dispute-record engine or schema.
 - Masking of free customer text before the LLM and static masking in Silver (proposed, [decision 004](../build/decisions/004-pii-lifecycle.md)). If a customer types their national id, it reaches the LLM; the demo states this.
-- A separate web app, an advisor screen, a proof-of-work card, a charge pause or an SLA timer.
+- A separate web app, an admin panel, advisor actions (claim, state change), a proof-of-work card, a charge pause or an SLA timer. The advisor has a read-only ticket view ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - Balances, products, cards and credit: out of the flow's scope ([decision 008](../build/decisions/008-account-inquiry-scope.md)).
 - Brazil as a market: `pt-BR` is a test language; the dataset covers Mexico, Colombia and Argentina.
 
