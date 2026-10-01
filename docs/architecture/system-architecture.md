@@ -45,11 +45,19 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
-    client --> dapi["Disputes API<br/>preview → create · list"]
-    chat --> session["Session<br/>and conversation state"]
-    dapi --> session
-    session --> orch["Orchestrator<br/>U → D → A → V → E"]
+    client(["Customer"])
+    advisor(["Advisor"])
+
+    subgraph http["HTTP layer · /api/v1 · one FastAPI process"]
+        auth["Auth and roles<br/>session cookie · customer / advisor"]
+        chat["Chat · POST /chat<br/>confirm box"]
+        dapi["Disputes<br/>preview → create · list"]
+        hapi["Handoffs · GET<br/>advisor only"]
+    end
+    client --> auth
+    advisor --> auth
+    auth --> chat & dapi & hapi
+    chat & dapi --> orch["Orchestrator<br/>U → D → A → V → E"]
 
     subgraph understand["Understanding · LLM"]
         router["LLM router"]
@@ -66,29 +74,43 @@ flowchart TB
         verify["lookup_dispute"]
         handoff["handoff"]
     end
+    subgraph ports["Ports · fixed contract, adapter chosen by configuration"]
+        mport["ModelPort"]
+        gport["GoldTransactions"]
+        cport["Case store"]
+        sport["Session and<br/>conversation store"]
+    end
 
-    orch --> router & learned & policy
+    orch --> policy
+    orch --> mport --> router & learned
     orch --> lookup & open & verify & handoff
-    lookup --> gold[("Gold<br/>minimal view")]
-    open --> disputes[("Case store<br/>disputes · tickets")]
-    verify --> disputes
-    handoff --> disputes
-    disputes --> aview["Advisor view<br/>GET /api/v1/handoffs"]
-    aview --> advisor(["Advisor"])
-    orch -.-> logs[("Structured logs<br/>traces, latency, cost")]
+    lookup --> gport --> gold[("Gold<br/>serving view")]
+    open & verify & handoff --> cport
+    hapi --> cport
+    auth --> sport
+    orch --> sport
+    cport & sport --> db[("PostgreSQL<br/>cases · tickets · sessions · conversation")]
+
+    subgraph obs["Observability"]
+        records[("Turn records<br/>trace_id · step · rule · latency · cost")]
+        audit[("Audit events<br/>login · logout · access_denied")]
+    end
+    orch -.-> records
+    auth -.-> audit
     evalr["Evaluation runner"] -.-> chat
-    evalr -.-> logs
+    evalr -.-> records
 
     classDef comp fill:#f1edff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
     classDef store fill:#fbfaff,stroke:#3d8bff,stroke-width:2px,color:#1a1530
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class chat,dapi,session,orch,router,learned,policy,lookup,open,verify,handoff,aview,evalr comp
-    class config,gold,disputes,logs store
+    class auth,chat,dapi,hapi,orch,router,learned,policy,lookup,open,verify,handoff,mport,gport,cport,sport,evalr comp
+    class config,gold,db,records,audit store
     class client,advisor ext
 ```
 
 | Component | Role |
 |---|---|
+| HTTP layer: auth and roles | Every route sits under `/api/v1` behind the session cookie. Login needs a password; the role stored on the session decides which routes answer (customer: chat, transactions, disputes; advisor: handoffs). A role failure is a 403 recorded as `access_denied`. |
 | Chat page and `POST /api/v1/chat` | The customer's entry point. State-changing actions are confirmed with a confirm box, not with free text. |
 | Disputes API | `/api/v1/disputes`: the same dispute workflow without chat, in two steps (preview = confirm box, create = confirmation) on the same orchestrator turn, plus the customer's own case list. Not a second business path. |
 | Session and conversation state | Trusted session (password login, role stored) that carries `customer_id`; recent turns, pending confirmation and a per-turn history, kept outside the process and deleted on logout or expiry. |
@@ -98,8 +120,9 @@ flowchart TB
 | Policy engine and configuration | Evaluates rules in code (status, eligibility, confirmation, handoff triggers) with per-country parameters from configuration. A policy outcome is final. |
 | Tools | Four functions bound to the session: look up charges, open a dispute (idempotent, one open dispute per charge), read it back, hand off. |
 | Case store | Operational relational store (PostgreSQL) for disputes and handoff tickets, with sessions and conversation state alongside. Never Gold. |
-| Advisor view | `GET /api/v1/handoffs`, role `advisor`: each escalated ticket with its reason, summary, verified facts, actions attempted and open questions. Read-only ([009](../build/decisions/009-demo-ui-and-advisor-view.md)). |
-| Structured logs | One record per loop step, used for tracing, monitoring and evaluation metrics. |
+| Handoffs route and advisor view | `GET /api/v1/handoffs`, role `advisor`: each escalated ticket with its reason, summary, verified facts, actions attempted and open questions. Read-only ([009](../build/decisions/009-demo-ui-and-advisor-view.md)). |
+| Ports and adapters | Four contracts the code depends on: `ModelPort` (understanding), `GoldTransactions` (charges), the case store (disputes and tickets) and the session and conversation store. The adapter behind each one is chosen by configuration, so the demo and production run the same loop. |
+| Observability | Turn records (one per loop step plus one closing record per turn: `trace_id`, rule, latency, cost) and audit events (login, logout, `access_denied`), with no customer text or identifier in clear. They serve tracing, monitoring and the evaluation metrics. |
 | Evaluation runner | Replays labelled conversations against `POST /api/v1/chat` and computes the metrics the brief asks for. |
 
 ## Walkthrough of a case

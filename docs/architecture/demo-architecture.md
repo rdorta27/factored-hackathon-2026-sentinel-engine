@@ -47,16 +47,20 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
-    client --> dapi["Disputes API<br/>preview → create · list"]
-    chat --> session["Test session<br/>and conversation state · SQLite"]
-    dapi --> session
-    session --> orch["Orchestrator<br/>U → D → A → V → E"]
+    client(["Customer"])
+    advisor(["Advisor<br/>demo user"])
 
-    subgraph understand["Understanding · LLM"]
-        router["Model port<br/>keyword baseline served ·<br/>prompted router measured offline"]
-        learned["Learned component<br/>dispute-category classifier"]
+    subgraph http["HTTP layer · /api/v1 · one FastAPI process"]
+        auth["Auth and roles<br/>test session · password"]
+        chat["Chat · POST /chat<br/>confirm box"]
+        dapi["Disputes<br/>preview → create · list"]
+        hapi["Handoffs · GET<br/>advisor only"]
     end
+    client --> auth
+    advisor --> auth
+    auth --> chat & dapi & hapi
+    chat & dapi --> orch["Orchestrator<br/>U → D → A → V → E"]
+
     subgraph control["Control · code"]
         policy["Policy engine"]
         config[("Policy configuration<br/>synthetic, per country")]
@@ -68,28 +72,51 @@ flowchart TB
         verify["lookup_dispute"]
         handoff["handoff"]
     end
+    subgraph ports["Ports · same contract as the target"]
+        mport["ModelPort"]
+        gport["GoldTransactions"]
+        cport["Case store"]
+        sport["Session and<br/>conversation store"]
+    end
+    subgraph adapters["Adapters · chosen by configuration"]
+        baseline["Keyword baseline<br/>served"]
+        prompted["Prompted router<br/>offline eval · fixtures"]
+        duck[("Gold on DuckDB<br/>PII-free view")]
+        goldmock[("Gold mock<br/>fallback, labelled")]
+        sqlite[("SQLite file<br/>cases · tickets · sessions · conversation")]
+        memory[("In memory<br/>tests and offline eval")]
+    end
 
-    orch --> router & learned & policy
+    orch --> policy
+    orch --> mport --> baseline & prompted
     orch --> lookup & open & verify & handoff
-    lookup --> gold[("Gold on DuckDB<br/>or labelled mock")]
-    open --> disputes[("Case store<br/>SQLite · disputes · tickets")]
-    verify --> disputes
-    handoff --> disputes
-    disputes --> aview["Advisor view<br/>GET /api/v1/handoffs"]
-    aview --> advisor(["Advisor<br/>demo user"])
-    orch -.-> logs[("Structured logs<br/>local files")]
+    lookup --> gport --> duck & goldmock
+    open & verify & handoff --> cport
+    hapi --> cport
+    auth --> sport
+    orch --> sport
+    cport & sport --> sqlite & memory
+
+    subgraph obs["Observability · local files"]
+        records[("Turn records<br/>var/turns.jsonl")]
+        audit[("Audit events<br/>same log")]
+    end
+    orch -.-> records
+    auth -.-> audit
     evalr["Evaluation runner"] -.-> chat
-    evalr -.-> logs
+    evalr -.-> records
 
     classDef comp fill:#f1edff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
     classDef store fill:#fbfaff,stroke:#3d8bff,stroke-width:2px,color:#1a1530
     classDef mock fill:#fff0f5,stroke:#ff4f8b,stroke-width:2px,stroke-dasharray:5 3,color:#1a1530
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class chat,dapi,orch,router,learned,policy,lookup,open,verify,handoff,aview,evalr comp
-    class gold,logs store
-    class session,config,disputes,advisor mock
-    class client ext
+    class chat,dapi,hapi,orch,policy,lookup,open,verify,handoff,mport,gport,cport,sport,prompted,evalr comp
+    class duck,records,audit store
+    class auth,config,baseline,goldmock,sqlite,memory mock
+    class client,advisor ext
 ```
+
+Each port keeps the target contract; the demo picks the adapter by configuration: the keyword baseline is served and the prompted router is measured offline (`create_app(model=...)`), Gold comes from the DuckDB view or the labelled mock (`SENTINEL_GOLD_SOURCE`, reported by `/api/v1/health`), and state lives in the SQLite file or in memory for tests and the offline eval (`SENTINEL_STATE_BACKEND`).
 
 ## Mocked components
 
