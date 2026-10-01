@@ -2,7 +2,7 @@
 
 What the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`) that the rest of the documentation cites, and this table doubles as the traceability matrix: every requirement is tied to the official document it comes from, the evaluation criterion it serves, the area that owns it, the evidence that will prove it, and its status.
 
-**Purpose:** prioritize the work and spot evaluation criteria that still lack evidence. **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
+**Purpose:** prioritize the work, spot evaluation criteria that still lack evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
 
 ## Hackathon material
 
@@ -22,13 +22,16 @@ A requirement with no official source is marked **Own**: a team design decision,
 
 | Column | Values |
 |---|---|
-| **Type** | **F** = functional (what it does) · **NF** = non-functional (how: security, reliability, operations) · **DML** = data and ML · **E** = delivery |
+| **Type** | **Frontend and backend** = what the customer and advisor experience and the service behind it · **Non-functional** = how: security, reliability, operations · **Data and ML** = pipeline, sources, learned component · **Analytics** = analysis and metrics · **Delivery** = what the evaluators receive. Mixed requirements sit in their main type; the *Area* column shows the others |
 | **Priority** | **P0** = mandatory: code, results and README ready by Fri 10/2; the presentation and the video are finished by Mon 10/5 · **P1** = scores points, from Thu 10/1 if P0 is on track · **P2** = only if time remains. Code freezes on Fri 10/2 at night |
 | **Flow** | "All", or the flow it depends on (transaction disputes, see [decision 003](../build/decisions/003-disputes-flow.md)) |
 | **Criterion** | Kickoff evaluation criterion: Rationale, AI Engineering, Data Engineering, Data Analytics, Machine Learning |
 | **Area** | Areas that work on it; the first one owns it and the rest collaborate: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
 | **Status** | Pending, In progress, Done. Updated when the task that covers it closes |
 | **Source** | Official document and section or page (see [hackathon material](#hackathon-material)), or **Own** |
+| **Depends on** | Requirements that must be met first (see [dependencies](#dependencies)) |
+
+Each type has a summary table here and its own file with one card per requirement with its description, source, dependencies and evidence. **Evidence** says what proves the requirement today (*Proven by*) and what is still needed (*Missing*).
 
 ## Summary by priority
 
@@ -44,87 +47,124 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 18 | 16 | 7 | 44% |
+| P0 | 41 | 17 | 17 | 7 | 41% |
 | P1 | 12 | 6 | 3 | 3 | 50% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 25 | 19 | 13 | 44% |
+| **Total** | **57** | 24 | 20 | 13 | 42% |
 
-## Functional (F)
+## Status by type
 
-| ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| REQ-0001 | Keep conversation context | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2 · Kickoff p. 11 | Conversation state per session (turns, candidates, pending confirmation, language) persisted in SQLite and restored after a restart (`tests/test_state_sqlite.py::test_session_conversation_and_case_survive_a_restart`); per-turn history in the handoff (`tests/test_handoff_package.py`); router context behind `ModelPort` (`tests/test_ai_router.py`) | Done |
-| REQ-0002 | Clarify ambiguous requests or abstain from unsupported ones | P0 | All | AI Engineering | ai | Problem statement: Scope; What your solution should demonstrate 2 · Kickoff p. 11 | `clarification` with ranked candidates and out-of-scope handoff (`tests/test_contract.py::test_normal_case_variants_match_the_contract`, adversarial group E in `evidence/adversarial/20261001T130342Z/summary.json`); ambiguous cases replayed in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | Done |
-| REQ-0003 | Answer only with verified records; if the data does not exist, say so | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2 · Kickoff p. 13 | Every amount and merchant in a reply is a verified Gold fact (`tests/test_facts_grounding.py`, mutation-checked); canary `test_rendered_facts_change_when_gold_changes`; case number only after read-back (`tests/test_contract.py`) | Done |
-| REQ-0004 | Use tools safely to execute the flow; no real movement of money or live decisions (simulated actions only) | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2; Data and execution boundaries · Kickoff p. 11 | Session-bound tool port; writes only after the confirm box, idempotent, read back; `source=mock` and `noFundsHeld` on every confirmation; no write path skips confirmation (`tests/test_disputes_api.py`, adversarial D6 in `evidence/adversarial/20261001T130342Z/summary.json`) | Done |
-| REQ-0006 | Define what it answers alone, what requires confirmation, and when to escalate | P0 | All | Rationale | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11 | [Conversation](../build/conversation.md) + policy engine + confirm box; handoff on person insist, unverified write, out of scope, unknown charge. Fraud and high-amount thresholds (decisions 25, 26) still null: proposed for a separate branch | In progress |
-| REQ-0008 | Structured JSON handoff: request, verified facts, actions, evidence, open questions; no raw transcript | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 3 · Kickoff p. 11, 14 | `handoff` reply carries the package: request, deterministic conversation summary and per-turn entries, verified facts, every action attempted across the session (failed ones included), evidence, open questions, language, country; no `customer_id`, no raw text; filed as an escalated case and read by the advisor at `GET /api/v1/handoffs` (`tests/test_handoff_package.py`, `tests/test_handoffs_api.py`) | Done |
-| REQ-0009 | Demo: normal case resolved per policies | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Normal case in es-419 and pt-BR: confirm box → verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); replayed in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`. Video: REQ-0037 | Done |
-| REQ-0010 | Demo: ambiguous or unsupported case (clarifies or abstains) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Ambiguous charge → `clarification` with candidates; out of scope → handoff; nothing opened (`tests/adversarial/test_e_ambiguity.py`, `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`). Video: REQ-0037 | Done |
-| REQ-0011 | Demo: case requiring a human (escalates with handoff) | P0 | All | AI Engineering | ai | Problem statement: Scope · Kickoff p. 11 | Person insist and unverified write → `handoff` with package, filed as a ticket the advisor reads (`tests/test_handoffs_api.py`, `tests/test_handoff_package.py`). Video: REQ-0037 | Done |
-| REQ-0012 | Robust interactions in Spanish and Portuguese; the dataset is Spanish-only, so pt-BR cases are team-generated and labeled as such | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Scope · Kickoff p. 10 · Dataset summary | pt-BR demo + metrics by language + router pt-BR detection (`tests/test_ai_router.py`) | In progress |
-| REQ-0033 | Policy decides, the LLM converses: it neither approves nor invents rules. The source's risk/eligibility separation is credit-specific and does not apply to disputes | P0 | All | AI Engineering / ML | ai, ml | Problem statement: Data and execution boundaries; What your solution should demonstrate 3 | Architecture | Done |
-| REQ-0038 | Simple frontend for using the system (e.g., chat); dashboard not required (scope decision: no dashboard) | P0 | All | AI Engineering | ai | Kickoff p. 20 | One page served at `/ui/` by the same process: customer chat (confirm box, chips, transactions panel, handoff card) and the read-only advisor view (`tests/test_ui.py`, `tests/test_contract.py::test_served_app_is_the_full_app`); no dashboard ([009](../build/decisions/009-demo-ui-and-advisor-view.md)) | Done |
-| REQ-0039 | Declare data freshness ("updated through…"); never claim anything more recent | P0 | All | AI Engineering / Data Engineering | ai, data | Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) · Dataset summary (data ends 2026-06-17) | `as_of` on the listing and `referenceDate` on every confirmation, one configurable reference date (`test_screen_and_engine_share_the_default_reference_date`, `tests/test_contract.py`) | Done |
-| REQ-0040 | Request to speak to a person: a single offer to help and, if they insist, escalate immediately | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-the-customer-asks-to-speak-to-a-person) | One offer, then handoff (`tests/test_ui.py::test_agent_control_is_two_step_and_session_is_not_stored`). Gap: a person request while a confirm box is pending gets a clarification instead | In progress |
-| REQ-0041 | Show amounts in the transaction's original currency; language follows the customer, currency follows the account | P0 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#language) · Dataset summary (local currency and USD) | COP/ARS per-customer tests `test_cop_customer_sees_only_cop_charges`, `test_ars_customer_sees_only_ars_charges`; pt-BR conversation keeps the charge currency (`tests/test_facts_grounding.py`) | Done |
-| REQ-0042 | Open disputes with minimum effort: show candidate transactions instead of asking for amounts | P1 | Disputes | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-dispute) | Clarification chips and transactions-panel tap select exactly one charge without opening (`tests/test_chat.py`, `tests/test_contract.py`) | Done |
-| REQ-0043 | Check the charge status (Pending, Reversed) before opening a dispute | P1 | Disputes, accounts | AI Engineering | ai | Own: [conversation](../build/conversation.md#when-opening-a-dispute) | Pending, Reversed and Declined explained, never disputed; raw `Refunded` mapped to Reversed (`tests/test_transactions.py`, `tests/test_disputes_api.py::test_preview_runs_the_policy`) | Done |
-| REQ-0044 | Neutral Spanish, with local acronyms and terms explained; understand terms from other countries | P1 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#language) | Demo | Pending |
-| REQ-0045 | Offer recent app-error context as a question (auxiliary context, not its own flow) | P2 | All | AI Engineering | ai | Own: [conversation](../build/conversation.md#app-context) | Demo | Pending |
-| REQ-0046 | Route the handoff to an advisor with the right language and specialty (simulated) | P2 | All | AI Engineering | ai | Own: [AI](../build/areas/ai.md#simulated-routing) | Handoff example | Pending |
+| Type | Total | Done | In progress | Pending | Done % |
+|---|---|---|---|---|---|
+| [Frontend and backend](frontend-backend.md) | 19 | 12 | 4 | 3 | 63% |
+| [Non-functional](non-functional.md) | 13 | 10 | 3 | 0 | 77% |
+| [Data and ML](data-ml.md) | 10 | 1 | 5 | 4 | 10% |
+| [Analytics](analytics.md) | 7 | 1 | 5 | 1 | 14% |
+| [Delivery](delivery.md) | 8 | 0 | 3 | 5 | 0% |
+| **Total** | **57** | 24 | 20 | 13 | 42% |
 
-## Non-functional (NF)
+## Frontend and backend
 
-| ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| REQ-0005 | Report only verified actions (timeout is not success) | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 2 · Kickoff p. 11 | Tool-failure test | Done |
-| REQ-0007 | Permissions and policies in code, in addition to the prompt | P0 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 3; Data and execution boundaries · Kickoff p. 13 | Policy in code; roles enforced in code (customer endpoints `customer`, `/api/v1/handoffs` `advisor`, 403 + `access_denied`); adversarial groups B, C, D in `evidence/adversarial/20261001T130342Z/summary.json` | Done |
-| REQ-0021 | Failure tests: bad or missing data, expired session, unauthorized access, prompt injection, tool failure, multilingual ambiguity | P0 | All | Machine Learning | ml, ai | Problem statement: What your solution should demonstrate 5 · Kickoff p. 13 | Adversarial set `tests/adversarial/`: 36 attacks (chat, the disputes API and the advisor endpoint), `unsafe_outcome_rate` `0/36`, 28 `blocked_verified`, 3 `passes_on_mock`, 4 `no_defense_yet` (xfail strict), 1 `documented`, plus 5 covered elsewhere — `evidence/adversarial/20261001T130342Z/summary.json` — plus runner fault injection (gold, session, tool) degrading safely in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | Done |
-| REQ-0027 | Authentication with test session, per-customer access control, retention policy | P0 | All | AI Engineering / Data Engineering | ai, data | Problem statement: What your solution should demonstrate 6; Data and execution boundaries · Kickoff p. 15 | Password login on `/api/v1/auth/*` (no login by customer number alone); isolation matrix `test_foreign_access_attempts_are_blocked_8_of_8`; `me` returns role and country only; sessions and conversation in SQLite keyed by token hash, conversation deleted on logout and expiry (`tests/test_state_sqlite.py`); retention table in the [specification](../architecture/specification.md#data-retention) | Done |
-| REQ-0028 | Reproducibility: setup, versioning, repeatable evaluation | P0 | All | Rationale | all | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | stdlib evidence scripts with `verify` (`evidence/evaluation/eval_measure.py`), frozen write-once runs, offline replayable harness (`python3 -m eval.freeze`); full data-sync setup note pending | In progress |
-| REQ-0047 | The LLM receives no identifiers or personal data (PII), and no restricted data goes in external model requests; tools filter by the session customer | P0 | All | AI Engineering | ai | Problem statement: Data and execution boundaries · Own: [security](../build/security.md#llm-visibility) | Session-bound lookup (`lookup_transactions` takes no customer arg) + 8/8 denial test (PR #16) + auth events as salted `session_ref` records with no IP (`test_audit_session_ref_is_a_hash_not_the_customer`) + router request whitelist (`tests/test_ai_router.py`). Adversarial set `evidence/adversarial/20261001T130342Z/summary.json`; the orchestrator sees an opaque customer hash, never the id; the free-text PII path `A9` stays `no_defense_yet` (masking, decision 004) | In progress |
-| REQ-0048 | Decision order: policy in code > learned component > LLM | P0 | All | Rationale / ML | ai, ml | Problem statement: introduction · Kickoff p. 11 · Own: [system](../architecture/specification.md#decision-priority) | [Decision priority](../architecture/specification.md#decision-priority) | Done |
-| REQ-0056 | Explicit trade-offs across autonomy, accuracy, latency, cost, and human oversight; justify where AI is used and where deterministic logic is preferable | P0 | All | Rationale | all | Problem statement: introduction · Kickoff p. 11 | Decisions + presentation | In progress |
-| REQ-0025 | Observability: execution traces and logs, with country and language | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | `app/observability/` per-step + turn records with country and language, replay by `trace_id` (`test_full_turn_is_replayable_by_trace_id`); runner reads records by trace id in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | Done |
-| REQ-0026 | Bounded retries, safe fallback; idempotent actions | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 | Tool-failure test | Done |
-| REQ-0029 | Explanations based on sources, rules, and logs; not on model reasoning | P1 | All | AI Engineering | ai | Problem statement: What your solution should demonstrate 6 | `policy_rule` on every decide record and in the handoff evidence; summary built from turn codes, never model reasoning (`tests/test_handoff_package.py`) | Done |
-| REQ-0032 | Mock tools with documented contracts and limitations | P1 | All | AI Engineering | ai | Problem statement: Data and execution boundaries | Tool and Gold contracts in the [specification](../architecture/specification.md#tool-contracts); mock and DuckDB Gold behind one seam with fallback (`tests/test_gold_duckdb.py`); memory and SQLite state behind the same ports; mocks listed in [demo architecture](../architecture/demo-architecture.md#mocked-components) | Done |
-| REQ-0049 | Country is configuration, not code | P2 | All | Rationale | ai | Own: [AI](../build/areas/ai.md#technical-rules) | Configuration file | Done |
+What the customer and the advisor experience, and the service behind it: conversation, verified answers, tools, policy and handoff. Cards: [frontend-backend.md](frontend-backend.md).
 
-## Data and ML (DML)
+| ID | Requirement | P | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [REQ-0001](frontend-backend.md#req-0001) | Keep conversation context | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
+| [REQ-0002](frontend-backend.md#req-0002) | Clarify or abstain | P0 | ai | [REQ-0001](frontend-backend.md#req-0001), [REQ-0003](frontend-backend.md#req-0003) | Done |
+| [REQ-0003](frontend-backend.md#req-0003) | Answer only from verified records | P0 | ai | [REQ-0015](data-ml.md#req-0015), [REQ-0032](non-functional.md#req-0032) | Done |
+| [REQ-0004](frontend-backend.md#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
+| [REQ-0006](frontend-backend.md#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](frontend-backend.md#req-0033) | In progress |
+| [REQ-0008](frontend-backend.md#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
+| [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | In progress |
+| [REQ-0010](frontend-backend.md#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](frontend-backend.md#req-0002) | Done |
+| [REQ-0011](frontend-backend.md#req-0011) | Demo: case requiring a human | P0 | ai | [REQ-0008](frontend-backend.md#req-0008), [REQ-0040](frontend-backend.md#req-0040) | Done |
+| [REQ-0012](frontend-backend.md#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](frontend-backend.md#req-0001) | In progress |
+| [REQ-0033](frontend-backend.md#req-0033) | Policy decides, the LLM converses | P0 | ai, ml | [REQ-0048](non-functional.md#req-0048) | Done |
+| [REQ-0038](frontend-backend.md#req-0038) | Simple frontend | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
+| [REQ-0040](frontend-backend.md#req-0040) | Request for a person | P0 | ai | [REQ-0006](frontend-backend.md#req-0006) | In progress |
+| [REQ-0041](frontend-backend.md#req-0041) | Original currency, customer's language | P0 | ai | [REQ-0003](frontend-backend.md#req-0003) | Done |
+| [REQ-0042](frontend-backend.md#req-0042) | Minimum-effort dispute opening | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0038](frontend-backend.md#req-0038) | Done |
+| [REQ-0043](frontend-backend.md#req-0043) | Check charge status first | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0015](data-ml.md#req-0015) | Done |
+| [REQ-0044](frontend-backend.md#req-0044) | Neutral Spanish with local terms | P1 | ai | [REQ-0012](frontend-backend.md#req-0012) | Pending |
+| [REQ-0045](frontend-backend.md#req-0045) | App-error context | P2 | ai | [REQ-0001](frontend-backend.md#req-0001) | Pending |
+| [REQ-0046](frontend-backend.md#req-0046) | Handoff routing (simulated) | P2 | ai | [REQ-0008](frontend-backend.md#req-0008), [REQ-0012](frontend-backend.md#req-0012) | Pending |
 
-| ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| REQ-0014 | Data-backed problem, with reproducible analysis justifying the flow | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 1 · Kickoff p. 13 | Reproducible analysis | Done |
-| REQ-0015 | Repeatable pipeline with strict contracts, quality, lineage, and freshness; handles the declared ~2% duplicates, ~5% nulls and orphaned records | P0 | All | Data Engineering | data | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Dataset summary · Dictionary | Pipeline + quality report | In progress |
-| REQ-0016 | At least one learned component compared against a baseline on held-out; a prompted or fine-tuned LLM counts if defined, evaluated and justified | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28) | Router vs baseline on identical held-out cases plus system replay in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`; fixtures are baseline-mirrored so the delta is zero by construction | In progress |
-| REQ-0017 | Valid labels with no data leakage; justify metrics, thresholds, and splits | P0 | All | Machine Learning | ml | Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 | Window 2024Q4 with held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `2024Q4-v1/summary.json`; team-written cases with dev/held_out splits and no shared ids in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | In progress |
-| REQ-0020 | Baseline and system on the same held-out, with realistic distribution | P0 | All | Machine Learning | ml | Problem statement: Evaluation evidence · Kickoff p. 12 | Same 35 team-written cases for both models and the loop in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`; held_out measured once | In progress |
-| REQ-0022 | Metrics with n, case mix, versions, and variability; include failures | P0 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 5; Evaluation evidence | Every metric with n, mix, versions and failures in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | In progress |
-| REQ-0055 | Report the mandatory outcome metrics: safe automated resolution (plus share attempted), containment, escalation quality (missed and unnecessary transfers), unsafe outcomes with counts and denominators, p50/p95 latency, cost per attempted case and per successful resolution ("not defined" if none) | P0 | All | Data Analytics | analysis, ml | Problem statement: Evaluation evidence; What your solution should demonstrate 5 · Kickoff p. 12 | [Metrics](../build/metrics.md) report; router emits tokens and cost per turn (`tests/test_ai_router.py`); full mandatory set with denominators in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | In progress |
-| REQ-0053 | Sizing and its limits: disputes per day in the data, capacity the prototype is designed for, and what changes at real volume | P0 | All | Data Analytics | analysis | Help channel (9/28) | Sizing section | In progress |
-| REQ-0057 | Intended customer and business outcomes, with cost-per-resolution ROI against the baseline; projected savings labeled as projections | P1 | All | Data Analytics | analysis | Problem statement: introduction; What your solution should demonstrate 1 · Kickoff p. 13 | Cost per attempted/resolution measured in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` ("not defined" without resolutions); ROI labeled projection | In progress |
-| REQ-0031 | Only approved data under the published data-use terms; label each source (real, de-identified, synthetic, team-generated) | P0 | All | Data Engineering | data | Problem statement: Data and execution boundaries | Source inventory | Pending |
-| REQ-0054 | External data only if justified: source, license, why it is needed, no PII, labeled as external | P1 | All | Data Engineering | data, ml | Help channel (9/28) | Source inventory | Pending |
-| REQ-0018 | Real incremental processing of the declared late arrivals, duplicates and schema evolution; a labeled test fixture proves update correctness | P0 | All | Data Engineering | data | Problem statement: Architecture freedom · Dataset summary | Update fixture | Pending |
-| REQ-0019 | Experiment tracking: model and prompt versions, parameters, metrics | P1 | All | Machine Learning | ml | Kickoff p. 20 | Router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); run versions model route prompt and label provenance in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json` | In progress |
-| REQ-0024 | Breakdown by language, country, and authorized segment, investigating disparities (fairness) and stating small-sample limits; separate offline, simulation, and projection | P1 | All | Data Analytics | analysis | Problem statement: Evaluation evidence | Metrics by locale and country with small-sample limits in `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`; team-written simulation, offline only | In progress |
-| REQ-0050 | Monitoring by country (latency, failures, escalations, complaints) | P1 | All | Data Analytics | analysis | Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 · Own: [analysis](../build/areas/analysis.md#country-monitoring) | Report by country | Pending |
-| REQ-0023 | If there is an LLM judge: documented rubric validated on a sample against human or deterministic judgments | P2 | If applicable | Machine Learning | ml | Problem statement: Evaluation evidence | Rubric + validated sample | Pending |
+## Non-functional
 
-## Delivery (E)
+How the system behaves: security, privacy, reliability, observability and reproducibility. Cards: [non-functional.md](non-functional.md).
 
-| ID | Requirement | P | Flow | Criterion | Area | Source | Evidence | Status |
-|---|---|---|---|---|---|---|---|---|
-| REQ-0034 | Public repository `factored-hackathon-2026-[team]`, without secrets or restricted data; all links sent to `hackathon.admin@factored.ai` | P0 | All | Rationale | all | Kickoff p. 18 | Repository `factored-hackathon-2026-sentinel-engine` is public; current tree has no bucket or account id. Pending: final secrets and data review, and the bucket id still present in older commits | In progress |
-| REQ-0035 | Link to the deployed tool, with usage and spending limits; a minimal deployment is enough, cloud is not mandatory | P0 | All | AI Engineering | ai | Kickoff p. 18 · Help channel (9/28) | Link | Pending |
-| REQ-0036 | 4-to-6-slide presentation | P0 | All | Rationale | all | Kickoff p. 18 | [Script](../build/delivery.md#presentation) | Pending |
-| REQ-0037 | Short, mandatory video pitch: working demo and core architecture decisions | P0 | All | Rationale | all | Kickoff p. 18 | [Script](../build/delivery.md#video-pitch) | Pending |
-| REQ-0051 | Repo README, presentation (4 to 6 slides), video script, AND `docs/` and `team/` all in English | P0 | All | Rationale | all | Own: [language](../build/delivery.md#language) | [Pre-submission check](../build/delivery.md#language) | Pending |
-| REQ-0013 | Report data and language-coverage limitations, including that the dataset has no Portuguese text and covers only MX, CO and AR | P0 | All | Rationale | analysis | Problem statement: Scope · Kickoff p. 15 · Dataset summary | Limitations section | Pending |
-| REQ-0030 | Declare what is missing: capacity, data, languages, deployment, risks | P0 | All | Rationale | all | Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28) | Limitations section | In progress |
-| REQ-0052 | Credible path to production: how it deploys, scales, is monitored and secured, and what changes from the prototype | P0 | All | AI Engineering / Rationale | ai, all | Help channel (9/28) · Kickoff p. 15 | [Path to production](../architecture/specification.md#path-to-production) | In progress |
+| ID | Requirement | P | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [REQ-0005](non-functional.md#req-0005) | Report only verified actions | P0 | ai | [REQ-0032](non-functional.md#req-0032) | Done |
+| [REQ-0007](non-functional.md#req-0007) | Permissions and policy in code | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
+| [REQ-0021](non-functional.md#req-0021) | Failure tests | P0 | ml, ai | [REQ-0007](non-functional.md#req-0007), [REQ-0012](frontend-backend.md#req-0012), [REQ-0026](non-functional.md#req-0026), [REQ-0027](non-functional.md#req-0027) | Done |
+| [REQ-0025](non-functional.md#req-0025) | Observability | P1 | ai | — | Done |
+| [REQ-0026](non-functional.md#req-0026) | Bounded retries and safe fallback | P1 | ai | [REQ-0005](non-functional.md#req-0005) | Done |
+| [REQ-0027](non-functional.md#req-0027) | Authentication, isolation and retention | P0 | ai, data | — | Done |
+| [REQ-0028](non-functional.md#req-0028) | Reproducible setup | P0 | all | [REQ-0015](data-ml.md#req-0015), [REQ-0019](data-ml.md#req-0019) | In progress |
+| [REQ-0029](non-functional.md#req-0029) | Explanations from sources and rules | P1 | ai | [REQ-0025](non-functional.md#req-0025) | Done |
+| [REQ-0032](non-functional.md#req-0032) | Documented mock tools | P1 | ai | — | Done |
+| [REQ-0047](non-functional.md#req-0047) | No personal data to the LLM | P0 | ai | [REQ-0027](non-functional.md#req-0027) | In progress |
+| [REQ-0048](non-functional.md#req-0048) | Decision order | P0 | ai, ml | [REQ-0016](data-ml.md#req-0016) | Done |
+| [REQ-0049](non-functional.md#req-0049) | Country as configuration | P2 | ai | — | Done |
+| [REQ-0056](non-functional.md#req-0056) | Explicit trade-offs | P0 | all | [REQ-0016](data-ml.md#req-0016), [REQ-0055](analytics.md#req-0055) | In progress |
+
+## Data and ML
+
+Data preparation, sources and freshness, and the learned component with its labels, splits and tracking. Cards: [data-ml.md](data-ml.md).
+
+| ID | Requirement | P | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [REQ-0015](data-ml.md#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](data-ml.md#req-0031) | In progress |
+| [REQ-0016](data-ml.md#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](data-ml.md#req-0017), [REQ-0020](data-ml.md#req-0020) | In progress |
+| [REQ-0017](data-ml.md#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](data-ml.md#req-0015) | In progress |
+| [REQ-0018](data-ml.md#req-0018) | Real incremental processing | P0 | data | [REQ-0015](data-ml.md#req-0015) | Pending |
+| [REQ-0019](data-ml.md#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](data-ml.md#req-0016) | In progress |
+| [REQ-0020](data-ml.md#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](data-ml.md#req-0017) | In progress |
+| [REQ-0023](data-ml.md#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](data-ml.md#req-0016) | Pending |
+| [REQ-0031](data-ml.md#req-0031) | Approved data, labeled by origin | P0 | data | — | Pending |
+| [REQ-0039](data-ml.md#req-0039) | Declare data freshness | P0 | ai, data | [REQ-0015](data-ml.md#req-0015) | Done |
+| [REQ-0054](data-ml.md#req-0054) | Justified external data | P1 | data, ml | [REQ-0031](data-ml.md#req-0031) | Pending |
+
+## Analytics
+
+Analysis that justifies the flow and the metrics that prove the system works. Cards: [analytics.md](analytics.md).
+
+| ID | Requirement | P | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [REQ-0014](analytics.md#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
+| [REQ-0022](analytics.md#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](analytics.md#req-0055) | In progress |
+| [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | In progress |
+| [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
+| [REQ-0053](analytics.md#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](analytics.md#req-0014) | In progress |
+| [REQ-0055](analytics.md#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | In progress |
+| [REQ-0057](analytics.md#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](analytics.md#req-0055) | In progress |
+
+## Delivery
+
+What the evaluators receive: repository, deployed link, slides, video, limitations and the path to production. Cards: [delivery.md](delivery.md).
+
+| ID | Requirement | P | Area | Depends on | Status |
+|---|---|---|---|---|---|
+| [REQ-0013](delivery.md#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | Pending |
+| [REQ-0030](delivery.md#req-0030) | Declare what is missing | P0 | all | [REQ-0013](delivery.md#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
+| [REQ-0034](delivery.md#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | In progress |
+| [REQ-0035](delivery.md#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](delivery.md#req-0034) | Pending |
+| [REQ-0036](delivery.md#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
+| [REQ-0037](delivery.md#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](delivery.md#req-0035) | Pending |
+| [REQ-0051](delivery.md#req-0051) | Everything in English | P0 | all | [REQ-0036](delivery.md#req-0036), [REQ-0037](delivery.md#req-0037) | Pending |
+| [REQ-0052](delivery.md#req-0052) | Path to production | P0 | ai, all | [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050) | In progress |
+
+## Dependencies
+
+A requirement depends on another when it cannot be met, or its evidence cannot be produced, until the other one is met. Each requirement lists its direct dependencies in its table row and, with the reason, in its card. Update them when a requirement is added or its evidence changes.
+
+Chains that still block P0 work:
+
+- **Data:** REQ-0031 (Pending) → REQ-0015 (In progress) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0018 also waits on REQ-0015.
+- **Deployment and video:** REQ-0034 → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
+- **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
+- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 → REQ-0030.
 
 ## Future work (not requirements)
 

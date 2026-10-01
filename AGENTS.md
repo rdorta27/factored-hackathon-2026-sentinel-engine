@@ -37,7 +37,7 @@ For agents:
 |---|---|
 | [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture and their specification |
 | [`docs/understand/`](docs/understand/) | The challenge and the data in one read; [`reference/`](docs/understand/reference/) holds the official data dictionary |
-| [`docs/requirements/`](docs/requirements/) | Requirements with priority, owner, evidence and status |
+| [`docs/requirements/`](docs/requirements/) | Requirements: [`requirements.md`](docs/requirements/requirements.md) is the index (sources, status, dependencies); one file per type holds the cards with description and evidence |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
 | [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
