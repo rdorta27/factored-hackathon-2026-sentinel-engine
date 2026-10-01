@@ -25,33 +25,32 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Tell Felix and Natalia: `sentinel-login/` retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | — | Rubén | Thu 10/1 | Everyone works on the merged code | Pending |
-| 2 | Decide who provides the Azure subscription, with spend cap and alerts (decision 13) | REQ-0035 | Unassigned | Thu 10/1 | Public link | Pending |
-| 3 | Public link: Azure, or the free-host fallback of decision 13, with usage and spending limits | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Pending |
-| 4 | Source inventory: label each source (real, de-identified, synthetic, team-generated) under the data-use terms; declare no external data | REQ-0031, REQ-0054 | Unassigned | Fri 10/2 | The whole data chain; secrets review | Pending |
-| 5 | Minimal pipeline: run Bronze → Silver → Gold end to end and publish the quality report (duplicates, nulls, orphans, lineage, freshness) | REQ-0015 | Natalia | Fri 10/2 | Labels, held-out, real Gold read, incremental fixture | In progress: code with tests in `sentinel-data-engine/`; not yet validated end to end |
-| 6 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | In progress: DuckDB adapter behind `GoldTransactions` with fallback to the labelled mock (`app/tools/gold_duckdb.py`, `tests/test_gold_duckdb.py`); not yet run on local Gold data |
-| 7 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
-| 8 | Labelled incremental fixture: late arrivals, duplicates and schema change | REQ-0018 | Unassigned | Fri 10/2 | — | Pending |
-| 9 | Decide the model per route (decision 10), serve the prompted router, re-record fixtures and freeze a new run id | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | Pending: the served model is the keyword baseline; delta zero by construction |
-| 10 | A person request while a confirm box is pending must escalate like any other | REQ-0040 | Unassigned | Fri 10/2 | Human demo case | Pending |
-| 11 | Fraud and high-amount thresholds (decisions 25, 26) in a separate branch, with a mock row or eval case per rule | REQ-0006 | Rubén | Fri 10/2 | — | Pending |
-| 12 | Mask free-text PII before the model (decision 004) so adversarial `A9` becomes blocked | REQ-0047 | Unassigned | Fri 10/2 | — | Pending |
-| 13 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
-| 14 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
-| 15 | Sizing: disputes per day and prototype capacity | REQ-0053 | Natalia | Fri 10/2 | Limitations | Pending |
-| 16 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
-| 17 | Data-sync setup note: bring the bucket into `data/` from `.env` only | REQ-0028 | Unassigned | Fri 10/2 | — | Pending |
-| 18 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
-| 19 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
-| 20 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
-| 21 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
-| 22 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
-| 23 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
-| 24 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
-| 25 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
-| 26 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
-| 27 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
+| 1 | Decide who provides the Azure subscription, with spend cap and alerts (decision 13) | REQ-0035 | Unassigned | Thu 10/1 | Public link | Pending |
+| 2 | Public link: Azure, or the free-host fallback of decision 13, with usage and spending limits | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Pending |
+| 3 | Source inventory: label each source (real, de-identified, synthetic, team-generated) under the data-use terms; declare no external data | REQ-0031, REQ-0054 | Unassigned | Fri 10/2 | The whole data chain; secrets review | Pending |
+| 4 | Minimal pipeline: run Bronze → Silver → Gold end to end and publish the quality report (duplicates, nulls, orphans, lineage, freshness) | REQ-0015 | Natalia | Fri 10/2 | Labels, held-out, real Gold read, incremental fixture | In progress: code with tests in `sentinel-data-engine/`; not yet validated end to end |
+| 5 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | In progress: DuckDB adapter behind `GoldTransactions` with fallback to the labelled mock (`app/tools/gold_duckdb.py`, `tests/test_gold_duckdb.py`); not yet run on local Gold data |
+| 6 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
+| 7 | Labelled incremental fixture: late arrivals, duplicates and schema change | REQ-0018 | Unassigned | Fri 10/2 | — | Pending |
+| 8 | Decide the model per route (decision 10), serve the prompted router, re-record fixtures and freeze a new run id | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | Pending: the served model is the keyword baseline; delta zero by construction |
+| 9 | A person request while a confirm box is pending must escalate like any other | REQ-0040 | Unassigned | Fri 10/2 | Human demo case | Pending |
+| 10 | Fraud and high-amount thresholds (decisions 25, 26) in a separate branch, with a mock row or eval case per rule | REQ-0006 | Rubén | Fri 10/2 | — | Pending |
+| 11 | Mask free-text PII before the model (decision 004) so adversarial `A9` becomes blocked | REQ-0047 | Unassigned | Fri 10/2 | — | Pending |
+| 12 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
+| 13 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
+| 14 | Sizing: disputes per day and prototype capacity | REQ-0053 | Natalia | Fri 10/2 | Limitations | Pending |
+| 15 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
+| 16 | Data-sync setup note: bring the bucket into `data/` from `.env` only | REQ-0028 | Unassigned | Fri 10/2 | — | Pending |
+| 17 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
+| 18 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
+| 19 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
+| 20 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
+| 21 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
+| 22 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
+| 23 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
+| 24 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
+| 25 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
+| 26 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
@@ -137,6 +136,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Handoff ticket with conversation summary and every attempted action | Natalia (Rubén integrated; summary and attempted actions added by Rubén) | Done: `tests/test_handoff_package.py` |
 | Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 | Test that no reply shows amounts or merchants outside the verified facts | Rubén | Done: `tests/test_facts_grounding.py` (mutation-checked) |
+| Tell Felix and Natalia: `sentinel-login/` retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
 
 ### Fri 10/2
 
