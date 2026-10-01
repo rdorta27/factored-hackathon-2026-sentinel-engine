@@ -1,3 +1,4 @@
+import hashlib
 from datetime import date
 from pathlib import Path
 
@@ -10,7 +11,8 @@ def load_country(country: str, directory: Path = CONFIG_DIR) -> CountryPolicy | 
     path = directory / f"{country.lower()}.yaml"
     if not path.is_file():
         return None
-    data = _parse(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8")
+    data = _parse(text)
     thresholds = data["thresholds"]
     return CountryPolicy(
         country=data["country"],
@@ -26,6 +28,7 @@ def load_country(country: str, directory: Path = CONFIG_DIR) -> CountryPolicy | 
         staleness_days=_threshold(thresholds["staleness_days"]),
         mandatory_fields=tuple(data.get("mandatory_fields", [])),
         synthetic=data.get("synthetic") == "true",
+        version=hashlib.sha256(text.encode("utf-8")).hexdigest()[:16],
     )
 
 

@@ -44,6 +44,9 @@ class StepRecord:
     country: str
     event: str | None = None
     handoff: dict | None = None
+    # Country policy file version and whether it is the team's synthetic policy.
+    policy_version: str | None = None
+    policy_synthetic: bool | None = None
 
     def __post_init__(self) -> None:
         if not HEX16.match(self.trace_id):

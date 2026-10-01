@@ -58,6 +58,8 @@ class CountryPolicy:
     staleness_days: Threshold
     mandatory_fields: tuple[str, ...] = ()
     synthetic: bool = True
+    # Content hash of the country file, recorded on each decision for audit.
+    version: str | None = None
 
 
 @dataclass(frozen=True)

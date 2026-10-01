@@ -263,6 +263,8 @@ def _hit(
         step="decide",
         policy_rule=hit.rule_id,
         latency_ms=(perf_counter() - started) * 1000,
+        policy_version=None if policy is None else policy.version,
+        policy_synthetic=None if policy is None else policy.synthetic,
     )
     return hit
 

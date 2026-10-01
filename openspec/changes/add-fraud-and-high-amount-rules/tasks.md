@@ -9,7 +9,7 @@
 
 - [x] 2.1 Change the loader and engine to read `values` per currency and look up the charge currency; a missing key or null does not fire; equal does not fire. Area: [ai](../../../docs/build/areas/ai.md). Verify: tests for the USD-on-MX-account, per-currency fraud score, missing currency and equal-value scenarios in `tests/test_policy*.py`.
 - [ ] 2.2 Fill `config/policy/{mx,co,ar}.yaml` with p95 values per currency from 2024Q4-v2, each with its `source`, and leave groups below 100 charges empty. Decisions 25, 26. Verify: a test checks every value whose `source` is an evidence run matches the cited `summary.json` field, and a value with a bank `source` is checked for format only.
-- [ ] 2.3 Record the policy file version and the synthetic flag on every `decide` record. Area: [ai](../../../docs/build/areas/ai.md). Verify: an observability test changes a value between two turns and sees two versions.
+- [x] 2.3 Record the policy file version and the synthetic flag on every `decide` record. Area: [ai](../../../docs/build/areas/ai.md). Verify: an observability test changes a value between two turns and sees two versions.
 
 ## 3. Inputs to the rules
 
