@@ -39,7 +39,7 @@ flowchart LR
     class client ext
 ```
 
-- **Data layer.** The same pipeline, run locally on DuckDB. The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active.
+- **Data layer.** The same pipeline, run locally on DuckDB: it has run end to end on the full dataset into `data/gold_bank.duckdb` with a [quality report](../../sentinel-data-engine/data_quality_report.md). The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active. The adapter reads the view as a Delta table under `data/gold/`, while the local run writes a DuckDB file, so the demo still serves the mock until one of them changes.
 - **Service layer.** The same single process, run locally or in one container behind the public link.
 - **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only.
 
@@ -161,10 +161,10 @@ The same repository and folders as the target. Owners and progress per folder ar
 ## Out of scope for the submission
 
 - PostgreSQL and more than one instance (the SQLite file serves one).
-- Masking of free customer text before the LLM and static masking in Silver (proposed, [decision 004](../build/decisions/004-pii-lifecycle.md)). If a customer types their national id, it reaches the LLM; the demo states this.
+- Static masking in Silver and a token vault ([decision 004](../build/decisions/004-pii-lifecycle.md)). Free customer text is masked at the API boundary before the model; the masking is irreversible because no demo tool needs the original value.
 - A separate web app, an admin panel, advisor actions (claim, state change), a proof-of-work card, a charge pause or an SLA timer. The advisor has a read-only ticket view ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - Balances, products, cards and credit: out of the flow's scope ([decision 008](../build/decisions/008-account-inquiry-scope.md)).
-- Brazil as a market: `pt-BR` is a test language; the dataset covers Mexico, Colombia and Argentina.
+- Brazil as a market: `pt-BR` is a test language; accounts exist only in México, Colombia and Argentina ([dataset assumptions](../understand/dataset.md#assumptions)).
 
 ## References
 
