@@ -2,8 +2,8 @@
 
 ## 1. Evidence: thresholds by account country and currency
 
-- [ ] 1.1 Extend `evidence/evaluation/eval_measure.py` (new script version) to join transactions to `customers.country`, normalize `Mexico` to `México`, and report amount and fraud-score percentiles per country and charge currency, product share per country and currency, empty `amount_usd` count and a minimum group size. Area: [data](../../../docs/build/areas/data.md), [ml](../../../docs/build/areas/ml.md). Verify: unit test on a synthetic in-memory sample shows two currencies of one country reported as separate groups.
-- [ ] 1.2 Run it on the local `data/` copy and freeze `evidence/evaluation/2024Q4-v2/summary.json` (aggregates only, held-out rows 0). Decisions 25, 26. Verify: `verify` mode passes on the new run and v1 is unchanged (`git diff evidence/evaluation/2024Q4-v1` empty).
+- [x] 1.1 Extend `evidence/evaluation/eval_measure.py` (new script version) to read `silver_transactions`, `silver_customers` and `silver_products` from the pipeline DuckDB file (`SENTINEL_EVIDENCE_DUCKDB`), join charges to the customer's country, normalize `Mexico` to `México` as a guard, and report amount and fraud-score percentiles per country and charge currency, product share per country and currency, empty `amount_usd` count and a minimum group size. Area: [data](../../../docs/build/areas/data.md), [ml](../../../docs/build/areas/ml.md). Verify: unit test on a synthetic in-memory sample shows two currencies of one country reported as separate groups.
+- [ ] 1.2 Run it on the local `gold_bank.duckdb` (gitignored) and freeze `evidence/evaluation/2024Q4-v2/summary.json` (aggregates only, held-out rows 0). Decisions 25, 26. Verify: `verify` mode passes on the new run and v1 is unchanged (`git diff evidence/evaluation/2024Q4-v1` empty).
 
 ## 2. Policy configuration per currency
 
@@ -15,7 +15,7 @@
 
 - [ ] 3.1 Carry `fraud_score` on Gold rows (mock and DuckDB adapter) and on the candidate; never in listings, replies or model requests. Area: [ai](../../../docs/build/areas/ai.md). Verify: `tests/test_gold_duckdb.py` and a test that the transactions listing and the router request whitelist exclude the score.
 - [ ] 3.2 Report the not-mine claim from the keyword baseline and the router output, pass it to the engine, and cite `fraud.claim` with its handoff mapping and es-419 and pt-BR texts. Decision 25. Verify: tests for "no fui yo", "não fui eu" (claim, `fraud.claim`) and "no reconozco este cargo" (no claim).
-- [ ] 3.3 Add mock rows per demo country above each configured threshold, with a USD product only for the MX customer. Area: [ai](../../../docs/build/areas/ai.md). Verify: test that every configured country and currency has a mock row above its value.
+- [ ] 3.3 Give each demo customer a local-currency and a USD product, with charges above each configured value; the MX MXN product has no threshold and keeps the other rules. Area: [ai](../../../docs/build/areas/ai.md). Verify: test that every configured country and currency has a mock row above its value.
 
 ## 4. Evaluation and demo evidence
 

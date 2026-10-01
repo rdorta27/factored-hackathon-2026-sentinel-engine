@@ -6,7 +6,10 @@ Freezes what the evaluation runner consumes: the label universe
 label-quality checks, the intent mix and the amount/fraud reference
 thresholds. Flow evidence chose the flow; this evidence feeds the runner.
 
-Stdlib only. Reads the gitignored dataset, writes aggregates only.
+Stdlib only for the raw CSV sections. The account thresholds (v2) read the
+pipeline's Silver tables from its local DuckDB file, found through
+SENTINEL_EVIDENCE_DUCKDB or data/gold_bank.duckdb, with the optional duckdb
+package. Reads gitignored data, writes aggregates only.
 
 Usage:
     python3 eval_measure.py run [RUN_ID] [WINDOW]
@@ -27,7 +30,7 @@ import re
 import sys
 from collections import Counter
 
-SCRIPT_VERSION = "2026-09-30+eval-v1"
+SCRIPT_VERSION = "2026-10-01+eval-v2"
 RESULTS: dict = {}
 
 HELD_OUT_CUT = "2025-07-01"
@@ -51,6 +54,124 @@ def find_data() -> str:
 
 
 DATA = None  # resolved lazily so --help works without data
+
+DUCKDB_ENV = "SENTINEL_EVIDENCE_DUCKDB"
+DUCKDB_CANDIDATES = [
+    os.path.join(BASE, "data", "gold_bank.duckdb"),
+    os.path.join(os.path.dirname(os.path.dirname(BASE)), "data", "gold_bank.duckdb"),
+    os.path.join(os.path.dirname(os.path.dirname(BASE)), "sentinel-data-engine", "data", "gold_bank.duckdb"),
+]
+# A (country, currency) group needs this many development charges before a
+# percentile is reported; smaller groups get no threshold (design decision 2).
+MIN_GROUP = 100
+# Account countries in the data dictionary (customers.country), canonical spelling.
+COUNTRY_CANON = {"Mexico": "México"}
+
+
+def find_duckdb() -> str | None:
+    """Pipeline DuckDB file for the account thresholds, or None when absent."""
+    override = os.environ.get(DUCKDB_ENV)
+    if override:
+        if not os.path.isfile(override):
+            raise SystemExit(f"{DUCKDB_ENV} points to a missing file: {override}")
+        return override
+    for candidate in DUCKDB_CANDIDATES:
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def account_thresholds(db_path: str, start: str, end: str) -> dict:
+    """Amount and fraud-score percentiles per account country and charge currency.
+
+    Charges are joined to their customer's country (customers.country), never
+    grouped by transaction_country, and currencies are never pooled. Groups
+    under MIN_GROUP charges report their count and no percentiles.
+    """
+    import duckdb  # optional: only the v2 account thresholds need it
+
+    con = duckdb.connect(db_path, read_only=True)
+    try:
+        charges = con.execute(
+            """
+            SELECT c.country, t.currency, t.amount, t.fraud_score, t.amount_usd
+            FROM silver_transactions t
+            JOIN silver_customers c USING (customer_id)
+            WHERE CAST(t.transaction_date AS DATE) >= CAST(? AS DATE)
+              AND CAST(t.transaction_date AS DATE) <  CAST(? AS DATE)
+            """,
+            [start, end],
+        ).fetchall()
+        unmatched = con.execute(
+            """
+            SELECT COUNT(*) FROM silver_transactions t
+            LEFT JOIN silver_customers c USING (customer_id)
+            WHERE c.customer_id IS NULL
+              AND CAST(t.transaction_date AS DATE) >= CAST(? AS DATE)
+              AND CAST(t.transaction_date AS DATE) <  CAST(? AS DATE)
+            """,
+            [start, end],
+        ).fetchone()[0]
+        products = con.execute(
+            """
+            SELECT c.country, p.currency, COUNT(*)
+            FROM silver_products p
+            JOIN silver_customers c USING (customer_id)
+            GROUP BY 1, 2
+            """
+        ).fetchall()
+    finally:
+        con.close()
+
+    def canon(country: object) -> str:
+        text = str(country or "").strip() or "unknown"
+        return COUNTRY_CANON.get(text, text)
+
+    amounts: dict[tuple[str, str], list[float]] = {}
+    scores: dict[tuple[str, str], list[float]] = {}
+    normalized = 0
+    usd_empty = 0
+    for country, currency, amount, score, amount_usd in charges:
+        if str(country or "").strip() in COUNTRY_CANON:
+            normalized += 1
+        key = (canon(country), str(currency or "").strip() or "unknown")
+        amounts.setdefault(key, [])
+        value = to_float(amount)
+        if value is not None:
+            amounts[key].append(value)
+        fraud = to_float(score)
+        if fraud is not None:
+            scores.setdefault(key, []).append(fraud)
+        if to_float(amount_usd) is None:
+            usd_empty += 1
+
+    groups: dict[str, dict] = {}
+    for (country, currency), values in sorted(amounts.items()):
+        n = len(values)
+        enough = n >= MIN_GROUP
+        groups.setdefault(country, {})[currency] = {
+            "n": n,
+            "below_minimum": not enough,
+            "amount": percentiles(values) if enough else None,
+            "fraud_score": percentiles(scores.get((country, currency), [])) if enough else None,
+        }
+    product_share: dict[str, dict] = {}
+    for country, currency, count in products:
+        bucket = product_share.setdefault(canon(country), {"n": 0, "by_currency": {}})
+        cur = str(currency or "").strip() or "unknown"
+        bucket["by_currency"][cur] = bucket["by_currency"].get(cur, 0) + int(count)
+        bucket["n"] += int(count)
+    return {
+        "source": "silver_transactions joined to silver_customers (pipeline DuckDB)",
+        "group_by": ["customers.country", "transactions.currency"],
+        "min_group": MIN_GROUP,
+        "n_charges": len(charges),
+        "unmatched_customer": int(unmatched),
+        "country_normalized": normalized,
+        "amount_usd_empty": {"count": usd_empty, "denominator": len(charges)},
+        "groups": groups,
+        "product_currency": {k: product_share[k] for k in sorted(product_share)},
+    }
 
 WINDOW_DEFAULT = "2024Q4"
 RUN_ID_DEFAULT = "2024Q4-v1"
@@ -207,7 +328,7 @@ def scan_months(table: str, months: tuple, data_dir: str) -> list:  # type: igno
     return rows
 
 
-def compute_summary(data_dir: str, window: str) -> dict:
+def compute_summary(data_dir: str, window: str, duckdb_path: str | None = None) -> dict:
     start, end = window_bounds(window)
     year, quarter = int(window[:4]), int(window[5])
     first_month = 3 * quarter - 2
@@ -374,6 +495,8 @@ def compute_summary(data_dir: str, window: str) -> dict:
             for country, values in sorted(amt_by_country.items())
         },
     }
+    if duckdb_path:
+        summary["account_thresholds"] = account_thresholds(duckdb_path, start, end)
     record("run", "n", len(window_rows))
     return summary
 
@@ -382,7 +505,7 @@ def run_folder(run_id: str) -> str:
     return os.path.join(BASE, run_id)
 
 
-def manifest_hashes(data_dir: str, window: str) -> list[dict]:
+def manifest_hashes(data_dir: str, window: str, duckdb_path: str | None = None) -> list[dict]:
     year, quarter = int(window[:4]), int(window[5])
     first_month = 3 * quarter - 2
     patterns = [
@@ -405,6 +528,13 @@ def manifest_hashes(data_dir: str, window: str) -> list[dict]:
         out.append(
             {"pattern": f"data/{pattern}", "files": len(files), "rows": rows, "sha256_16": digest.hexdigest()[:16]}
         )
+    if duckdb_path:
+        digest = hashlib.sha256()
+        with open(duckdb_path, "rb") as handle:
+            for chunk in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(chunk)
+        out.append({"pattern": "pipeline DuckDB (silver tables)", "files": 1, "rows": 0,
+                    "sha256_16": digest.hexdigest()[:16]})
     return out
 
 
@@ -413,12 +543,13 @@ def do_run(run_id: str, window: str) -> None:
     folder = run_folder(run_id)
     if os.path.exists(folder):
         raise SystemExit(f"refusing to overwrite committed run {folder}; use a new RUN_ID")
-    summary = compute_summary(data_dir, window)
+    duckdb_path = find_duckdb()
+    summary = compute_summary(data_dir, window, duckdb_path)
     guard_summary(summary)
     os.makedirs(folder)
     with open(os.path.join(folder, "summary.json"), "w", encoding="utf-8") as handle:
         json.dump(summary, handle, indent=2, sort_keys=True, ensure_ascii=False)
-    hashes = manifest_hashes(data_dir, window)
+    hashes = manifest_hashes(data_dir, window, duckdb_path)
     with open(os.path.join(folder, "MANIFEST.md"), "w", encoding="utf-8") as handle:
         handle.write(f"# Data manifest — {window} evaluation window\n\n")
         for entry in hashes:
@@ -448,7 +579,12 @@ def do_verify(run_id: str) -> None:
     with open(summary_path, encoding="utf-8") as handle:
         frozen = json.load(handle)
     window = frozen.get("meta", {}).get("window", WINDOW_DEFAULT)
-    fresh = compute_summary(data_dir, window)
+    duckdb_path = find_duckdb() if "account_thresholds" in frozen else None
+    if "account_thresholds" in frozen and not duckdb_path:
+        raise SystemExit("verify failed: run has account_thresholds but no pipeline DuckDB file was found")
+    fresh = compute_summary(data_dir, window, duckdb_path)
+    # A run is verified against the script version that froze it.
+    fresh.get("meta", {})["script_version"] = frozen.get("meta", {}).get("script_version")
     guard_summary(fresh)
     if fresh != frozen:
         for section in sorted(set(list(fresh) + list(frozen))):
