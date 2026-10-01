@@ -180,9 +180,18 @@ def test_dev_salt_persists_across_restarts(tmp_path, monkeypatch) -> None:
     from app.observability import Recorder
 
     monkeypatch.delenv("SENTINEL_SESSION_SALT", raising=False)
-    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv("SENTINEL_VAR_DIR", str(tmp_path / "var"))
     first = Recorder()
     second = Recorder()
     assert first.salt == second.salt
     assert first.session_ref("CUST-0001") == second.session_ref("CUST-0001")
     assert (tmp_path / "var" / ".session_salt").is_file()
+
+
+def test_var_dir_ignores_process_cwd(tmp_path, monkeypatch) -> None:
+    from app.observability import var_dir
+
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.delenv("SENTINEL_VAR_DIR", raising=False)
+    assert var_dir().parent.name == "sentinel-ai-core"
+    assert var_dir().name == "var"

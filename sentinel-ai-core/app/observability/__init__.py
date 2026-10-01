@@ -2,7 +2,7 @@
 
 from app.observability.observer import TurnObserver, utc_now
 from app.observability.records import COUNTRIES, LANGUAGES, OUTCOMES, STEPS, StepRecord
-from app.observability.writer import DEFAULT_PATH, SALT_ENV, Recorder
+from app.observability.writer import DEFAULT_PATH, SALT_ENV, VAR_DIR_ENV, Recorder, var_dir
 
 __all__ = [
     "COUNTRIES",
@@ -11,8 +11,10 @@ __all__ = [
     "OUTCOMES",
     "STEPS",
     "SALT_ENV",
+    "VAR_DIR_ENV",
     "Recorder",
     "StepRecord",
     "TurnObserver",
     "utc_now",
+    "var_dir",
 ]
