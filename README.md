@@ -15,7 +15,7 @@ Two layers:
 - **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold, with DuckDB locally and Azure Databricks in production, both running the same `sentinel_data` package.
 - **Service:** one FastAPI process with the chat, the orchestrator, the policy engine and four session-bound tools. A prompted LLM router classifies intent behind one model port and is measured against the keyword baseline on team-written cases (mirrored fixtures until a live model is configured). The process serves one app and one API under `/api/v1` (`session`, `transactions`, `chat`, `health`); the demo is that app with mock adapters. Gold is read from the DuckDB view when it is available and from the labelled mock otherwise.
 
-The submission runs the same code with a few documented mocks (test session, in-memory dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
+The submission runs the same code with a few documented mocks (test session, SQLite dispute record, simulated advisor, synthetic policy). See the [architecture](docs/architecture/README.md).
 
 ## Quickstart
 
@@ -73,7 +73,7 @@ The [documentation index](docs/README.md) covers everything else.
 | Path | What it holds |
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) over Delta Lake. DuckDB locally; Databricks mode implemented, not deployed. 13 LATAM Bank tables, ~19 M records. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with one API under `/api/v1` (chat, session-bound transactions, session), policy engine, orchestrator and chat UI, with in-memory tool fakes and a DuckDB Gold adapter that falls back to the mock; prompted router with fixtures plus the offline evaluation harness (`eval/`, 35 team-written cases). Owners in [team/plan.md](team/plan.md#folders). |
+| [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop and policy engine: FastAPI with one API under `/api/v1` (chat, session-bound transactions, session, two-step disputes), policy engine, orchestrator and chat UI; sessions, conversation and cases in SQLite; a DuckDB Gold adapter that falls back to the mock; prompted router with fixtures plus the offline evaluation harness (`eval/`, 35 team-written cases). Owners in [team/plan.md](team/plan.md#folders). |
 | [`docs/architecture/`](docs/architecture/) | [System Architecture](docs/architecture/system-architecture.md), [Demo Architecture](docs/architecture/demo-architecture.md), [specification](docs/architecture/specification.md) |
 | [`docs/understand/`](docs/understand/) | The challenge and the data: [The Challenge](docs/understand/overview.md), [dataset](docs/understand/dataset.md), [glossary](docs/understand/glossary/) |
 | [`docs/requirements/`](docs/requirements/requirements.md) | What the system must do, traced to the hackathon material, with priority, owner, evidence and status |

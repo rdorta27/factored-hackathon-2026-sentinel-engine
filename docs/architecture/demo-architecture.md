@@ -24,7 +24,7 @@ flowchart LR
         client(["Customer"]) <--> chat["One-page chat"]
         chat --> orch["Orchestrator<br/>Understand → Decide → Act<br/>→ Verify → Escalate"]
         orch --> tools["Session-bound tools"]
-        tools -- "write · read back" --> disputes[("Dispute record<br/>in memory")]
+        tools -- "write · read back" --> disputes[("Dispute record<br/>SQLite")]
         tools -- "JSON handoff" --> advisor(["Advisor<br/>simulated"])
     end
     tools -- "read minimal view" --> gold
@@ -41,7 +41,7 @@ flowchart LR
 
 - **Data layer.** The same pipeline, run locally on DuckDB. If Gold is not connected to the service in time, `lookup_transactions` reads a fixture with the same fields, and the demo says which source it used.
 - **Service layer.** The same single process, run locally or in one container behind the public link.
-- **Dispute record.** In process memory, keyed by idempotency key. Lost on restart; the demo script does not restart.
+- **Dispute record.** SQLite file, one open dispute per charge (idempotency scoped to an opaque customer hash). Sessions and conversation state live in the same file, so a restart keeps them; one instance only.
 
 ## Components
 
@@ -70,7 +70,7 @@ flowchart TB
     orch --> router & learned & policy
     orch --> lookup & open & verify & handoff
     lookup --> gold[("Gold on DuckDB<br/>or fixture")]
-    open --> disputes[("Dispute record<br/>in memory")]
+    open --> disputes[("Dispute record<br/>SQLite")]
     verify --> disputes
     handoff --> advisor(["Advisor<br/>simulated"])
     orch -.-> logs[("Structured logs<br/>local files")]
@@ -93,7 +93,7 @@ flowchart TB
 |---|---|---|---|
 | Session | Identity provider | Trusted test session | No real authentication |
 | Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; open thresholds (decisions 25–27) use placeholder values |
-| Dispute record | Relational store (engine not decided) | Dictionary in process memory | Lost on restart |
+| Dispute record | Relational store (Postgres) | SQLite file, same models | One instance only |
 | Advisor | Human advisor; delivery channel not decided (decision 28) | Customer is told a person takes over; the package is returned and logged | Nothing is queued |
 | Secrets | Azure Key Vault | `.env`, gitignored | — |
 | Gold (fallback only) | Gold on Databricks | Fixture with the same fields | Used only if Gold is not connected; declared |
@@ -102,7 +102,7 @@ Everything else in the diagrams runs the target code.
 
 ## Walkthrough of a case
 
-Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-case). In the demo, *Dispute record* is the in-memory dictionary and *Advisor* is simulated; the steps, the confirmation and the read-back do not change.
+Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-case). In the demo, *Dispute record* is a SQLite file and *Advisor* is simulated; the steps, the confirmation and the read-back do not change.
 
 ## Learned component
 
@@ -117,7 +117,7 @@ Identical to the target: a prompted LLM that classifies the dispute category, co
 | Frontend | One-page chat served by the same process, styled with the `branding/` files |
 | Data pipeline | The same `sentinel_data` package on DuckDB |
 | Gold serving | DuckDB, or the fixture |
-| Dispute record | In memory |
+| Dispute record | SQLite |
 | LLM | Hybrid router with usage caps; model per route not decided |
 | Identity and secrets | Test session; `.env` |
 | Serving | One process, no autoscaling |

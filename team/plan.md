@@ -45,7 +45,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
 | Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | [cost](../docs/build/cost.md) |
-| Dispute record: in-memory for the submission; SQLite locally and Postgres on Azure only as the production backend of the same tool contract. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
+| Dispute record, sessions and conversation state: SQLite for the submission (updated 10/1, mentor feedback: externalize conversation state), Postgres on Azure as the production backend of the same models; in memory only for tests and the offline eval. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [stack](../docs/architecture/system-architecture.md#stack-and-deployment) |
 | Flow: transaction disputes, entered through an account inquiry (confirmed 9/29) | Accepted | [003](../docs/build/decisions/003-disputes-flow.md) |
 | Repository language: everything in English, including `docs/` and `team/` (decision 19, closed 9/28) | Accepted | [pending decisions](pending-decisions.md) |
@@ -83,7 +83,7 @@ Two hackathon rules are non-negotiable: no secrets or data in the repo (credenti
 
 Two code folders. `sentinel-ai-core/` is the whole FastAPI process, including the chat, its policy configuration and the evaluation runner. It is not a separate AI service. No web package and no infrastructure folder.
 
-That process serves one app from `sentinel-ai-core/app/main.py` (`app = create_app()`), with one API under `/api/v1`: `session/{login,logout,me}`, `transactions`, `chat`, `health`. The demo and the later service share it; only the adapters behind the ports change (Gold: DuckDB view or mock; disputes: in memory; model: baseline or prompted router).
+That process serves one app from `sentinel-ai-core/app/main.py` (`app = create_app()`), with one API under `/api/v1`: `session/{login,logout,me}`, `transactions`, `chat`, `health`. The demo and the later service share it; only the adapters behind the ports change (Gold: DuckDB view or mock; state: SQLite or memory; model: baseline or prompted router). Disputes also have their own two-step API (`/api/v1/disputes/preview`, `/api/v1/disputes`, plus a read-only listing) running the chat's turn cycle.
 
 | Path | Who | What | Status |
 |---|---|---|---|
@@ -112,9 +112,9 @@ We start with well-documented mocks and swap them for the real thing one by one,
 |---|---|---|---|
 | Tue 9/29 | Nothing was ready; the skeleton moves to Wed | — | — |
 | Wed 9/30 | Four tools in memory, test session, synthetic policy configuration, simulated advisor, `.env` | Chat and `POST /chat`, orchestrator loop, policy engine, JSON handoff | Identity provider, Key Vault |
-| Thu 10/1 | Dispute record (in memory) | Charge lookup on Gold if the read path is up, otherwise the fixture stays and we say so. Structured confirmation, bounded retries, structured logs | Dispute-record engine (not decided) |
+| Thu 10/1 | Dispute record, sessions and conversation in SQLite | Charge lookup on Gold if the read path is up, otherwise the fixture stays and we say so. Structured confirmation, bounded retries, structured logs | Dispute-record engine (not decided) |
 | Fri 10/2 | Anything not reached, reported as a limitation | Evaluation runner and results. Incremental pipeline, if it lands | Advisor delivery channel (decision 28) |
 
-The dispute-record engine is not a milestone: it stays in memory for the submission.
+The dispute-record engine is SQLite for the submission; Postgres is the production step (URL change, same models).
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).
 - **Learned component:** where today a fixed rule stands, we keep it as the baseline and compare it with the component on the same held-out set (REQ-0016).

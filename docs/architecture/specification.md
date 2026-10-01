@@ -184,10 +184,10 @@ REQ-0027. Proposed; confirm with [security](../build/security.md#data).
 
 | Data | Demo | Production (proposed) |
 |---|---|---|
-| Conversation state | Process memory, deleted on session expiry or restart | Deleted on session expiry |
+| Conversation state | SQLite, deleted on logout and on session expiry; orphans purged at login | Deleted on session expiry |
 | Log records | Local files, no customer text | Centralized, 90 days, no customer text |
-| Dispute records | Process memory | Kept per the bank's regulatory retention |
-| Handoff packages | Response and log | With the dispute record |
+| Dispute records | SQLite | Kept per the bank's regulatory retention |
+| Handoff packages | Response, log and the case table (`kind=handoff`) | With the dispute record |
 | LLM provider | No retention, no training use | Same, contractual |
 
 ## Capacity
@@ -216,7 +216,7 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Area | Work before production |
 |---|---|
 | Identity | Replace the test session with an identity provider; move secrets to Azure Key Vault |
-| Dispute record and conversation state | Choose the relational engine (SQLite and PostgreSQL are candidates) and move both stores out of process memory |
+| Dispute record and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
 | Policy | Replace the synthetic configuration with the bank's approved policy, same format; set thresholds (decisions 25–27) |
 | Handoff | Decide how the JSON package reaches advisors: queue, CRM ticket or similar (decision 28); routing by language and specialty is REQ-0046 (P2) |
