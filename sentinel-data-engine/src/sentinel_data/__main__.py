@@ -1,12 +1,15 @@
 """
 Unified CLI entry point for Databricks python_wheel_task execution.
 
-Routes to the Bronze ingestor or Silver transformer based on --layer.
+Routes to the Bronze ingestor, Silver transformer, Gold builder, or the full
+local DuckDB pipeline runner based on --layer.
 
 Local examples
 --------------
     python -m sentinel_data --layer bronze --table-name transactions
     python -m sentinel_data --layer silver --table-name transactions
+    python -m sentinel_data --layer gold
+    python -m sentinel_data --layer all --duckdb-out data/gold_bank.duckdb
 
 Databricks Job task example (python_wheel_task)
 ------------------------------------------------
@@ -30,9 +33,35 @@ logger = logging.getLogger(__name__)
 def _parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Sentinel Data Engine – Medallion Pipeline CLI")
 
-    p.add_argument("--layer", required=True, choices=["bronze", "silver", "gold"])
-    p.add_argument("--table-name", required=True)
+    p.add_argument(
+        "--layer",
+        required=True,
+        choices=["bronze", "silver", "gold", "all"],
+        help=(
+            "Pipeline layer to execute. Use 'all' to run the full Bronze→Silver→Gold "
+            "workflow locally against a persistent DuckDB file."
+        ),
+    )
+    # Gold builds all tables at once so --table-name is not needed; default to 'all'.
+    p.add_argument("--table-name", default="all")
     p.add_argument("--run-mode", default="local", choices=["local", "databricks"])
+
+    # 'all' layer local runner
+    p.add_argument(
+        "--duckdb-out",
+        default="data/gold_bank.duckdb",
+        help="Persistent DuckDB file path used by --layer=all (local runner).",
+    )
+    p.add_argument(
+        "--raw-dir",
+        default="data/raw",
+        help="Root directory holding raw CSV table sub-folders (used by --layer=all).",
+    )
+    p.add_argument(
+        "--report-out",
+        default="data_quality_report.md",
+        help="Output path for the Markdown data-quality report (used by --layer=all).",
+    )
 
     # Bronze-specific
     p.add_argument("--s3-bucket", default="")
@@ -79,7 +108,7 @@ def main() -> None:
         cfg_g = GoldBuilderConfig(
             run_mode=GoldRunMode(args.run_mode),
             databricks_catalog=args.databricks_catalog,
-            databricks_schema_silver=args.databricks_schema_bronze,
+            databricks_schema_silver=args.databricks_schema_silver,  # was incorrectly schema_bronze
             databricks_schema_gold="gold",
         )
         builder = GoldBuilder(cfg_g)
@@ -89,6 +118,15 @@ def main() -> None:
             builder.run(spark=spark)
         else:
             builder.run()
+
+    elif args.layer == "all":
+        from sentinel_data.local_runner import LocalPipelineRunner
+
+        LocalPipelineRunner(
+            raw_dir=args.raw_dir,
+            duckdb_path=args.duckdb_out,
+            report_path=args.report_out,
+        ).run()
 
     elif args.layer == "silver":
         from sentinel_data.silver.transform_silver import (
