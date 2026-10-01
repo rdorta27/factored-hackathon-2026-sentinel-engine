@@ -1,9 +1,13 @@
 """
-Operational SQLite database setup.
+Operational SQLite database: sessions, conversation state and cases.
 
-Uses SQLAlchemy 2.x with aiosqlite for async I/O.  All synchronous
-CPU/DB-bound calls are offloaded via asyncio.to_thread() where needed
-outside this module to keep the FastAPI event loop unblocked.
+Synchronous SQLAlchemy 2.x over the stdlib ``sqlite3`` driver: the routes are
+sync and run in FastAPI's threadpool, so no call blocks the event loop.
+The same declarative models run on Postgres by changing the URL.
+
+Path: ``SENTINEL_DB_PATH``, default ``var/sentinel.db`` next to the package
+(gitignored). One file serves one instance; a deployment needs persistent
+storage for it.
 """
 
 from __future__ import annotations
@@ -11,35 +15,42 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import DeclarativeBase
 
-_DB_PATH = Path(os.getenv("SENTINEL_DB_PATH", "sentinel_operational.db"))
-_DATABASE_URL = f"sqlite+aiosqlite:///{_DB_PATH}"
+from app.observability.writer import var_dir
 
-engine = create_async_engine(_DATABASE_URL, echo=False, future=True)
-
-AsyncSessionLocal = async_sessionmaker(
-    bind=engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
-)
+DB_PATH_ENV = "SENTINEL_DB_PATH"
 
 
 class Base(DeclarativeBase):
     pass
 
 
-async def init_db() -> None:
-    """Create all tables defined by ORM models (idempotent)."""
-    # Import models so Base.metadata is populated before create_all
-    from app.models import dispute_case, session_state  # noqa: F401
-
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def db_path() -> Path:
+    override = os.environ.get(DB_PATH_ENV)
+    return Path(override) if override else var_dir() / "sentinel.db"
 
 
-async def get_session() -> AsyncSession:  # type: ignore[return]
-    """FastAPI dependency that yields a managed AsyncSession."""
-    async with AsyncSessionLocal() as session:
-        yield session
+def make_engine(path: Path | str | None = None) -> Engine:
+    """Create the engine and every table (idempotent)."""
+    target = Path(path) if path is not None else db_path()
+    target.parent.mkdir(parents=True, exist_ok=True)
+    engine = create_engine(
+        f"sqlite:///{target}",
+        connect_args={"check_same_thread": False},
+        future=True,
+    )
+
+    @event.listens_for(engine, "connect")
+    def _pragmas(connection, _record):  # type: ignore[no-untyped-def]
+        cursor = connection.cursor()
+        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute("PRAGMA foreign_keys=ON")
+        cursor.close()
+
+    # Import models so Base.metadata is populated before create_all.
+    from app.models import conversation, dispute_case, session_state  # noqa: F401
+
+    Base.metadata.create_all(engine)
+    return engine

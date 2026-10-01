@@ -10,13 +10,18 @@ decide; here each ``TurnOutput`` is projected onto the canonical reply
 contract in ``app.schemas.chat``. A handoff carries the advisor package
 (REQ-0008), which is also written to the closing turn record.
 
-Per-session state is stored in app.state.memories (InMemoryTools) and
-app.state.conversations (ConversationState), both keyed by the session token.
+Conversation state lives in ``app.state.conversation_store`` (memory or
+SQLite, keyed by a hash of the session token). Cases live in
+``app.state.cases``; ``app.state.memories`` caches one ``CaseTools`` per
+customer (keyed by an opaque salted hash), so a charge disputed in one session
+is "already disputed" in the next. The turn cycle (``open_turn`` →
+``run_turn`` → ``finish_turn``) is shared with ``/api/v1/disputes``.
 """
 
 from __future__ import annotations
 
 import secrets
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from time import perf_counter
 
@@ -53,9 +58,9 @@ from app.schemas.chat import (
 )
 from app.session.models import Session
 from app.session.router import SESSION_COOKIE, require_session
+from app.state.cases import ESCALATED, CaseRow, CaseTools
+from app.state.conversation import StoredConversation
 from app.tools.bound import SessionBoundLookup
-from app.tools.fake import InMemoryTools
-from app.tools.gold import to_candidate
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
@@ -233,32 +238,44 @@ def _turn_outcome(output: TurnOutput | None) -> str:
     return "ok"
 
 
-def _reply(reply: ChatReply, trace_id: str) -> JSONResponse:
-    return JSONResponse(content=reply.model_dump(mode="json"), headers={"X-Trace-Id": trace_id})
+@dataclass
+class TurnContext:
+    """Everything one request needs to run a turn for the session customer."""
+
+    session: Session
+    token: str
+    trace_id: str
+    stored: StoredConversation
+    bound: SessionBoundLookup
+    tools: CaseTools
+    ports: Ports
+    observer: TurnObserver
+    recorder: Recorder
+    ref_date: date
+    started: float
+
+    @property
+    def state(self) -> ConversationState:
+        return self.stored.state
 
 
-@router.post("/chat")
-def chat(
-    body: ChatInput,
-    request: Request,
-    session: Session = Depends(require_session),
-) -> JSONResponse:
+def open_turn(request: Request, session: Session) -> TurnContext:
+    app_state = request.app.state
     token: str = request.cookies.get(SESSION_COOKIE, "")
     trace_id: str = getattr(request.state, "trace_id", None) or secrets.token_hex(8)
+    recorder: Recorder = app_state.recorder
+    ref_date: date = app_state.reference_date
 
-    memories: dict[str, InMemoryTools] = request.app.state.memories
-    conversations: dict[str, ConversationState] = request.app.state.conversations
-
-    if token not in memories:
-        memories[token] = InMemoryTools()
-    if token not in conversations:
-        conversations[token] = ConversationState(language=Language.ES_419)
-
-    memory = memories[token]
-    state = conversations[token]
-    gold = request.app.state.gold
-    ref_date = request.app.state.reference_date
-    recorder: Recorder = request.app.state.recorder
+    stored = app_state.conversation_store.get(token) or StoredConversation(
+        ConversationState(language=Language.ES_419)
+    )
+    # Opaque, stable per customer: idempotency and case tools survive new sessions,
+    # and the orchestrator never sees the customer identifier.
+    customer_ref = recorder.session_ref(f"customer:{session.customer_id}")
+    memories: dict[str, CaseTools] = app_state.memories
+    if customer_ref not in memories:
+        memories[customer_ref] = CaseTools(app_state.cases, session.customer_id, app_state.gold)
+    tools = memories[customer_ref]
 
     observer = TurnObserver(
         recorder=recorder,
@@ -266,64 +283,69 @@ def chat(
         session_ref=recorder.session_ref(token),
         country=session.country,
     )
-
-    bound = SessionBoundLookup(gold, session.customer_id, memory)
+    bound = SessionBoundLookup(app_state.gold, session.customer_id, tools)
     ports = Ports(
-        idempotency_scope=token[:12],
+        idempotency_scope=customer_ref,
         tools=bound,
-        model=request.app.state.model,
+        model=app_state.model,
         country=session.country,
         today=ref_date,
         trace_id=trace_id,
         observer=observer,
     )
+    return TurnContext(
+        session=session,
+        token=token,
+        trace_id=trace_id,
+        stored=stored,
+        bound=bound,
+        tools=tools,
+        ports=ports,
+        observer=observer,
+        recorder=recorder,
+        ref_date=ref_date,
+        started=perf_counter(),
+    )
 
-    started = perf_counter()
 
-    if body.selected_reference is not None:
-        # Check if this reference belongs to the customer at all.
-        row = gold.get(body.selected_reference, session.customer_id)
-        if row is None:
-            reply = _handoff(
-                "unknownCharge",
-                None,
-                None,
-                language=state.language.value,
-                country=session.country,
-                trace_id=trace_id,
-                ref_date=ref_date,
-                recorder=recorder,
-            )
-            observer.emit(
-                step="turn",
-                language=state.language.value,
-                outcome="ok",
-                attempt=1,
-                policy_rule="unknownCharge",
-                latency_ms=(perf_counter() - started) * 1000,
-                handoff=reply.package.model_dump(mode="json"),
-            )
-            return _reply(reply, trace_id)
-        # The transactions panel shows every own charge, so a tapped charge
-        # counts as shown even when the last clarification listed others.
-        if all(item.candidate_id != row.reference for item in state.candidates):
-            state.candidates = [*state.candidates, to_candidate(row)]
-        turn = CandidateIdInput(candidate_id=body.selected_reference)
+def select_charge(turn: TurnContext, reference: str) -> Candidate | None:
+    """Make an own charge selectable; None when the reference is not the customer's.
+
+    The transactions panel shows every own charge, so a tapped charge counts as
+    shown even when the last clarification listed others. The fresh candidate
+    replaces a stale one, so "already disputed" is current.
+    """
+    candidate = turn.bound.candidate(reference)
+    if candidate is None:
+        return None
+    state = turn.state
+    if any(item.candidate_id == reference for item in state.candidates):
+        state.candidates = [candidate if item.candidate_id == reference else item for item in state.candidates]
     else:
-        turn = TextInput(text=body.message or "")
+        state.candidates = [*state.candidates, candidate]
+    return candidate
 
+
+def unknown_charge(turn: TurnContext) -> Handoff:
+    return _handoff(
+        "unknownCharge",
+        None,
+        None,
+        language=turn.state.language.value,
+        country=turn.session.country,
+        trace_id=turn.trace_id,
+        ref_date=turn.ref_date,
+        recorder=turn.recorder,
+    )
+
+
+def run_turn(turn: TurnContext, turn_input: TextInput | CandidateIdInput) -> tuple[TurnOutput | None, ChatReply]:
+    """Run the orchestrator once and project its output onto the reply contract."""
     try:
-        output = step(turn, state, ports)
+        output = step(turn_input, turn.state, turn.ports)
     except Exception:
         # Gold or orchestrator failure: degrade gracefully without leaking internals.
-        observer.emit(
-            step="turn",
-            language=state.language.value,
-            outcome="failed",
-            attempt=1,
-            latency_ms=(perf_counter() - started) * 1000,
-        )
-        return _reply(ErrorReply(message_key="errorGeneric", trace_id=trace_id), trace_id)
+        return None, ErrorReply(message_key="errorGeneric", trace_id=turn.trace_id)
 
     # For FAILURE (unknown/foreign reference), strip candidate details to avoid
     # disclosing data from another customer's transaction.
@@ -332,22 +354,85 @@ def chat(
 
     reply = _to_reply(
         output,
-        state,
-        bound,
-        session=session,
-        trace_id=trace_id,
-        ref_date=ref_date,
-        recorder=recorder,
+        turn.state,
+        turn.bound,
+        session=turn.session,
+        trace_id=turn.trace_id,
+        ref_date=turn.ref_date,
+        recorder=turn.recorder,
+    )
+    return output, reply
+
+
+def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
+    facts = reply.package.verified_facts
+    request.app.state.cases.add(
+        CaseRow(
+            case_id=reply.reference,
+            customer_id=turn.session.customer_id,
+            kind="handoff",
+            status=ESCALATED,
+            created_at=datetime.now(timezone.utc),
+            transaction_id=facts.transaction_id if facts else None,
+            amount=f"{facts.amount:.2f}" if facts else None,
+            currency=facts.currency if facts else None,
+            merchant=facts.merchant if facts else None,
+            transaction_date=facts.transaction_date if facts else None,
+            reason_key=reply.reason_key,
+            package=reply.package.model_dump(mode="json"),
+        )
     )
 
-    observer.emit(
+
+def finish_turn(
+    request: Request,
+    turn: TurnContext,
+    reply: ChatReply,
+    output: TurnOutput | None = None,
+    *,
+    policy_rule: str | None = None,
+    status_code: int = 200,
+) -> JSONResponse:
+    """Persist the conversation, file a handoff ticket, close the turn record, reply."""
+    request.app.state.conversation_store.save(turn.token, turn.stored)
+    if isinstance(reply, Handoff):
+        _save_ticket(request, turn, reply)
+    if isinstance(reply, ErrorReply):
+        outcome = "failed"
+    elif output is None:
+        outcome = "ok"
+    else:
+        outcome = _turn_outcome(output)
+    turn.observer.emit(
         step="turn",
-        language=state.language.value,
-        outcome=_turn_outcome(output),
-        attempt=output.attempt if output.attempt is not None else 1,
-        policy_rule=output.reason,
-        latency_ms=(perf_counter() - started) * 1000,
+        language=turn.state.language.value,
+        outcome=outcome,
+        attempt=output.attempt if output is not None and output.attempt is not None else 1,
+        policy_rule=policy_rule if policy_rule is not None else (output.reason if output else None),
+        latency_ms=(perf_counter() - turn.started) * 1000,
         handoff=reply.package.model_dump(mode="json") if isinstance(reply, Handoff) else None,
     )
+    return JSONResponse(
+        status_code=status_code,
+        content=reply.model_dump(mode="json"),
+        headers={"X-Trace-Id": turn.trace_id},
+    )
 
-    return _reply(reply, trace_id)
+
+@router.post("/chat")
+def chat(
+    body: ChatInput,
+    request: Request,
+    session: Session = Depends(require_session),
+) -> JSONResponse:
+    turn = open_turn(request, session)
+
+    if body.selected_reference is not None:
+        if select_charge(turn, body.selected_reference) is None:
+            return finish_turn(request, turn, unknown_charge(turn), policy_rule="unknownCharge")
+        turn_input: TextInput | CandidateIdInput = CandidateIdInput(candidate_id=body.selected_reference)
+    else:
+        turn_input = TextInput(text=body.message or "")
+
+    output, reply = run_turn(turn, turn_input)
+    return finish_turn(request, turn, reply, output)

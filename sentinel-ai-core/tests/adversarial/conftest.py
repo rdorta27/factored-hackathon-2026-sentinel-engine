@@ -117,10 +117,10 @@ def login_as(api: TestClient, name: str) -> None:
 
 
 def session_memory(api: TestClient):
-    """The per-session `InMemoryTools`, keyed by the session token.
+    """The write-side tools (`CaseTools`) of the logged-in customer.
 
-    Conversation state and tool memory are keyed by `session.token`
-    (`app/routers/chat.py::_bundle`), never by the customer id.
+    Keyed by an opaque salted hash of the customer, so a dispute opened in one
+    session is visible to the next; conversation state stays per session.
     """
     return next(iter(api.app.state.memories.values()))
 

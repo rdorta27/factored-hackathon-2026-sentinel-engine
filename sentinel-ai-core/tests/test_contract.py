@@ -67,8 +67,6 @@ def test_served_app_is_the_full_app() -> None:
         ("post", "/session/login"),
         ("post", "/auth/login"),
         ("post", "/api/v1/auth/login"),
-        ("post", "/api/v1/disputes"),
-        ("get", "/api/v1/disputes"),
         ("get", "/health"),
     ],
 )

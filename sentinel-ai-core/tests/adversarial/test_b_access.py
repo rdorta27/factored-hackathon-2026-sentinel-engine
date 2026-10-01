@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 
 from app.session.router import SESSION_COOKIE
 
-from .conftest import CUSTOMER, facts_travel_nowhere
+from .conftest import CUSTOMER, facts_travel_nowhere, login_as
 
 # --- blocked (verified) ---
 
@@ -115,3 +115,37 @@ def test_logout_does_not_invalidate_other_customers_sessions(api) -> None:
     survivor = TestClient(api.app)
     survivor.cookies.set(SESSION_COOKIE, second)
     assert survivor.get("/api/v1/transactions").status_code == 200, "the other session survives"
+
+
+# --- disputes API: a second entry point, same isolation ---
+
+
+@pytest.mark.attack("B9", "blocked_verified")
+def test_disputes_api_never_reaches_another_customers_charge_or_case(logged_in) -> None:
+    """B9. Another customer's charge or case through `/api/v1/disputes` is unknown.
+
+    blocked (verified): the preview resolves the reference inside the session
+    customer's Gold rows (handoff, no facts), and a case id from another
+    customer is a 404 indistinguishable from a missing case.
+    """
+    preview = logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-9001"})
+    assert preview.json()["kind"] == "handoff"
+    assert facts_travel_nowhere(preview.json())
+    assert "ACME Store" not in preview.text and "100.00" not in preview.text
+    assert logged_in.post("/api/v1/disputes", json={"reference": "TXN-9001"}).status_code == 409
+
+    logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-1006"})
+    case_id = logged_in.post("/api/v1/disputes", json={"reference": "TXN-1006"}).json()["case_id"]
+    logged_in.post("/api/v1/session/logout")
+    login_as(logged_in, "CUST-0002")
+    assert logged_in.get(f"/api/v1/disputes/{case_id}").status_code == 404
+    assert logged_in.get("/api/v1/disputes").json() == []
+
+
+@pytest.mark.attack("B10", "blocked_verified")
+def test_disputes_api_rejects_a_client_supplied_identity(logged_in) -> None:
+    """B10. A `customer_id` in the body or the query never selects whose data is used."""
+    body = {"reference": "TXN-1006", "customer_id": "CUST-0002"}
+    assert logged_in.post("/api/v1/disputes/preview", json=body).status_code == 422
+    assert logged_in.post("/api/v1/disputes", json=body).status_code == 422
+    assert logged_in.get("/api/v1/disputes", params={"customer_id": "CUST-0002"}).status_code == 422

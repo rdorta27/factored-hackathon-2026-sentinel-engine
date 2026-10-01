@@ -195,3 +195,39 @@ class ErrorReply(BaseModel):
 
 
 ChatReply = Union[TextReply, Clarification, ConfirmBox, CaseConfirmation, Handoff, ErrorReply]
+
+
+# --- /api/v1/disputes -------------------------------------------------------
+
+_REFERENCE = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9\-]+$")
+
+
+class DisputePreviewInput(BaseModel):
+    """Step 1: ask the policy about one own charge. Never writes."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    reference: str = _REFERENCE
+    reason: Optional[str] = Field(default=None, max_length=300)
+
+
+class DisputeCreateInput(BaseModel):
+    """Step 2: open the dispute previewed for this charge."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    reference: str = _REFERENCE
+
+
+class CaseSummary(BaseModel):
+    """One case as the customer sees it. No customer identifier, no advisor package."""
+
+    model_config = StrictModel
+
+    case_id: str
+    kind: Literal["dispute", "handoff"]
+    status: str
+    transaction: Optional[TransactionFacts] = None
+    reason_key: Optional[str] = None
+    created_at: datetime
+    source: Source = "mock"

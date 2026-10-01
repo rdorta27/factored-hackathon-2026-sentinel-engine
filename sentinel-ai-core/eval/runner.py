@@ -47,7 +47,8 @@ def build_client(fixtures_dir: Path | str) -> TestClient:
         prompt_version="v1",
     )
     router = PromptedLLMRouter(FixtureTransport(fixtures_dir), config)
-    return TestClient(create_app(model=router))
+    # Each case on its own in-memory state: cases never share sessions or cases.
+    return TestClient(create_app(model=router, state_backend="memory"))
 
 
 def login(client: TestClient) -> None:

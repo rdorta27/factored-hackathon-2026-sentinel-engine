@@ -57,6 +57,8 @@ def require_session(request: Request) -> Session:
     try:
         return get_service(request).validate(token, trace_id, ip)
     except SessionExpired:
+        # Retention: the conversation (customer turns included) dies with the session.
+        request.app.state.conversation_store.delete(token)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Session expired")
     except UnknownSession:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
@@ -94,7 +96,10 @@ def login(body: LoginRequest, request: Request) -> JSONResponse:
 
 @router.post("/logout")
 def logout(request: Request, response: Response) -> JSONResponse:
-    get_service(request).logout(request.cookies.get(SESSION_COOKIE), _trace(request), _ip(request))
+    token = request.cookies.get(SESSION_COOKIE)
+    get_service(request).logout(token, _trace(request), _ip(request))
+    if token is not None:
+        request.app.state.conversation_store.delete(token)
     response.delete_cookie(SESSION_COOKIE, path="/")
     return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "Logged out"})
 

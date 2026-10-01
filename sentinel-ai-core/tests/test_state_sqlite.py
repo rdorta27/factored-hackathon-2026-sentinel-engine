@@ -1,0 +1,81 @@
+"""SQLite backend: state survives a restart; retention deletes the conversation."""
+
+from datetime import datetime, timedelta, timezone
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import update
+from sqlalchemy.orm import Session as DbSession
+
+from app.main import create_app
+from app.models.session_state import SessionState
+from app.session.router import SESSION_COOKIE
+
+PASSWORD = "Testpass-001"
+
+
+@pytest.fixture
+def sqlite_env(monkeypatch, tmp_path):  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("SENTINEL_STATE_BACKEND", "sqlite")
+    monkeypatch.setenv("SENTINEL_DB_PATH", str(tmp_path / "state.db"))
+    return tmp_path
+
+
+def login(api: TestClient) -> None:
+    assert api.post("/api/v1/session/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+
+
+def restarted(api: TestClient) -> TestClient:
+    """A new process on the same database, carrying the browser cookie."""
+    fresh = TestClient(create_app())
+    fresh.cookies.set(SESSION_COOKIE, api.cookies.get(SESSION_COOKIE))
+    return fresh
+
+
+def test_health_reports_sqlite(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    assert TestClient(create_app()).get("/api/v1/health").json()["state_backend"] == "sqlite"
+
+
+def test_session_conversation_and_case_survive_a_restart(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api)
+    assert api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()["kind"] == "confirm_box"
+
+    # The pending confirm box lives in the database, so another process can confirm it.
+    second = restarted(api)
+    case = second.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()
+    assert case["kind"] == "case_confirmation"
+
+    third = restarted(second)
+    listing = third.get("/api/v1/disputes").json()
+    assert [row["case_id"] for row in listing] == [case["case_id"]]
+    assert third.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()["message_key"] == "already.disputed"
+
+
+def test_session_token_is_not_stored_in_clear(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api)
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    raw = (sqlite_env / "state.db").read_bytes()
+    assert api.cookies.get(SESSION_COOKIE).encode() not in raw
+
+
+def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api)
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo de Cafe Central"})
+    store = api.app.state.conversation_store
+    assert store.count() == 1
+    api.post("/api/v1/session/logout")
+    assert store.count() == 0
+
+
+def test_expiry_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api)
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo de Cafe Central"})
+    engine = api.app.state.conversation_store._engine
+    with DbSession(engine) as db, db.begin():
+        db.execute(update(SessionState).values(expires_at=datetime.now(timezone.utc) - timedelta(seconds=1)))
+    assert api.post("/api/v1/chat", json={"message": "hola"}).status_code == 401
+    assert api.app.state.conversation_store.count() == 0

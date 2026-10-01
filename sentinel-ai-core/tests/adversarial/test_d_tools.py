@@ -10,7 +10,7 @@ knows nothing.
 
 import pytest
 
-from .conftest import EmptyGold, RaisingGold, facts_travel_nowhere, session_memory
+from .conftest import CUSTOMER, EmptyGold, RaisingGold, facts_travel_nowhere, login_as, session_memory
 
 # --- blocked (verified) ---
 
@@ -91,3 +91,27 @@ def test_slow_gold_does_not_hang_the_request(logged_in) -> None:
     elapsed = time.monotonic() - start
     assert response.status_code == 200
     assert elapsed < 0.05, "a slow tool must not hold the request open"
+
+
+@pytest.mark.attack("D6", "blocked_verified")
+def test_disputes_api_cannot_skip_the_confirmation(logged_in) -> None:
+    """D6. A direct create without a preview, or after a refused preview, writes nothing."""
+    assert logged_in.post("/api/v1/disputes", json={"reference": "TXN-1006"}).status_code == 409
+    refused = logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-1003"}).json()
+    assert refused["kind"] == "text"
+    assert logged_in.post("/api/v1/disputes", json={"reference": "TXN-1003"}).status_code == 409
+    assert session_memory(logged_in).open_calls == 0
+
+
+@pytest.mark.attack("D7", "blocked_verified")
+def test_a_new_session_cannot_open_a_duplicate_dispute(logged_in) -> None:
+    """D7. One charge, one case, whichever session or entry point asks again."""
+    logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1006"})
+    first = logged_in.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()
+    assert first["kind"] == "case_confirmation"
+    logged_in.post("/api/v1/session/logout")
+    login_as(logged_in, CUSTOMER)
+    preview = logged_in.post("/api/v1/disputes/preview", json={"reference": "TXN-1006"}).json()
+    assert preview == {"kind": "text", "message_key": "already.disputed"}
+    disputes = [row for row in logged_in.get("/api/v1/disputes").json() if row["kind"] == "dispute"]
+    assert [row["case_id"] for row in disputes] == [first["case_id"]]

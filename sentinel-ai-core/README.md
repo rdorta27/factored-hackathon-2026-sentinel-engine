@@ -33,7 +33,7 @@ Login is `POST /api/v1/session/login` with `login` and `password`. Do not send
 ## API
 
 One app, one API under `/api/v1`: `session/{login,logout,me}`, `transactions`,
-`chat`, `health`. The chat page is at `/ui/`. Replies are the typed models in
+`chat`, `disputes` (`POST preview`, `POST`, `GET`, `GET {case_id}`), `health`. The chat page is at `/ui/`. Replies are the typed models in
 `app/schemas/chat.py`.
 
 Gold is read through `GoldTransactions`: the DuckDB view
@@ -42,6 +42,11 @@ readable, the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`, see the repo
 `.env.example`). `GET /api/v1/health` reports which one is active. Real Gold
 needs logins mapped to real customer ids: point `SENTINEL_USERS_PATH` at a users
 file under the gitignored `data/`.
+
+Sessions, conversation state and cases live in SQLite at `SENTINEL_DB_PATH`
+(default `var/sentinel.db`, gitignored), so a restart keeps them; set
+`SENTINEL_STATE_BACKEND=memory` for a throwaway run. Conversation state is
+deleted on logout and on expiry. Login-attempt counters are per process.
 
 ## Model seam
 
