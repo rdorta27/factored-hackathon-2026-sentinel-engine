@@ -6,7 +6,7 @@ Legend: green = implemented and tested · amber = partial (works behind a mock o
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /chat<br/>confirm box"]
+    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
     chat --> session["Session<br/>and conversation state"]
     session --> orch["Orchestrator<br/>U → D → A → V → E"]
 
@@ -38,20 +38,15 @@ flowchart TB
     tests -.-> session
     s3[("S3 raw data")] --> pipeline["Bronze → Silver → Gold<br/>code with tests, no end-to-end run"]
     pipeline --> goldmock
-    subgraph prod["Production track · /api/v1 (not in frozen runs)"]
-        prodapi["Async chat, disputes,<br/>HIL handoff tickets"]
-        prodgold[("DuckDB Gold view<br/>PII-free reader")]
-        proddb[("SQLite sessions<br/>and dispute cases")]
-    end
+    lookup -.-> prodgold[("DuckDB Gold view<br/>adapter, fallback to mock")]
     deploy["Public deployment"] -.-> chat
-    deploy -.-> prodapi
 
     classDef done fill:#d9f5e3,stroke:#1f9d55,stroke-width:2px,color:#12351f
     classDef partial fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#4a3200
     classDef missing fill:#ffe3e3,stroke:#d33f3f,stroke-width:2px,color:#4a1111
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
     class chat,session,orch,policy,config,lookup,open,verify,disputes,logs,tests,learned,evalr done
-    class goldmock,handoff,pipeline,prodapi,prodgold,proddb partial
+    class goldmock,handoff,pipeline,prodgold partial
     class deploy,s3 missing
     class client ext
 ```
@@ -59,9 +54,9 @@ flowchart TB
 ## Reading it
 
 - **Done (14):** the full demo path works — chat, session, loop, policy with per-country files, the three tools against fakes, the in-memory dispute record with read-back verification, the structured log with its JSONL file, the measured [adversarial set](../evidence/adversarial/20260930T214744Z/summary.json) (29 attacks, `0/29` unsafe), the prompted router with fixtures and safe fallback, and the [frozen evaluation run](../evidence/evaluation-runs/2024Q4-eval-v1/summary.json) (35 cases, 0 failures, unsafe `0/35`).
-- **Partial (4):** Gold is a mock store on the demo path (the pipeline code exists with tests but never ran end to end); the advisor handoff is a stub with no queue UI; the router-vs-baseline delta is zero by construction (mirrored fixtures — the live-model comparison needs decision 010); the production track (`/api/v1` chat, disputes, DuckDB Gold reader, SQLite sessions, HIL tickets) is wired with tests but neither deployed nor covered by frozen runs.
+- **Partial (4):** Gold is a mock store on the demo path (the pipeline code exists with tests but never ran end to end); the advisor handoff is a stub with no queue UI; the router-vs-baseline delta is zero by construction (mirrored fixtures — the live-model comparison needs decision 010); the DuckDB Gold adapter is wired behind the same seam with fallback to the mock, but no local Gold data has been read through it yet.
 - **Missing (2):** the S3-to-service real read path and the public deployment.
 
 ## What unblocks what
 
-The measured pieces are frozen: router, label evidence and runner are archived with their specs (`llm-router`, `evaluation-evidence`, `evaluation-runner`). The demo is the measured submission path; the production track (`/api/v1`) still needs deployment (decision 13) and its own measurement before it can be cited. What remains open: the live model per route (decision 10, re-record fixtures and freeze a new run id), the Gold real read on the demo path, the deployment subscription (see [To find out](tasks.md#to-find-out)), and the presentation and video on the frozen build.
+The measured pieces are frozen: router, label evidence and runner are archived with their specs (`llm-router`, `evaluation-evidence`, `evaluation-runner`). One app serves the demo and the later service on `/api/v1`; it still needs deployment (decision 13). What remains open: the live model per route (decision 10, re-record fixtures and freeze a new run id), the Gold real read on the demo path, the deployment subscription (see [To find out](tasks.md#to-find-out)), and the presentation and video on the frozen build.

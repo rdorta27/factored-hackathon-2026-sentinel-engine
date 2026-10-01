@@ -36,7 +36,7 @@ There is no advisor UI. The JSON package is the handoff.
 State-changing actions need an explicit, structured confirmation (REQ-0006). A free-text "yes" interpreted by the LLM is not a confirmation.
 
 1. The orchestrator shows the selected candidate in a confirm box in the chat (`.chat-confirm` in [`branding/chat.css`](../../branding/chat.css)), with amount, currency, merchant and date.
-2. The customer presses confirm. The page sends the candidate id back to `POST /chat` as a structured field, not as text.
+2. The customer presses confirm. The page sends the candidate id back to `POST /api/v1/chat` as a structured field, not as text.
 3. The orchestrator issues a single-use `confirmation_token` bound to session, candidate and action, with a short expiry.
 4. `open_dispute` accepts only that token. The LLM never sees, creates or forwards it.
 
@@ -165,7 +165,7 @@ The system is measured offline on held-out, labelled conversations, with the sam
 
 - **Cases:** a versioned JSONL file. Each case has language, country, session, customer turns, and expected outcome (resolve, explain, clarify, abstain, escalate), expected category and whether a handoff is required. Text is team-generated in `es-419` and `pt-BR` and labelled as such.
 - **Mix:** normal, ambiguous or unsupported, human-required, plus the failure set of REQ-0021: wrong or missing data, expired session, access to another customer's charge, prompt injection, tool failure, multilingual ambiguity.
-- **Runner:** replays each case against `POST /chat` with a test session and fault injection in the tools, then reads the log records by `trace_id`. Repeated runs measure variability.
+- **Runner:** replays each case against `POST /api/v1/chat` with a test session and fault injection in the tools, then reads the log records by `trace_id`. Repeated runs measure variability.
 - **Baseline:** the same cases with the keyword baseline in place of the learned component.
 
 | Metric (brief) | Computed as |

@@ -38,14 +38,14 @@ flowchart LR
 ```
 
 - **Data layer.** Batch medallion pipeline. Bronze keeps the files as received; Silver enforces the schema contracts and quality rules and sends invalid rows to quarantine instead of dropping them; Gold holds denormalised tables ready to serve. The service reads Gold and never writes to it.
-- **Service layer.** One process serves the chat page and `POST /chat`; there is no second app and no advisor screen.
+- **Service layer.** One process serves the chat page and `POST /api/v1/chat`; there is no second app and no advisor screen.
 - **Two stores, two jobs.** Charges are read from Gold, which the pipeline refreshes in batches. Disputes are written to an operational dispute record and read back at once, so the customer only hears a case number that exists.
 
 ## Components
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /chat<br/>confirm box"]
+    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
     chat --> session["Session<br/>and conversation state"]
     session --> orch["Orchestrator<br/>U → D → A → V → E"]
 
@@ -85,7 +85,7 @@ flowchart TB
 
 | Component | Role |
 |---|---|
-| Chat page and `POST /chat` | The customer's only entry point. State-changing actions are confirmed with a confirm box, not with free text. |
+| Chat page and `POST /api/v1/chat` | The customer's only entry point. State-changing actions are confirmed with a confirm box, not with free text. |
 | Session and conversation state | Trusted session that carries `customer_id`; recent turns and pending confirmation, deleted when the session expires. |
 | Orchestrator | Runs the loop and owns every call. It injects `customer_id` into tools; the LLM never sees or chooses it. |
 | LLM router | Sends each LLM call to a model by route. Understands intent, language and the charge; drafts the reply. |
@@ -94,7 +94,7 @@ flowchart TB
 | Tools | Four functions bound to the session: look up charges, open a dispute (idempotent), read it back, hand off. |
 | Dispute record | Operational store for disputes. Relational; the engine is not decided (SQLite and PostgreSQL are candidates). Never Gold. |
 | Structured logs | One record per loop step, used for tracing, monitoring and evaluation metrics. |
-| Evaluation runner | Replays labelled conversations against `POST /chat` and computes the metrics the brief asks for. |
+| Evaluation runner | Replays labelled conversations against `POST /api/v1/chat` and computes the metrics the brief asks for. |
 
 ## Walkthrough of a case
 

@@ -54,7 +54,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Backend skeleton: orchestrator, policy engine and 4 mock tools with the [contracts](../docs/architecture/specification.md#tool-contracts) (open dispute idempotent) | Rubén, Felix | Done: loop, policy engine and in-memory fakes in `sentinel-ai-core/`; handoff stays an outcome by design; chat connected |
 | Simple chat with a test session and conversation state, connected to `POST /chat` | Felix | Done: chat page, test session, `POST /chat` and confirm box verified end to end (web session to case `D-1` + `test_full_turn_is_replayable_by_trace_id`) |
 | Synthetic policy configuration per country (MX, CO, AR), placeholder thresholds for decisions 25–27 | Rubén | Done: `sentinel-ai-core/config/policy/`; reference percentiles frozen in `evidence/evaluation/2024Q4-v1/summary.json`, thresholds still provisional |
-| JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | In progress: demo outcome with reference and reason; production `HandoffTicket` with verified facts on `/api/v1/chat`; full package schema still open |
+| JSON handoff schema (request, verified facts, actions, evidence, open questions, language, country) | Rubén | In progress: `handoff` reply carries the package (request, verified facts, actions taken, evidence, open questions, language, country) without `customer_id` or raw text, also on the turn record (`app/schemas/chat.py`, `tests/test_contract.py`); routing to an advisor (decision 28, REQ-0046) still open |
 | Gold view with only the [data contract](../docs/architecture/specification.md#data-contract) columns, no personal data | Natalia | Pending |
 | Evidence run recording claim categories and subcategories with counts | Natalia, Rubén | Done: `evidence/evaluation/2024Q4-v1/summary.json` (10 Claim combos, full counter) + derived `sentinel-ai-core/eval/labels.json` |
 | Design the held-out set: labels (from the v4 category list), locales | Rubén | Done: dev/held_out splits with no shared ids in `sentinel-ai-core/eval/cases/` |
@@ -94,7 +94,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Path to production write-up (REQ-0052) | Rubén | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | Final README update: results and limitations | Rubén | Pending |
 | Review the repo for secrets and data; freeze the code | Unassigned | Pending |
-| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | In progress: `/auth` and `/api/v1/auth` login aliases plus frontend-contract transaction keys landed in ai-core; removal itself pending |
+| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | In progress: ai-core serves the demo alone on `/api/v1` with the `sentinel-login` reply contract; removal itself pending |
 | Validate the presentation outline with the group | Rubén, team | Pending |
 
 ## Sat 10/3 to Mon 10/5

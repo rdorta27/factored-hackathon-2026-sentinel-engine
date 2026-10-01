@@ -47,7 +47,7 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /chat<br/>confirm box"]
+    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
     chat --> session["Test session<br/>and conversation state"]
     session --> orch["Orchestrator<br/>U → D → A → V → E"]
 
