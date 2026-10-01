@@ -47,21 +47,21 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 17 | 17 | 7 | 41% |
+| P0 | 41 | 18 | 16 | 7 | 44% |
 | P1 | 12 | 6 | 3 | 3 | 50% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 24 | 20 | 13 | 42% |
+| **Total** | **57** | 25 | 19 | 13 | 44% |
 
 ## Status by type
 
 | Type | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| [Frontend and backend](frontend-backend.md) | 19 | 12 | 4 | 3 | 63% |
+| [Frontend and backend](frontend-backend.md) | 19 | 13 | 3 | 3 | 68% |
 | [Non-functional](non-functional.md) | 13 | 10 | 3 | 0 | 77% |
 | [Data and ML](data-ml.md) | 10 | 1 | 5 | 4 | 10% |
 | [Analytics](analytics.md) | 7 | 1 | 5 | 1 | 14% |
 | [Delivery](delivery.md) | 8 | 0 | 3 | 5 | 0% |
-| **Total** | **57** | 24 | 20 | 13 | 42% |
+| **Total** | **57** | 25 | 19 | 13 | 44% |
 
 ## Frontend and backend
 
@@ -73,7 +73,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0002](frontend-backend.md#req-0002) | Clarify or abstain | P0 | ai | [REQ-0001](frontend-backend.md#req-0001), [REQ-0003](frontend-backend.md#req-0003) | Done |
 | [REQ-0003](frontend-backend.md#req-0003) | Answer only from verified records | P0 | ai | [REQ-0015](data-ml.md#req-0015), [REQ-0032](non-functional.md#req-0032) | Done |
 | [REQ-0004](frontend-backend.md#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
-| [REQ-0006](frontend-backend.md#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](frontend-backend.md#req-0033) | In progress |
+| [REQ-0006](frontend-backend.md#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](frontend-backend.md#req-0033) | Done |
 | [REQ-0008](frontend-backend.md#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
 | [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | In progress |
 | [REQ-0010](frontend-backend.md#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](frontend-backend.md#req-0002) | Done |

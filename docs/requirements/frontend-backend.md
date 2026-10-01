@@ -8,7 +8,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0002](#req-0002) | Clarify or abstain | P0 | ai | [REQ-0001](#req-0001), [REQ-0003](#req-0003) | Done |
 | [REQ-0003](#req-0003) | Answer only from verified records | P0 | ai | [REQ-0015](data-ml.md#req-0015), [REQ-0032](non-functional.md#req-0032) | Done |
 | [REQ-0004](#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
-| [REQ-0006](#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](#req-0033) | In progress |
+| [REQ-0006](#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](#req-0033) | Done |
 | [REQ-0008](#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
 | [REQ-0009](#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012) | In progress |
 | [REQ-0010](#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](#req-0002) | Done |
@@ -81,15 +81,13 @@ The system acts only through tools bound to the logged-in customer, asks for con
 
 Written rules say what the system answers alone, which actions need the customer's confirmation, and when it must hand over to a person. The brief calls this controlled automation.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** ai
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** ai
 
 **Source:** Problem statement: What your solution should demonstrate 3 · Kickoff p. 11
 
 **Depends on:** [REQ-0007](non-functional.md#req-0007), [REQ-0033](#req-0033). The answer/confirm/escalate split is policy in code.
 
-**Evidence:** Proven by: the [conversation rules](../build/conversation.md), the policy engine and the confirm box; handoff on person insist, unverified write, out of scope and unknown charge.
-
-Missing: the fraud and high-amount thresholds (decisions 25, 26) are still null.
+**Evidence:** Proven by: the [conversation rules](../build/conversation.md), the policy engine and the confirm box; handoff on person insist, unverified write, out of scope and unknown charge; suspected fraud (`fraud.claim`, `fraud.score`) and high amount (`amount.high`) per account country and currency ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)), with values from `evidence/evaluation/2024Q4-v2/summary.json` and one demo charge per rule (`tests/test_not_mine_claim.py`, `tests/test_policy_files.py`); replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`. Mexican MXN has no threshold (no MXN accounts in the data); staleness (decision 27) stays off.
 
 <a id="req-0008"></a>
 ### REQ-0008 · Structured handoff package
@@ -117,7 +115,7 @@ The first of the three mandatory demo cases: a customer asks about a charge and 
 
 **Evidence:** Proven by: the confirm box leads to a verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); replayed in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: the same case in Portuguese (REQ-0012), the fraud and high-amount thresholds (REQ-0006), and the video (REQ-0037).
+Missing: the same case in Portuguese (REQ-0012) and the video (REQ-0037).
 
 <a id="req-0010"></a>
 ### REQ-0010 · Demo: ambiguous or unsupported case

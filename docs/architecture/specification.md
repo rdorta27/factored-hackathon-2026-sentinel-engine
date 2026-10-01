@@ -147,7 +147,7 @@ Context is kept per session by the orchestrator, not by the LLM (REQ-0001).
 
 Rules are evaluated in code, in the policy engine (`app/policy/`), which also applies the [decision priority](#decision-priority). Their parameters (status explanations, per-country fields, deadlines and thresholds) live in one versioned configuration file per country (`config/policy/`), not in code and not in prompts (REQ-0007, REQ-0049). Adding a country changes configuration only.
 
-- **Contents:** meaning of each transaction status and whether it is disputable; mandatory dispute fields; filing deadlines; handoff thresholds (decisions 25, 26, 27).
+- **Contents:** meaning of each transaction status and whether it is disputable; mandatory dispute fields; filing deadlines; handoff thresholds per account country and charge currency, each citing its source ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md); staleness, decision 27, stays off).
 - **Traceability:** each entry has an id. Replies that explain a rule cite it, and the log records it as `policy_rule` (REQ-0029).
 - **Labelling:** the dataset ships no bank policy, so the file is a **synthetic policy** written by the team and labelled as such (REQ-0031).
 
@@ -238,7 +238,7 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Identity | Replace the test session with an identity provider; move secrets to Azure Key Vault |
 | Case store, sessions and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
-| Policy | Replace the synthetic configuration with the bank's approved policy, same format; set thresholds (decisions 25–27) |
+| Policy | Replace the synthetic configuration with the bank's approved policy, same format: per-currency values, `source` pointing to the bank policy, `synthetic: false`; decide staleness (decision 27). Each decision already records the policy file version |
 | Handoff | Decide how the JSON package reaches advisors: queue, CRM ticket or similar (decision 28); routing by language and specialty is REQ-0046 (P2) |
 | Personal data | Serving view without personal columns; masking of free text and of Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
 | Serving | Container Apps with autoscaling (decision 13) |

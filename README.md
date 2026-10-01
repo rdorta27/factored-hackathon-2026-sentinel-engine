@@ -57,15 +57,15 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 17 | 17 | 7 | 41% |
+| P0 | 41 | 18 | 16 | 7 | 44% |
 | P1 | 12 | 6 | 3 | 3 | 50% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 24 | 20 | 13 | 42% |
+| **Total** | **57** | 25 | 19 | 13 | 44% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0048 decision order. Demo: REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T130342Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) |
-| **In progress** | Normal demo case in Portuguese (REQ-0009, REQ-0012) · learned component vs baseline and the outcome metrics (live model pending, decision 10) · pipeline end to end and Gold read on real data · thresholds for fraud and high amount (decisions 25, 26) · person request during a pending confirmation (REQ-0040) · PII typed by the customer (REQ-0047) · deliverables: public link, slides, video |
+| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate (fraud and high amount per currency) · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0048 decision order. Demo: REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T130342Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) |
+| **In progress** | Normal demo case in Portuguese (REQ-0009, REQ-0012) · learned component vs baseline and the outcome metrics (live model pending, decision 10) · pipeline end to end and Gold read on real data · person request during a pending confirmation (REQ-0040) · PII typed by the customer (REQ-0047) · deliverables: public link, slides, video |
 
 Status per requirement and per type: [requirements](docs/requirements/requirements.md#status-by-priority).
 

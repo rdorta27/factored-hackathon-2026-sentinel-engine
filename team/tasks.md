@@ -35,23 +35,22 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 8 | Decide the model per route (decision 10), serve the prompted router, re-record fixtures and freeze a new run id | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | Pending: the served model is the keyword baseline; delta zero by construction |
 | 9 | Define and test how the system serves a Portuguese-speaking customer without Portuguese data: replies, country and currency, reviewed cases (decision 15) | REQ-0012, REQ-0009 | Unassigned | Fri 10/2 | Normal case in Portuguese, the 3 demo cases in pt-BR | Pending |
 | 10 | A person request while a confirm box is pending must escalate like any other | REQ-0040 | Unassigned | Fri 10/2 | Human demo case | Pending |
-| 11 | Fraud and high-amount thresholds (decisions 25, 26) in a separate branch, with a mock row or eval case per rule | REQ-0006 | Rubén | Fri 10/2 | — | Pending |
-| 12 | Mask free-text PII before the model (decision 004) so adversarial `A9` becomes blocked | REQ-0047 | Unassigned | Fri 10/2 | — | Pending |
-| 13 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
-| 14 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
-| 15 | Sizing: disputes per day and prototype capacity | REQ-0053 | Natalia | Fri 10/2 | Limitations | Pending |
-| 16 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
-| 17 | Data-sync setup note: bring the bucket into `data/` from `.env` only | REQ-0028 | Unassigned | Fri 10/2 | — | Pending |
-| 18 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
-| 19 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
-| 20 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
-| 21 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
-| 22 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
-| 23 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
-| 24 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
-| 25 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
-| 26 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
-| 27 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
+| 11 | Mask free-text PII before the model (decision 004) so adversarial `A9` becomes blocked | REQ-0047 | Unassigned | Fri 10/2 | — | Pending |
+| 12 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
+| 13 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
+| 14 | Sizing: disputes per day and prototype capacity | REQ-0053 | Natalia | Fri 10/2 | Limitations | Pending |
+| 15 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
+| 16 | Data-sync setup note: bring the bucket into `data/` from `.env` only | REQ-0028 | Unassigned | Fri 10/2 | — | Pending |
+| 17 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
+| 18 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
+| 19 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
+| 20 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
+| 21 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
+| 22 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
+| 23 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
+| 24 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
+| 25 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
+| 26 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
@@ -138,6 +137,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 | Test that no reply shows amounts or merchants outside the verified facts | Rubén | Done: `tests/test_facts_grounding.py` (mutation-checked) |
 | Tell Felix and Natalia: `sentinel-login/` retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
+| Fraud and high-amount thresholds per account country and currency (decisions 25, 26) | Rubén | Done: [010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md); evidence `evidence/evaluation/2024Q4-v2/`, run `2024Q4-eval-v6` |
 | Requirements regrouped by type (frontend and backend, non-functional, data and ML, analytics, delivery) with one card each and their dependencies | Rubén | Done: [requirements](../docs/requirements/requirements.md) |
 
 ### Fri 10/2
