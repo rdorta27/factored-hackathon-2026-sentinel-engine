@@ -16,7 +16,9 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+
+import secrets
 
 from app.db.session import init_db
 from app.observability import Recorder
@@ -61,13 +63,16 @@ async def health() -> dict[str, str]:
 # ---------------------------------------------------------------------------
 
 
-def create_app() -> FastAPI:
+def create_app(model: ModelPort | None = None) -> FastAPI:
     """
     Create a fully wired demo application instance.
 
     Each call returns an independent FastAPI app with its own in-memory state,
-    so test cases can spin up isolated instances.
+    so test cases can spin up isolated instances. The model is selectable per
+    app (keyword baseline by default) without editing code.
     """
+    from app.ai.demo import DemoModel
+    from app.ai.port import ModelPort
     from app.routers.auth_compat import api_v1_auth_router, auth_router
     from app.routers.demo_chat import router as chat_router
     from app.routers.demo_transactions import router as txn_router
@@ -82,6 +87,15 @@ def create_app() -> FastAPI:
 
     demo = FastAPI(title="Sentinel AI Core (demo)", version="0.1.0")
 
+    import secrets as _secrets
+
+    @demo.middleware("http")
+    async def trace_middleware(request: Request, call_next):  # type: ignore[no-untyped-def]
+        request.state.trace_id = secrets.token_hex(8)
+        response = await call_next(request)
+        response.headers["X-Trace-Id"] = request.state.trace_id
+        return response
+
     recorder = Recorder()
     ref_date = get_reference_date()
     audit = AuditLogger(recorder)
@@ -93,6 +107,7 @@ def create_app() -> FastAPI:
 
     demo.state.recorder = recorder
     demo.state.audit = audit
+    demo.state.model = model if model is not None else DemoModel()
     demo.state.session_service = service
     demo.state.gold = gold
     demo.state.reference_date = ref_date

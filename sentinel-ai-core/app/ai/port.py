@@ -13,12 +13,24 @@ class UnderstandKind(StrEnum):
 
 
 @dataclass(frozen=True)
+class ModelInfo:
+    model: str
+    route: str
+    prompt_version: str
+
+
+@dataclass(frozen=True)
 class UnderstandResult:
     kind: UnderstandKind
     language: Language
+    tokens_in: int = 0
+    tokens_out: int = 0
+    cost_usd: float = 0.0
 
 
 class ModelPort(Protocol):
     def understand(self, message: str, turns: list[str]) -> UnderstandResult: ...
 
     def classify(self, message: str) -> str: ...
+
+    def describe(self) -> ModelInfo: ...

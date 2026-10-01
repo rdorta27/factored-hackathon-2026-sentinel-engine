@@ -1,4 +1,4 @@
-from app.ai.port import UnderstandKind, UnderstandResult
+from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
 from app.orchestrator.types import Language
 
 _PERSON = ("persona", "pessoa", "asesor", "atendente", "agente")
@@ -7,6 +7,9 @@ _PT = ("não", "nao", "cobrança", "cobranca", "pessoa", "junho", "qual é", "qu
 
 
 class DemoModel:
+    def describe(self) -> ModelInfo:
+        return ModelInfo(model="keyword-baseline", route="baseline", prompt_version="v1")
+
     def understand(self, message: str, turns: list[str]) -> UnderstandResult:
         text = message.lower()
         language = Language.PT_BR if any(mark in text for mark in _PT) else Language.ES_419

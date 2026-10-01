@@ -1,4 +1,4 @@
-from app.ai.port import UnderstandKind, UnderstandResult
+from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
 from app.orchestrator.types import Language
 
 
@@ -39,6 +39,9 @@ class FakeModel:
             "não reconheço esta cobrança": "Cargo no reconocido",
             "me cobraron dos veces": "Cargo duplicado",
         }
+
+    def describe(self) -> ModelInfo:
+        return ModelInfo(model="fake", route="mock", prompt_version="none")
 
     def understand(self, message: str, turns: list[str]) -> UnderstandResult:
         if message in self.scripts:

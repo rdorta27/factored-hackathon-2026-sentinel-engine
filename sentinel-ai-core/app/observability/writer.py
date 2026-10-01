@@ -13,13 +13,29 @@ from app.observability.records import StepRecord
 logger = logging.getLogger("sentinel.observability")
 
 SALT_ENV = "SENTINEL_SESSION_SALT"
+VAR_DIR_ENV = "SENTINEL_VAR_DIR"
 DEFAULT_PATH = Path("var") / "turns.jsonl"
+
+
+def var_dir() -> Path:
+    """Canonical runtime directory, independent of the process CWD.
+
+    Resolves to ``SENTINEL_VAR_DIR`` when set (tests), otherwise to the
+    ``var/`` folder next to the installed ``app`` package, so launching from
+    the repo root can no longer scatter a second ``var/`` tree.
+    """
+    override = os.environ.get(VAR_DIR_ENV)
+    if override:
+        return Path(override)
+    return Path(__file__).resolve().parents[2] / "var"
 
 
 class Recorder:
     """Collects records in memory and appends them as JSON lines to a file."""
 
     def __init__(self, path: Path | str | None = DEFAULT_PATH, salt: str | None = None) -> None:
+        if path is DEFAULT_PATH or (isinstance(path, Path) and path == DEFAULT_PATH):
+            path = var_dir() / "turns.jsonl"
         self._path = Path(path) if path is not None else None
         self.salt, self.ephemeral_salt = self._resolve_salt(salt)
         self._records: list[StepRecord] = []
@@ -36,7 +52,7 @@ class Recorder:
         env_salt = os.environ.get(SALT_ENV)
         if env_salt:
             return env_salt, False
-        salt_file = Path("var") / ".session_salt"
+        salt_file = var_dir() / ".session_salt"
         if salt_file.is_file():
             return salt_file.read_text(encoding="utf-8").strip(), False
         generated = secrets.token_hex(16)

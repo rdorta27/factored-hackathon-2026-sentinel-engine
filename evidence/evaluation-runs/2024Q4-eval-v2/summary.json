@@ -1,0 +1,556 @@
+{
+  "automation": {
+    "automated": 25,
+    "n": 32,
+    "share": 0.7812
+  },
+  "case_mix": {
+    "by_country": {
+      "AR": 9,
+      "CO": 10,
+      "MX": 16
+    },
+    "by_intent": {
+      "charge": 16,
+      "missing": 7,
+      "out_of_scope": 7,
+      "person": 5
+    },
+    "by_locale": {
+      "es-419": 22,
+      "pt-BR": 13
+    },
+    "by_split": {
+      "development": 25,
+      "held_out": 10
+    },
+    "n": 35
+  },
+  "component": {
+    "baseline": {
+      "by_locale": {
+        "es-419": {
+          "accuracy": 0.8421,
+          "confusion": {
+            "charge": {
+              "charge": 9,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "missing": {
+              "charge": 3,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 4,
+              "person": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 3
+            }
+          },
+          "n": 19,
+          "per_class": {
+            "charge": {
+              "f1": 0.8571,
+              "n": 9,
+              "precision": 0.75,
+              "recall": 1.0,
+              "support": 9
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 3
+            },
+            "out_of_scope": {
+              "f1": 1.0,
+              "n": 4,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 4
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 3
+            }
+          }
+        },
+        "pt-BR": {
+          "accuracy": 0.7692,
+          "confusion": {
+            "charge": {
+              "charge": 5,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "missing": {
+              "charge": 3,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 3,
+              "person": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 2
+            }
+          },
+          "n": 13,
+          "per_class": {
+            "charge": {
+              "f1": 0.7692,
+              "n": 5,
+              "precision": 0.625,
+              "recall": 1.0,
+              "support": 5
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 3
+            },
+            "out_of_scope": {
+              "f1": 1.0,
+              "n": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 3
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 2,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 2
+            }
+          }
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 96,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "intent": {
+        "accuracy": 0.8125,
+        "confusion": {
+          "charge": {
+            "charge": 14,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "missing": {
+            "charge": 6,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 7,
+            "person": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 5
+          }
+        },
+        "n": 32,
+        "per_class": {
+          "charge": {
+            "f1": 0.8235,
+            "n": 14,
+            "precision": 0.7,
+            "recall": 1.0,
+            "support": 14
+          },
+          "missing": {
+            "f1": 0.0,
+            "n": 6,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "out_of_scope": {
+            "f1": 1.0,
+            "n": 7,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 7
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 5,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 5
+          }
+        }
+      },
+      "latency_ms": {
+        "mean": 0.0029,
+        "n": 96,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "model": "keyword-baseline",
+      "n": 32,
+      "prompt_version": "v1",
+      "route": "baseline",
+      "safety": {
+        "failures": [],
+        "n": 4,
+        "pass_rate": 1.0,
+        "passed": 4
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 32,
+        "runs": 3
+      }
+    },
+    "case_ids": [
+      "dev-charge-01",
+      "dev-charge-02",
+      "dev-charge-03",
+      "dev-charge-04",
+      "dev-charge-05",
+      "dev-charge-06",
+      "dev-charge-07",
+      "dev-charge-08",
+      "dev-missing-01",
+      "dev-missing-02",
+      "dev-missing-03",
+      "dev-missing-04",
+      "dev-oos-01",
+      "dev-oos-02",
+      "dev-oos-03",
+      "dev-oos-04",
+      "dev-person-01",
+      "dev-person-02",
+      "dev-person-03",
+      "dev-adv-01",
+      "dev-adv-02",
+      "dev-adv-03",
+      "ho-charge-01",
+      "ho-charge-02",
+      "ho-charge-03",
+      "ho-missing-01",
+      "ho-missing-02",
+      "ho-oos-01",
+      "ho-oos-02",
+      "ho-person-01",
+      "ho-person-02",
+      "ho-adv-01"
+    ],
+    "identical_set": true,
+    "n": 32,
+    "repetitions": 3,
+    "router": {
+      "by_locale": {
+        "es-419": {
+          "accuracy": 0.8421,
+          "confusion": {
+            "charge": {
+              "charge": 9,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "missing": {
+              "charge": 3,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 4,
+              "person": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 3
+            }
+          },
+          "n": 19,
+          "per_class": {
+            "charge": {
+              "f1": 0.8571,
+              "n": 9,
+              "precision": 0.75,
+              "recall": 1.0,
+              "support": 9
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 3
+            },
+            "out_of_scope": {
+              "f1": 1.0,
+              "n": 4,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 4
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 3
+            }
+          }
+        },
+        "pt-BR": {
+          "accuracy": 0.7692,
+          "confusion": {
+            "charge": {
+              "charge": 5,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "missing": {
+              "charge": 3,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 3,
+              "person": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 2
+            }
+          },
+          "n": 13,
+          "per_class": {
+            "charge": {
+              "f1": 0.7692,
+              "n": 5,
+              "precision": 0.625,
+              "recall": 1.0,
+              "support": 5
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 3,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 3
+            },
+            "out_of_scope": {
+              "f1": 1.0,
+              "n": 3,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 3
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 2,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 2
+            }
+          }
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 96,
+        "p50": 0.0,
+        "p95": 0.0
+      },
+      "intent": {
+        "accuracy": 0.8125,
+        "confusion": {
+          "charge": {
+            "charge": 14,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "missing": {
+            "charge": 6,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 7,
+            "person": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 5
+          }
+        },
+        "n": 32,
+        "per_class": {
+          "charge": {
+            "f1": 0.8235,
+            "n": 14,
+            "precision": 0.7,
+            "recall": 1.0,
+            "support": 14
+          },
+          "missing": {
+            "f1": 0.0,
+            "n": 6,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 6
+          },
+          "out_of_scope": {
+            "f1": 1.0,
+            "n": 7,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 7
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 5,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 5
+          }
+        }
+      },
+      "latency_ms": {
+        "mean": 0.0409,
+        "n": 96,
+        "p50": 0.04,
+        "p95": 0.05
+      },
+      "model": "cheap-eval",
+      "n": 32,
+      "prompt_version": "v1",
+      "route": "cheap",
+      "safety": {
+        "failures": [],
+        "n": 4,
+        "pass_rate": 1.0,
+        "passed": 4
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 32,
+        "runs": 3
+      }
+    }
+  },
+  "created_at": "2026-10-01T01:05:43.024032+00:00",
+  "eval_version": "2026-09-30+runner-v1",
+  "failures": [],
+  "labels": {
+    "n": 10,
+    "run_id": "2024Q4-v1",
+    "summary_sha16": "f55e1aed7e702a19"
+  },
+  "n": 35,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Router served by baseline-mirrored fixtures (no live model configured); router-vs-baseline delta is zero by construction.",
+    "Small-sample limits apply per locale and class; held_out measured once in this run."
+  ],
+  "run_id": "2024Q4-eval-v2",
+  "safety": {
+    "failures": [],
+    "n": 4,
+    "pass_rate": 1.0,
+    "passed": 4
+  },
+  "system": {
+    "attempted_n": 32,
+    "containment": {
+      "contained": 25,
+      "n": 32,
+      "share": 0.7812
+    },
+    "cost_usd": {
+      "n": 32,
+      "per_attempted": 0.0001,
+      "per_resolution": "not defined",
+      "total": 0.0032
+    },
+    "escalation_quality": {
+      "missed_transfers": [
+        "dev-fault-01",
+        "dev-fault-02",
+        "dev-fault-03",
+        "dev-person-01",
+        "dev-person-02",
+        "dev-person-03",
+        "ho-person-01",
+        "ho-person-02"
+      ],
+      "n": 35,
+      "unnecessary_transfers": []
+    },
+    "latency_ms": {
+      "n": 35,
+      "p50": 0.36,
+      "p95": 0.47
+    },
+    "n": 35,
+    "safe_resolution": {
+      "n": 32,
+      "resolved": 0,
+      "share": 0.0
+    },
+    "unsafe_outcomes": {
+      "cases": [],
+      "count": 0,
+      "n": 35,
+      "rate": "0/35"
+    }
+  }
+}

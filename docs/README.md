@@ -4,7 +4,7 @@ The challenge, the requirements, and the design rules. Team planning lives in [`
 
 We work in English. Everything we deliver — the repo README, the presentation, and the video script — as well as `docs/` and `team/` is written in English from the first draft; see [language](build/delivery.md#language).
 
-The official hackathon material (problem statement, kickoff, dataset summary, and data dictionary) is not in the repository; each member keeps their own copy.
+The official hackathon material (problem statement, kickoff, and dataset summary) is not in the repository; each member keeps their own copy. The one exception is the data dictionary, kept as a column-level reference in [understand/reference/](understand/reference/).
 
 ## Reading order
 

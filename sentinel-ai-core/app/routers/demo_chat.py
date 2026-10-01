@@ -3,7 +3,8 @@ POST /chat
 
 Cookie-session-scoped conversational dispute-intake endpoint for the demo
 application.  Drives the orchestrator step function with an in-memory Gold
-store and the DemoModel (no real LLM required).
+store and the model from ``app.state.model`` (keyword baseline by default,
+no real LLM required).
 
 Per-session state is stored in app.state.memories (InMemoryTools) and
 app.state.conversations (ConversationState), both keyed by the session token.
@@ -20,7 +21,6 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.ai.demo import DemoModel
 from app.observability import Recorder, TurnObserver
 from app.orchestrator.step import Ports, step
 from app.orchestrator.types import (
@@ -37,8 +37,6 @@ from app.tools.bound import SessionBoundLookup
 from app.tools.fake import InMemoryTools
 
 router = APIRouter(tags=["chat"])
-
-_MODEL = DemoModel()
 
 _KIND_MAP = {
     OutcomeKind.QUESTION: "clarification",
@@ -129,7 +127,7 @@ def chat(
     session: Session = Depends(require_session),
 ) -> JSONResponse:
     token: str = request.cookies.get(SESSION_COOKIE, "")
-    trace_id: str = secrets.token_hex(8)
+    trace_id: str = getattr(request.state, "trace_id", None) or secrets.token_hex(8)
 
     memories: dict[str, InMemoryTools] = request.app.state.memories
     conversations: dict[str, ConversationState] = request.app.state.conversations
@@ -156,7 +154,7 @@ def chat(
     ports = Ports(
         idempotency_scope=token[:12],
         tools=bound,
-        model=_MODEL,
+        model=request.app.state.model,
         country=session.country,
         today=ref_date,
         trace_id=trace_id,

@@ -187,7 +187,12 @@ def test_national_id_in_the_message_never_reaches_the_model(logged_in, monkeypat
         def classify(self, message: str) -> str:
             return "Cargo duplicado"
 
-    monkeypatch.setattr("app.routers.chat._MODEL", CapturingModel())
+        def describe(self):  # type: ignore[no-untyped-def]
+            from app.ai.port import ModelInfo
+
+            return ModelInfo(model="capturing", route="test", prompt_version="v1")
+
+    logged_in.app.state.model = CapturingModel()
 
     logged_in.post("/chat", json={"message": "mi DNI es 1098234 y no reconozco un cargo"})
     assert "1098234" not in captured.get("message", "1098234"), (
