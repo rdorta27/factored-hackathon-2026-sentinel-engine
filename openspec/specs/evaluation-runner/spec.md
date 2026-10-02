@@ -7,6 +7,7 @@ running system and computes the component and outcome metrics the brief
 requires, frozen as reproducible evidence.
 
 ## Requirements
+
 ### Requirement: Versioned labelled case set
 
 The harness SHALL read a versioned case set in JSON lines where each case
@@ -69,7 +70,7 @@ In progress).
 
 ### Requirement: System runner replays the loop and reads the logs
 
-The harness SHALL replay each case against `POST /chat` with a test session,
+The harness SHALL replay each case against `POST /api/v1/chat` with a test session,
 inject the declared faults (Gold unavailable, expired session, tool failure), and
 recover the turn's records by `trace_id`. Traces to REQ-0025 (P1, In progress)
 and REQ-0021 (P0, Done).

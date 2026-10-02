@@ -22,12 +22,17 @@ The system SHALL read transaction eligibility through a single seam returning de
 
 ### Requirement: Mock labeled, real deferred
 
-Phase 1 SHALL serve invented rows from an in-memory mock labeled `source=mock`; the DuckDB and Delta Lake adapters SHALL remain a documented later swap with unchanged contracts. Traces to REQ-0032 (P1, Pending) and REQ-0028 (P0, Pending).
+The system SHALL read Gold through the `GoldTransactions` seam with two interchangeable adapters: a DuckDB adapter over the PII-free view `v_service_dispute_eligible_transactions`, used when the view answers a probe at startup, and the in-memory mock otherwise. `SENTINEL_GOLD_SOURCE` (`auto`, `mock`, `duckdb`) SHALL select the adapter, and `GET /api/v1/health` SHALL report which one is active. Confirmations SHALL keep `source=mock` while the dispute store is in memory. Traces to REQ-0032 (P1, In progress), REQ-0028 (P0, In progress), and REQ-0015 (P0, In progress).
 
 #### Scenario: Mock source is visible
 
-- **WHEN** any confirmation is produced in Phase 1
+- **WHEN** any confirmation is produced with the in-memory dispute store
 - **THEN** its source field reads `mock`
+
+#### Scenario: Missing view falls back to the mock
+
+- **WHEN** the Gold view is absent or DuckDB cannot read it
+- **THEN** the app starts on the mock and the health route reports `mock`
 
 ### Requirement: Per-customer isolation on reads
 
@@ -68,11 +73,11 @@ The seam SHALL support listing every transaction of one session customer, ordere
 
 ### Requirement: Session listing endpoint
 
-The submission app SHALL expose `GET /transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, each with date, amount, currency, merchant, status, and the as-of mark. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, Pending), REQ-0032 (P1, Pending), REQ-0039 (P0, Pending), and REQ-0047 (P0, Pending).
+The app SHALL expose `GET /api/v1/transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, and the as-of mark; each row SHALL have the same shape as a chat candidate: reference, date, amount, currency, merchant, status, `eligible`, and `ineligibleKey`. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, In progress), REQ-0032 (P1, In progress), REQ-0039 (P0, In progress), and REQ-0047 (P0, In progress).
 
 #### Scenario: Listing stays inside the session
 
-- **WHEN** a customer requests `GET /transactions`
+- **WHEN** a customer requests `GET /api/v1/transactions`
 - **THEN** the response contains only their own rows and the as-of mark
 
 #### Scenario: Another customer's row is absent
@@ -84,6 +89,11 @@ The submission app SHALL expose `GET /transactions` for the signed-in customer. 
 
 - **WHEN** the listing request includes a customer identifier
 - **THEN** the system rejects the request and does not use that identifier to choose rows
+
+#### Scenario: Ineligible rows say why
+
+- **WHEN** a row is outside the window, reversed, declined, pending, or already disputed
+- **THEN** it has `eligible=false` and a translated `ineligibleKey`
 
 ### Requirement: Rows carry the fraud score
 
