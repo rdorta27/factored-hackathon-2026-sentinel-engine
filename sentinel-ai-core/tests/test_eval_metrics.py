@@ -63,3 +63,47 @@ def test_system_metrics_undefined_cost_without_resolutions() -> None:
     assert result["unsafe_outcomes"]["rate"] == "0/2"
     assert result["escalation_quality"]["missed_transfers"] == []
     assert result["latency_ms"]["p50"] == 15.0
+
+
+def _vcase(case_id: str, base: str, variant: str, intent: str = "charge"):  # type: ignore[no-untyped-def]
+    from eval.cases import Case
+
+    locale = "pt-BR" if variant == "pt-BR" else "es-419"
+    country = {"es-MX": "MX", "es-CO": "CO", "es-AR": "AR", "pt-BR": "MX"}[variant]
+    return Case(
+        id=case_id, locale=locale, country=country, turns=(case_id,), expected_intent=intent,
+        expected_category=None, expected_outcome="clarification", requires_handoff=False,
+        split="held_out", base_id=base, variant=variant,
+    )
+
+
+VARIANT_NAMES = ("es-MX", "es-CO", "es-AR", "pt-BR")
+
+
+def test_breakdown_reports_n_and_interval_per_variant_and_intent() -> None:
+    from eval.intervals import breakdown
+
+    cases = [_vcase(f"b{b}-{v}", f"b{b}", v) for b in range(40) for v in VARIANT_NAMES]
+    # es-AR misses every fourth base; the others are always right.
+    predicted = [
+        "missing" if (c.variant == "es-AR" and int(c.base_id[1:]) % 4 == 0) else "charge" for c in cases
+    ]
+    result = breakdown(cases, predicted)
+    assert result["overall"]["n"] == 160 and result["overall"]["clusters"] == 40
+    assert result["by_variant"]["es-AR"]["accuracy"] == 0.75
+    assert result["by_variant"]["es-MX"]["accuracy"] == 1.0
+    low, high = result["by_variant"]["es-AR"]["interval_95"]
+    assert low < 0.75 < high
+    assert result["by_intent"]["charge"]["n"] == 160
+    # Same seed, same interval.
+    assert breakdown(cases, predicted)["by_variant"]["es-AR"]["interval_95"] == [low, high]
+
+
+def test_thin_breakdown_is_labelled_descriptive() -> None:
+    from eval.intervals import breakdown
+
+    cases = [_vcase(f"b{b}-es-MX", f"b{b}", "es-MX") for b in range(8)]
+    predicted = ["charge", "missing"] * 4
+    block = breakdown(cases, predicted)["by_variant"]["es-MX"]
+    assert block["n"] == 8
+    assert block["descriptive"] is True
