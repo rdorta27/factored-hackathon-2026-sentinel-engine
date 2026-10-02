@@ -89,10 +89,7 @@ def test_without_language_portuguese_text_is_detected() -> None:
 # --- 3. the selector wins over detection ----------------------------------
 
 
-@pytest.mark.parametrize("locale", ["pt-BR"])
-def test_portuguese_selector_with_spanish_text_answers_in_portuguese(
-    locale: str,
-) -> None:
+def test_portuguese_selector_with_spanish_text_answers_in_portuguese() -> None:
     """The response language follows the selector, not the detected one.
 
     The handoff ticket is advisor-only (`/handoffs` answers 403 for a customer),
@@ -101,9 +98,9 @@ def test_portuguese_selector_with_spanish_text_answers_in_portuguese(
     sets from the selector before the ticket is built.
     """
     api = client_for()
-    api.post("/api/v1/chat", json={"message": "quiero una persona", "language": locale})
+    api.post("/api/v1/chat", json={"message": "quiero una persona", "language": "pt-BR"})
     body = api.post(
-        "/api/v1/chat", json={"message": "quiero una persona", "language": locale}
+        "/api/v1/chat", json={"message": "quiero una persona", "language": "pt-BR"}
     ).json()
     assert body["kind"] == "handoff"
     # The ticket travels in the reply package, built after the language is set.
@@ -113,15 +110,16 @@ def test_portuguese_selector_with_spanish_text_answers_in_portuguese(
     assert turn.detected_language == "es-419", "the model still saw Spanish"
 
 
-def test_spanish_regional_selector_maps_to_the_base_on_the_server() -> None:
-    """es-AR is a frontend nuance: the service answers in es-419."""
+@pytest.mark.parametrize("locale", ["es-MX", "es-CO", "es-AR"])
+def test_spanish_regional_selector_maps_to_the_base_on_the_server(locale: str) -> None:
+    """Every Spanish regional is a frontend nuance: the service answers es-419."""
     api = client_for()
-    api.post("/api/v1/chat", json={"message": "quiero una persona", "language": "es-AR"})
+    api.post("/api/v1/chat", json={"message": "quiero una persona", "language": locale})
     body = api.post(
-        "/api/v1/chat", json={"message": "quiero una persona", "language": "es-AR"}
+        "/api/v1/chat", json={"message": "quiero una persona", "language": locale}
     ).json()
     assert body["kind"] == "handoff"
-    assert body["package"]["language"] == "es-419"
+    assert body["package"]["language"] == "es-419", f"{locale} must map to es-419"
     turn = [r for r in api.app.state.recorder.records if r.step == "turn"][-1]
     assert turn.language == "es-419"
 
@@ -160,11 +158,16 @@ def test_the_turn_record_reports_both_languages() -> None:
 
 
 def test_the_answer_follows_the_selector_turn_by_turn() -> None:
-    """Switching the selector mid-conversation switches the answer."""
+    """Switching the selector mid-conversation switches the recorded answer."""
     api = client_for()
     api.post("/api/v1/chat", json={"message": ES_TEXT, "language": "es-419"})
-    pt = api.post("/api/v1/chat", json={"message": "por qué", "language": "pt-BR"}).json()
-    assert pt["language"] if "language" in pt else True  # key is shared, no prose
+    api.post("/api/v1/chat", json={"message": "por que", "language": "pt-BR"})
+    turns = [r for r in api.app.state.recorder.records if r.step == "turn"]
+    # The first turn answers in Spanish; the second follows the switched
+    # selector, while the model keeps detecting the Spanish text.
+    assert turns[0].language == "es-419"
+    assert turns[-1].language == "pt-BR"
+    assert turns[-1].detected_language == "es-419"
 
 
 # --- 4. the frontend sends it on every path ------------------------------

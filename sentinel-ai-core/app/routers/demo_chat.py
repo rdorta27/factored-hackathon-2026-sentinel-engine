@@ -319,11 +319,10 @@ class TurnContext:
     recorder: Recorder
     ref_date: date
     started: float
-    # Language the interface asked for, and what the model detected and what was
-    # answered. Kept apart so the turn record can report both without lying.
-    selected_language: object | None = None
-    detected_language: object | None = None
-    response_language: object | None = None
+    # Language the interface asked for, and what the model detected. Kept apart
+    # so the turn record can report both without lying.
+    selected_language: Language | None = None
+    detected_language: Language | None = None
 
     @property
     def state(self) -> ConversationState:
@@ -453,7 +452,6 @@ def run_turn(turn: TurnContext, turn_input: TextInput | CandidateIdInput) -> tup
         # ticketed or stored.
         turn.state.language = turn.selected_language
         output = replace(output, language=turn.selected_language)
-    turn.response_language = output.language
 
     # For FAILURE (unknown/foreign reference), strip candidate details to avoid
     # disclosing data from another customer's transaction.
