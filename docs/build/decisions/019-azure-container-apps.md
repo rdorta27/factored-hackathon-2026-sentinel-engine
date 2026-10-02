@@ -34,7 +34,7 @@ Configuration: `SENTINEL_DEMO_AUTH=1`, `SENTINEL_SECURE_COOKIES=true`, `SENTINEL
 
 ## Consequences
 
-- The link serves labeled mock data and, until decision 10 lands, the keyword baseline; the submission says so ([what the public link runs](../../rationale/public-link.md)).
+- The link serves labeled mock data and router_v2 with a keyword-baseline fallback; the submission says so ([what the public link runs](../../rationale/public-link.md)).
 - An idle app scales to zero; the first visit after that waits a few seconds and finds an empty database, so the demo user logs in again.
 - [Cost](../cost.md) records the Azure lines (registry plus free grant) instead of a free Hugging Face tier.
 - Production stays on Azure, now one configuration away from the demo itself ([path to production](../../architecture/specification.md#path-to-production)).

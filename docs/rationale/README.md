@@ -14,7 +14,7 @@ This folder is not a decision log. [Decisions](../build/decisions/) record *what
 | [Router model selection](router-model-selection.md) | Open-weight models chosen per route by a rule fixed before measuring | 2, 4 |
 | [What the model never receives](model-data-minimization.md) | The model gets the customer's words only; ids, personal data and the fraud score stay in code | 3 |
 | [One app, state outside the process](one-app-state-outside.md) | One FastAPI app and one API; sessions, conversation and cases survive a restart | 2 |
-| [What the public link runs](public-link.md) | The deployed demo runs the keyword baseline and the labeled Gold mock, and says so | 5 |
+| [What the public link runs](public-link.md) | The deployed demo runs the measured router with a baseline fallback and the labeled Gold mock, and says so | 5 |
 | [Repository history](repository-history.md) | An old commit names the data bucket; we did not rewrite history, and why | 5 |
 
 ## How to write a page
