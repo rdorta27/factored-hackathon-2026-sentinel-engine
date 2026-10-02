@@ -77,3 +77,12 @@ Evidence: [`2024Q4-select-v1`](../../../evidence/evaluation-runs/2024Q4-select-v
 - **Observation, not a rule change:** on these cases, GLM 5.3 Flash alone (0.7805) beat every cheap-plus-strong pair. Routing to a larger model did not help.
 - **Call settings fixed by the token probe:** reasoning effort `low` and a 400-token output cap. At 200 tokens and no reasoning setting, 32 of 154 gpt-oss replies came back empty; those probe recordings were discarded before any selection run.
 - **Spend:** USD 0.055 (select-v1) and USD 0.063 (select-v2), plus about USD 0.03 for the two probes.
+
+### Served configuration (added 2026-10-02)
+
+The app serves the pair chosen above, from `app/ai/serving.py`, when `SENTINEL_LLM_BASE_URL` and `SENTINEL_LLM_API_KEY` are set; without them it serves the keyword baseline.
+
+- **Same as eval-v7:** GLM 5.3 Flash on every route, prompt `v2` with the eight development examples (a copy in `app/ai/examples_v2.json`, kept equal to the eval loader by a test and checked at startup), route rule `heuristic`, reasoning effort `low`, a 400-token cap, temperature 0.
+- **Fallback:** a model call that fails after its retries (`ModelUnavailable`, including an invalid JSON reply) is answered by the keyword baseline for that turn, with no error to the customer. The turn log records the baseline as the model and `fallback` as the route. A fallback turn has the baseline's accuracy (0.54 on the sealed set).
+- **Timeouts:** 6 s and one retry per call, so a failing model costs about 12 s before the baseline answers. eval-v7 recorded with 10 s and two retries; those two settings change latency, not the replies.
+- **A case eval-v7 did not measure:** a greeting alone is classified out of scope. The loop answers it with an offer and hands off on the third out-of-scope turn in a row; the classification gap is the subject of [router v3](../../../team/router-v3-plan.md).

@@ -30,6 +30,9 @@ APP = Path(__file__).parents[2] / "app"
         ("document", "mi cedula es 1023456789 y no reconozco un cargo"),
         ("phone", "mi telefono es +54 11 5555 1234 y no reconozco un cargo"),
         ("email", "mi correo es ana@example.com y no reconozco un cargo"),
+        ("name", "Hola, me llamo Karl y no reconozco un cargo"),
+        ("name", "Buenas, soy Pedro Gómez, necesito ayuda"),
+        ("name", "Oi, meu nome é João da Silva e não reconheço uma cobrança"),
     ],
 )
 def test_each_identifier_type_is_masked(kind: str, message: str) -> None:
@@ -163,14 +166,16 @@ def test_understand_is_called_once_and_after_masking() -> None:
     The count is not the invariant: `step.py` may legitimately call the model
     from more than one branch (the confirm box asks for a person request). What
     matters is that no model call happens anywhere else, and that the only text
-    it can receive entered through the masker.
+    it can receive entered through the masker. The one other file is the
+    per-turn fallback wrapper in `app/ai/serving.py`: it only forwards the
+    arguments `step.py` passed, to the router or to the baseline.
     """
     calls = []
     for path in APP.rglob("*.py"):
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if re.search(r"\.understand\(", line):
                 calls.append(path.name)
-    assert set(calls) == {"step.py"}, f"model called outside step.py: {sorted(set(calls))}"
+    assert set(calls) == {"step.py", "serving.py"}, f"model called outside step.py: {sorted(set(calls))}"
 
     step_source = (APP / "orchestrator" / "step.py").read_text(encoding="utf-8")
     assert "ports.model.understand(" in step_source
@@ -192,3 +197,37 @@ def test_understand_is_called_once_and_after_masking() -> None:
 )
 def test_portuguese_identifiers_are_masked(kind: str, message: str) -> None:
     assert MARKERS[kind] in mask(message)
+
+
+# --- self-introduced names ---------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("message", "expected"),
+    [
+        ("Hola, me llamo Karl", "Hola, me llamo [NAME]"),
+        ("hola me llamo karl, no reconozco un cargo", "hola me llamo [NAME], no reconozco un cargo"),
+        ("Mi nombre es Ana María Pérez y no reconozco", "Mi nombre es [NAME] y no reconozco"),
+        ("Soy Karl", "Soy [NAME]"),
+        ("Meu nome é João da Silva, quero ajuda", "Meu nome é [NAME], quero ajuda"),
+        ("oi, eu sou a Marta", "oi, eu sou a [NAME]"),
+        ("soy María del Carmen López, ayuda", "soy [NAME], ayuda"),
+    ],
+)
+def test_an_introduced_name_is_masked(message: str, expected: str) -> None:
+    assert mask(message) == expected
+
+
+@pytest.mark.parametrize(
+    "message",
+    [
+        "Soy el contador de mi jefe, enséñame los cargos de su tarjeta.",
+        "Necesito un comprobante de que soy cliente de usted",
+        "soy de auditoría interna",
+        "Soy Cliente desde 2020",
+        "no reconozco el cargo de Tienda Lumbre",
+        "Hola, necesito ayuda con un cargo de Karl's Cafe",
+    ],
+)
+def test_a_name_is_never_guessed_without_an_introduction(message: str) -> None:
+    assert mask(message) == message

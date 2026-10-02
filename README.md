@@ -4,7 +4,7 @@ Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Prototype under active development. Status per requirement is tracked in Requirements coverage below; open decisions are marked as such.
 
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and the keyword baseline; it runs one replica and scales to zero when idle, so the first visit may take a few seconds and sessions do not survive a restart ([decision 019](docs/build/decisions/019-azure-container-apps.md)).
+**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and router_v2 (a prompted GLM 5.3 Flash) with the keyword baseline as a per-turn fallback; it runs one replica that stays up until the awards, and sessions do not survive a redeploy or restart ([decision 019](docs/build/decisions/019-azure-container-apps.md)).
 
 ## What we are building
 
@@ -22,12 +22,16 @@ The submission runs the same code with a few documented mocks (test session, SQL
 
 ## Quickstart
 
-Run the service (from the repository root):
+Install and run the service (Python 3.12 or newer, from the repository root):
 
 ```bash
 cd sentinel-ai-core
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
 uvicorn app.main:app
 ```
+
+Without a model configured the service serves the keyword baseline. To serve the measured router, copy `.env.example` to `.env`, fill in the `SENTINEL_LLM_*` values (see [`.env.example`](.env.example) and [the secrets guide](sentinel-ai-core/README.md)), load it with `set -a; source ../.env; set +a` and start `uvicorn` again; `GET /api/v1/health` shows the active model. To publish to Azure, see [`deploy/azure/README.md`](deploy/azure/README.md).
 
 Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`). These credentials are false and test-only.
 
@@ -67,7 +71,7 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 | Status | Requirements |
 |---|---|
 | **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate (fraud and high amount per currency) · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person, also with the confirm box open · REQ-0048 decision order. Demo: REQ-0012 Spanish and Portuguese · REQ-0010 ambiguous · REQ-0011 human · REQ-0016 learned component vs baseline ([v7](evidence/evaluation-runs/2024Q4-eval-v7/summary.json)) · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261002T120107Z/summary.json)) · REQ-0028 reproducible setup · REQ-0047 no personal data to the model (free text masked) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0018 incremental processing · REQ-0031 sources labeled by origin ([inventory](docs/data_inventory.md)) · REQ-0053 sizing ([capacity](docs/sizing_capacity.md)) · REQ-0054 no external data · Deployment: REQ-0035 [live link](docs/requirements/delivery.md#req-0035) |
-| **In progress** | Normal demo case on real Gold (REQ-0009) · serving the measured router (decision 016; the comparison is done, the public link still uses the keyword baseline) · pipeline quality report (nulls, orphans, late arrivals) and Gold read on real data in the app (REQ-0015) · limitations (REQ-0013, REQ-0030) · deliverables: slides, video |
+| **In progress** | Normal demo case on real Gold (REQ-0009) · router_v2 served with a baseline fallback (decision 016; code and tests done, remote check of the public link recorded in REQ-0035) · pipeline quality report (nulls, orphans, late arrivals) and Gold read on real data in the app (REQ-0015) · limitations (REQ-0013, REQ-0030) · deliverables: slides, video |
 
 Status per requirement and per type: [requirements](docs/requirements/requirements.md#status-by-priority).
 
@@ -77,7 +81,7 @@ What the prototype does not do, stated up front (REQ-0013, REQ-0030; capacity in
 
 - **Data:** synthetic and in Spanish only; accounts only in Mexico, Colombia and Argentina, and Mexican accounts only in USD. The public link runs on a labeled mock, not on real Gold; the DuckDB adapter exists but the served app has not been read against real data ([REQ-0015](docs/requirements/requirements.md)).
 - **Languages:** the Portuguese (`pt-BR`) cases are model-written, with no native-speaker review, and variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). The three demo lines were back-translated by a second model. A Colombian check accepted the es-CO lines after the peso was named mexicano. Mexican and Argentine lines were checked by that model, not by a speaker. A 2% replay of the 2024Q4 transcripts, on the development side of the 70/30 time split, handed off all 280 times; the sample had 2 prefixes and no customer data was stored ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)). Those transcripts are templates, not customer language. Pix hands off. `extrato` and `fatura` stay charge words because the sealed set uses them inside charge inquiries.
-- **Model:** the served app uses the keyword baseline. The prompted router is measured offline and the served app does not read the `SENTINEL_LLM_*` variables yet (decision 10 is open).
+- **Model:** the app serves router_v2 when `SENTINEL_LLM_*` are set, the configuration measured in [`2024Q4-eval-v7`](evidence/evaluation-runs/2024Q4-eval-v7/summary.json): 0.98 intent accuracy against 0.54 for the keyword baseline on the sealed set (n = 280), latency p50 1079 ms and p95 4475 ms for the router. When the model fails, that turn is answered by the baseline, which is the 0.54 level, and the turn log marks it. A greeting alone or small talk is classified as out of scope by the model (the sealed set has no such case); the chat answers it with an offer and hands off only on the third turn in a row. The router lowers risk, not effort: policy, confirmations and handoffs stay in code ([serving](sentinel-ai-core/app/ai/serving.py)).
 - **State:** SQLite, one instance. On the public link it sits on the container's ephemeral disk, so a restart or scale-to-zero loses sessions and cases. Login-attempt and write-rate counters are per process.
 - **Privacy:** free customer text is masked before the model, by pattern; personal data outside those patterns is not detected.
 - **Safety evidence:** the adversarial set has 36 attacks with `0/36` unsafe outcomes, but three have no defense yet (A3, A4b, D4) and three pass only because the stand-in model is the keyword baseline ([run](evidence/adversarial/20261002T120107Z/summary.json)).

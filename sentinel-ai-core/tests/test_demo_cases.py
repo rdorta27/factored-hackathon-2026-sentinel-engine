@@ -93,10 +93,14 @@ def test_ambiguous_case_asks_and_does_not_open(text: str, language: Language) ->
         ("qual é o meu saldo", Language.PT_BR),
     ],
 )
-def test_unsupported_case_offers_handoff(text: str, language: Language) -> None:
+def test_unsupported_case_offers_twice_then_hands_off(text: str, language: Language) -> None:
     model = FakeModel()
     tools, ports = _ports(model)
     state = ConversationState(language=language)
+    first = step(TextInput(text), state, ports)
+    assert first.kind is OutcomeKind.OFFER
+    assert first.reason == "out_of_scope.ask"
+    assert step(TextInput(text), state, ports).kind is OutcomeKind.OFFER
     result = step(TextInput(text), state, ports)
     assert result.kind is OutcomeKind.HANDOFF
     assert result.reason == "out_of_scope"

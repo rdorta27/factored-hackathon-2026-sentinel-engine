@@ -70,6 +70,7 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 # Policy rule or orchestrator reason → translation key shown to the customer.
 _TEXT_KEYS = {
     "person.ask": "person.ask",
+    "out_of_scope.ask": "out_of_scope.ask",
     "status.reversed": "status.reversed",
     "status.declined": "status.declined",
     "status.pending": "status.pending",

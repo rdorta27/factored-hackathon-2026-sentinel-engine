@@ -82,7 +82,7 @@ Record which model, prompt version, parameters and metrics produced each result,
 
 **Depends on:** [REQ-0016](#req-0016). Tracks the learned component's versions.
 
-**Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); the served app records the model, route (`fallback` when the baseline answered) and prompt version of each turn (`tests/test_model_serving.py`). Status stays In progress until the public link is checked remotely.
 
 The frozen runs are the tracking record; no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
 

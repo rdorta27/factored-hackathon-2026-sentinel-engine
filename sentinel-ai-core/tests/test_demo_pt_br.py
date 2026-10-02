@@ -103,15 +103,15 @@ def test_probes_lock_baseline_behavior() -> None:
         assert brl[0]["candidate"]["currency"] == "MXN"
 
     saldo = _replay(by_id["probe-saldo"])
-    assert saldo[0]["kind"] == "handoff"
-    assert saldo[0]["reason_key"] == "handoff.outOfScope"
+    assert saldo[0]["kind"] == "text"
+    assert saldo[0]["message_key"] == "out_of_scope.ask"
 
 
 def test_pix_abstains_and_statement_words_show_account_charges() -> None:
     by_id = {row["id"]: row for row in _load()}
     pix = _replay(by_id["probe-pix"])
-    assert pix[0]["kind"] == "handoff"
-    assert pix[0]["reason_key"] == "handoff.outOfScope"
+    assert pix[0]["kind"] == "text"
+    assert pix[0]["message_key"] == "out_of_scope.ask"
     assert DemoModel().understand("cargo en PIXELMART", []).kind is UnderstandKind.CHARGE
     for case_id in ("probe-extrato", "probe-fatura"):
         replies = _replay(by_id[case_id])

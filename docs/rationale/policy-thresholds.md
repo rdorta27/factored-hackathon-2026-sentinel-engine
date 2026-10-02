@@ -9,7 +9,7 @@ Two handoff rules send a dispute to an advisor:
 - **Suspected fraud:** the customer says the charge was not theirs (`fraud.claim`), or the charge's `fraud_score` is above the threshold (`fraud.score`).
 - **High amount:** the charge amount is above the threshold (`amount.high`).
 
-Both thresholds are set per account country **and** per charge currency. They are a **synthetic policy** written by the team; a bank replaces them by configuration.
+Both thresholds are set per account country **and** per charge currency. They are a **synthetic policy** written by the team; a bank replaces them by configuration. The thresholds are one part of it: the [policy sources](policy-sources.md) page inventories the rest (window, statuses, estimated time) and where real values come from.
 
 ## Why
 
