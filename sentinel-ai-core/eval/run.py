@@ -146,7 +146,16 @@ def _route_simulation(cases: list[Case], single: dict[str, dict]) -> dict:
     return out
 
 
-def select(run_id: str, record: bool = False, cap_usd: float = DEFAULT_CAP_USD, freeze: bool = True) -> dict:
+def select(
+    run_id: str,
+    record: bool = False,
+    cap_usd: float = DEFAULT_CAP_USD,
+    freeze: bool = True,
+    extra_strong: tuple[str, ...] = (),
+) -> dict:
+    """``extra_strong`` adds the larger strong models 016 measures only when the strong candidate fails."""
+    global STRONG_CANDIDATES
+    STRONG_CANDIDATES = tuple(dict.fromkeys(STRONG_CANDIDATES + extra_strong))
     cases = load_dir(CASES_DIR)
     held = sorted(c.id for c in cases if c.split != "development")
     if held:
@@ -353,9 +362,10 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("run_id")
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
+    parser.add_argument("--strong", action="append", default=[], help="extra strong candidate (select only)")
     args = parser.parse_args(argv)
     if args.command == "select":
-        summary = select(args.run_id, args.record, args.cap)
+        summary = select(args.run_id, args.record, args.cap, extra_strong=tuple(args.strong))
         print(f"[select] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     elif args.command == "measure":
         summary = measure(args.run_id, args.record, args.cap)
