@@ -16,12 +16,28 @@ def test_missing_label_fails_naming_the_id() -> None:
 
 
 def test_splits_share_no_case_id() -> None:
-    cases = load_dir(CASES_DIR)
+    cases = load_dir(CASES_DIR) + load_dir(CASES_DIR / "sealed")
     assert cases, "the case set must not be empty"
     check_splits(cases)
-    dev = {c.id for c in cases if c.split == "development"}
-    held = {c.id for c in cases if c.split == "held_out"}
-    assert dev and held
+    assert {c.id for c in cases if c.split == "development"}
+
+
+def test_working_dir_holds_no_held_out_case() -> None:
+    # Held-out cases live only under eval/cases/sealed/, sealed by hash.
+    assert not [c.id for c in load_dir(CASES_DIR) if c.split == "held_out"]
+
+
+def test_retired_held_out_cases_are_not_sealed_again() -> None:
+    import json
+
+    retired = json.loads((CASES_DIR / "retired.json").read_text(encoding="utf-8"))["cases"]
+    assert len(retired) == 10
+    sealed = load_dir(CASES_DIR / "sealed")
+    ids = {c.id for c in sealed}
+    texts = {turn.strip().lower() for c in sealed for turn in c.turns}
+    for case in retired:
+        assert case["id"] not in ids
+        assert not {t.strip().lower() for t in case["turns"]} & texts
 
 
 def test_both_locales_and_all_intents_present() -> None:
