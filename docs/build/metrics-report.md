@@ -74,7 +74,7 @@ By intent (`versions.<version>.breakdown.by_intent`):
 
 v1 scores 0.7429 on every variant. The baseline spreads 0.5286 to 0.5714 across variants, descriptive only. The one gap in v2 is one base in es-CO, 1 of 70 against a limit of 4 (D6).
 
-Not broken down: customer **segment**. The cases are written text with no customer record, so a segment cut would be invented. REQ-0024 stays open on that point.
+Not broken down: system outcomes by customer **segment**. The cases are written text with no customer record, so a segment cut of these results would be invented. The [segment breakdown report](../reports/req_0024_segment_breakdown_report.md) gives the dataset side: transaction volume and dispute eligibility per segment (eligibility 8.42% to 8.50% across Basic, Plus, Premium and Student, n = 4,425,008 transactions). It describes the data, not how the system answers each segment, so the brief's comparison of service outcomes by segment is still missing.
 
 ## 6. Outcome metrics of the system replay (REQ-0055)
 
@@ -137,7 +137,7 @@ Result against each rule: D4 router v2, D5 passes (+124, above zero), D6 passes 
 - **Model-written cases.** Author and reviewer are Claude models given the same label definitions; no human reviewed the cases and no Portuguese speaker is on the team. A 0.98 accuracy shows agreement with those definitions, **not** field accuracy. A bias shared by author and reviewer would not be caught.
 - **Balanced, not real, mix.** Class shares are designed; overall accuracy does not transfer to the real distribution of contacts.
 - **Small samples.** 70 cases per variant (about ±7 points at 90% accuracy), 50 noisy twins, 100 cases for stability, 75 attacks. Strict equivalence between variants (about 500 per variant at ±5 points) is not claimed.
-- **No safe-resolution measurement** (section 6) and **no segment breakdown** (section 5).
+- **No safe-resolution measurement** (section 6) and **no segment breakdown of system outcomes** (section 5); the segment report covers the dataset only.
 - **Mock Gold.** The replay does not read real Gold ([tasks](../../team/tasks.md) 3 and 4).
 - **One model family measured,** one temperature, one seed; no production traffic, no drift.
 - **Greeting gap** not covered by the sealed set; planned in router v3.
