@@ -30,6 +30,11 @@ def var_dir() -> Path:
     return Path(__file__).resolve().parents[2] / "var"
 
 
+def _touch_private(path: Path) -> None:
+    """Create the log owner-only (0600); the turn log is read by the operator only."""
+    os.close(os.open(path, os.O_CREAT | os.O_APPEND | os.O_WRONLY, 0o600))
+
+
 class Recorder:
     """Collects records in memory and appends them as JSON lines to a file."""
 
@@ -41,6 +46,7 @@ class Recorder:
         self._records: list[StepRecord] = []
         if self._path is not None:
             self._path.parent.mkdir(parents=True, exist_ok=True)
+            _touch_private(self._path)
 
     @staticmethod
     def _resolve_salt(explicit: str | None) -> tuple[str, bool]:
@@ -58,7 +64,9 @@ class Recorder:
         generated = secrets.token_hex(16)
         try:
             salt_file.parent.mkdir(parents=True, exist_ok=True)
-            salt_file.write_text(generated, encoding="utf-8")
+            fd = os.open(salt_file, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(generated)
         except OSError:
             logger.warning("%s is unset; using an ephemeral salt for session_ref", SALT_ENV)
             return generated, True

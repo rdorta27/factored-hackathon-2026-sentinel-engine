@@ -26,7 +26,8 @@ import os
 import secrets
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, Response
+from sqlalchemy import text
 
 from app.ai.port import ModelPort
 from app.session.router import SESSION_COOKIE  # re-exported for test imports
@@ -55,7 +56,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     from app.routers.ui import mount_ui
     from app.session.audit import AuditLogger
     from app.session.clock import reference_date as get_reference_date
-    from app.session.limits import AttemptTracker
+    from app.session.limits import AttemptTracker, RateLimiter
     from app.session.router import router as session_router
     from app.session.service import SessionService
     from app.session.store import InMemorySessionStore, JsonUserRepository, SqliteSessionStore
@@ -70,6 +71,18 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
         request.state.trace_id = secrets.token_hex(8)
         response = await call_next(request)
         response.headers["X-Trace-Id"] = request.state.trace_id
+        # Transport hardening: clickjacking, MIME sniffing and referrer leaks
+        # are mitigated for every response, including the served page.
+        # HSTS is only honored on HTTPS; on local HTTP it is ignored.
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; connect-src 'self'; frame-ancestors 'deny'; "
+            "base-uri 'self'; form-action 'self'"
+        )
         return response
 
     recorder = Recorder()
@@ -77,6 +90,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     audit = AuditLogger(recorder)
     demo_auth = os.environ.get("SENTINEL_DEMO_AUTH", "0") == "1"
     users = JsonUserRepository(Path(os.environ.get("SENTINEL_USERS_PATH") or _FIXTURE_PATH), demo_roles=demo_auth)
+    engine = None
     state_backend = (state_backend or os.environ.get("SENTINEL_STATE_BACKEND", "sqlite")).lower()
     if state_backend == "memory":
         sessions = InMemorySessionStore()
@@ -92,6 +106,8 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
         cases = SqliteCaseRepository(engine)
     # Login attempts stay in memory: per process, documented limit with several workers.
     attempts = AttemptTracker()
+    # Write budget for chat/disputes, also per process (same documented limit).
+    write_limiter = RateLimiter()
     service = SessionService(users, sessions, attempts, audit)
     gold, gold_source = select_gold(as_of=ref_date.isoformat())
 
@@ -99,10 +115,12 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     application.state.audit = audit
     application.state.model = model if model is not None else DemoModel()
     application.state.session_service = service
+    application.state.write_limiter = write_limiter
     application.state.gold = gold
     application.state.gold_source = gold_source
     application.state.reference_date = ref_date
     application.state.state_backend = state_backend
+    application.state.engine = engine
     application.state.conversation_store = conversation_store
     application.state.cases = cases
     # In memory, the live conversations dict (tests count threads through it).
@@ -113,9 +131,20 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     ops = APIRouter(prefix="/api/v1", tags=["ops"])
 
     @ops.get("/health")
-    def health() -> dict[str, str]:
+    def health(response: Response) -> dict[str, str]:
+        # Strong health: the state store must answer, not only the process.
+        # A probe that only sees "ok" would keep routing traffic to an
+        # instance whose database file is gone or unwritable.
+        status = "ok"
+        if application.state.engine is not None:
+            try:
+                with application.state.engine.connect() as connection:
+                    connection.execute(text("SELECT 1"))
+            except Exception:  # noqa: BLE001 - any store failure means not ready
+                status = "unavailable"
+                response.status_code = 503
         return {
-            "status": "ok",
+            "status": status,
             "gold_source": gold_source,
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),

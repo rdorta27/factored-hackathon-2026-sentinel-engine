@@ -78,6 +78,9 @@ class ConversationState:
     # Last system question codes (e.g. "missing", "which_charge"), newest last,
     # capped at two: the system-side half of the model digest (REQ-0001).
     sys_questions: list[str] = field(default_factory=list)
+    # Reference of the ticket filed for this conversation. A conversation files
+    # at most one: later turns that hand off again point at the same ticket.
+    handoff_reference: str | None = None
 
 
 @dataclass(frozen=True)

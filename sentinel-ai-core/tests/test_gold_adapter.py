@@ -151,7 +151,9 @@ def test_screen_and_engine_share_an_environment_reference_date(
 
 
 def test_reference_is_never_rendered_by_the_frontend() -> None:
-    """`reference` may travel in the JSON, but app.js must not paint it."""
+    """`reference` may travel in the JSON, but app.js must not paint the
+    internal transaction id. The handoff ticket reference (`HO-…`) is
+    customer-facing and does get painted, under `field_reference`."""
     source = (STATIC / "app.js").read_text(encoding="utf-8")
     assert "selected_reference: candidate.reference" in source
     offenders = []
@@ -161,8 +163,8 @@ def test_reference_is_never_rendered_by_the_frontend() -> None:
             continue
         if "selected_reference" in stripped:
             continue
-        if "field_referenceDate" in stripped:
-            continue  # the reference DATE is customer-facing and translated
+        if "field_reference" in stripped:
+            continue  # the reference DATE and the handoff ticket reference are translated
         if "el(" in stripped or "textContent" in stripped:
             offenders.append(stripped)
     assert offenders == [], f"reference rendered into text: {offenders}"

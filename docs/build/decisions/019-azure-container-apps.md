@@ -21,7 +21,7 @@ The service itself did not change: one process (`python -m uvicorn app.main:app`
 
 ## Decision
 
-Azure Container Apps, one container, `minReplicas 0` and `maxReplicas 2`, image stored in Azure Container Registry (Basic).
+Azure Container Apps, one container, `minReplicas 0` and `maxReplicas 1` (amended 10/2: SQLite is per instance, so a second replica would not know the first one's sessions), image stored in Azure Container Registry (Basic).
 
 - **Aligned with [001](001-azure-platform.md):** the submission runs on the platform already chosen for production; the 012 exception exists no more.
 - **Works when an evaluator opens it:** scale-to-zero wakes in seconds, not Render's minute, and the free grant covers the demo's traffic.

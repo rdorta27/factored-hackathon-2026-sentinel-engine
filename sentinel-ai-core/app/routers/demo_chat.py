@@ -201,6 +201,23 @@ def _to_reply(
 ) -> ChatReply:
     kind = output.kind
     if kind is OutcomeKind.QUESTION:
+        if state.pending_confirmation is not None:
+            # A message that is not a person request does not confirm, but the
+            # box is still open: show it again instead of a confusing "which
+            # charge", so the customer can press the button (REQ-0006).
+            pending = next(
+                (
+                    item
+                    for item in state.candidates
+                    if item.candidate_id == state.pending_confirmation.candidate_id
+                ),
+                None,
+            )
+            if pending is not None:
+                return ConfirmBox(
+                    message_key="confirmCharge",
+                    candidate=candidate_view(pending, session.country, ref_date),
+                )
         if not state.candidates:
             # Nothing shown yet: offer the customer's own charges as chips.
             state.candidates = bound.lookup_transactions()
@@ -278,6 +295,21 @@ class TurnContext:
     @property
     def state(self) -> ConversationState:
         return self.stored.state
+
+
+def rate_limited(request: Request, session: Session) -> JSONResponse | None:
+    """429 when the session exhausted its write budget, else None.
+
+    Shared by ``POST /api/v1/chat`` and ``POST /api/v1/disputes``: every
+    authenticated write costs one unit, so a script cannot burn unbounded
+    model calls or fill the case store from one session.
+    """
+    limiter = getattr(request.app.state, "write_limiter", None)
+    if limiter is None or limiter.allow(f"write:{session.token}"):
+        return None
+    trace_id: str = getattr(request.state, "trace_id", None) or secrets.token_hex(8)
+    request.app.state.audit.emit("rate_limited", trace_id)
+    return JSONResponse(status_code=429, content={"detail": "Too many requests"})
 
 
 def open_turn(request: Request, session: Session) -> TurnContext:
@@ -534,9 +566,18 @@ def finish_turn(
             if candidate is not None:
                 update["verified_facts"] = _verified_facts(candidate, turn.session.country, turn.ref_date)
         reply = reply.model_copy(update={"package": reply.package.model_copy(update=update)})
-    request.app.state.conversation_store.save(turn.token, stored)
+    new_ticket = False
     if isinstance(reply, Handoff):
-        _save_ticket(request, turn, reply)
+        if turn.state.handoff_reference is None:
+            turn.state.handoff_reference = reply.reference
+            new_ticket = True
+        else:
+            # Already handed off: the advisor has the case, so repeated turns do
+            # not file another ticket and keep pointing at the first one.
+            reply = reply.model_copy(update={"reference": turn.state.handoff_reference})
+    request.app.state.conversation_store.save(turn.token, stored)
+    if new_ticket:
+        _save_ticket(request, turn, reply)  # type: ignore[arg-type]
     if isinstance(reply, ErrorReply):
         outcome = "failed"
     elif output is None:
@@ -565,6 +606,9 @@ def chat(
     request: Request,
     session: Session = Depends(require_customer),
 ) -> JSONResponse:
+    blocked = rate_limited(request, session)
+    if blocked is not None:
+        return blocked
     turn = open_turn(request, session)
 
     if body.selected_reference is not None:

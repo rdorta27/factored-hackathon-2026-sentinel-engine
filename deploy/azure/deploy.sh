@@ -4,7 +4,11 @@ set -euo pipefail
 # Builds the Sentinel Engine image in Azure Container Registry and deploys
 # it to Azure Container Apps. Requires an active Azure login (az login) on
 # the target subscription. Reads SENTINEL_SESSION_SALT from the repo .env
-# when set; otherwise generates a random one per run.
+# when set; otherwise generates a random one per run. The LLM router variables
+# (SENTINEL_LLM_*) are read from the same .env and passed through when set; the
+# API key goes in as a secret. The served app does not read them yet (decision
+# 10 is open): they reach the container and are ignored. State is SQLite inside the container, so the app
+# runs a single replica and loses sessions and cases on restart.
 
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
@@ -59,6 +63,24 @@ if [[ -z "$salt" ]]; then
 	salt="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
 fi
 
+env_value() {
+	sed -n "s/^$1=//p" "$REPO_DIR/.env" | tail -n 1
+}
+
+env_vars=(SENTINEL_SECURE_COOKIES=true SENTINEL_SESSION_SALT=secretref:session-salt)
+secrets=("session-salt=$salt")
+llm_key="$(env_value SENTINEL_LLM_API_KEY)"
+if [[ -n "$llm_key" ]]; then
+	secrets+=("llm-api-key=$llm_key")
+	env_vars+=(SENTINEL_LLM_API_KEY=secretref:llm-api-key)
+fi
+for name in SENTINEL_LLM_BASE_URL SENTINEL_LLM_CHEAP_MODEL SENTINEL_LLM_STRONG_MODEL \
+	SENTINEL_LLM_DEFAULT_MODEL SENTINEL_LLM_PROMPT_VERSION SENTINEL_LLM_ROUTE_RULE \
+	SENTINEL_LLM_REASONING_EFFORT SENTINEL_LLM_TIMEOUT_S SENTINEL_LLM_MAX_RETRIES; do
+	value="$(env_value "$name")"
+	[[ -n "$value" ]] && env_vars+=("$name=$value")
+done
+
 acr_user="$(az acr credential show --name "$ACR_NAME" --query username -o tsv)"
 acr_pass="$(az acr credential show --name "$ACR_NAME" --query 'passwords[0].value' -o tsv)"
 
@@ -74,12 +96,12 @@ az containerapp create \
 	--ingress external \
 	--transport auto \
 	--min-replicas 0 \
-	--max-replicas 2 \
+	--max-replicas 1 \
 	--registry-server "$ACR_NAME.azurecr.io" \
 	--registry-username "$acr_user" \
 	--registry-password "$acr_pass" \
-	--secrets "session-salt=$salt" \
-	--env-vars SENTINEL_SECURE_COOKIES=true SENTINEL_SESSION_SALT=secretref:session-salt \
+	--secrets "${secrets[@]}" \
+	--env-vars "${env_vars[@]}" \
 	--output none
 
 fqdn="$(az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \

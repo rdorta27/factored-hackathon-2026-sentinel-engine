@@ -25,6 +25,9 @@ MAX_ATTEMPTS = 3
 OPEN_ACTION = "open_dispute"
 # At most two clarification rounds: the third vague turn hands off (REQ-0001).
 MAX_CLARIFICATIONS = 2
+# The stored turn window is bounded like the history: the model only reads the
+# last few turns, so an unbounded list would grow the session state forever.
+MAX_TURNS = 50
 
 
 @dataclass
@@ -175,6 +178,8 @@ def _person_request(state: ConversationState, ports: Ports) -> TurnOutput:
 
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
     state.turns.append(turn.text)
+    if len(state.turns) > MAX_TURNS:
+        del state.turns[: len(state.turns) - MAX_TURNS]
     if state.pending_confirmation is not None:
         # The box swallows everything except a person request. The model is not
         # consulted here for anything else, so a failure cannot change this.

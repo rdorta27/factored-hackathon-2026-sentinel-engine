@@ -39,3 +39,19 @@ def test_agent_control_is_two_step_and_session_is_not_stored() -> None:
 def test_mask_keeps_only_the_last_four() -> None:
     assert "****" in APP_JS
     assert "slice(-4)" in APP_JS
+
+
+def test_transactions_panel_marks_ineligible_and_paints_http_errors() -> None:
+    """E2E: the panel only offers eligible charges, and a failed call is not
+    rendered as a bot reply (it used to paint the JSON error body as text)."""
+    assert "!tx.eligible" in APP_JS
+    assert "ineligibleKey" in APP_JS
+    assert "renderError" in APP_JS
+    assert "!response.ok" in APP_JS
+    assert "tooManyRequests" in APP_JS
+
+
+def test_handoff_card_shows_the_reference() -> None:
+    assert 't("field_reference")' in APP_JS
+    assert "body.reference" in APP_JS
+

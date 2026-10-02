@@ -46,6 +46,17 @@
 - No credentials, API keys, or restricted data in the repo. `.gitignore` and `.env` from the **first commit**: anything that enters git history stays exposed even if we delete it later.
 - The deployed link is an attack surface (evaluators may try injection). We use rate limits, a spending cap, and test sessions.
 
+### Controls on the served app (10/2 hardening)
+
+| Area | Control |
+|---|---|
+| Cookie, headers, CSRF | Session cookie with the `Secure` flag by default (`SENTINEL_SECURE_COOKIES`), HSTS, `nosniff`, `X-Frame-Options: DENY`, no-referrer and a strict Content-Security-Policy on every response; CSRF checks on writes |
+| Rate limit and input | Per-session write budget on chat and disputes (429), login-attempt throttling, and a strict chat input contract (unknown fields are a 422) |
+| Injection | Customer text is data: masked at the boundary, never merged into instructions; the "this charge is not mine" claim is gated |
+| Sessions and state | Conversation state is deleted on logout and expiry; the stored turn window is bounded; one handoff ticket per conversation |
+| Files | The SQLite file, the turn log and the dev salt are `0600`; a folder the app creates is `0700`; the container runs as a non-root user |
+| Health | `/api/v1/health` queries the state store and answers 503 when it fails |
+
 ### History review (REQ-0034, 10/1)
 
 The full history was scanned before submission. `gitleaks git --redact` covered **the 246 commits of the history at that point and reported 0 findings**; a manual review of the same history found no AWS key shapes (`AKIA…`), no private key material, and no real passwords (only the documented demo credentials such as `Testpass-001`). **No file with dataset rows was ever committed:** no `.csv`, `.parquet`, `.duckdb`, `.db` or `sqlite` blob exists in the history, and no `data/` or `raw/` folder was ever tracked.

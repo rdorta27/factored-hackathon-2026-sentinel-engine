@@ -55,7 +55,7 @@ Test the cases the brief names explicitly: bad or missing data, expired session,
 
 **Depends on:** [REQ-0007](#req-0007), [REQ-0012](frontend-backend.md#req-0012), [REQ-0026](#req-0026), [REQ-0027](#req-0027). The attacks test permissions, languages, fallback and the session.
 
-**Evidence:** Proven by: 36 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/36` (29 `blocked_verified`, 3 `no_defense_yet`: A3, A4b, D4) in [`evidence/adversarial/20261001T222341Z/summary.json`](../../evidence/adversarial/20261001T222341Z/summary.json); runner fault injection (Gold, session, tool) degrading safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
+**Evidence:** Proven by: 36 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/36` (29 `blocked_verified`, 3 `no_defense_yet`: A3, A4b, D4) in [`evidence/adversarial/20261002T120107Z/summary.json`](../../evidence/adversarial/20261002T120107Z/summary.json); runner fault injection (Gold, session, tool) degrading safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
 
 <a id="req-0025"></a>
 ### REQ-0025 · Observability
@@ -90,7 +90,7 @@ A trusted test session proves identity (a customer number alone does not), each 
 
 **Source:** Problem statement: What your solution should demonstrate 6; Data and execution boundaries · Kickoff p. 15
 
-**Evidence:** Proven by: password login on `/api/v1/auth/*`; isolation matrix `test_foreign_access_attempts_are_blocked_8_of_8`; `me` returns role and country only; sessions and conversation stored by token hash and deleted on logout and expiry (`tests/test_state_sqlite.py`); [retention table](../architecture/specification.md#data-retention).
+**Evidence:** Proven by: password login on `/api/v1/auth/*`; isolation matrix `test_foreign_access_attempts_are_blocked_8_of_8`; `me` returns role and country only; sessions and conversation stored by token hash and deleted on logout and expiry (`tests/test_state_sqlite.py`); the SQLite file, the turn log and the dev salt are created `0600` and a folder the app creates is `0700` (`test_database_file_is_owner_only`, `test_turn_log_and_dev_salt_are_owner_only`); the stored turn window is capped at 50; cookie, header, CSRF, rate-limit and input controls listed in [security](../build/security.md#controls-on-the-served-app-102-hardening); [retention table](../architecture/specification.md#data-retention).
 
 <a id="req-0028"></a>
 ### REQ-0028 · Reproducible setup
@@ -140,7 +140,7 @@ The model never receives identifiers or personal data, and no restricted data go
 
 **Depends on:** [REQ-0027](#req-0027). Tools filter by the session customer.
 
-**Evidence:** Proven by: session-bound lookup that takes no customer argument plus the 8/8 denial test; auth events stored as salted `session_ref` records with no IP (`test_audit_session_ref_is_a_hash_not_the_customer`); router request whitelist that also keeps the fraud score out (`tests/test_ai_router.py`); the orchestrator sees an opaque customer hash, never the id; personal identifiers typed in free text are masked before the model (`app/privacy/`, `tests/privacy/`), so attack `A9` is `blocked_verified` in [`evidence/adversarial/20261001T222341Z/summary.json`](../../evidence/adversarial/20261001T222341Z/summary.json).
+**Evidence:** Proven by: session-bound lookup that takes no customer argument plus the 8/8 denial test; auth events stored as salted `session_ref` records with no IP (`test_audit_session_ref_is_a_hash_not_the_customer`); router request whitelist that also keeps the fraud score out (`tests/test_ai_router.py`); the orchestrator sees an opaque customer hash, never the id; personal identifiers typed in free text are masked before the model (`app/privacy/`, `tests/privacy/`), so attack `A9` is `blocked_verified` in [`evidence/adversarial/20261002T120107Z/summary.json`](../../evidence/adversarial/20261002T120107Z/summary.json).
 
 <a id="req-0048"></a>
 ### REQ-0048 · Decision order

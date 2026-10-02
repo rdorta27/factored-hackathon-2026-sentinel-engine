@@ -36,6 +36,34 @@ def test_health_reports_sqlite(sqlite_env) -> None:  # type: ignore[no-untyped-d
     assert TestClient(create_app()).get("/api/v1/health").json()["state_backend"] == "sqlite"
 
 
+def test_health_fails_when_the_state_store_is_unreachable(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    app = create_app()
+    api = TestClient(app)
+    assert api.get("/api/v1/health").status_code == 200
+
+    class Broken:
+        def connect(self):  # type: ignore[no-untyped-def]
+            raise RuntimeError("database is gone")
+
+    app.state.engine = Broken()
+    response = api.get("/api/v1/health")
+    assert response.status_code == 503
+    assert response.json()["status"] == "unavailable"
+
+
+def test_a_conversation_files_one_handoff_ticket(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    app = create_app()
+    api = TestClient(app)
+    login(api)
+    references = set()
+    for _ in range(6):
+        body = api.post("/api/v1/chat", json={"message": "quiero hablar con una persona"}).json()
+        if body["kind"] == "handoff":
+            references.add(body["reference"])
+    assert len(references) == 1, "every handoff reply points at the same ticket"
+    assert len(app.state.cases.handoffs()) == 1
+
+
 def test_session_conversation_and_case_survive_a_restart(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     login(api)
@@ -68,6 +96,31 @@ def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no
     assert store.count() == 1
     api.post("/api/v1/auth/logout")
     assert store.count() == 0
+
+
+def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    import os
+    import stat
+
+    os.chmod(sqlite_env, 0o755)
+    api = TestClient(create_app())
+    login(api)
+    for suffix in ("", "-wal", "-shm"):
+        path = sqlite_env / f"state.db{suffix}"
+        if path.exists():
+            assert stat.S_IMODE(os.stat(path).st_mode) == 0o600, path.name
+    assert stat.S_IMODE(os.stat(sqlite_env).st_mode) == 0o755, "an existing folder is left as is"
+
+
+def test_database_folder_created_owner_only(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import os
+    import stat
+
+    from app.db.session import make_engine
+
+    folder = tmp_path / "fresh"
+    make_engine(folder / "state.db").dispose()
+    assert stat.S_IMODE(os.stat(folder).st_mode) == 0o700
 
 
 def test_expiry_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no-untyped-def]

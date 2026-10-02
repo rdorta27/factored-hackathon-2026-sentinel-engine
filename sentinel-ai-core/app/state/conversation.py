@@ -90,6 +90,7 @@ def from_json(raw: str) -> ConversationState:
         person_asks=int(data.get("person_asks", 0)),
         rejected_ids=list(data.get("rejected_ids", [])),
         sys_questions=list(data.get("sys_questions", []))[-2:],
+        handoff_reference=data.get("handoff_reference"),
     )
 
 

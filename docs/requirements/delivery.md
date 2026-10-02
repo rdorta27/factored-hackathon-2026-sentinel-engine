@@ -26,7 +26,9 @@ State openly what the data cannot support: the dataset is synthetic, Spanish onl
 
 **Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD.
 
-Missing: the limitations section in the README and the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
+Proven by (also): the README [limitations](../../README.md#limitations) section.
+
+Missing: the limits on the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
@@ -39,7 +41,9 @@ An honest list of what the prototype lacks before real use: capacity, data, lang
 
 **Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). Gathers the data, language and capacity limits.
 
-**Evidence:** Missing: the limitations section, which gathers REQ-0013 and the [sizing](../sizing_capacity.md) (REQ-0053).
+**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing_capacity.md) (REQ-0053).
+
+Missing: the same limits on the slides.
 
 <a id="req-0034"></a>
 ### REQ-0034 · Clean public repository
@@ -67,7 +71,7 @@ A link to the running tool, with usage and spending limits. A minimal deployment
 
 **Depends on:** [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034). A public link needs the session and a clean repo.
 
-**Evidence:** Proven by: the live link at `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`, deployed 10/02 from [deploy/azure](../../deploy/azure/deploy.sh) under [019](../build/decisions/019-azure-container-apps.md) (Hugging Face dropped its free Docker tier, so [012](../build/decisions/012-public-deployment.md) is superseded). Verified remotely on 10/02: `GET /api/v1/health` returns `{"status":"ok","gold_source":"mock","state_backend":"sqlite","reference_date":"2026-06-17"}`, the page and branding load, `CUST-0001` logs in and creates a dispute (201), and `ADV-0001` sees the handoffs. Usage and spending limits: hosting sits inside the Azure monthly free grant plus about USD 0.08/day for the registry, all within the USD 200 trial credit ([cost](../build/cost.md)).
+**Evidence:** Proven by: the live link at `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`, deployed 10/02 from [deploy/azure](../../deploy/azure/deploy.sh) under [019](../build/decisions/019-azure-container-apps.md) (Hugging Face dropped its free Docker tier, so [012](../build/decisions/012-public-deployment.md) is superseded). Verified remotely on 10/02: `GET /api/v1/health` returns `{"status":"ok","gold_source":"mock","state_backend":"sqlite","reference_date":"2026-06-17"}`, the page and branding load, `CUST-0001` logs in and creates a dispute (201), and `ADV-0001` sees the handoffs. Usage and spending limits: hosting sits inside the Azure monthly free grant plus about USD 0.08/day for the registry, all within the USD 200 trial credit ([cost](../build/cost.md)). The 10/02 hardening changes the deploy to one replica (SQLite is per instance), a non-root user with state under `/tmp/sentinel`, a container healthcheck and a health route that answers 503 when the state store fails; the image was built and run locally, but the live link has not been redeployed from this branch yet.
 
 <a id="req-0036"></a>
 ### REQ-0036 · Presentation, 4 to 6 slides

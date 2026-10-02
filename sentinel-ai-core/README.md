@@ -51,6 +51,11 @@ Sessions, conversation state and cases live in SQLite at `SENTINEL_DB_PATH`
 (default `var/sentinel.db`, gitignored), so a restart keeps them; set
 `SENTINEL_STATE_BACKEND=memory` for a throwaway run. Conversation state is
 deleted on logout and on expiry. Login-attempt counters are per process.
+The database file is created owner-only (`0600`, and `0700` for a folder the app
+creates), like the turn log and the generated dev salt. A conversation keeps its
+last 50 turns and files one handoff ticket: later handoff replies point at it.
+`GET /api/v1/health` runs a query against the store and answers 503 when it
+fails.
 
 ## Model seam
 
