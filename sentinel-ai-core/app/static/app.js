@@ -107,10 +107,9 @@ function show(id) {
 
 /* The session country picks the starting language; the selector can change it. */
 const COUNTRY_LOCALES = { MX: "es-MX", CO: "es-CO", AR: "es-AR" };
-/* Country and the demo's filing window are page-level: the chips are chosen
-   from the listing alone, with no request to the chat. */
+/* Country is page-level: the chips are chosen from the listing alone, with no
+   request to the chat. */
 let sessionCountry = null;
-const WINDOW_DAYS = 90;
 
 async function loadContext() {
   const response = await api("/api/v1/auth/me");
@@ -247,12 +246,14 @@ async function loadTransactions() {
     }
     box.append(item);
   });
-  renderDemoPrompts(payload.transactions, payload.as_of);
+  renderDemoPrompts(payload.transactions);
 }
 /* Demo prompts: built from the customer's own charges, never hardcoded.
-   Normal picks the newest charge in the account's own currency, inside the
-   filing window, using only the listing. If the reply on click escalates, that
-   is a legitimate outcome and is shown, not hidden.
+   Normal picks the newest charge in the account's own currency that the backend
+   marks eligible, using only the listing. Eligibility already carries the
+   country policy (window, status, prior dispute), so the page never re-derives
+   it. If the reply on click escalates, that is a legitimate outcome and is
+   shown, not hidden.
    Ambiguous picks a merchant with two or more charges, so the system asks. */
 function repeatedMerchant(transactions) {
   const counts = new Map();
@@ -271,33 +272,24 @@ function localCurrency() {
   return COUNTRY_CURRENCIES[sessionCountry] || null;
 }
 
-function daysBetween(fromIso, toIso) {
-  const from = new Date(`${fromIso}T00:00:00Z`);
-  const to = new Date(`${toIso}T00:00:00Z`);
-  if (Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return Number.NaN;
-  return Math.floor((to - from) / 86400000);
-}
-
-/* Newest charge that is in the local currency, eligible, and inside the 90-day
-   window measured against the listing's own as-of date. Nothing here calls the
-   chat: the chips are chosen from data already on the page. */
-function demoCharge(transactions, asOf, windowDays) {
+/* Newest eligible charge in the local currency. Eligibility is the backend's
+   own country policy (window, status, prior dispute), so the page does not
+   duplicate the 90-day rule. Nothing here calls the chat: the chips are chosen
+   from data already on the page. */
+function demoCharge(transactions) {
   const currency = localCurrency();
   if (!currency) return null;
-  const candidates = (transactions || []).filter((tx) => {
-    if (tx.eligible === false) return false;
-    if (tx.currency !== currency) return false;
-    const age = daysBetween(tx.date, asOf);
-    return Number.isFinite(age) && age >= 0 && age <= windowDays;
-  });
+  const candidates = (transactions || []).filter(
+    (tx) => tx.eligible !== false && tx.currency === currency
+  );
   return candidates.sort((a, b) => String(b.date).localeCompare(String(a.date)))[0] || null;
 }
 
-function renderDemoPrompts(transactions, asOf) {
+function renderDemoPrompts(transactions) {
   const box = document.getElementById("demo-prompts");
   box.textContent = "";
   const rows = transactions || [];
-  const charge = demoCharge(rows, asOf, WINDOW_DAYS);
+  const charge = demoCharge(rows);
   const merchant = repeatedMerchant(rows);
   const prompts = [];
 

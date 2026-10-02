@@ -86,25 +86,24 @@ def test_ambiguous_template_asks_by_merchant_only() -> None:
 
 @pytest.mark.parametrize("customer", CUSTOMERS)
 def test_normal_phrase_reaches_the_confirm_box(customer: str) -> None:
-    """The chip's charge is picked from the listing alone: newest local charge.
+    """The chip's charge is picked from the listing alone: newest eligible local.
 
-    The rule is: in the account's own currency, not eligible=false, and inside
-    the 90-day window against the listing's as-of date. If that charge escalates
-    on click, that is a legitimate outcome and the chip still shows it.
+    The rule is: in the account's own currency and not `eligible=false`. The
+    backend already folds the country policy (window, status, prior dispute)
+    into `eligible`, so the page does not re-derive the 90-day window. If that
+    charge escalates on click, that is a legitimate outcome and the chip still
+    shows it.
     """
     api = client_for(customer)
     payload = api.get("/api/v1/transactions").json()
     rows = payload["transactions"]
-    as_of = payload["as_of"]
     country = api.get("/api/v1/auth/me").json()["country"]
     currency = COUNTRY_CURRENCIES[country]
 
     local = [
         tx
         for tx in rows
-        if tx.get("eligible") is not False
-        and tx["currency"] == currency
-        and 0 <= days_between(tx["date"], as_of) <= 90
+        if tx.get("eligible") is not False and tx["currency"] == currency
     ]
     assert local, f"{customer} must have a local-currency charge for the chip"
     charge = sorted(local, key=lambda tx: tx["date"], reverse=True)[0]
@@ -236,9 +235,7 @@ def test_loading_the_page_posts_nothing_to_the_chat() -> None:
     chosen = [
         tx
         for tx in payload["transactions"]
-        if tx.get("eligible") is not False
-        and tx["currency"] == currency
-        and 0 <= days_between(tx["date"], payload["as_of"]) <= 90
+        if tx.get("eligible") is not False and tx["currency"] == currency
     ]
 
     assert chosen, "the normal chip has a charge to offer"
@@ -262,16 +259,33 @@ def test_app_does_not_post_chat_while_building_the_chips() -> None:
 
 
 def test_chip_has_no_usd_charge_and_no_out_of_window_charge() -> None:
-    """The 90-day window and the local currency are applied to the choice."""
+    """The backend's `eligible` flag carries the window and the currency rule.
+
+    TXN-1002 is 153 days before the as-of date. The meaningful check is that the
+    backend marks it `candidateOutOfWindow`, not that the page re-derives the
+    window: the chip rule is `eligible is not False`.
+    """
     api = client_for("CUST-0001")
     payload = api.get("/api/v1/transactions").json()
     rows = payload["transactions"]
-    # TXN-1002 is 153 days before the as-of date and must never be the chip.
     stale = next(tx for tx in rows if tx["reference"] == "TXN-1002")
-    assert days_between(stale["date"], payload["as_of"]) > 90
-    assert not any(
-        tx["currency"] != "MXN" and tx["reference"] == "TXN-1002" for tx in rows
-    )
+    assert days_between(stale["date"], payload["as_of"]) > 90, "fixture must be stale"
+    assert stale["eligible"] is False, "the backend must mark the stale charge ineligible"
+    assert stale["ineligibleKey"] == "candidateOutOfWindow"
+    # The chip rule is the eligible local set, so the stale charge is never it.
+    chip_choice = [
+        tx
+        for tx in rows
+        if tx.get("eligible") is not False and tx["currency"] == "MXN"
+    ]
+    assert stale["reference"] not in {tx["reference"] for tx in chip_choice}
+
+
+def test_chip_rule_uses_backend_eligibility_not_a_local_window() -> None:
+    """Regression guard: the page must not duplicate the country's window."""
+    assert "WINDOW_DAYS" not in APP_JS, "the hardcoded window came back"
+    assert "daysBetween" not in APP_JS, "the page re-derives the window"
+    assert "tx.eligible !== false" in APP_JS, "the chip must trust backend eligibility"
 
 
 # --- locale-aware amount formatting --------------------------------------
