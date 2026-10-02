@@ -40,12 +40,16 @@ One app, one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`,
 `handoffs` (advisor), `health`. The chat page is at `/ui/`. Replies are the typed models in
 `app/schemas/chat.py`.
 
-Gold is read through `GoldTransactions`: the DuckDB view
-`v_service_dispute_eligible_transactions` under `SENTINEL_GOLD_DIR` when it is
-readable, the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`, see the repo
-`.env.example`). `GET /api/v1/health` reports which one is active. Real Gold
-needs logins mapped to real customer ids: point `SENTINEL_USERS_PATH` at a users
-file under the gitignored `data/`.
+Gold is read through `GoldTransactions`. The DuckDB file is
+`SENTINEL_GOLD_DUCKDB` when set, otherwise
+`sentinel-data-engine/data/gold_bank.duckdb` resolved from the repository, never
+from the folder the process was started from. A Delta view under
+`SENTINEL_GOLD_DIR` is the next probe. The labelled mock is used when neither is
+readable, and whenever `SENTINEL_GOLD_SOURCE` is `mock` (no file is opened).
+`GET /api/v1/health` reports which one is active. Rows dated after the reference
+date are excluded in the query. Real Gold needs logins mapped to real customer
+ids: `scripts/write_real_gold_users.py` writes that file under the gitignored
+`data/` and prints counts only; point `SENTINEL_USERS_PATH` at it.
 
 Sessions, conversation state and cases live in SQLite at `SENTINEL_DB_PATH`
 (default `var/sentinel.db`, gitignored), so a restart keeps them; set
