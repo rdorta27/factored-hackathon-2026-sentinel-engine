@@ -305,3 +305,59 @@ def test_two_repetitions_do_not_share_a_recording(tmp_path) -> None:  # type: ig
     ).content
     with pytest.raises(ModelUnavailable):
         RecordedTransport(tmp_path, "v1", repetition=2).complete(model="cheap-model", messages=messages)
+
+
+class _FakeHttpResponse:
+    def __init__(self, body: dict, status_code: int = 200) -> None:
+        self._body = body
+        self.status_code = status_code
+
+    def json(self) -> dict:
+        return self._body
+
+
+def _serve(monkeypatch: pytest.MonkeyPatch, body: dict, sent: list | None = None) -> None:
+    def _post(self, url, json=None, headers=None):  # type: ignore[no-untyped-def]
+        if sent is not None:
+            sent.append({"url": url, "json": json, "headers": headers})
+        return _FakeHttpResponse(body)
+
+    monkeypatch.setattr("httpx.Client.post", _post)
+
+
+_USAGE_BODY = {
+    "choices": [{"message": {"content": '{"intent": "charge", "language": "es-419"}'}}],
+    "usage": {"prompt_tokens": 1_000_000, "completion_tokens": 1_000_000},
+}
+
+
+def test_cost_follows_the_serving_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES
+
+    _serve(monkeypatch, _USAGE_BODY)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    cheap = transport.complete(model="accounts/fireworks/models/gpt-oss-120b", messages=[])
+    strong = transport.complete(model="accounts/fireworks/models/deepseek-v4p1-flash", messages=[])
+    assert cheap.cost_usd == pytest.approx(0.15 + 0.60)
+    assert strong.cost_usd == pytest.approx(0.30 + 1.20)
+
+
+def test_cached_input_uses_the_cached_price(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES
+
+    body = {**_USAGE_BODY, "usage": {**_USAGE_BODY["usage"], "prompt_tokens_details": {"cached_tokens": 1_000_000}}}
+    _serve(monkeypatch, body)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    reply = transport.complete(model="accounts/fireworks/models/deepseek-v4p1-flash", messages=[])
+    assert reply.cost_usd == pytest.approx(0.006 + 1.20)
+
+
+def test_unpriced_model_is_refused_before_the_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES, UnknownPrice
+
+    sent: list = []
+    _serve(monkeypatch, _USAGE_BODY, sent)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    with pytest.raises(UnknownPrice, match="accounts/fireworks/models/unknown"):
+        transport.complete(model="accounts/fireworks/models/unknown", messages=[])
+    assert sent == []

@@ -7,6 +7,8 @@ from typing import Protocol
 
 import httpx
 
+from app.ai.prices import ModelPrice, UnknownPrice, cost_usd, price_for
+
 
 class ModelUnavailable(Exception):
     """The model call failed or timed out after bounded retries."""
@@ -46,6 +48,8 @@ class HttpTransport:
         max_retries: int = 2,
         price_in_per_1k: float = _DEFAULT_PRICE_IN_PER_1K,
         price_out_per_1k: float = _DEFAULT_PRICE_OUT_PER_1K,
+        prices: dict[str, ModelPrice] | None = None,
+        require_price: bool = False,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
@@ -53,6 +57,19 @@ class HttpTransport:
         self._max_retries = max(0, max_retries)
         self._price_in = price_in_per_1k
         self._price_out = price_out_per_1k
+        # With a price table, cost follows the serving model; require_price makes
+        # an unpriced model fail instead of falling back to the flat default.
+        self._prices = prices
+        self._require_price = require_price
+
+    def _cost(self, model: str, tokens_in: int, tokens_out: int, cached_in: int) -> float:
+        if self._prices is not None or self._require_price:
+            try:
+                return cost_usd(price_for(model, self._prices), tokens_in, tokens_out, cached_in)
+            except UnknownPrice:
+                if self._require_price:
+                    raise
+        return (tokens_in * self._price_in + tokens_out * self._price_out) / 1000.0
 
     def complete(
         self,
@@ -69,6 +86,8 @@ class HttpTransport:
         headers = {"Content-Type": "application/json"}
         if self._api_key:
             headers["Authorization"] = f"Bearer {self._api_key}"
+        if self._require_price:
+            price_for(model, self._prices)
         last_error: Exception | None = None
         for _ in range(self._max_retries + 1):
             try:
@@ -89,7 +108,9 @@ class HttpTransport:
                 usage = body.get("usage") or {}
                 tokens_in = int(usage.get("prompt_tokens", 0) or 0)
                 tokens_out = int(usage.get("completion_tokens", 0) or 0)
-                cost = (tokens_in * self._price_in + tokens_out * self._price_out) / 1000.0
+                details = usage.get("prompt_tokens_details") or {}
+                cached_in = int(details.get("cached_tokens", 0) or 0)
+                cost = self._cost(model, tokens_in, tokens_out, cached_in)
                 return LLMResponse(
                     content=str(content),
                     tokens_in=tokens_in,
