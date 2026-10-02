@@ -32,20 +32,19 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
 | 6 | Decide the model per route (decision 10), serve the prompted router, re-record fixtures and freeze a new run id | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | Pending: the served model is the keyword baseline; delta zero by construction |
 | 7 | Define and test how the system serves a Portuguese-speaking customer without Portuguese data: replies, country and currency, reviewed cases (decision 15) | REQ-0012, REQ-0009 | Unassigned | Fri 10/2 | Normal case in Portuguese, the 3 demo cases in pt-BR | Pending |
-| 8 | A person request while a confirm box is pending must escalate like any other | REQ-0040 | Unassigned | Fri 10/2 | Human demo case | Pending |
-| 9 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
-| 10 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
-| 11 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
-| 12 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
-| 13 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
-| 14 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
-| 15 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
-| 16 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
-| 17 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
-| 18 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
-| 19 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
-| 20 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
-| 21 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
+| 8 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
+| 9 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
+| 10 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
+| 11 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
+| 12 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
+| 13 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
+| 14 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
+| 15 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
+| 16 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
+| 17 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
+| 18 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
+| 19 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
+| 20 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
@@ -140,6 +139,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Data setup in two steps: sync the raw tables, build the DuckDB file | Natalia | Done: [quickstart](../sentinel-data-engine/README.md#9-local-development-quickstart) (REQ-0028) |
 | Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261001T222341Z/summary.json` (REQ-0047) |
 | Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/understand/dataset.md#assumptions); asked in the help channel |
+| A person request while the confirm box is open escalates like any other; insisting after other messages still escalates; the extra model call is logged | Felix (Rubén reviewed and fixed) | Done: `tests/test_person_while_confirming.py`, PR #30 (REQ-0040) |
 | Requirements regrouped by type (frontend and backend, non-functional, data and ML, analytics, delivery) with one card each and their dependencies | Rubén | Done: [requirements](../docs/requirements/requirements.md) |
 
 ### Fri 10/2
