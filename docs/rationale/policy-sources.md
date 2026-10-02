@@ -17,19 +17,19 @@ with no code change. Until then the chat must not present the values as a bank's
 
 | What the customer sees | Where it lives | Origin | State |
 |---|---|---|---|
-| "Outside the 90-day window" | `window_days: 90` in the three country files | team assumption, source unconfirmed ([003](../build/decisions/003-disputes-flow.md)) | same value for all three countries |
+| "Outside the 90-day window" | `window_days: 90` in the three country files | team assumption, source unconfirmed ([003](../build/decisions/003-disputes-flow.md)); the team's own Gold view filters on the same 90 days ([sizing](../sizing_capacity.md#22-eligible-dispute-volume-90-day-window)), so it agrees with the policy but is not an independent source | same value for all three countries |
 | "Because of the amount, an advisor will review" | `thresholds.high_amount` per currency | p95 of 2024Q4 charges ([011](../build/decisions/011-high-amount-threshold.md)) | a workload choice, not a business rule; MXN has no value |
 | A handoff on suspected fraud | `thresholds.fraud_score` and the "not me" wording ([010](../build/decisions/010-fraud-handoff-rule.md)) | p95 of 2024Q4 scores | the customer never sees the word fraud |
 | Which statuses can be disputed | `statuses:` in the country files | team decision | pending, reversed and declined are not disputable |
-| "Estimated time" on a handoff | `_sla_date` in `app/routers/demo_chat.py`: reference date plus 5 calendar days | invented | reads like a commitment |
+| "Estimated time (demonstration value)" on a handoff | `_sla_date` in `app/routers/demo_chat.py`: reference date plus 5 calendar days | invented | labelled as a demonstration value |
 | "Today" | `demo_today` and `SENTINEL_REFERENCE_DATE`, 2026-06-17 | fixed demo date over 2024Q4 data | stated in the health route |
 
 ## Known defects
 
-- **An invented citation.** The case confirmation shows "within the 90-day window (Art. 4)" (`ruleEligible` in `app/static/i18n/es-419.json` and `pt-BR.json`). No "Art. 4" exists anywhere in the repository. It must go.
-- **The window is written twice.** The text "90 días" is hand-written in `i18n`; the real value is `window_days`. Changing a country's value would leave the chat wrong.
-- **One window for three countries,** although real windows differ by country and product.
-- **The estimated time** is a demo value presented without a label.
+- **An invented citation** ("within the 90-day window (Art. 4)", `ruleEligible`). No such article exists in the repository. *Fixed 2026-10-02:* removed from es-419 and pt-BR.
+- **The window was written twice.** The customer texts repeated "90 días" while the value is `window_days`. *Fixed 2026-10-02:* the texts no longer carry a number; `tests/test_policy_texts.py` fails if one does. The number comes back, read from `window_days`, with the follow-up "why?" answer in the [chat plan](../../team/chat-behavior-plan.md).
+- **One window for three countries,** although real windows differ by country and product. Open until the verification table is filled.
+- **The estimated time** was a demo value presented without a label. *Fixed 2026-10-02:* the field reads "estimated time (demonstration value)" in es-419 and pt-BR. The 5-day value itself is still invented.
 
 ## Where real values could come from
 

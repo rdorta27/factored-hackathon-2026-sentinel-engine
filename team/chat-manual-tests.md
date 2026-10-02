@@ -63,7 +63,7 @@ chat plan.
 - **Expected:** answer from the policy: the rule, the 90-day value, the cut-off date, and that this is the service's demonstration policy, not a bank rule.
 - **Cause:** there is no follow-up intent; the text "90 días" is written in `i18n` instead of read from `window_days`. See [policy sources](../docs/rationale/policy-sources.md).
 - **Capability:** Explain.
-- **Status:** open.
+- **Status:** partly fixed. The texts no longer hard-code "90 días" and no longer cite an article; the follow-up answer is still open.
 
 ### MT-06 · Sixteen first messages, one fresh session each (2026-10-02, Claude)
 
