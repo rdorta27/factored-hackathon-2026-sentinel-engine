@@ -102,3 +102,59 @@ def test_v2_prompt_places_examples_before_the_turn_and_records_ids() -> None:
     assert "texto dev-7" in Spy.messages[1]["content"]
     assert "no veo mi cargo" in Spy.messages[-1]["content"]
     assert config.example_ids == ("dev-7",)
+
+
+def _recorded_router(tmp_path, cases, replies_by_rep: dict, version: str = "v1"):  # type: ignore[no-untyped-def]
+    """A router served by rec- recordings: replies_by_rep[rep][case_id] = intent."""
+    from app.ai.llm import PromptedLLMRouter, RouterConfig, build_messages
+    from app.ai.recording import RecordedTransport, write_recording
+    from app.ai.transport import LLMResponse
+
+    transport = RecordedTransport(tmp_path, version)
+    config = RouterConfig(cheap_model="m", strong_model="m", prompt_version=version)
+    for rep, replies in replies_by_rep.items():
+        transport.repetition = rep
+        for case in cases:
+            if case.id not in replies:
+                continue
+            messages = build_messages(case.message, list(case.turns))
+            path, digest = transport.path_for("m", messages)
+            write_recording(
+                path, model="m", prompt_version=version, digest=digest, repetition=rep, messages=messages,
+                response=LLMResponse(content=f'{{"intent": "{replies[case.id]}", "language": "es-419"}}', cost_usd=0.0002),
+            )
+    transport.repetition = 0
+    return PromptedLLMRouter(transport, config), transport
+
+
+def test_three_versions_run_on_identical_ids(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.demo import DemoModel
+    from eval.versions import Version, run_versions
+
+    cases = [_case("dev-1", "development"), _case("dev-2", "development", "missing")]
+    v1, t1 = _recorded_router(tmp_path / "v1", cases, {0: {"dev-1": "charge", "dev-2": "charge"}})
+    v2, t2 = _recorded_router(tmp_path / "v2", cases, {0: {"dev-1": "charge", "dev-2": "missing"}}, "v2")
+    result = run_versions(
+        cases,
+        {"baseline": Version(DemoModel()), "router_v1": Version(v1, t1), "router_v2": Version(v2, t2)},
+    )
+    assert result["case_ids"] == ["dev-1", "dev-2"]
+    assert set(result["versions"]) == {"baseline", "router_v1", "router_v2"}
+    assert all(block["n"] == 2 for block in result["versions"].values())
+    assert result["paired"]["router_v2_vs_router_v1"]["fixed"] == ["dev-2"]
+    assert result["versions"]["router_v2"]["prompt_version"] == "v2"
+
+
+def test_stability_uses_recorded_repetitions_only(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from eval.versions import Version, run_version
+
+    cases = [_case("dev-1", "development"), _case("dev-2", "development")]
+    # dev-1 has three recorded passes that disagree once; dev-2 has only one recording.
+    router, transport = _recorded_router(
+        tmp_path, cases,
+        {0: {"dev-1": "charge", "dev-2": "charge"}, 1: {"dev-1": "charge"}, 2: {"dev-1": "missing"}},
+    )
+    block = run_version(cases, Version(router, transport, repetitions=3, repeat_ids=frozenset({"dev-1", "dev-2"})))
+    assert block["stability"]["n"] == 1
+    assert block["stability"]["recorded_repetitions"] == 3
+    assert block["stability"]["agreement"] == round(2 / 3, 4)
