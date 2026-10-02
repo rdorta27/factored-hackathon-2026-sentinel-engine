@@ -68,19 +68,40 @@ def select_gold(as_of: str) -> tuple[GoldTransactions, str]:
 
     ``SENTINEL_GOLD_SOURCE`` = ``auto`` (default) | ``mock`` | ``duckdb``.
     ``duckdb`` still falls back to the mock, with a warning, if the probe fails.
+
+    Source priority (``auto`` mode):
+      1. ``data/gold_bank.duckdb``  – single-file DuckDB from the Medallion pipeline.
+      2. ``data/gold/``             – Delta Lake directory (``SENTINEL_GOLD_DIR``).
+      3. Mock data                  – when neither source is present or readable.
     """
     if os.environ.get("SENTINEL_GOLD_SOURCE", "auto").lower() == "mock":
         return MockGoldStore(as_of=as_of), "mock"
+
+    # Priority 1: single-file DuckDB (multi-path resolution)
+    db_file = gold_service.gold_duckdb_path()
+    if db_file is not None:
+        store = DuckDbGoldStore(as_of)
+        try:
+            store.list_for_customer("__probe__")
+        except Exception as error:  # noqa: BLE001
+            logger.warning("gold_bank.duckdb at %s not readable (%s); trying Delta Lake", db_file, type(error).__name__)
+        else:
+            logger.info("Gold source: duckdb file (%s)", db_file)
+            return store, "duckdb"
+
+    # Priority 2: Delta Lake directory
     view = gold_service._gold_path() / gold_service._VIEW_TABLE
     if view.is_dir():
         store = DuckDbGoldStore(as_of)
         try:
             store.list_for_customer("__probe__")
-        except Exception as error:  # noqa: BLE001 - any DuckDB failure means fallback
+        except Exception as error:  # noqa: BLE001
             logger.warning("Gold view at %s not readable (%s); using the mock", view, type(error).__name__)
         else:
-            logger.info("Gold source: duckdb (%s)", view)
+            logger.info("Gold source: delta lake (%s)", view)
             return store, "duckdb"
     else:
         logger.info("Gold view not found at %s; using the mock", view)
+
+    # Priority 3: mock fallback
     return MockGoldStore(as_of=as_of), "mock"
