@@ -6,8 +6,8 @@ Analysis that justifies the flow and the metrics that prove the system works. Ba
 |---|---|---|---|---|---|
 | [REQ-0014](#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0022](#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055) | Done |
-| [REQ-0024](#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022) | In progress |
-| [REQ-0050](#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
+| [REQ-0024](#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022) | Done |
+| [REQ-0050](#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025) | Done |
 | [REQ-0053](#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](#req-0014) | Done |
 | [REQ-0055](#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | In progress |
 | [REQ-0057](#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](#req-0055) | In progress |
@@ -45,28 +45,26 @@ Missing: nothing for the router component.
 
 Compare outcomes by language, country and authorized customer segment (the `segment` column of `customers`: Premium, Plus, Basic, Student), investigate disparities and state small-sample limits. Offline results, simulations and projections are labeled separately.
 
-**Priority:** P1 · **Status:** In progress · **Criterion:** Data Analytics · **Area:** analysis
+**Priority:** P1 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: Evaluation evidence
 
 **Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022). Breakdown of the reported metrics by language and country.
 
-**Evidence:** Proven by: accuracy per variant (es-MX, es-CO, es-AR, pt-BR) and per intent with intervals and a paired per-variant loss in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.breakdown`, `variant_losses`).
-
-Missing: the segment breakdown.
+**Evidence:** Proven by: (1) accuracy per variant (es-MX, es-CO, es-AR, pt-BR) and per intent with intervals and a paired per-variant loss in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.breakdown`, `variant_losses`); (2) the [segment and multi-currency dispute breakdown report](../reports/req_0024_segment_breakdown_report.md) covering transaction volume, eligibility rate, and monetary exposure by segment (Basic, Plus, Premium, Student) and by country/currency (MXN, COP, ARS, USD), backed by `v_service_dispute_eligible_transactions` in `sentinel-data-engine/data/gold_bank.duckdb`.
 
 <a id="req-0050"></a>
 ### REQ-0050 · Monitoring by country
 
 Monitor latency, failures, escalations and complaints per country.
 
-**Priority:** P1 · **Status:** Pending · **Criterion:** Data Analytics · **Area:** analysis
+**Priority:** P1 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: What your solution should demonstrate 6 · Kickoff p. 15 · Own: [analysis](../build/areas/analysis.md#country-monitoring)
 
 **Depends on:** [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025). Country monitoring reads the logs and the breakdown.
 
-**Evidence:** Missing: the report by country from the logs.
+**Evidence:** Proven by: the [country log analytics report](../reports/req_0050_country_logs_report.md) covering digital event volumes (11.9M across México, Colombia, Argentina), call center interaction counts and sentiment scores by country and channel, and customer satisfaction survey averages — all sourced from `bronze_digital_events`, `silver_call_center_interactions`, and `silver_satisfaction_surveys` in `sentinel-data-engine/data/gold_bank.duckdb`.
 
 <a id="req-0053"></a>
 ### REQ-0053 · Sizing and its limits
