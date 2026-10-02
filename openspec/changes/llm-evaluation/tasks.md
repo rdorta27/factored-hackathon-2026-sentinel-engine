@@ -37,7 +37,7 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 - [x] 5.5 Review back-translations for bases 36 to 70. Verify: each case has a review record.
 - [x] 5.6 Write 50 noisy twins of held-out cases, one declared perturbation each. Verify: each names its base, variant and perturbation, and the loader accepts them.
 - [x] 5.7 Write 75 attacks, including pt-BR injection, from the patterns in `ai-core/tests/adversarial/`, and mark the code-decided ones. Verify: the loader accepts them and the count is 75.
-- [ ] 5.8 Seal the held-out, noisy and attack files. Verify: `seal.json` is committed and its commit predates task 8.2. If 70 bases are not ready by 2026-10-03 18:00 UTC-5, stop and amend this change to 50 bases first (design, Risks).
+- [x] 5.8 Seal the held-out, noisy and attack files. Verify: `seal.json` is committed and its commit predates task 8.2. If 70 bases are not ready by 2026-10-03 18:00 UTC-5, stop and amend this change to 50 bases first (design, Risks).
 
 ## 6. Runner metrics and guards
 
