@@ -1,6 +1,6 @@
 # Sentinel Engine — Data Quality Report
 
-**Execution timestamp:** 2026-10-01 18:21:11 UTC
+**Execution timestamp:** 2026-10-02 19:01:28 UTC
 **Dataset cutoff date:** 2026-06-17
 **DuckDB file:** `data/gold_bank.duckdb`
 
