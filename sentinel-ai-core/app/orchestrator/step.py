@@ -78,9 +78,65 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
 UNDERSTAND_RETRIES = 2
 
 
+def _model_says_person(message: str, state: ConversationState, ports: Ports) -> bool | None:
+    """Ask the model whether this message requests a person.
+
+    Returns True/False, or None when the model is unavailable. The caller
+    decides what an unavailable model means; here it never escalates, so a
+    failure while the box is open keeps today's behaviour.
+    """
+    started = perf_counter()
+    for _ in range(UNDERSTAND_RETRIES + 1):
+        try:
+            understood = ports.model.understand(message, state.turns)
+        except ModelUnavailable:
+            continue
+        # Same record as the main path, so this call's tokens, cost and latency
+        # count in the turn log (REQ-0025, REQ-0055).
+        _emit(
+            ports,
+            state.language.value,
+            step="understand",
+            latency_ms=(perf_counter() - started) * 1000,
+            **_identity_fields(_describe(ports.model), understood),
+        )
+        return understood.kind is UnderstandKind.PERSON
+    _emit(
+        ports,
+        state.language.value,
+        step="understand",
+        outcome="failed",
+        latency_ms=(perf_counter() - started) * 1000,
+        **_identity_fields(_describe(ports.model)),
+    )
+    return None
+
+
+def _person_request(state: ConversationState, ports: Ports) -> TurnOutput:
+    """One place for the person-request rule (REQ-0040).
+
+    The first ask offers to keep helping; insisting escalates. Used by both
+    paths: a plain message and a message that arrives while the confirm box is
+    open, so the behaviour cannot drift between them.
+
+    On escalation the pending confirmation is cleared: the customer must not be
+    able to confirm and open a case while an advisor is already taking over.
+    """
+    state.person_asks += 1
+    hit = _hit(state, ports, Intent.PERSON, None)
+    output = _from_hit(hit, state, None, ports)
+    if output.kind is OutcomeKind.HANDOFF:
+        state.pending_confirmation = None
+    return output
+
+
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
     state.turns.append(turn.text)
     if state.pending_confirmation is not None:
+        # The box swallows everything except a person request. The model is not
+        # consulted here for anything else, so a failure cannot change this.
+        if _model_says_person(turn.text, state, ports) is True:
+            return _person_request(state, ports)
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language, text=turn.text)
     started = perf_counter()
     understood = None
@@ -127,9 +183,7 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
             reason="out_of_scope",
         )
     if understood.kind is UnderstandKind.PERSON:
-        state.person_asks += 1
-        hit = _hit(state, ports, Intent.PERSON, None)
-        return _from_hit(hit, state, None, ports)
+        return _person_request(state, ports)
     started = perf_counter()
     candidates = ports.tools.lookup_transactions()
     _emit(
@@ -160,6 +214,10 @@ def _confirm(
     selected = shown_candidate(state, turn.candidate_id)
     if pending is None or turn.candidate_id != pending.candidate_id:
         return _after_policy(state, ports, Intent.CHARGE, selected, "")
+    # Pressing the button is the customer choosing the charge, not asking for a
+    # person: an unanswered offer to help must not decide this turn. Clearing it
+    # here keeps the policy rule from firing on a confirmation (REQ-0040).
+    state.person_asks = 0
     hit = _hit(state, ports, Intent.DISPUTE, selected)
     if hit.outcome is not HitOutcome.ALLOW:
         return _from_hit(hit, state, selected, ports)

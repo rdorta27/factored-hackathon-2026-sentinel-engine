@@ -47,21 +47,21 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 23 | 14 | 4 | 56% |
+| P0 | 41 | 24 | 13 | 4 | 59% |
 | P1 | 12 | 7 | 3 | 2 | 58% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 31 | 17 | 9 | 54% |
+| **Total** | **57** | 32 | 16 | 9 | 56% |
 
 ## Status by type
 
 | Type | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| [Frontend and backend](frontend-backend.md) | 19 | 13 | 3 | 3 | 68% |
+| [Frontend and backend](frontend-backend.md) | 19 | 14 | 2 | 3 | 74% |
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
 | [Data and ML](data-ml.md) | 10 | 4 | 5 | 1 | 40% |
 | [Analytics](analytics.md) | 7 | 2 | 4 | 1 | 29% |
 | [Delivery](delivery.md) | 8 | 0 | 4 | 4 | 0% |
-| **Total** | **57** | 31 | 17 | 9 | 54% |
+| **Total** | **57** | 32 | 16 | 9 | 56% |
 
 ## Frontend and backend
 
@@ -81,7 +81,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0012](frontend-backend.md#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](frontend-backend.md#req-0001) | In progress |
 | [REQ-0033](frontend-backend.md#req-0033) | Policy decides, the LLM converses | P0 | ai, ml | [REQ-0048](non-functional.md#req-0048) | Done |
 | [REQ-0038](frontend-backend.md#req-0038) | Simple frontend | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
-| [REQ-0040](frontend-backend.md#req-0040) | Request for a person | P0 | ai | [REQ-0006](frontend-backend.md#req-0006) | In progress |
+| [REQ-0040](frontend-backend.md#req-0040) | Request for a person | P0 | ai | [REQ-0006](frontend-backend.md#req-0006) | Done |
 | [REQ-0041](frontend-backend.md#req-0041) | Original currency, customer's language | P0 | ai | [REQ-0003](frontend-backend.md#req-0003) | Done |
 | [REQ-0042](frontend-backend.md#req-0042) | Minimum-effort dispute opening | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0038](frontend-backend.md#req-0038) | Done |
 | [REQ-0043](frontend-backend.md#req-0043) | Check charge status first | P1 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0015](data-ml.md#req-0015) | Done |
@@ -161,10 +161,13 @@ A requirement depends on another when it cannot be met, or its evidence cannot b
 
 Chains that still block P0 work:
 
-- **Data:** REQ-0031 (Pending) → REQ-0015 (In progress) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0018 also waits on REQ-0015.
-- **Deployment and video:** REQ-0034 → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
+- **Data:** REQ-0015 (In progress: quality metrics) → REQ-0017 → REQ-0020 → REQ-0016, REQ-0022, REQ-0055. REQ-0031 and REQ-0018 are done.
+- **Learned component:** decision 10 (live model) → REQ-0016 (In progress) → REQ-0019, REQ-0056.
+- **Deployment and video:** REQ-0034 (In progress) → REQ-0035 (Pending) → REQ-0037 → REQ-0051.
 - **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
-- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 → REQ-0030.
+- **Limitations:** REQ-0012, REQ-0024 → REQ-0013 (In progress) → REQ-0030. REQ-0053 is done.
+
+Statuses in these chains are written by hand: update them when a requirement changes status.
 
 ## Future work (not requirements)
 
