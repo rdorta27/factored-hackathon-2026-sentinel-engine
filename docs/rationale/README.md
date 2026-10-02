@@ -10,6 +10,7 @@ This folder is not a decision log. [Decisions](../build/decisions/) record *what
 |---|---|---|
 | [Data assumptions](data-assumptions.md) | Accounts exist only in México, Colombia and Argentina; currency belongs to the product, not the country | 1, 5 |
 | [Policy thresholds](policy-thresholds.md) | Fraud and high-amount handoffs use synthetic per-currency values a bank replaces without code | 3 |
+| [Policy sources](policy-sources.md) | The dispute policy is synthetic: what the customer sees of it, its known defects and where real values come from | 3 |
 | [Router model selection](router-model-selection.md) | Open-weight models chosen per route by a rule fixed before measuring | 2, 4 |
 | [What the model never receives](model-data-minimization.md) | The model gets the customer's words only; ids, personal data and the fraud score stay in code | 3 |
 | [One app, state outside the process](one-app-state-outside.md) | One FastAPI app and one API; sessions, conversation and cases survive a restart | 2 |

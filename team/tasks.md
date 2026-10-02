@@ -32,43 +32,45 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 4 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
 | 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Sun 10/4 | Metrics, trade-offs and slides with a real delta | In progress: the comparison is frozen in `2024Q4-eval-v7` (REQ-0016 done); the code serves router_v2 with a baseline fallback on the branch `feat/serve-router-v2`, not yet deployed; the greeting gap is planned in [router v3](router-v3-plan.md) (task 20) |
 | 6 | Write the pt-BR twins of the key cases and check them by back-translation ([017](../docs/build/decisions/017-portuguese.md)); include the three demo cases | REQ-0012, REQ-0009 | Unassigned | Fri 10/2 | Normal case in Portuguese, the 3 demo cases in pt-BR | Done: four variants signed (`eval/review/demo-pt-br.md`); Pix hands off; extrato and fatura show the account's charges (`tests/test_demo_pt_br.py`); 2% development replay, 280 handoffs, 2 prefixes ([evidence](../evidence/transcript-chats/20261002T144836Z/summary.json)) |
-| 7 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Sun 10/4 | Trade-offs, slides | Pending: on the run that is frozen at the end (eval-v7, or eval-v8 if router v3 lands) |
+| 7 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Unassigned | — | Trade-offs, slides | Pending: on the run that is frozen at the end (eval-v7, or eval-v8 if router v3 lands) |
 | 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | In progress: the README has the limitations section (10/02); the slides are pending |
 | 9 | Path to production write-up, including monitoring; handoff delivery decided ([015](../docs/build/decisions/015-handoff-delivery.md)) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Sun 10/4 | Public link, submission | Secrets review done; the freeze itself moves to Sun 10/4 night. gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
-| 11 | Final README update: results and limitations | REQ-0030 | Rubén | Sun 10/4 | — | Pending |
-| 12 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
-| 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
-| 14 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
-| 15 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Rubén | Mon 10/5 | Submission | Pending |
-| 16 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
-| 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
-| 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
-| 19 | Critical fixes only after the freeze | — | Team | Sun 10/4 night to Mon 10/5 | — | Pending |
-| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Rubén | Sun 10/4 | Final metrics, README, slides | Pending |
+| 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | Pending |
+| 12 | Start the video script | REQ-0037 | Unassigned | — | Video | Pending |
+| 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Unassigned | — | Validation Fri | Pending |
+| 14 | Validate the presentation outline with the group | REQ-0036 | Unassigned | — | Slides | Pending |
+| 15 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Unassigned | — | Submission | Pending |
+| 16 | Record and edit the video (3 minutes at most) | REQ-0037 | Unassigned | — | Submission | Pending |
+| 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | — | Submission | Pending |
+| 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | — | — | Pending |
+| 19 | Critical fixes only after the freeze | — | Unassigned | — | — | Pending |
+| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Unassigned | — | Final metrics, README, slides | Pending |
+| 21 | Make the synthetic policy honest ([sources](../docs/rationale/policy-sources.md)): remove the invented "(Art. 4)" citation, read the window from `window_days` instead of from the text, label the estimated time as a demo value, and fill the verification table from official sources per country | REQ-0033 | Unassigned | — | README, slides | Pending |
+| 22 | A chat that behaves better ([plan](chat-behavior-plan.md), observations in [manual tests](chat-manual-tests.md)): richer reading, locate the charge, contrast what the customer says with the data, explain decisions, evaluation by conversation and a new sealed set | REQ-0001, REQ-0002, REQ-0016, REQ-0017 | Unassigned | — | Final metrics, slides | Pending: open decisions in the plan |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
 | 1 | Archive the OpenSpec changes `align-canonical-api-v1`, `persist-state-and-dispute-api`, `serve-demo-ui-with-advisor-view`, and `add-fraud-and-high-amount-rules` after PR #29 merges | — | Rubén | Fri 10/2 | — | Done: all four under `openspec/changes/archive/` (2026-10-01), main specs synced |
-| 2 | Enable the commit hook: `git config core.hooksPath .githooks` | — | Felix, Natalia | Fri 10/2 | — | Pending |
-| 3 | ROI against the baseline with cost per resolution, labelled as a projection | REQ-0057 | Unassigned | Fri 10/2 | — | Pending |
-| 4 | Breakdown by authorized segment and disparity analysis on the frozen run | REQ-0024 | Unassigned | Fri 10/2 | Limitations | Pending |
-| 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | Fri 10/2 | Path to production | Pending |
-| 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | Fri 10/2 | — | Pending |
-| 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Natalia | — | — | Pending |
+| 2 | Enable the commit hook: `git config core.hooksPath .githooks` | — | Unassigned | — | — | Pending |
+| 3 | ROI against the baseline with cost per resolution, labelled as a projection | REQ-0057 | Unassigned | — | — | Pending |
+| 4 | Breakdown by authorized segment and disparity analysis on the frozen run | REQ-0024 | Unassigned | — | Limitations | Pending |
+| 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | — | Path to production | Pending |
+| 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
+| 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Pending |
 
 ### Low: only if time remains (P2) or to confirm and close
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Close as not applicable if no LLM judge is used | REQ-0023 | Unassigned | Fri 10/2 | — | Pending |
+| 1 | Close as not applicable if no LLM judge is used | REQ-0023 | Unassigned | — | — | Pending |
 | 2 | Recent app-error context offered as a question | REQ-0045 | Unassigned | — | — | Pending |
 | 3 | Simulated handoff routing by language and specialty | REQ-0046 | Unassigned | — | — | Pending |
 | 4 | Keyword baseline for dispute category, with a time-based split: confirm whether the served keyword baseline covers it and close | REQ-0016 | Unassigned | — | — | Pending |
 | 5 | First look at the data: table inventory vs the dictionary | — | Rubén | — | — | In progress |
-| 6 | Record your preference in [pending decisions](pending-decisions.md) | — | Everyone | — | — | Pending |
+| 6 | Record your preference in [pending decisions](pending-decisions.md) | — | Unassigned | — | — | Pending |
 
 ## Log by day
 

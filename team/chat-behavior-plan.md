@@ -1,6 +1,6 @@
 # Plan: a chat that behaves better
 
-Status: proposed, not started. Date: 2026-10-02. Owner: Rubén. No time limit
+Status: proposed, not started. Date: 2026-10-02. No time limit
 set for this work (the Sunday 10/4 freeze in [tasks](tasks.md) is lifted for
 it; the owner decides what is in the submission). Supersedes the prompt part
 of [router v3](router-v3-plan.md), which becomes step 1 here.

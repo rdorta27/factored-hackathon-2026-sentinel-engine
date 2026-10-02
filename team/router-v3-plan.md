@@ -1,6 +1,6 @@
 # Plan: router v3 and a new held-out measurement (eval-v8)
 
-Status: proposed, not started; folded into [chat behaviour](chat-behavior-plan.md) as its first step. Date: 2026-10-02. Owner: Rubén.
+Status: proposed, not started; folded into [chat behaviour](chat-behavior-plan.md) as its first step. Date: 2026-10-02.
 Requirements: REQ-0016, REQ-0017, REQ-0019, REQ-0020, REQ-0047.
 
 ## Why
