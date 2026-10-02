@@ -2,7 +2,7 @@
 
 ## Choice
 
-The deployed demo runs:
+The deployed demo runs on Hugging Face Spaces, one container ([012](../build/decisions/012-public-deployment.md)), with:
 
 - **Model:** the keyword baseline. The prompted LLM router is being connected (decision 10); when ready, its key goes in the host as a secret (`SENTINEL_LLM_API_KEY`) with a spending cap set at the provider.
 - **Data:** the labeled Gold mock (`gold_source: mock` on `/api/v1/health`). The dataset never leaves the gitignored `data/` folder.

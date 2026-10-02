@@ -13,30 +13,12 @@ Open choices, each with its options, supporting material and deadline. The list 
 
 ## Overdue (due Wednesday 9/30)
 
-Includes the decisions due Tuesday 9/29 that were not settled. Decision 10 blocks the learned-component evidence (REQ-0016).
+Includes the decisions due Tuesday 9/29 that were not settled. Decision 10 blocks the learned-component evidence (REQ-0016); decision 15 blocks the Portuguese demo case (REQ-0012, REQ-0009).
 
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
 | 10 | Hybrid LLM models | The router is implemented and archived (`openspec/specs/llm-router/spec.md`); which model serves each route is not. Natalia's proposal: Llama 3 on Databricks for frequent queries, GPT-4o for ambiguous cases, Portuguese and evaluation. Live-model comparison pending; mirrored fixtures hold zero delta meanwhile | [Decision 001](../docs/build/decisions/001-azure-platform.md) |
-| 14 | Experiment tracking | MLflow (built into Databricks, decision 12), Azure ML or another tool. Runs already record model/route/prompt/tokens/cost (latest `evidence/evaluation-runs/2024Q4-eval-v5/summary.json`) | [ML](../docs/build/areas/ml.md) |
 | 15 | Portuguese | There is no Portuguese in the data, but the system must work in Portuguese (REQ-0012). There are no Brazilian accounts: `customers.country` is México, Colombia or Argentina only (data dictionary). Open: how a Portuguese-speaking customer is served (replies, country and currency, given there are no Brazilian customers), how it is tested, and who reviews the Portuguese. The 13 single-turn pt-BR utterances in `sentinel-ai-core/eval/cases/` are team-written, unreviewed and only exercise the router. Dropped: external pt-BR data | [Conversation: languages](../docs/build/conversation.md#languages) |
-| 27 | Data staleness threshold | How old Gold may be before the assistant stops answering from it and offers a handoff. The as-of date is always stated either way (REQ-0039) | [Specification: failure handling](../docs/architecture/specification.md#failure-handling) |
-
-## Due Thursday 10/1
-
-Postponed from 9/28 and 9/29. Until then the demo runs locally; the Azure services it would use are already mocked (test session, `.env`, local logs), but the public link is a mandatory deliverable and cannot be a mock.
-
-| # | Decision | Options or proposal | Supporting material |
-|---|---|---|---|
-| 13 | Azure services | A minimal deployment for the public link (Container Apps or App Service) and secrets (Key Vault). With the Databricks production path of decision 12, also ADLS, Databricks and Unity Catalog. The app is one process (`uvicorn app.main:app` from `sentinel-ai-core/`, SQLite state, Gold mock or DuckDB) and waits on a subscription or host. **Fallback if Azure is not ready on Thursday:** deploy the same container on a free host (for example Render, Fly.io or Hugging Face Spaces, Docker) with usage limits, recorded as an exception to [decision 001](../docs/build/decisions/001-azure-platform.md); the brief only requires a minimal deployment (REQ-0035) | [Decision 001](../docs/build/decisions/001-azure-platform.md) |
-| 16 | Azure subscription or credits | Who provides it, with a spend cap and alerts. Only needed for the minimal deployment behind the public link: cloud is not mandatory (help channel, 9/28). Cost assumption: USD 20–58, within the USD 200 trial credit (Natalia's estimate) | [Decision 001](../docs/build/decisions/001-azure-platform.md) |
-
-## Due before submission (Monday 10/5)
-
-| # | Decision | Options or proposal | Supporting material |
-|---|---|---|---|
-| 23 | `team/` in the submission | The repo stays public (decided). Open: keep `team/` in the submission or remove it before submitting. Does not block the skeleton | [Security](../docs/build/security.md#public-repository-and-deployment) |
-| 28 | Handoff delivery in production | How the JSON package reaches advisors in production: queue, CRM ticket or similar. Not needed for the demo (the package is returned and logged). Routing by language and specialty is REQ-0046 (P2, simulated). Presented as remaining deployment work | [Specification: path to production](../docs/architecture/specification.md#path-to-production) |
 
 ## Decided
 
@@ -63,3 +45,8 @@ Postponed from 9/28 and 9/29. Until then the demo runs locally; the Azure servic
 | 29 | Advisor queue, admin panel, role landing | Role landing and a read-only advisor view of escalated tickets (`GET /api/v1/handoffs`) in the ai-core page; demo advisor only with `SENTINEL_DEMO_AUTH=1`; admin panel out; `sentinel-login/` backend removed ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) | 10/1 |
 | 25 | Suspected-fraud handoff rule | Claim (`fraud.claim`) or score above the p95 per account country and currency (`fraud.score`), synthetic values from evidence 2024Q4-v2 ([010](../docs/build/decisions/010-fraud-handoff-rule.md)) | 10/1 |
 | 26 | High-amount handoff threshold | p95 per account country and charge currency, synthetic values from evidence 2024Q4-v2; Mexican MXN has none ([011](../docs/build/decisions/011-high-amount-threshold.md)) | 10/1 |
+| 13, 16 | Deployment and subscription | Hugging Face Spaces, one Docker container, free tier; Azure stays the production target ([012](../docs/build/decisions/012-public-deployment.md)) | 10/1 |
+| 14 | Experiment tracking | The frozen evaluation runs are the tracking record; MLflow on Databricks in production ([013](../docs/build/decisions/013-experiment-tracking.md)) | 10/1 |
+| 23 | `team/` in the submission | Kept: it shows the plan, decisions and evidence behind the build; reviewed before submitting | 10/1 |
+| 27 | Data staleness threshold | Off in the demo (Gold's age is always zero); per-country threshold in production ([014](../docs/build/decisions/014-data-staleness.md)) | 10/1 |
+| 28 | Handoff delivery in production | Ticket store and advisor view in the demo; queue to the bank's CRM in production ([015](../docs/build/decisions/015-handoff-delivery.md)) | 10/1 |

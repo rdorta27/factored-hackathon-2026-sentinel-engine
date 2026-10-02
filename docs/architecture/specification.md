@@ -121,7 +121,7 @@ Failures degrade to a safe answer or a handoff, never to an unverified claim (RE
 | Failure | Behaviour |
 |---|---|
 | Gold unavailable | Tell the customer the lookup is not available; offer a handoff. Do not guess charges. |
-| Gold older than expected | Answer with the as-of date stated ("updated through…"); never claim a more recent state (REQ-0039). The staleness threshold is open (decision 27). |
+| Gold older than expected | Answer with the as-of date stated ("updated through…"); never claim a more recent state (REQ-0039). The staleness rule is off in the demo, where Gold's age is always zero; production sets a per-country threshold ([014](../build/decisions/014-data-staleness.md)). |
 | Dispute write or read-back fails or times out | Retry with the same idempotency key, bounded. If still unverified, escalate with the attempt recorded in the handoff; do not give a case number. |
 | LLM error or timeout | Bounded retry, then a fixed fallback message and a handoff offer. |
 | Proposed tool call violates policy | Rejected by the orchestrator and logged. The LLM is asked to reply without it. |
@@ -240,9 +240,9 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Case store, sessions and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
 | Policy | Replace the synthetic configuration with the bank's approved policy, same format: per-currency values, `source` pointing to the bank policy, `synthetic: false`; decide staleness (decision 27). Each decision already records the policy file version |
-| Handoff | Decide how the JSON package reaches advisors: queue, CRM ticket or similar (decision 28); routing by language and specialty is REQ-0046 (P2) |
+| Handoff | Publish each ticket to a queue (for example Azure Service Bus) that creates it in the bank's CRM, routed by language and specialty (REQ-0046); same package format ([015](../build/decisions/015-handoff-delivery.md)) |
 | Personal data | Serving view without personal columns and free-text masking (built); a token vault if a tool ever needs the original value, and static masking in Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
-| Serving | Container Apps with autoscaling (decision 13) |
+| Serving | The submission runs one container on Hugging Face Spaces ([012](../build/decisions/012-public-deployment.md)); production moves it to Azure Container Apps with autoscaling and Key Vault |
 | LLM | Per-route quotas and a model per route (decision 10) |
 | Observability | Centralised logs and traces, alerts by country (REQ-0050) |
 | Evaluation | Run the same harness as a release gate |

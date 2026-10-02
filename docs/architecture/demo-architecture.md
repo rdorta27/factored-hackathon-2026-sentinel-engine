@@ -125,7 +125,7 @@ Each port keeps the target contract; the demo picks the adapter by configuration
 | Session | Identity provider | Test session: password login against a fixture of false credentials, role stored, cookie | No real identity; the advisor user exists only with `SENTINEL_DEMO_AUTH=1` |
 | Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; fraud and high-amount thresholds are synthetic p95 values per account country and currency from evidence 2024Q4-v2 ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)); Mexican MXN has none; staleness (decision 27) stays off |
 | Case store | PostgreSQL | SQLite file, same models (disputes, tickets, sessions, conversation) | One instance only; login-attempt counters per process |
-| Advisor | Human advisor; delivery channel not decided (decision 28) | Demo advisor user reads the filed tickets in a read-only view | No claim, routing or state change |
+| Advisor | Human advisor; tickets reach the bank's CRM through a queue ([015](../build/decisions/015-handoff-delivery.md)) | Demo advisor user reads the filed tickets in a read-only view | No claim, routing or state change |
 | Secrets | Azure Key Vault | `.env`, gitignored | — |
 | Gold (fallback) | Gold on Databricks | Labelled in-memory mock behind the same seam | Used when the DuckDB view is not readable; reported by `/api/v1/health` |
 

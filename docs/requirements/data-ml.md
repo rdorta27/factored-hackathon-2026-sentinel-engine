@@ -86,6 +86,8 @@ Record which model, prompt version, parameters and metrics produced each result,
 
 **Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
+The frozen runs are the tracking record; no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
+
 Missing: the live model's parameters, once decision 10 lands.
 
 <a id="req-0020"></a>

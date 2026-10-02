@@ -18,7 +18,7 @@ The submission serves one FastAPI app (`app.main:app`) with one API under `/api/
 
 ## In production
 
-Postgres on Azure behind the same models, more than one instance, and a queue or CRM for handoffs (decision 28).
+Postgres on Azure behind the same models, more than one instance, and a queue to the bank's CRM for handoffs ([015](../build/decisions/015-handoff-delivery.md)).
 
 ## On the slide
 
