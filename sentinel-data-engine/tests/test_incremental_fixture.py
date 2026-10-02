@@ -134,29 +134,32 @@ def _create_bronze_batch1(con: duckdb.DuckDBPyConnection) -> None:
     con.execute(
         f"""
         CREATE TABLE bronze_transactions (
-            transaction_id       VARCHAR,
-            transaction_date     VARCHAR,
-            process_date         VARCHAR,
-            customer_id          VARCHAR,
-            product_id           VARCHAR,
-            amount               DOUBLE,
-            currency             VARCHAR,
-            channel              VARCHAR,
-            transaction_country  VARCHAR,
-            transaction_status   VARCHAR,
-            is_fraud             BOOLEAN,
-            merchant_name        VARCHAR,
-            transaction_type     VARCHAR,
-            fraud_score          DOUBLE,
-            merchant_category    VARCHAR
+            transaction_id        VARCHAR,
+            transaction_date      VARCHAR,
+            process_date          VARCHAR,
+            customer_id           VARCHAR,
+            product_id            VARCHAR,
+            amount                DOUBLE,
+            currency              VARCHAR,
+            channel               VARCHAR,
+            transaction_country   VARCHAR,
+            transaction_status    VARCHAR,
+            is_fraud              BOOLEAN,
+            merchant_name         VARCHAR,
+            transaction_type      VARCHAR,
+            fraud_score           DOUBLE,
+            merchant_category     VARCHAR,
+            transaction_category  VARCHAR,
+            amount_usd            DOUBLE,
+            branch_id             VARCHAR
         )
         """
     )
     con.execute(
         f"""
         INSERT INTO bronze_transactions VALUES
-            ('{_DUPLICATE_TXN_ID}', '{_CUTOFF}',        '{_CUTOFF}',        'C001', 'PROD-A', 150.0, 'MXN', 'APP',    'Colombia', 'COMPLETED', FALSE, 'MerchX', 'PURCHASE', 0.1, 'RETAIL'),
-            ('TXN-B1-002',          '{_LATE_ARRIVAL_DATE}', '{_CUTOFF}',    'C003', 'PROD-C', 300.0, 'COP', 'ONLINE', 'Argentina','COMPLETED', FALSE, 'MerchY', 'PURCHASE', 0.0, 'FOOD')
+            ('{_DUPLICATE_TXN_ID}', '{_CUTOFF}',            '{_CUTOFF}', 'C001', 'PROD-A', 150.0, 'MXN', 'APP',    'Colombia', 'COMPLETED', FALSE, 'MerchX', 'PURCHASE', 0.1, 'RETAIL', 'Food',      12.50, NULL),
+            ('TXN-B1-002',          '{_LATE_ARRIVAL_DATE}', '{_CUTOFF}', 'C003', 'PROD-C', 300.0, 'COP', 'ONLINE', 'Argentina','COMPLETED', FALSE, 'MerchY', 'PURCHASE', 0.0, 'FOOD',   'Transport', 18.00, NULL)
         """
     )
 
@@ -198,11 +201,11 @@ def _append_batch2(con: duckdb.DuckDBPyConnection) -> None:
         INSERT INTO bronze_transactions VALUES
             -- Late-arriving valid record (transaction_date 10 days before cutoff).
             -- Uses C003/PROD-C which has no open complaint, so is_eligible = TRUE.
-            ('TXN-B2-LATE', '{_LATE_ARRIVAL_DATE}', '{_CUTOFF}', 'C003', 'PROD-C', 99.0,  'MXN', 'ATM',    'México',   'COMPLETED', FALSE, 'MerchZ', 'PURCHASE', 0.0, 'RETAIL',  NULL),
+            ('TXN-B2-LATE',        '{_LATE_ARRIVAL_DATE}', '{_CUTOFF}', 'C003', 'PROD-C', 99.0,  'MXN', 'ATM',    'México',   'COMPLETED', FALSE, 'MerchZ', 'PURCHASE', 0.0, 'RETAIL',  'Health',  7.10, NULL,     NULL),
             -- Duplicate: same transaction_id as Batch 1 row 1
-            ('{_DUPLICATE_TXN_ID}', '{_CUTOFF}',    '{_CUTOFF}', 'C001', 'PROD-A', 150.0, 'MXN', 'APP',    'Colombia', 'COMPLETED', FALSE, 'MerchX', 'PURCHASE', 0.1, 'RETAIL',  NULL),
+            ('{_DUPLICATE_TXN_ID}','{_CUTOFF}',            '{_CUTOFF}', 'C001', 'PROD-A', 150.0, 'MXN', 'APP',    'Colombia', 'COMPLETED', FALSE, 'MerchX', 'PURCHASE', 0.1, 'RETAIL',  'Food',   12.50, NULL,     NULL),
             -- New valid record with device_fingerprint populated (schema evolution)
-            ('TXN-B2-NEW',  '{_CUTOFF}',            '{_CUTOFF}', 'C001', 'PROD-A', 500.0, 'USD', 'ONLINE', 'Mexico',   'COMPLETED', FALSE, 'MerchW', 'TRANSFER', 0.0, 'DIGITAL', 'fp-abc123')
+            ('TXN-B2-NEW',         '{_CUTOFF}',            '{_CUTOFF}', 'C001', 'PROD-A', 500.0, 'USD', 'ONLINE', 'Mexico',   'COMPLETED', FALSE, 'MerchW', 'TRANSFER', 0.0, 'DIGITAL', NULL,    500.0, 'BR-001', 'fp-abc123')
         """
     )
 

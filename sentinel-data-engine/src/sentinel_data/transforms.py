@@ -61,13 +61,19 @@ def silver_customers_sql(source: str) -> str:
             COALESCE(document_type,    'UNSPECIFIED') AS document_type,
             document_number,
             date_of_birth,
+            gender,
             COALESCE(city,             'UNSPECIFIED') AS city,
             COALESCE(state,            'UNSPECIFIED') AS state,
             {country_norm_expr('country')}             AS country,
             COALESCE(segment,          'UNSPECIFIED') AS segment,
             COALESCE(customer_status,  'UNSPECIFIED') AS customer_status,
+            COALESCE(detected_accent,  'UNSPECIFIED') AS detected_accent,
             registration_date,
-            credit_score
+            registration_branch_id,
+            last_updated,
+            accepts_marketing,
+            credit_score,
+            TRY_CAST(estimated_monthly_income AS DOUBLE) AS estimated_monthly_income
         FROM {source}
     """
 
@@ -80,16 +86,19 @@ def silver_transactions_sql(source: str) -> str:
             process_date,
             product_id,
             customer_id,
-            COALESCE(transaction_type,   'UNSPECIFIED') AS transaction_type,
-            CAST(amount AS DOUBLE)                      AS amount,
-            COALESCE(currency,           'UNSPECIFIED') AS currency,
-            COALESCE(channel,            'UNSPECIFIED') AS channel,
-            {country_norm_expr('transaction_country')}  AS transaction_country,
-            COALESCE(transaction_status, 'UNSPECIFIED') AS transaction_status,
+            COALESCE(transaction_type,     'UNSPECIFIED') AS transaction_type,
+            COALESCE(transaction_category, 'UNSPECIFIED') AS transaction_category,
+            CAST(amount AS DOUBLE)                        AS amount,
+            COALESCE(currency,             'UNSPECIFIED') AS currency,
+            TRY_CAST(amount_usd AS DOUBLE)                AS amount_usd,
+            COALESCE(channel,              'UNSPECIFIED') AS channel,
+            branch_id,
+            {country_norm_expr('transaction_country')}    AS transaction_country,
+            COALESCE(transaction_status,   'UNSPECIFIED') AS transaction_status,
             is_fraud,
-            TRY_CAST(fraud_score AS DOUBLE)             AS fraud_score,
-            COALESCE(merchant_name,      'UNSPECIFIED') AS merchant_name,
-            COALESCE(merchant_category,  'UNSPECIFIED') AS merchant_category
+            TRY_CAST(fraud_score AS DOUBLE)               AS fraud_score,
+            COALESCE(merchant_name,        'UNSPECIFIED') AS merchant_name,
+            COALESCE(merchant_category,    'UNSPECIFIED') AS merchant_category
         FROM {source}
     """
 
@@ -99,13 +108,20 @@ def silver_products_sql(source: str) -> str:
         SELECT DISTINCT
             product_id,
             customer_id,
-            COALESCE(product_type,   'UNSPECIFIED') AS product_type,
+            COALESCE(product_type,    'UNSPECIFIED') AS product_type,
             product_number,
-            COALESCE(product_status, 'UNSPECIFIED') AS product_status,
-            COALESCE(currency,       'UNSPECIFIED') AS currency,
-            TRY_CAST(current_balance AS DOUBLE)     AS current_balance,
+            COALESCE(product_status,  'UNSPECIFIED') AS product_status,
+            COALESCE(currency,        'UNSPECIFIED') AS currency,
+            TRY_CAST(current_balance  AS DOUBLE)     AS current_balance,
+            TRY_CAST(credit_limit     AS DOUBLE)     AS credit_limit,
+            TRY_CAST(interest_rate    AS DOUBLE)     AS interest_rate,
             opening_date,
-            expiration_date
+            expiration_date,
+            opening_branch_id,
+            COALESCE(opening_channel, 'UNSPECIFIED') AS opening_channel,
+            has_linked_app,
+            days_past_due,
+            last_updated
         FROM {source}
     """
 
@@ -124,6 +140,7 @@ def silver_complaints_sql(source: str) -> str:
     return f"""
         SELECT DISTINCT
             complaint_id,
+            process_date,
             customer_id,
             affected_product_id                           AS product_id,
             assigned_agent_id,
@@ -141,6 +158,7 @@ def silver_complaints_sql(source: str) -> str:
             sla_breached,
             COALESCE(resolution,          'UNSPECIFIED') AS resolution_notes,
             TRY_CAST(claimed_amount       AS DOUBLE)     AS claimed_amount,
+            COALESCE(currency,            'UNSPECIFIED') AS currency,
             compensation_granted,
             is_repeat_complainer
         FROM {source}
@@ -151,11 +169,17 @@ def silver_service_agents_sql(source: str) -> str:
     return f"""
         SELECT DISTINCT
             agent_id,
-            COALESCE(first_name,       'UNSPECIFIED') AS first_name,
-            COALESCE(last_name,        'UNSPECIFIED') AS last_name,
-            COALESCE(agent_type,       'UNSPECIFIED') AS agent_type,
-            COALESCE(experience_level, 'UNSPECIFIED') AS experience_level,
-            languages
+            COALESCE(first_name,         'UNSPECIFIED') AS first_name,
+            COALESCE(last_name,          'UNSPECIFIED') AS last_name,
+            COALESCE(agent_type,         'UNSPECIFIED') AS agent_type,
+            COALESCE(experience_level,   'UNSPECIFIED') AS experience_level,
+            COALESCE(languages,          'UNSPECIFIED') AS languages,
+            COALESCE(native_accent,      'UNSPECIFIED') AS native_accent,
+            COALESCE(country_of_origin,  'UNSPECIFIED') AS country_of_origin,
+            COALESCE(agent_status,       'UNSPECIFIED') AS agent_status,
+            COALESCE(work_shift,         'UNSPECIFIED') AS work_shift,
+            hire_date,
+            TRY_CAST(avg_csat AS DOUBLE)               AS avg_csat
         FROM {source}
     """
 
@@ -170,16 +194,23 @@ def silver_call_center_interactions_sql(source: str) -> str:
     return f"""
         SELECT DISTINCT
             interaction_id,
+            process_date,
             customer_id,
             agent_id,
-            TRY_CAST(interaction_date AS DATE)         AS interaction_date,
-            COALESCE(channel,          'UNSPECIFIED')  AS channel,
-            COALESCE(contact_reason,   'UNSPECIFIED')  AS contact_reason,
-            COALESCE(reason_category,  'UNSPECIFIED')  AS reason_category,
-            TRY_CAST(sentiment_score   AS DOUBLE)      AS sentiment_score,
+            TRY_CAST(interaction_date  AS DATE)          AS interaction_date,
+            COALESCE(interaction_type, 'UNSPECIFIED')    AS interaction_type,
+            COALESCE(channel,          'UNSPECIFIED')    AS channel,
+            COALESCE(contact_reason,   'UNSPECIFIED')    AS contact_reason,
+            COALESCE(reason_category,  'UNSPECIFIED')    AS reason_category,
+            duration_seconds,
+            wait_time_seconds,
+            TRY_CAST(sentiment_score   AS DOUBLE)        AS sentiment_score,
             was_escalated,
             was_resolved,
-            COALESCE(detected_sentiment, 'UNSPECIFIED') AS detected_sentiment
+            requires_followup,
+            has_transcript,
+            has_recording,
+            COALESCE(detected_sentiment, 'UNSPECIFIED')  AS detected_sentiment
         FROM {source}
     """
 
@@ -194,10 +225,13 @@ def silver_satisfaction_surveys_sql(source: str) -> str:
     return f"""
         SELECT DISTINCT
             survey_id,
+            process_date,
             customer_id,
             interaction_id,
             agent_id,
             TRY_CAST(survey_date AS DATE)              AS survey_date,
+            COALESCE(survey_type,   'UNSPECIFIED')     AS survey_type,
+            COALESCE(send_channel,  'UNSPECIFIED')     AS send_channel,
             TRY_CAST(main_score  AS DOUBLE)            AS main_score,
             COALESCE(open_comments, 'UNSPECIFIED')     AS comments,
             COALESCE(nps_category,  'UNSPECIFIED')     AS nps_category
