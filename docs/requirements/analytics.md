@@ -5,7 +5,7 @@ Analysis that justifies the flow and the metrics that prove the system works. Ba
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
 | [REQ-0014](#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
-| [REQ-0022](#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055) | In progress |
+| [REQ-0022](#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055) | Done |
 | [REQ-0024](#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022) | In progress |
 | [REQ-0050](#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
 | [REQ-0053](#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](#req-0014) | Done |
