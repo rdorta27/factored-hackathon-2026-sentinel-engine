@@ -1,7 +1,7 @@
 # 018 · Acceptance rules for the held-out router measurement
 
 **Date:** 2026-10-01
-**Status:** Proposed (accepted or rejected only by citing `2024Q4-eval-v7` fields, committed after this text)
+**Status:** Accepted 2026-10-02 (rules committed before the run; results below cite `2024Q4-eval-v7`)
 **Participants:** Rubén (owner)
 
 Change: [`llm-evaluation`](../../../openspec/changes/llm-evaluation/design.md). Model selection rules: [016](016-router-models.md#amendment--selection-on-development-paired-pt-br-rule). Portuguese method: [017](017-portuguese.md).
@@ -56,4 +56,26 @@ Limits this leaves: labels reflect one model family's reading of the definitions
 - Each answer can be checked against one frozen run, and the rules cannot have been fitted to it.
 - A negative or null result for D5 is an accepted outcome, reported the same way.
 - Strict equivalence between variants (about 500 cases per variant at ±5 points) is not claimed. The submission states this limit (REQ-0013).
-- Pending: the result section, with cited field paths, after `2024Q4-eval-v7` is frozen.
+
+## Result
+
+Evidence: [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The run measured seal `27ad2f1b…` once, and `sentinel-ai-core/eval/measured.json` records it. Models: GLM 5.3 Flash on both routes ([016](016-router-models.md#result-of-the-amendment-accepted-2026-10-02)), reasoning effort low, 400-token cap. Field paths are under `component` unless stated.
+
+| # | Verdict | Cited fields |
+|---|---|---|
+| D4 | **Router v2 (with examples).** v2 fixes 67 cases that v1 gets wrong and breaks none; the interval is [0.1429, 0.3357], above zero. | `paired.router_v2_vs_router_v1` |
+| D5 | **The router beats the keyword baseline.** Net +124 of 280 cases, interval [0.3286, 0.55], above zero; 0 cases broken. v1 also beats it: +57, interval [0.1107, 0.3]. | `paired.router_v2_vs_baseline`, `paired.router_v1_vs_baseline` |
+| D6 | **Passes.** The largest per-variant net loss is 1 of 70 bases (es-CO, `ho-b34`), against a limit of 4. | `versions.router_v2.variant_losses.by_variant` |
+| D7 | **Passes.** 0 unsafe outcomes, 0/75 for each router version and 0/105 for the baseline, which by the rule of three means at most 4%. | `system.<version>.unsafe_outcomes` |
+
+What the numbers rest on:
+- **Accuracy:** baseline 0.5393, v1 0.7429, v2 0.9821 (`versions.<version>.breakdown.overall`). The baseline gets 0 of 68 `missing` cases right, and v1 also gets 0. v2's examples include vague messages and it reaches 0.9265 on `missing` (`breakdown.by_intent`). Most of the v1→v2 gain is that one intent.
+- **Cost per case:** USD 0.000044 for v1 and USD 0.00013 for v2 (`versions.<version>.cost_usd.total` / 280). Component latency p50 is about 1.1 s and p95 about 4.4 s (`latency_ms`).
+- **Stability:** 0.9933 agreement over 3 recorded repetitions on 100 cases (`versions.router_v2.stability`).
+- **Noisy twins:** no case changed outcome under noise for any version (`noisy.degradation_vs_twin`). With n = 50 this is descriptive.
+
+Limits to state with these numbers (REQ-0013):
+- The cases were written and reviewed by Claude models, and the label definitions were given to both author and reviewer (see case provenance). A 0.98 accuracy on such a set shows the router agrees with those definitions. It is not a field accuracy.
+- The run's own note says "team-written simulation"; the cases are model-written simulation, as stated above. The frozen run is not edited.
+- System outcome metrics replay the loop offline with mock Gold, so cost per resolution is "not defined" (no case reaches a confirmed dispute in a single turn) and system latency is replay time.
+
