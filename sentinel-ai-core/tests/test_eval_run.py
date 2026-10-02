@@ -98,3 +98,21 @@ def test_measurement_summary_builds_offline_on_a_small_sealed_set(
     assert summary["noisy"]["n"] == 1
     assert summary["examples_v2"]["ids"] == ["dev-oos-01"]
     assert "test-eval" in render_measurement(summary)
+
+
+def test_measurement_report_shows_variant_paired_and_stability_sections(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from eval.report import render_measurement
+
+    test_measurement_summary_builds_offline_on_a_small_sealed_set(tmp_path, monkeypatch)
+    summary = run._held_out_summary("test-eval", False, 0.45, {"hash": "0" * 64})
+    report = render_measurement(summary)
+    for heading in ("## Accuracy by version", "## Paired comparisons", "## By variant", "## Stability",
+                    "## Noisy twins", "## Safety and system"):
+        assert heading in report
+    assert "router_v2_vs_baseline" in report
+    assert "es-AR: accuracy" in report
+    # Every number in the report is read from the summary.
+    overall = summary["component"]["versions"]["baseline"]["breakdown"]["overall"]
+    assert f"| baseline | {overall['accuracy']} |" in report

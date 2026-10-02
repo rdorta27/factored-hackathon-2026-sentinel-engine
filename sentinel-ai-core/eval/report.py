@@ -130,16 +130,98 @@ def freeze_run(repo_root: Path | str, run_id: str, summary: dict, report_md: str
     return folder
 
 
-__all__ = ["EVAL_VERSION", "build_summary", "freeze_run", "render_measurement", "render_report", "validate_has_n"]
+def _interval(block: dict) -> str:
+    interval = block.get("interval_95")
+    text = f"[{interval[0]}, {interval[1]}]" if interval else "n/a"
+    return text + (" (descriptive)" if block.get("descriptive") else "")
 
 
 def render_measurement(summary: dict) -> str:
     """Readable view of a held-out measurement; every number comes from ``summary``."""
+    seal = summary["seal"]
+    component = summary["component"]
+    versions = component["versions"]
     lines = [
         f"# Held-out measurement {summary['run_id']}",
         "",
-        f"Eval {summary['eval_version']} · seal {summary['seal']['hash'][:16]} · n={summary['n']}",
+        f"Eval {summary['eval_version']} · seal {seal['hash'][:16]} · n={summary['n']} · "
+        f"main block n={component['n']}, same case ids for every version.",
+        "",
+        "## Accuracy by version",
+        "",
+        "| Version | Accuracy | 95% interval | JSON failures | Cost USD (total) | Latency p50/p95 ms |",
+        "|---|---|---|---|---|---|",
+    ]
+    for name, block in versions.items():
+        overall = block["breakdown"]["overall"]
+        lines.append(
+            f"| {name} | {overall['accuracy']} | {_interval(overall)} | "
+            f"{block['json_failures']['count']}/{block['json_failures']['n']} | {block['cost_usd']['total']} | "
+            f"{block['latency_ms']['p50']}/{block['latency_ms']['p95']} |"
+        )
+    lines += ["", "## Paired comparisons", ""]
+    for name, block in component["paired"].items():
+        lines.append(
+            f"- {name}: fixed {len(block['fixed'])}, broken {len(block['broken'])}, net {block['net']} "
+            f"of {block['n']} ({block['net_share']}), interval {block['interval_95']}, "
+            f"above zero: {block['above_zero']}"
+        )
+        if block["broken"]:
+            lines.append(f"  - broken: {', '.join(block['broken'])}")
+    lines += ["", "## By variant", ""]
+    for name, block in versions.items():
+        losses = block["variant_losses"]
+        lines.append(f"### {name} (best variant: {losses.get('best')})")
+        for variant, stats in block["breakdown"]["by_variant"].items():
+            loss = losses["by_variant"].get(variant, {})
+            lost = ", ".join(loss.get("lost_bases", [])) or "none"
+            lines.append(
+                f"- {variant}: accuracy {stats['accuracy']} {_interval(stats)} (n={stats['n']}); "
+                f"net loss {loss.get('net_loss')} of {loss.get('n')} shared bases; lost: {lost}"
+            )
+    lines += ["", "## By intent", ""]
+    for name, block in versions.items():
+        parts = [
+            f"{intent} {stats['accuracy']} {_interval(stats)} (n={stats['n']})"
+            for intent, stats in block["breakdown"]["by_intent"].items()
+        ]
+        lines.append(f"- {name}: " + "; ".join(parts))
+    lines += ["", "## Stability", ""]
+    for name, block in versions.items():
+        stability = block["stability"]
+        lines.append(
+            f"- {name}: agreement {stability['agreement']} over {stability.get('recorded_repetitions', 0)} "
+            f"recorded repetitions (n={stability['n']})"
+        )
+    noisy = summary.get("noisy") or {}
+    if noisy:
+        lines += ["", f"## Noisy twins (descriptive, n={noisy['n']})", ""]
+        for name, block in noisy["degradation_vs_twin"].items():
+            lines.append(f"- {name}: broken by noise {len(block['broken'])}, fixed {len(block['fixed'])} (n={block['n']})")
+    lines += ["", "## Safety and system", ""]
+    attacks = summary["attacks"]
+    lines.append(
+        f"Attacks n={attacks['n']}: code-decided {attacks['code_decided']['n']} (baseline only), "
+        f"model-facing {attacks['model_facing']['n']}. End-to-end cases n={summary['end_to_end']['n']}."
+    )
+    for name, system in summary["system"].items():
+        unsafe = system["unsafe_outcomes"]
+        lines.append(
+            f"- {name}: unsafe {unsafe['rate']}"
+            + (f" ({', '.join(unsafe['cases'])})" if unsafe["cases"] else "")
+            + f"; missed transfers {len(system['escalation_quality']['missed_transfers'])}"
+            f"; cost per resolution {system['cost_usd']['per_resolution']}"
+        )
+    spend = summary["spend"]
+    lines += [
+        "",
+        f"Spend: USD {spend['spent_usd']} over {spend['n']} live calls (cap {spend['cap_usd']}). "
+        f"Prices: {summary['prices']}.",
+        f"Examples in v2: {', '.join(summary['examples_v2']['ids']) or 'none'}.",
     ]
     if summary.get("notes"):
         lines += ["", "## Notes"] + [f"- {note}" for note in summary["notes"]]
     return "\n".join(lines) + "\n"
+
+
+__all__ = ["EVAL_VERSION", "build_summary", "freeze_run", "render_measurement", "render_report", "validate_has_n"]
