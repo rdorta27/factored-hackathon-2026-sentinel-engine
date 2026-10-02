@@ -50,7 +50,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Archive the OpenSpec changes `align-canonical-api-v1`, `persist-state-and-dispute-api`, `serve-demo-ui-with-advisor-view`, and `add-fraud-and-high-amount-rules` after PR #29 merges | — | Rubén | Fri 10/2 | — | Pending |
+| 1 | Archive the OpenSpec changes `align-canonical-api-v1`, `persist-state-and-dispute-api`, `serve-demo-ui-with-advisor-view`, and `add-fraud-and-high-amount-rules` after PR #29 merges | — | Rubén | Fri 10/2 | — | Done: all four under `openspec/changes/archive/` (2026-10-01), main specs synced |
 | 2 | Enable the commit hook: `git config core.hooksPath .githooks` | — | Felix, Natalia | Fri 10/2 | — | Pending |
 | 3 | ROI against the baseline with cost per resolution, labelled as a projection | REQ-0057 | Unassigned | Fri 10/2 | — | Pending |
 | 4 | Breakdown by authorized segment and disparity analysis on the frozen run | REQ-0024 | Unassigned | Fri 10/2 | Limitations | Pending |
