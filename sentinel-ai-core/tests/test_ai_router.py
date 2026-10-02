@@ -258,3 +258,50 @@ def test_router_request_never_carries_the_fraud_score() -> None:
     with pytest.raises(ValueError, match="not allowed"):
         build_messages("no reconozco un cargo", [], {"transaction_id": "TXN-1", "amount": 1.0, "fraud_score": 29.0})
     assert "fraud" not in SYSTEM_PROMPT
+
+
+def _record(tmp_path, model: str, repetition: int, intent: str, message: str = "no reconozco este cargo"):  # type: ignore[no-untyped-def]
+    from app.ai.llm import build_messages
+    from app.ai.recording import RecordedTransport, write_recording
+
+    messages = build_messages(message, [message])
+    replay = RecordedTransport(tmp_path, "v1", repetition=repetition)
+    path, digest = replay.path_for(model, messages)
+    write_recording(
+        path,
+        model=model,
+        prompt_version="v1",
+        digest=digest,
+        repetition=repetition,
+        messages=messages,
+        response=LLMResponse(content=f'{{"intent": "{intent}", "language": "es-419"}}', tokens_in=10, tokens_out=5),
+    )
+    return path, messages
+
+
+def test_two_models_do_not_share_a_recording(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordedTransport
+
+    path_a, messages = _record(tmp_path, "cheap-model", 0, "charge")
+    path_b, _ = _record(tmp_path, "strong-model", 0, "missing")
+    assert path_a != path_b
+    replay = RecordedTransport(tmp_path, "v1")
+    assert '"charge"' in replay.complete(model="cheap-model", messages=messages).content
+    assert '"missing"' in replay.complete(model="strong-model", messages=messages).content
+
+
+def test_two_repetitions_do_not_share_a_recording(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import json
+
+    from app.ai.recording import RecordedTransport
+
+    path_0, messages = _record(tmp_path, "cheap-model", 0, "charge")
+    path_1, _ = _record(tmp_path, "cheap-model", 1, "person")
+    assert path_0 != path_1
+    body = json.loads(path_1.read_text(encoding="utf-8"))
+    assert (body["model"], body["prompt_version"], body["repetition"]) == ("cheap-model", "v1", 1)
+    assert '"person"' in RecordedTransport(tmp_path, "v1", repetition=1).complete(
+        model="cheap-model", messages=messages
+    ).content
+    with pytest.raises(ModelUnavailable):
+        RecordedTransport(tmp_path, "v1", repetition=2).complete(model="cheap-model", messages=messages)
