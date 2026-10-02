@@ -5,11 +5,11 @@ Data preparation, sources and freshness, and the learned component with its labe
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
 | [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | In progress |
-| [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | In progress |
+| [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | Done |
 | [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | In progress |
 | [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
 | [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | In progress |
-| [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | In progress |
+| [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | Done |
 | [REQ-0023](#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](#req-0016) | Pending |
 | [REQ-0031](#req-0031) | Approved data, labeled by origin | P0 | data | — | Done |
 | [REQ-0039](#req-0039) | Declare data freshness | P0 | ai, data | [REQ-0015](#req-0015) | Done |
