@@ -9,6 +9,7 @@ response body, never from a second instrumentation.
 
 from __future__ import annotations
 
+import os
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -43,6 +44,9 @@ class RaisingGold:
 
 def build_client(fixtures_dir: Path | str, model=None) -> TestClient:  # type: ignore[no-untyped-def]
     """A fresh app per case; ``model`` replaces the fixture-backed router when given."""
+    # The harness always speaks plain HTTP through TestClient, which never sends a
+    # Secure cookie; without this every replayed request would be rejected as 401.
+    os.environ["SENTINEL_SECURE_COOKIES"] = "false"
     config = RouterConfig(
         cheap_model="cheap-eval",
         strong_model="strong-eval",
