@@ -79,3 +79,5 @@ Limits to state with these numbers (REQ-0013):
 - The run's own note says "team-written simulation"; the cases are model-written simulation, as stated above. The frozen run is not edited.
 - System outcome metrics replay the loop offline with mock Gold, so cost per resolution is "not defined" (no case reaches a confirmed dispute in a single turn). In the frozen run, system latency for the router versions includes the live model calls (`system.<version>.latency_ms`, p50 about 0.95 s), despite the run note saying replay time. An offline replay reproduces every field except spend and latency (`python3 -m eval.run verify 2024Q4-eval-v7`).
 
+*Correction 2026-10-02:* the last sentence does not hold. `verify` reports the run as different: the component block replays identically, but the system block does not (for example containment 1.0 instead of 0.60 for v2, and no cost). The cause is not yet found; it is task 1.1 of the `resolution-eval` change. The rules and the verdicts above rest on the component block and are unaffected. Detail in the [metrics report](../metrics-report.md#9-reproduction).
+
