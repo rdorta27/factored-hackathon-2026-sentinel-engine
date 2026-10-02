@@ -26,7 +26,8 @@ import os
 import secrets
 from pathlib import Path
 
-from fastapi import APIRouter, FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request, Response
+from sqlalchemy import text
 
 from app.ai.port import ModelPort
 from app.session.router import SESSION_COOKIE  # re-exported for test imports
@@ -89,6 +90,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     audit = AuditLogger(recorder)
     demo_auth = os.environ.get("SENTINEL_DEMO_AUTH", "0") == "1"
     users = JsonUserRepository(Path(os.environ.get("SENTINEL_USERS_PATH") or _FIXTURE_PATH), demo_roles=demo_auth)
+    engine = None
     state_backend = (state_backend or os.environ.get("SENTINEL_STATE_BACKEND", "sqlite")).lower()
     if state_backend == "memory":
         sessions = InMemorySessionStore()
@@ -118,6 +120,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     application.state.gold_source = gold_source
     application.state.reference_date = ref_date
     application.state.state_backend = state_backend
+    application.state.engine = engine
     application.state.conversation_store = conversation_store
     application.state.cases = cases
     # In memory, the live conversations dict (tests count threads through it).
@@ -128,9 +131,20 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     ops = APIRouter(prefix="/api/v1", tags=["ops"])
 
     @ops.get("/health")
-    def health() -> dict[str, str]:
+    def health(response: Response) -> dict[str, str]:
+        # Strong health: the state store must answer, not only the process.
+        # A probe that only sees "ok" would keep routing traffic to an
+        # instance whose database file is gone or unwritable.
+        status = "ok"
+        if application.state.engine is not None:
+            try:
+                with application.state.engine.connect() as connection:
+                    connection.execute(text("SELECT 1"))
+            except Exception:  # noqa: BLE001 - any store failure means not ready
+                status = "unavailable"
+                response.status_code = 503
         return {
-            "status": "ok",
+            "status": status,
             "gold_source": gold_source,
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),

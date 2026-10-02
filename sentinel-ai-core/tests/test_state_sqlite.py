@@ -36,6 +36,21 @@ def test_health_reports_sqlite(sqlite_env) -> None:  # type: ignore[no-untyped-d
     assert TestClient(create_app()).get("/api/v1/health").json()["state_backend"] == "sqlite"
 
 
+def test_health_fails_when_the_state_store_is_unreachable(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    app = create_app()
+    api = TestClient(app)
+    assert api.get("/api/v1/health").status_code == 200
+
+    class Broken:
+        def connect(self):  # type: ignore[no-untyped-def]
+            raise RuntimeError("database is gone")
+
+    app.state.engine = Broken()
+    response = api.get("/api/v1/health")
+    assert response.status_code == 503
+    assert response.json()["status"] == "unavailable"
+
+
 def test_session_conversation_and_case_survive_a_restart(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     login(api)
