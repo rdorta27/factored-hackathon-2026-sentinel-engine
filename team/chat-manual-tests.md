@@ -98,6 +98,35 @@ chat plan.
   fixed safety rules are probed in `tests/adversarial/test_f_decision_disclosure.py`
   (`0/42` unsafe, [run](../../evidence/adversarial/20261002T195516Z/summary.json)).
 
+### MT-08 · MT-05 and MT-06 retest, fresh sessions (2026-10-02, agent)
+
+- **Setup:** one fresh login per message, keyword stand-in (no `SENTINEL_LLM_*`
+  in this session), mock Gold, reference date 2026-06-17, `CUST-0001`. The why
+  follow-up does not call the model; the first MT-05 turn matched in code.
+- **MT-05:** "Hay un cobro de 2500 MXN en ACME Store" → `text` / `window.expired`.
+  Then "en que te basas para decirme eso, de donde salen los 90 dias" →
+  `explanation` / `explanation.window.expired`, `rule_id` `window.expired`.
+  The charge list is not shown again.
+- **MT-06:** each first message in its own session.
+
+  | Message | Reply |
+  |---|---|
+  | "no reconozco un cargo de Tienda Lumbre" | `clarification` / `charge.not_found`, newest four |
+  | "me cobraron dos veces en la cafetería ayer" | `clarification` / `charge.not_found`, newest four (yesterday contradicts Cafe Central) |
+  | "hay un cobro de 849 que no hice" | `clarification` / `charge.not_found`, newest four |
+  | "el de ayer" | `clarification` / `charge.not_found`, newest four |
+  | "oi, não reconheço uma cobrança de R$ 215" | `clarification` / `charge.not_found`, newest four |
+  | "me cobraron en la cafetería" | `clarification` / `clarifyWhichCharge`, only TXN-1006, no confirm box |
+  | "no reconozco un cargo" | `clarification` / `clarifyWhichCharge`, newest four, no not-found text |
+
+- **Expected:** that. A soft match stays a clarification. A stated detail that
+  matches nothing says so and still lists the newest charges.
+- **Capability:** Locate, Explain.
+- **Status:** fixed for narrowing and the why follow-up. Small talk and status
+  questions from MT-06 are unchanged. Evidence: this run,
+  `tests/test_grounding.py`, `eval/review/narrowing.md` (before 20/24
+  right-charge-shown and 4/24 not-found-said; after 24/24 and 24/24).
+
 ## How to add an entry
 
 Copy a block: input, observed, expected, cause, capability, status. Name the

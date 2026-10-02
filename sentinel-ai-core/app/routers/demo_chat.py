@@ -29,7 +29,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
 from app.observability import Recorder, TurnObserver
-from app.orchestrator.step import Ports, step
+from app.orchestrator.step import MAX_ATTEMPTS, Ports, step
 from app.privacy import mask
 from app.orchestrator.types import (
     Candidate,
@@ -65,7 +65,7 @@ from app.session.models import Session
 from app.session.router import SESSION_COOKIE, require_customer
 from app.state.cases import ESCALATED, CaseRow, CaseTools
 from app.state.conversation import StoredConversation
-from app.tools.bound import SessionBoundLookup
+from app.tools.bound import GoldTimeout, SessionBoundLookup
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
@@ -73,6 +73,7 @@ router = APIRouter(prefix="/api/v1", tags=["chat"])
 _TEXT_KEYS = {
     "person.ask": "person.ask",
     "out_of_scope.ask": "out_of_scope.ask",
+    "extraction.refused": "extraction.refused",
     "status.reversed": "status.reversed",
     "status.declined": "status.declined",
     "status.pending": "status.pending",
@@ -242,12 +243,24 @@ def _to_reply(
                 )
         if not state.candidates:
             # Nothing shown yet: offer the customer's own charges as chips.
-            state.candidates = bound.lookup_transactions()
+            try:
+                state.candidates = bound.lookup_transactions()
+            except GoldTimeout:
+                return _handoff(
+                    "unverified",
+                    None,
+                    MAX_ATTEMPTS,
+                    language=state.language.value,
+                    country=session.country,
+                    trace_id=trace_id,
+                    ref_date=ref_date,
+                    recorder=recorder,
+                )
         shown = [
             item for item in state.candidates if item.candidate_id not in state.rejected_ids
         ][:4]
         return Clarification(
-            message_key="clarifyWhichCharge",
+            message_key="charge.not_found" if output.reason == "charge.not_found" else "clarifyWhichCharge",
             missing="transaction",
             candidates=[
                 candidate_view(item, session.country, ref_date) for item in shown
@@ -400,7 +413,10 @@ def select_charge(turn: TurnContext, reference: str) -> Candidate | None:
     shown even when the last clarification listed others. The fresh candidate
     replaces a stale one, so "already disputed" is current.
     """
-    candidate = turn.bound.candidate(reference)
+    try:
+        candidate = turn.bound.candidate(reference)
+    except GoldTimeout:
+        return None
     if candidate is None:
         return None
     state = turn.state
