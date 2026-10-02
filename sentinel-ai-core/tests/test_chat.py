@@ -62,6 +62,19 @@ def test_selection_does_not_open() -> None:
     assert api.app.state.memories[token].open_calls == 0
 
 
+def test_text_while_the_box_is_open_shows_the_box_again() -> None:
+    api = client()
+    login(api)
+    opened = api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"})
+    assert opened.json()["kind"] == "confirm_box"
+    again = api.post("/api/v1/chat", json={"message": "sí"})
+    body = again.json()
+    assert body["kind"] == "confirm_box", "text re-shows the box, it never confirms"
+    assert body["candidate"]["reference"] == "TXN-1006"
+    token = next(iter(api.app.state.memories))
+    assert api.app.state.memories[token].open_calls == 0, "a written yes never opens a case"
+
+
 def test_foreign_reference_does_not_disclose() -> None:
     api = client()
     login(api)

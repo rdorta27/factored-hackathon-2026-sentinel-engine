@@ -201,6 +201,23 @@ def _to_reply(
 ) -> ChatReply:
     kind = output.kind
     if kind is OutcomeKind.QUESTION:
+        if state.pending_confirmation is not None:
+            # A message that is not a person request does not confirm, but the
+            # box is still open: show it again instead of a confusing "which
+            # charge", so the customer can press the button (REQ-0006).
+            pending = next(
+                (
+                    item
+                    for item in state.candidates
+                    if item.candidate_id == state.pending_confirmation.candidate_id
+                ),
+                None,
+            )
+            if pending is not None:
+                return ConfirmBox(
+                    message_key="confirmCharge",
+                    candidate=candidate_view(pending, session.country, ref_date),
+                )
         if not state.candidates:
             # Nothing shown yet: offer the customer's own charges as chips.
             state.candidates = bound.lookup_transactions()

@@ -74,6 +74,12 @@ function addBubble(text) {
   document.getElementById("thread").append(el("div", "msg msg-user", text));
 }
 
+function renderError(body, status) {
+  const key = status === 429 ? "tooManyRequests" : "errorGeneric";
+  const trace = body && body.trace_id ? ` (${body.trace_id})` : "";
+  document.getElementById("thread").append(el("div", "msg msg-audit", `${t(key)}${trace}`));
+}
+
 async function postChat(payload) {
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
@@ -83,7 +89,12 @@ async function postChat(payload) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
-    renderReply(await response.json());
+    const body = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      renderError(body, response.status);
+      return;
+    }
+    renderReply(body);
   } finally {
     typing.remove();
   }
@@ -139,6 +150,7 @@ function renderReply(body) {
   } else if (body.kind === "handoff") {
     const card = el("div", "msg msg-audit");
     card.append(el("h3", "chat-title", t("handoffTitle")));
+    card.append(el("p", "", `${t("field_reference")}: ${body.reference}`));
     card.append(el("p", "", `${t("field_reason")}: ${t(body.reason_key)}`));
     if (body.estimated_date) {
       card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
@@ -153,7 +165,11 @@ function renderReply(body) {
 
 async function loadTransactions() {
   const response = await api("/api/v1/transactions");
-  const payload = await response.json();
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    renderError(payload, response.status);
+    return;
+  }
   document.getElementById("reference-date").textContent = `${t("field_referenceDate")}: ${formatDate(payload.as_of)}`;
   const box = document.getElementById("transactions");
   box.textContent = "";
@@ -163,7 +179,12 @@ async function loadTransactions() {
     item.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
     item.append(el("span", "chat-sub", ` ${tx.merchant}`));
     item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
-    item.addEventListener("click", () => selectCandidate(tx));
+    if (!tx.eligible) {
+      item.disabled = true;
+      item.append(el("span", "chat-sub", ` ${t(tx.ineligibleKey || "candidateOutOfWindow")}`));
+    } else {
+      item.addEventListener("click", () => selectCandidate(tx));
+    }
     box.append(item);
   });
 }
