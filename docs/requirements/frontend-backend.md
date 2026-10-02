@@ -160,7 +160,9 @@ The system must serve customers in Spanish and in Portuguese (brief: Scope; kick
 
 **Evidence:** Proven by: Spanish (es-419) on the whole demo path; router language detection includes pt-BR (`tests/test_ai_router.py`).
 
-Missing: how the system serves a Portuguese-speaking customer is not defined yet (replies, country and currency when no Brazilian customer exists). The eval holds 13 single-turn pt-BR utterances written by the team, unreviewed and attached to MX and CO customers; they are not yet a valid test of Portuguese.
+How a Portuguese-speaking customer is served and how pt-BR cases are reviewed is decided ([017](../build/decisions/017-portuguese.md)): an MX, CO or AR account answered in pt-BR, with cases checked through Spanish back-translation.
+
+Missing: the pt-BR twins of the key cases, written and checked that way.
 
 <a id="req-0033"></a>
 ### REQ-0033 · Policy decides, the LLM converses

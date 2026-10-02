@@ -11,13 +11,9 @@ Open choices, each with its options, supporting material and deadline. The list 
    - product and technical decisions in [decisions](../docs/build/decisions/), one file each, using the [template](../docs/build/decisions/_template.md);
    - team decisions in the [plan](plan.md#decisions-made) and in the [decided](#decided) table below.
 
-## Overdue (due Wednesday 9/30)
+## Open
 
-Includes the decisions due Tuesday 9/29 that were not settled. Decision 15 blocks the Portuguese demo case (REQ-0012, REQ-0009).
-
-| # | Decision | Options or proposal | Supporting material |
-|---|---|---|---|
-| 15 | Portuguese | There is no Portuguese in the data, but the system must work in Portuguese (REQ-0012). There are no Brazilian accounts: `customers.country` is México, Colombia or Argentina only (data dictionary). Open: how a Portuguese-speaking customer is served (replies, country and currency, given there are no Brazilian customers), how it is tested, and who reviews the Portuguese. The 13 single-turn pt-BR utterances in `sentinel-ai-core/eval/cases/` are team-written, unreviewed and only exercise the router. Dropped: external pt-BR data | [Conversation: languages](../docs/build/conversation.md#languages) |
+None. New choices are added here with their options, supporting material and deadline.
 
 ## Decided
 
@@ -50,3 +46,4 @@ Includes the decisions due Tuesday 9/29 that were not settled. Decision 15 block
 | 27 | Data staleness threshold | Off in the demo (Gold's age is always zero); per-country threshold in production ([014](../docs/build/decisions/014-data-staleness.md)) | 10/1 |
 | 28 | Handoff delivery in production | Ticket store and advisor view in the demo; queue to the bank's CRM in production ([015](../docs/build/decisions/015-handoff-delivery.md)) | 10/1 |
 | 10 | Router models | Open-weight models on Fireworks AI, cheap and strong route, chosen per route by a rule fixed before measuring; gpt-oss-120b as the starting cheap model ([016](../docs/build/decisions/016-router-models.md)) | 10/1 |
+| 15 | Portuguese | A Portuguese-speaking customer holds an MX, CO or AR account; pt-BR twins of the key cases, written by one model, back-translated to Spanish by another and checked by the team ([017](../docs/build/decisions/017-portuguese.md)) | 10/1 |

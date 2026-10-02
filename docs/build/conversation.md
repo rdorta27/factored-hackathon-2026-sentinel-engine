@@ -104,7 +104,6 @@ The dataset includes accent-detection fields (Mexican, Colombian, Argentine and,
 - Metrics by language, with n.
 - If pt-BR performs worse, we explain the cause (e.g., no pt-BR training data); we do not hide it.
 
-### Open questions
+### Generating and validating pt-BR cases
 
-- How do we generate and validate the pt-BR cases? Does anyone on the team read Portuguese?
-- How many pt-BR cases do we need for the comparison to be meaningful?
+Nobody on the team speaks Portuguese, so cases are checked through Spanish: one model writes the pt-BR case, a different model back-translates it, and the team compares the back-translation with the intended Spanish case. Every important es-419 case has a pt-BR twin ([017](decisions/017-portuguese.md)).
