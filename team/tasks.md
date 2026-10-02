@@ -14,8 +14,9 @@ Daily goals and milestones live in the [plan schedule](plan.md#schedule). The fl
 | Tue 9/29 | Flow confirmed; architecture reviewed (skeleton not reached) | [See](#tue-929) |
 | Wed 9/30 | The skeleton answers end to end; one case works fully | [See](#wed-930) |
 | Thu 10/1 | 3 cases in es-419 and pt-BR, public link | [See](#thu-101) |
-| Fri 10/2 | Code and results frozen | [See](#fri-102) |
-| Sat 10/3 to Mon 10/5 | Presentation and video done; submitted | [See](#sat-103-to-mon-105) |
+| Fri 10/2 | Router v2 served with baseline fallback; router v3 planned | [See](#fri-102) |
+| Sat 10/3 to Sun 10/4 | Router v3 measured and served; **code and results frozen Sun 10/4 night** | [See](#sat-103-to-mon-105) |
+| Mon 10/5 | Presentation and video done on the frozen build; submitted before 11:59 pm (UTC-5) | [See](#sat-103-to-mon-105) |
 
 ## Open work by priority
 
@@ -29,13 +30,13 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | In progress: end-to-end run and [report](../sentinel-data-engine/data_quality_report.md) exist and reproduce locally |
 | 3 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | In progress: the DuckDB adapter reads the view as Delta under `data/gold/`, but the pipeline writes `data/gold_bank.duckdb`; export the view as Delta or point the adapter at the DuckDB file |
 | 4 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
-| 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | In progress: the comparison is frozen in `2024Q4-eval-v7` (REQ-0016 done); the public link still serves the keyword baseline |
+| 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Sun 10/4 | Metrics, trade-offs and slides with a real delta | In progress: the comparison is frozen in `2024Q4-eval-v7` (REQ-0016 done); the code serves router_v2 with a baseline fallback on the branch `feat/serve-router-v2`, not yet deployed; the greeting gap is planned in [router v3](router-v3-plan.md) (task 20) |
 | 6 | Write the pt-BR twins of the key cases and check them by back-translation ([017](../docs/build/decisions/017-portuguese.md)); include the three demo cases | REQ-0012, REQ-0009 | Unassigned | Fri 10/2 | Normal case in Portuguese, the 3 demo cases in pt-BR | Done: four variants signed (`eval/review/demo-pt-br.md`); Pix hands off; extrato and fatura show the account's charges (`tests/test_demo_pt_br.py`); 2% development replay, 280 handoffs, 2 prefixes ([evidence](../evidence/transcript-chats/20261002T144836Z/summary.json)) |
-| 7 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
+| 7 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Sun 10/4 | Trade-offs, slides | Pending: on the run that is frozen at the end (eval-v7, or eval-v8 if router v3 lands) |
 | 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | In progress: the README has the limitations section (10/02); the slides are pending |
 | 9 | Path to production write-up, including monitoring; handoff delivery decided ([015](../docs/build/decisions/015-handoff-delivery.md)) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
-| 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Fri 10/2 | Public link, submission | Done: gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
-| 11 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
+| 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Sun 10/4 | Public link, submission | Secrets review done; the freeze itself moves to Sun 10/4 night. gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
+| 11 | Final README update: results and limitations | REQ-0030 | Rubén | Sun 10/4 | — | Pending |
 | 12 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
 | 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |
 | 14 | Validate the presentation outline with the group | REQ-0036 | Rubén, team | Fri 10/2 | Slides | Pending |
@@ -43,7 +44,8 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 16 | Record and edit the video (3 minutes at most) | REQ-0037 | Rubén | Mon 10/5 | Submission | Pending |
 | 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | Mon 10/5 | Submission | Pending |
 | 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | Mon 10/5 | — | Pending |
-| 19 | Critical fixes only after the freeze | — | Team | Sat 10/3 to Mon 10/5 | — | Pending |
+| 19 | Critical fixes only after the freeze | — | Team | Sun 10/4 night to Mon 10/5 | — | Pending |
+| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Rubén | Sun 10/4 | Final metrics, README, slides | Pending |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 

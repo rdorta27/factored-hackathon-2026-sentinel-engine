@@ -15,8 +15,9 @@ Tentative: we adjust it if anything slips.
 | Tue | 9/29 | Skeleton: 4 mock tools, orchestrator, simple chat, minimal pipeline. Analysis backing the flow | **The skeleton answers end to end** · *not reached: moved to Wed 9/30* |
 | Wed | 9/30 | Skeleton (moved from Tue). Normal case with real data, JSON handoff, learned component vs baseline | **The skeleton answers end to end; one case works fully** |
 | Thu | 10/1 | Ambiguous and human cases, Portuguese, adversarial set, deployment. Video script and slide outline start. P1 if time allows | **3 cases in es-419 and pt-BR, public link** · *partly reached: 3 cases in es-419; Portuguese serving and the public link still open* |
-| Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Group validates the slide outline. Freeze code at night | **Code and results frozen** |
-| Sat to Mon | 10/3 to 10/5 | Presentation review and video recording on the frozen build (results from Fri). Critical fixes only. Submit with margin on Mon | **Submitted** |
+| Fri | 10/2 | Held-out evaluation and metrics. README in English, limitations; review the repo for secrets. Group validates the slide outline. Router v2 served with baseline fallback; router v3 planned ([plan](router-v3-plan.md)) | **Router v2 served** |
+| Sat to Sun | 10/3 to 10/4 | Router v3, new held-out set and eval-v8; README and results. Freeze code at night on Sunday | **Code and results frozen** |
+| Mon | 10/5 | Presentation review and video recording on the frozen build. Critical fixes only. Submit with margin, deadline 11:59 pm (UTC-5) | **Submitted** |
 
 ```mermaid
 gantt
@@ -29,11 +30,11 @@ gantt
     Skeleton answers end to end  :milestone, 2026-09-30, 0d
     One case works fully         :milestone, 2026-09-30, 0d
     3 cases, public link         :milestone, 2026-10-01, 0d
-    Code and results frozen      :milestone, 2026-10-02, 0d
+    Code and results frozen      :milestone, 2026-10-04, 0d
     Submitted                    :milestone, 2026-10-05, 0d
 ```
 
-Per-person work is in [tasks](tasks.md), not on this chart. We want **code, results and README frozen by Friday 10/2**. The presentation and the video are finished over the weekend and Monday 10/5, on top of the frozen build, so the extra days go to building more. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
+Per-person work is in [tasks](tasks.md), not on this chart. We want **code, results and README frozen by Sunday 10/4 night** (moved from Friday 10/2 on 10/2, to measure router v3). The presentation and the video are finished on Monday 10/5, on top of the frozen build. Set an internal submission time on Monday, well before 11:59 pm. Working first: if anything optional blocks a mandatory item, it waits. Priorities live in the [requirements](../docs/requirements/requirements.md).
 
 ## Decisions made
 
