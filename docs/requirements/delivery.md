@@ -52,7 +52,7 @@ The repository is delivered public as `factored-hackathon-2026-sentinel-engine`,
 
 **Depends on:** [REQ-0031](data-ml.md#req-0031). No restricted data in the public repo.
 
-**Evidence:** Proven by: the current tree holds no bucket name or account id; `gitleaks git --redact` over the full history reports 0 findings across 250 commits (~5.7 MB), with no AWS key shapes, no private key material and no real passwords; no dataset rows were ever committed (no `.csv`, `.parquet`, `.duckdb` or database blob, and no `data/` or `raw/` folder, in any commit); `.gitignore` covers `data/`, `.env` and the local data formats; and `.github/workflows/gitleaks.yml` keeps scanning history on every push and pull request. The review and its blind spot are recorded in [security](../build/security.md#history-review-req-0034-101).
+**Evidence:** Proven by: the current tree holds no bucket name or account id; `gitleaks git --redact` over the full history reports 0 findings across the 246 commits, with no AWS key shapes, no private key material and no real passwords; no dataset rows were ever committed (no `.csv`, `.parquet`, `.duckdb` or database blob, and no `data/` or `raw/` folder, in any commit); `.gitignore` covers `data/`, `.env` and the local data formats; and `.github/workflows/gitleaks.yml` scans the commits each push and pull request adds, so a new secret is caught as it enters the repository. The review and its blind spot are recorded in [security](../build/security.md#history-review-req-0034-101).
 
 Accepted residual risk, documented: the dataset bucket name is visible in commits before `d070faa`. The bucket is private, no credentials were exposed, and the team decided not to rewrite history. The name is public; access is not.
 

@@ -1,10 +1,13 @@
 name: gitleaks
 
-# Scans the full git history for credential shapes on every change, so the
-# property is checked continuously instead of once before submission (REQ-0034).
-# The manual review in docs/build/security.md covers what a scanner cannot:
-# identifiers of resources, such as the dataset bucket name, are not credentials
-# and no default rule matches them.
+# Scans the commits each push and pull request adds for credential shapes, so
+# a new secret is caught as it enters the repository instead of only in a
+# pre-submission pass (REQ-0034). The action limits its scan to that range, so
+# the full history is covered by the one-time manual review recorded in
+# docs/build/security.md, not by this workflow; fetch-depth: 0 keeps the
+# parents the range needs. The manual review also covers what a scanner
+# cannot: identifiers of resources, such as the dataset bucket name, are not
+# credentials and no default rule matches them.
 
 on:
   push:
@@ -21,7 +24,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run gitleaks over the full history
+      - name: Run gitleaks on the new commits
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
