@@ -50,9 +50,9 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 
 ## 7. Model selection (development, live, about USD 0.09)
 
-- [ ] 7.1 Run the token probe: 10 development cases × 3 candidates, recorded. Verify: each model id from 016 resolves (correct the DeepSeek id in 016 if the other form is the valid one), recordings show real and cached tokens; if output exceeds 200 tokens, adjust the cap and re-estimate the budget in design §6 before going on. Decision: 016.
-- [ ] 7.2 Run `select` over 120 development cases for the candidates and freeze `evidence/evaluation-runs/2024Q4-select-v1/`. Verify: `summary.json` holds JSON-failure counts, accuracy per route and the pt-BR paired loss for each candidate.
-- [ ] 7.3 Accept D1 to D3 in 016, citing `2024Q4-select-v1` fields, and set the chosen model ids in your local `.env` only. Verify: the decision cites field paths, and `git status` shows no `.env`.
+- [x] 7.1 Run the token probe: 10 development cases × 3 candidates, recorded. Verify: each model id from 016 resolves (correct the DeepSeek id in 016 if the other form is the valid one), recordings show real and cached tokens; if output exceeds 200 tokens, adjust the cap and re-estimate the budget in design §6 before going on. Decision: 016.
+- [x] 7.2 Run `select` over 120 development cases for the candidates and freeze `evidence/evaluation-runs/2024Q4-select-v1/`. Verify: `summary.json` holds JSON-failure counts, accuracy per route and the pt-BR paired loss for each candidate.
+- [x] 7.3 Accept D1 to D3 in 016, citing `2024Q4-select-v1` fields, and set the chosen model ids in your local `.env` only. Verify: the decision cites field paths, and `git status` shows no `.env`.
 
 ## 8. Held-out measurement (once, live, about USD 0.26)
 
