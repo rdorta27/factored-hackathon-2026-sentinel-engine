@@ -8,11 +8,11 @@ Gives the authenticated customer a chat endpoint that answers only from verified
 
 ### Requirement: Message-only chat request
 
-The system SHALL accept a chat request carrying the customer message and, optionally, `selected_reference`, and SHALL derive the customer identity exclusively from the session. Those SHALL be the only accepted fields. `selected_reference` SHALL be validated for shape only; authorization SHALL come from resolving it inside the session customer's rows. `selected_reference` SHALL NOT open a dispute by itself. It SHALL be a selection when no confirm box is pending, and the confirmation turn only when it matches the pending box and was shown. The system SHALL NOT accept a `confirmation_token` or a `customer_id` in the body. Traces to REQ-0001 (P0, Pending), REQ-0006 (P0, Pending), and REQ-0027 (P0, Pending).
+The system SHALL accept a chat request on `POST /api/v1/chat` carrying the customer message and, optionally, `selected_reference`, and SHALL derive the customer identity exclusively from the session cookie. Those SHALL be the only accepted fields. `selected_reference` SHALL be validated for shape only; authorization SHALL come from resolving it inside the session customer's rows. `selected_reference` SHALL NOT open a dispute by itself. It SHALL be a selection when no confirm box is pending, and the confirmation turn only when it matches the pending box and was shown. A charge from the session customer's transaction panel counts as shown. The system SHALL NOT accept a `confirmation_token` or a `customer_id` in the body. Traces to REQ-0001 (P0, In progress), REQ-0006 (P0, In progress), and REQ-0027 (P0, In progress).
 
 #### Scenario: Chat without session is rejected
 
-- **WHEN** an unauthenticated client posts to `/chat`
+- **WHEN** an unauthenticated client posts to `/api/v1/chat`
 - **THEN** the system returns 401 and records `access_denied`
 
 #### Scenario: Extra fields are rejected
@@ -35,9 +35,14 @@ The system SHALL accept a chat request carrying the customer message and, option
 - **WHEN** a confirm box is pending and `selected_reference` matches that candidate
 - **THEN** the system treats the field as the confirmation turn, not as customer text
 
+#### Scenario: Old paths are gone
+
+- **WHEN** a client posts to `/chat` or to any `/auth/*` path
+- **THEN** the system returns 404
+
 ### Requirement: Structured response variants
 
-Every chat answer SHALL use exactly one variant: `text`, `clarification`, `confirm_box`, `case_confirmation`, `handoff`, or `error`. Replies SHALL carry raw values and translation keys rather than authored prose, and the `error` variant SHALL carry a generic message key plus `trace_id`, never internal details. A `clarification` SHALL be able to carry the candidate transactions the customer can choose from. A `confirm_box` SHALL carry amount, currency, merchant, and date, and SHALL NOT carry a `confirmation_token`. Traces to REQ-0002 (P0, Pending) and REQ-0006 (P0, Pending).
+Every chat answer SHALL use exactly one variant, validated by a strict model in `app/schemas/chat.py`: `text`, `clarification`, `confirm_box`, `case_confirmation`, `handoff`, or `error`. Replies SHALL carry raw values and translation keys rather than authored prose, and every key SHALL exist in the `es-419` and `pt-BR` locale files. The `error` variant SHALL carry a generic message key plus `trace_id`, never internal details. A `clarification` SHALL carry the candidate transactions the customer can choose from, each marked `eligible` with an `ineligibleKey` when not. A `confirm_box` SHALL carry amount, currency, merchant, and date, and SHALL NOT carry a `confirmation_token`. A `handoff` SHALL carry the customer card (reference, reason key, estimated date, source) and the advisor `package`: request intent, verified facts, actions taken, evidence, open questions, language, and country. The package SHALL NOT contain `customer_id` or the customer's raw text. Traces to REQ-0002 (P0, In progress), REQ-0006 (P0, In progress), REQ-0008 (P0, In progress), and REQ-0047 (P0, In progress).
 
 #### Scenario: Ambiguous request asks instead of guessing
 
@@ -63,6 +68,11 @@ Every chat answer SHALL use exactly one variant: `text`, `clarification`, `confi
 
 - **WHEN** policy allows a dispute on the selected charge
 - **THEN** the system returns `confirm_box` with amount, currency, merchant, and date, and no token
+
+#### Scenario: Handoff carries the advisor package
+
+- **WHEN** the turn ends in `handoff`
+- **THEN** the reply carries the package with request, verified facts, actions taken, evidence, open questions, language, and country, and no `customer_id` or message text
 
 ### Requirement: Verify-before-claim confirmations
 
@@ -158,3 +168,26 @@ The chat endpoint SHALL make three outcomes distinguishable, in both `es-419` an
 
 - **WHEN** verification fails or the customer asks for a person a second time
 - **THEN** the chat returns `handoff` and does not require an advisor queue
+
+### Requirement: Handoff filed as a ticket
+
+Every `handoff` reply SHALL be filed as a case with `kind=handoff`, `status=Escalated`, the reply's reference and reason key, and the full advisor package, so the human side receives the ticket and why it was raised. Traces to REQ-0008 (P0, In progress) and REQ-0011 (P0, In progress).
+
+#### Scenario: Insistent customer leaves a ticket
+
+- **WHEN** the customer asks for a person a second time
+- **THEN** the case list shows an escalated handoff with the reply's reference, and the stored package equals the reply's package
+
+### Requirement: Handoff package covers the whole conversation
+
+The handoff package SHALL carry a `summary` and a `conversation` list with one entry per turn of the session (turn number, what the customer did as a code, the verified charge reference if any, the reply kind and the rule or message key), and `actions_taken` SHALL list every step the system attempted in any turn of the session, failed attempts included, each tagged with its turn. The summary SHALL be built deterministically from those entries, never by a model, and SHALL NOT contain the customer's words. A reference that did not resolve to the session customer's charge SHALL NOT appear in the package. The history SHALL be stored with the conversation state and deleted with it. Traces to REQ-0008 (P0, In progress) and REQ-0047 (P0, In progress).
+
+#### Scenario: The advisor sees why and what was tried
+
+- **WHEN** a session ends in `handoff` after several turns
+- **THEN** the package lists every turn and every attempted step, including failed read-backs, and its summary names the rule that escalated
+
+#### Scenario: Unknown reference stays out of the ticket
+
+- **WHEN** the customer selected a reference that is not theirs earlier in the session
+- **THEN** that reference does not appear anywhere in the package
