@@ -1,6 +1,6 @@
 # Plan: router v3 and a new held-out measurement (eval-v8)
 
-Status: proposed, not started. Date: 2026-10-02. Owner: Rubén.
+Status: proposed, not started; folded into [chat behaviour](chat-behavior-plan.md) as its first step. Date: 2026-10-02. Owner: Rubén.
 Requirements: REQ-0016, REQ-0017, REQ-0019, REQ-0020, REQ-0047.
 
 ## Why
@@ -14,7 +14,7 @@ most common first message of a chat.
 
 Already done on `feat/serve-router-v2` (code, no new measurement needed):
 
-- **A.** Out of scope explains and offers an advisor first ([008](../docs/build/decisions/008-account-inquiry-scope.md)); a second out-of-scope turn in a row hands off. A model mistake on the first turn now costs one sentence, not a ticket.
+- **A.** Out of scope explains and offers an advisor first ([008](../docs/build/decisions/008-account-inquiry-scope.md)); two out-of-scope turns in a row get the offer and the third hands off; asking for an advisor hands off at once. A model mistake now costs a sentence, not a ticket.
 - **D.** Names the customer introduces ("me llamo Karl") are masked before the model call (REQ-0047).
 - **E.** "Who answered" is kept per thread, so the turn log cannot attribute a turn to another request's model.
 

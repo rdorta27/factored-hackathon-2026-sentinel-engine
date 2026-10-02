@@ -29,13 +29,14 @@ def _say(state: ConversationState, ports: Ports, text: str):  # type: ignore[no-
     return step(TextInput(text), state, ports)
 
 
-def test_first_out_of_scope_offers_and_the_second_hands_off() -> None:
+def test_two_out_of_scope_turns_get_the_offer_and_the_third_hands_off() -> None:
     _, ports = _ports()
     state = ConversationState(language=Language.ES_419)
     first = _say(state, ports, "cuál es mi saldo")
     second = _say(state, ports, "quiero ver mi saldo")
-    assert (first.kind, first.reason) == (OutcomeKind.OFFER, "out_of_scope.ask")
-    assert (second.kind, second.reason) == (OutcomeKind.HANDOFF, "out_of_scope")
+    third = _say(state, ports, "dime mi saldo")
+    assert [(o.kind, o.reason) for o in (first, second)] == [(OutcomeKind.OFFER, "out_of_scope.ask")] * 2
+    assert (third.kind, third.reason) == (OutcomeKind.HANDOFF, "out_of_scope")
 
 
 def test_a_charge_turn_in_between_resets_the_offer() -> None:
@@ -69,4 +70,5 @@ def test_the_offer_count_survives_a_stored_conversation() -> None:
     _say(state, ports, "qual é o meu saldo")
     restored = from_json(json.dumps(asdict(state)))
     assert restored.scope_asks == 1
+    assert _say(restored, ports, "qual é o meu saldo").kind is OutcomeKind.OFFER
     assert _say(restored, ports, "qual é o meu saldo").kind is OutcomeKind.HANDOFF

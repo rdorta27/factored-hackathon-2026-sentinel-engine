@@ -81,6 +81,8 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
 
 
 UNDERSTAND_RETRIES = 2
+# Out-of-scope turns in a row that are answered with the offer; the next one hands off.
+MAX_SCOPE_OFFERS = 2
 
 
 def _digest(state: ConversationState) -> dict:
@@ -232,10 +234,11 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
     if understood.kind is UnderstandKind.OUT_OF_SCOPE:
         # Decision 008: say what is out of scope and offer the advisor; a model
-        # error on the first turn costs one sentence, not a ticket. A second
-        # out-of-scope turn in a row hands off.
+        # error costs a sentence, not a ticket. The customer can ask for the
+        # advisor at any time; without that, a third out-of-scope turn in a
+        # row hands off.
         state.scope_asks += 1
-        if state.scope_asks == 1:
+        if state.scope_asks <= MAX_SCOPE_OFFERS:
             _emit(ports, state.language.value, step="decide", policy_rule="out_of_scope.ask")
             return TurnOutput(kind=OutcomeKind.OFFER, language=state.language, reason="out_of_scope.ask")
         _emit(ports, state.language.value, step="escalate", policy_rule=None)
