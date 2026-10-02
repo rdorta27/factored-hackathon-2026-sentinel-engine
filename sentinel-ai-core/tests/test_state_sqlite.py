@@ -1,6 +1,7 @@
 """SQLite backend: state survives a restart; retention deletes the conversation."""
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -99,6 +100,9 @@ def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no
     assert store.count() == 0
 
 
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
 def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     import os
     import stat
@@ -113,6 +117,9 @@ def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-unt
     assert stat.S_IMODE(os.stat(sqlite_env).st_mode) == 0o755, "an existing folder is left as is"
 
 
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
 def test_database_folder_created_owner_only(tmp_path) -> None:  # type: ignore[no-untyped-def]
     import os
     import stat
