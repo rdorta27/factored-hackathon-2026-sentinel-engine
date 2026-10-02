@@ -21,7 +21,7 @@ is "already disputed" in the next. The turn cycle (``open_turn`` →
 from __future__ import annotations
 
 import secrets
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime, timedelta, timezone
 from time import perf_counter
 
@@ -118,6 +118,25 @@ _REPLY_PHASES = {
     "case_confirmation": Phase.RESOLVED.value,
     "handoff": Phase.HANDED_OFF.value,
 }
+
+
+# Response language of the interface. The five locales are the ones the selector
+# offers; the orchestrator knows two, so the regional nuance stays in the
+# frontend dictionary and only the base language crosses this boundary.
+_LOCALE_TO_LANGUAGE = {
+    "es-419": Language.ES_419,
+    "es-MX": Language.ES_419,
+    "es-CO": Language.ES_419,
+    "es-AR": Language.ES_419,
+    "pt-BR": Language.PT_BR,
+}
+
+
+def _as_language(locale: str | None) -> Language | None:
+    """Map a selector locale to the language the service answers in."""
+    if locale is None:
+        return None
+    return _LOCALE_TO_LANGUAGE.get(locale)
 
 
 def _sla_date(ref_date: date) -> str:
@@ -300,6 +319,11 @@ class TurnContext:
     recorder: Recorder
     ref_date: date
     started: float
+    # Language the interface asked for, and what the model detected and what was
+    # answered. Kept apart so the turn record can report both without lying.
+    selected_language: object | None = None
+    detected_language: object | None = None
+    response_language: object | None = None
 
     @property
     def state(self) -> ConversationState:
@@ -402,12 +426,34 @@ def unknown_charge(turn: TurnContext) -> Handoff:
 
 
 def run_turn(turn: TurnContext, turn_input: TextInput | CandidateIdInput) -> tuple[TurnOutput | None, ChatReply]:
-    """Run the orchestrator once and project its output onto the reply contract."""
+    """Run the orchestrator once and project its output onto the reply contract.
+
+    Two languages are kept apart on purpose:
+
+    * **understanding** — what the model detected from the text. It stays as the
+      model reported it, so the turn record and the logs do not lie about what
+      was understood.
+    * **response** — what the customer picked in the interface. It decides the
+      language of everything the service generates afterwards: the reply, the
+      handoff ticket and the stored state.
+
+    The selector wins over detection for the *response* only. Without a selector,
+    both are the detected language, which is the behaviour before this change.
+    """
     try:
         output = step(turn_input, turn.state, turn.ports)
     except Exception:
         # Gold or orchestrator failure: degrade gracefully without leaking internals.
         return None, ErrorReply(message_key="errorGeneric", trace_id=turn.trace_id)
+
+    detected = output.language
+    turn.detected_language = detected
+    if turn.selected_language is not None:
+        # Response language: applied after the loop, before anything is rendered,
+        # ticketed or stored.
+        turn.state.language = turn.selected_language
+        output = replace(output, language=turn.selected_language)
+    turn.response_language = output.language
 
     # For FAILURE (unknown/foreign reference), strip candidate details to avoid
     # disclosing data from another customer's transaction.
@@ -600,6 +646,11 @@ def finish_turn(
     turn.observer.emit(
         step="turn",
         language=turn.state.language.value,
+        detected_language=(
+            turn.detected_language.value
+            if turn.detected_language is not None
+            else turn.state.language.value
+        ),
         outcome=outcome,
         attempt=output.attempt if output is not None and output.attempt is not None else 1,
         policy_rule=policy_rule if policy_rule is not None else (output.reason if output else None),
@@ -623,6 +674,9 @@ def chat(
     if blocked is not None:
         return blocked
     turn = open_turn(request, session)
+    # Response language from the interface. `None` keeps the previous behaviour:
+    # the language the model detects from the message decides.
+    turn.selected_language = _as_language(body.language)
 
     if body.selected_reference is not None:
         turn_input: TextInput | CandidateIdInput = CandidateIdInput(candidate_id=body.selected_reference)
