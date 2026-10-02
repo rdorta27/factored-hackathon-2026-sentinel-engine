@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import sys
 from collections import Counter
 from pathlib import Path
@@ -29,11 +30,11 @@ from app.ai.recording import RecordingTransport
 from app.ai.transport import HttpTransport
 from eval import metrics
 from eval.budget import DEFAULT_CAP_USD, CappedTransport, assert_freezable
-from eval.cases import Case, check_splits, load_dir
+from eval.cases import Case, check_splits, load_cases, load_dir
 from eval.examples import PROMPT_VERSION_WITH_EXAMPLES, build_examples
 from eval.intervals import accuracy_block
-from eval.paired import paired
-from eval.report import EVAL_VERSION, freeze_run, validate_has_n
+from eval.paired import paired, paired_flags
+from eval.report import EVAL_VERSION, freeze_run, render_resolution, validate_has_n
 from eval.runner import run_system
 from eval.seal import (
     MEASURED_PATH,
@@ -51,6 +52,9 @@ REPO_ROOT = HERE.parent.parent
 CASES_DIR = HERE / "cases"
 RECORDINGS_DIR = HERE.parent / "app" / "ai" / "fixtures"
 EXAMPLES_PATH = HERE / "examples_v2.json"
+# The resolution set and its own recordings, kept out of the app image (design §5).
+RESOLUTION_PATH = CASES_DIR / "resolution.jsonl"
+RESOLUTION_RECORDINGS_DIR = HERE / "recordings" / "resolution-v1"
 
 CHEAP_CANDIDATES = ("accounts/fireworks/models/gpt-oss-120b", "accounts/fireworks/models/glm-5p3-flash")
 STRONG_CANDIDATES = ("accounts/fireworks/models/deepseek-v4p1-flash",)
@@ -310,6 +314,95 @@ def measure(run_id: str, record: bool = False, cap_usd: float = DEFAULT_CAP_USD)
     return summary
 
 
+def _head_commit() -> str:
+    """The commit the loop was measured at, so a replay knows what it reproduces."""
+    try:
+        return subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=HERE, capture_output=True, text=True, check=True
+        ).stdout.strip()
+    except Exception:  # noqa: BLE001 - a missing git must not fail the run
+        return "unknown"
+
+
+def _resolution_mix(cases: list[Case]) -> dict:
+    return {
+        "n": len(cases),
+        "by_country": dict(sorted(Counter(c.country for c in cases).items())),
+        "by_locale": dict(sorted(Counter(c.locale for c in cases).items())),
+        "by_variant": dict(sorted(Counter(c.variant or c.locale for c in cases).items())),
+        "by_outcome": dict(sorted(Counter(c.expected_outcome for c in cases).items())),
+        "by_situation": dict(sorted(Counter(c.base_id or c.id for c in cases).items())),
+    }
+
+
+def _resolved(turn: dict) -> bool:
+    """A safe resolution: a case number on a must-not-pass case would not count."""
+    return turn.get("outcome") == "case_confirmation" and not turn.get("must_not_pass")
+
+
+def resolution(
+    run_id: str,
+    record: bool = False,
+    cap_usd: float = DEFAULT_CAP_USD,
+    freeze: bool = True,
+    router_factory=None,  # type: ignore[no-untyped-def]
+    recordings_dir: Path | str | None = None,
+) -> dict:
+    """Measure safe resolution over the multi-turn resolution set (decision 022).
+
+    Baseline and ``router_v2`` replay the same cases, session, store and reference
+    date. The router's answers are recorded once under the spend cap and replayed
+    offline afterwards; ``router_factory`` is for tests only.
+    """
+    cases = load_cases(RESOLUTION_PATH)
+    check_splits(cases)
+    development = load_dir(CASES_DIR)
+    if not EXAMPLES_PATH.is_file():
+        raise SystemExit(f"write the development example ids for v2 to {EXAMPLES_PATH} before running")
+    examples = build_examples(development, json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"])
+    live, api_key = live_transport(record, cap_usd)
+    rec_dir = Path(recordings_dir) if recordings_dir is not None else RESOLUTION_RECORDINGS_DIR
+    rec = RecordingTransport(rec_dir, PROMPT_VERSION_WITH_EXAMPLES, live, record=record, api_key=api_key)
+    if router_factory is None:
+        router_factory = lambda: _router(rec, PROMPT_VERSION_WITH_EXAMPLES, examples)  # noqa: E731
+    baseline_turns = run_system(cases, rec_dir, DemoModel)
+    router_turns = run_system(cases, rec_dir, router_factory)
+    system = {
+        "baseline": metrics.system_metrics(baseline_turns),
+        "router_v2": metrics.system_metrics(router_turns),
+    }
+    paired_block = paired_flags(
+        cases,
+        [_resolved(t) for t in baseline_turns],
+        [_resolved(t) for t in router_turns],
+    )
+    situations = sorted({c.base_id for c in cases if c.base_id})
+    summary = {
+        "run_id": run_id,
+        "kind": "resolution",
+        "eval_version": EVAL_VERSION,
+        "n": len(cases),
+        "situations": {"n": len(situations), "ids": situations},
+        "case_mix": _resolution_mix(cases),
+        "system": system,
+        "paired_resolution": paired_block,
+        "spend": _spend(live),
+        "prices": PRICE_SOURCE,
+        "measured_commit": _head_commit(),
+        "notes": [
+            SIMULATION_NOTE,
+            "Simulation over a mock store: not a field resolution rate (decision 022).",
+            "Baseline and router_v2 on the same cases, session, store and reference date; intervals resample situations.",
+            "The system block replays the loop at measured_commit; a later loop change means a new run (task 1.1).",
+        ],
+    }
+    validate_has_n(summary)
+    if freeze:
+        assert_freezable(summary["spend"])
+        freeze_run(REPO_ROOT, run_id, summary, render_resolution(summary))
+    return summary
+
+
 def _strip(node):  # type: ignore[no-untyped-def]
     if isinstance(node, dict):
         return {k: _strip(v) for k, v in node.items() if k != "latency_ms"}
@@ -319,17 +412,21 @@ def _strip(node):  # type: ignore[no-untyped-def]
 
 
 def _comparable(summary: dict) -> dict:
-    """Everything a replay must reproduce: spend and wall-clock latency are left out,
-    since a replay makes no live call and reads latency from rounded recordings."""
+    """Everything a replay must reproduce: spend, wall-clock latency and the commit
+    are left out, since a replay makes no live call and records where it ran."""
     body = json.loads(json.dumps(summary, sort_keys=True))
     body.pop("spend", None)
+    body.pop("measured_commit", None)
     return _strip(body)
 
 
 def verify(run_id: str) -> bool:
-    """Recompute a frozen measurement from recordings, offline, and compare."""
+    """Recompute a frozen run from recordings, offline, and compare."""
     frozen_path = REPO_ROOT / "evidence" / "evaluation-runs" / run_id / "summary.json"
     frozen = json.loads(frozen_path.read_text(encoding="utf-8"))
+    if frozen.get("kind") == "resolution":
+        replayed = resolution(run_id, record=False, freeze=False)
+        return _comparable(replayed) == _comparable(frozen)
     seal_record = verify_seal(SEALED_DIR, SEAL_PATH)
     if frozen.get("seal", {}).get("hash") != seal_record["hash"]:
         raise SystemExit("the sealed set differs from the one this run measured")
@@ -368,7 +465,7 @@ def _measurement_report(summary: dict) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Router evaluation: select on development, measure once.")
-    parser.add_argument("command", choices=("select", "measure", "verify"))
+    parser.add_argument("command", choices=("select", "measure", "verify", "resolution"))
     parser.add_argument("run_id")
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
@@ -380,6 +477,9 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "measure":
         summary = measure(args.run_id, args.record, args.cap)
         print(f"[measure] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
+    elif args.command == "resolution":
+        summary = resolution(args.run_id, args.record, args.cap)
+        print(f"[resolution] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     else:
         same = verify(args.run_id)
         print(f"[verify] {args.run_id}: {'matches' if same else 'DIFFERS from'} the frozen summary")
@@ -390,4 +490,4 @@ if __name__ == "__main__":
     main()
 
 
-__all__ = ["SelectionReadsHeldOut", "main", "measure", "select", "verify"]
+__all__ = ["SelectionReadsHeldOut", "main", "measure", "resolution", "select", "verify"]

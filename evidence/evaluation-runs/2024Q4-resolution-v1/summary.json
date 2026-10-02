@@ -1,0 +1,164 @@
+{
+  "case_mix": {
+    "by_country": {
+      "AR": 12,
+      "CO": 12,
+      "MX": 32
+    },
+    "by_locale": {
+      "es-419": 28,
+      "pt-BR": 28
+    },
+    "by_outcome": {
+      "case_confirmation": 16,
+      "handoff": 28,
+      "text": 12
+    },
+    "by_situation": {
+      "amount-ar-3002": 4,
+      "amount-co-2002": 4,
+      "amount-mx-1101": 4,
+      "disputed-mx-1004": 4,
+      "eligible-ar-3001": 4,
+      "eligible-co-2001": 4,
+      "eligible-mx-1001": 4,
+      "eligible-mx-1006": 4,
+      "fraud-ar-3003": 4,
+      "fraud-co-2003": 4,
+      "fraud-mx-1102": 4,
+      "notmine-mx-1001": 4,
+      "reversed-mx-1003": 4,
+      "window-mx-1002": 4
+    },
+    "by_variant": {
+      "es-AR": 6,
+      "es-CO": 6,
+      "es-MX": 16,
+      "pt-BR": 28
+    },
+    "n": 56
+  },
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "resolution",
+  "measured_commit": "677c59d8dcc1306d108eeb36dad69c68526e1b9a",
+  "n": 56,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Simulation over a mock store: not a field resolution rate (decision 022).",
+    "Baseline and router_v2 on the same cases, session, store and reference date; intervals resample situations.",
+    "The system block replays the loop at measured_commit; a later loop change means a new run (task 1.1)."
+  ],
+  "paired_resolution": {
+    "above_zero": false,
+    "broken": [],
+    "fixed": [],
+    "interval_95": [
+      0.0,
+      0.0
+    ],
+    "n": 56,
+    "net": 0,
+    "net_share": 0.0
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "run_id": "2024Q4-resolution-v1",
+  "situations": {
+    "ids": [
+      "amount-ar-3002",
+      "amount-co-2002",
+      "amount-mx-1101",
+      "disputed-mx-1004",
+      "eligible-ar-3001",
+      "eligible-co-2001",
+      "eligible-mx-1001",
+      "eligible-mx-1006",
+      "fraud-ar-3003",
+      "fraud-co-2003",
+      "fraud-mx-1102",
+      "notmine-mx-1001",
+      "reversed-mx-1003",
+      "window-mx-1002"
+    ],
+    "n": 14
+  },
+  "spend": {
+    "cap_usd": 0.45,
+    "capped": false,
+    "n": 8,
+    "spent_usd": 0.001307
+  },
+  "system": {
+    "baseline": {
+      "attempted_n": 56,
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.0,
+        "per_resolution": 0.0,
+        "total": 0.0
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.46,
+        "p95": 0.58
+      },
+      "n": 56,
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    },
+    "router_v2": {
+      "attempted_n": 56,
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.00016,
+        "per_resolution": 0.000561,
+        "total": 0.008973
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.46,
+        "p95": 0.63
+      },
+      "n": 56,
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    }
+  }
+}

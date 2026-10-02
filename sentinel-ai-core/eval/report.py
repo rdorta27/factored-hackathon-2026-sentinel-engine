@@ -118,6 +118,66 @@ def render_report(summary: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def render_resolution(summary: dict) -> str:
+    """Readable view of a resolution run; every number comes from ``summary``."""
+    system = summary["system"]
+    lines = [
+        f"# Resolution measurement {summary['run_id']}",
+        "",
+        f"Eval {summary['eval_version']} · simulation over a mock store · "
+        f"n={summary['n']} cases in {summary['situations']['n']} situations · "
+        f"commit {str(summary['measured_commit'])[:12]}.",
+        "",
+        "> Simulation over a mock store, not a field resolution rate (decision 022).",
+        "",
+        "## Safe resolution by version",
+        "",
+        "| Version | Safe resolutions | Share | Containment | Missed | Unnecessary | Unsafe outcomes | Latency p50/p95 ms | Cost per attempted | Cost per resolution |",
+        "|---|---|---|---|---|---|---|---|---|---|",
+    ]
+    for name, block in system.items():
+        resolution_block = block["safe_resolution"]
+        escalation = block["escalation_quality"]
+        unsafe = block["unsafe_outcomes"]
+        cost = block["cost_usd"]
+        latency = block["latency_ms"]
+        lines.append(
+            f"| {name} | {resolution_block['resolved']} of {resolution_block['n']} | "
+            f"{resolution_block['share']} | {block['containment']['share']} | "
+            f"{len(escalation['missed_transfers'])} | {len(escalation['unnecessary_transfers'])} | "
+            f"{unsafe['count']} ({unsafe['rate']}) | {latency['p50']}/{latency['p95']} | "
+            f"{cost['per_attempted']} | {cost['per_resolution']} |"
+        )
+    paired = summary["paired_resolution"]
+    router = system["router_v2"]
+    baseline = system["baseline"]
+    safe = all(block["unsafe_outcomes"]["count"] == 0 for block in system.values())
+    transferred = all(len(block["escalation_quality"]["missed_transfers"]) == 0 for block in system.values())
+    lines += [
+        "",
+        "## Paired resolution (router_v2 vs baseline)",
+        "",
+        f"- fixed {len(paired['fixed'])}, broken {len(paired['broken'])}, net {paired['net']} of "
+        f"{paired['n']} ({paired['net_share']}), interval {paired['interval_95']}, above zero: {paired['above_zero']}",
+        "",
+        "## Acceptance rules (decision 022)",
+        "",
+        f"- R1 safe: {'PASS' if safe else 'FAIL'} — "
+        + "; ".join(f"{name} {block['unsafe_outcomes']['rate']}" for name, block in system.items()),
+        f"- R2 no missed transfers: {'PASS' if transferred else 'FAIL'} — "
+        + "; ".join(f"{name} {len(block['escalation_quality']['missed_transfers'])}" for name, block in system.items()),
+        f"- R3 router resolves more (interval above zero): {'PASS' if paired['above_zero'] else 'not above zero'}",
+        f"- R4 router unsafe outcomes: {'PASS' if router['unsafe_outcomes']['count'] == 0 else 'FAIL'}"
+        + (f"; baseline {baseline['unsafe_outcomes']['count']}" if baseline["unsafe_outcomes"]["count"] else ""),
+        "",
+        f"Spend: USD {summary['spend']['spent_usd']} over {summary['spend']['n']} live calls "
+        f"(cap {summary['spend']['cap_usd']}). Prices: {summary['prices']}.",
+    ]
+    if summary.get("notes"):
+        lines += ["", "## Notes"] + [f"- {note}" for note in summary["notes"]]
+    return "\n".join(lines) + "\n"
+
+
 def freeze_run(repo_root: Path | str, run_id: str, summary: dict, report_md: str) -> Path:
     folder = Path(repo_root) / "evidence" / "evaluation-runs" / run_id
     if folder.exists():
@@ -224,4 +284,12 @@ def render_measurement(summary: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
-__all__ = ["EVAL_VERSION", "build_summary", "freeze_run", "render_measurement", "render_report", "validate_has_n"]
+__all__ = [
+    "EVAL_VERSION",
+    "build_summary",
+    "freeze_run",
+    "render_measurement",
+    "render_report",
+    "render_resolution",
+    "validate_has_n",
+]

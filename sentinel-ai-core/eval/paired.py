@@ -41,6 +41,37 @@ def paired(cases: list[Case], before: list[str], after: list[str]) -> dict:
     }
 
 
+def paired_flags(cases: list[Case], before: list[bool], after: list[bool]) -> dict:
+    """What ``after`` fixes and breaks relative to ``before`` on a success flag.
+
+    Used for resolution (a case reached a verified case number) rather than the
+    intent label. Clusters are situations, so the variants of one situation are
+    resampled together.
+    """
+    if not (len(cases) == len(before) == len(after)):
+        raise ValueError("paired comparison needs one flag per case for both versions")
+    fixed, broken = [], []
+    clusters: dict[str, list[float]] = defaultdict(list)
+    for case, b, a in zip(cases, before, after):
+        if a and not b:
+            fixed.append(case.id)
+        elif b and not a:
+            broken.append(case.id)
+        clusters[cluster_of(case)].append(float(a) - float(b))
+    n = len(cases)
+    net = len(fixed) - len(broken)
+    interval = bootstrap_interval(clusters)
+    return {
+        "n": n,
+        "fixed": sorted(fixed),
+        "broken": sorted(broken),
+        "net": net,
+        "net_share": round(net / n, 4) if n else 0.0,
+        "interval_95": list(interval) if interval else None,
+        "above_zero": bool(interval and interval[0] > 0),
+    }
+
+
 def variant_losses(cases: list[Case], predicted: list[str]) -> dict:
     """Per variant, the net loss against the best variant over bases that have both."""
     correct: dict[str, dict[str, bool]] = defaultdict(dict)
@@ -70,4 +101,4 @@ def variant_losses(cases: list[Case], predicted: list[str]) -> dict:
     return {"n": len(correct), "best": best, "by_variant": result}
 
 
-__all__ = ["paired", "variant_losses"]
+__all__ = ["paired", "paired_flags", "variant_losses"]
