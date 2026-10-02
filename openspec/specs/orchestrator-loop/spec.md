@@ -22,7 +22,7 @@ The loop SHALL accept either customer text or a structured candidate id. A free-
 - **THEN** the loop selects that charge, runs policy, and does not open a dispute
 
 ### Requirement: Conversation state survives the turn
-The loop SHALL keep, for the life of the session, the bounded turns, the candidates shown, the pending confirmation, the detected language, the clarification count, and `person_asks`. Language SHALL be `es-419` or `pt-BR`. The state SHALL NOT contain `customer_id`. The policy engine SHALL NOT store `person_asks`. Traces to REQ-0001 (P0, Pending), REQ-0040 (P0, Pending), and REQ-0047 (P0, Pending).
+The loop SHALL keep, for the life of the session, the bounded turns, the candidates shown, the pending confirmation, the detected language, the clarification count, `person_asks`, and `rejected_ids` (denied or superseded candidate ids). Language SHALL be `es-419` or `pt-BR` and SHALL persist across turns, including a switch between them. The state SHALL NOT contain `customer_id`. The policy engine SHALL NOT store `person_asks`. Traces to REQ-0001 (P0, In progress), REQ-0040 (P0, Pending), and REQ-0047 (P0, Pending).
 
 #### Scenario: Next turn sees the candidates already shown
 - **WHEN** a turn shows candidate charges and a later turn arrives on the same session
@@ -32,8 +32,16 @@ The loop SHALL keep, for the life of the session, the bounded turns, the candida
 - **WHEN** the customer asks for a person and a later turn arrives on the same session
 - **THEN** `person_asks` is still the count from the previous turn
 
+#### Scenario: Rejected ids survive the turn
+- **WHEN** a candidate was denied or superseded on an earlier turn
+- **THEN** its id is still present in `rejected_ids` on the next turn
+
+#### Scenario: Language persists across a switch
+- **WHEN** the customer switches from es-419 to pt-BR (or back) mid-session
+- **THEN** the detected language follows the latest turn and stays stable for the following turns
+
 ### Requirement: A turn stops when it cannot yet act
-The loop SHALL ask a clarifying question when the charge is missing, and SHALL abstain when the request is out of scope for charges and transactions. It SHALL NOT open a dispute in either case. Traces to REQ-0002 (P0, Pending) and decision 008.
+The loop SHALL ask a clarifying question when the charge is missing, up to a maximum of two clarification rounds; the third consecutive vague turn SHALL end in `handoff` with reason `fields.missing` instead of another question. The loop SHALL abstain when the request is out of scope for charges and transactions. It SHALL NOT open a dispute in any of these cases. Traces to REQ-0002 (P0, Pending) and decision 008.
 
 #### Scenario: Ambiguous charge inquiry
 - **WHEN** the customer text does not identify a charge
@@ -42,6 +50,10 @@ The loop SHALL ask a clarifying question when the charge is missing, and SHALL a
 #### Scenario: Unsupported request
 - **WHEN** the customer asks for a balance, a product, a card, or credit
 - **THEN** the loop says that is out of scope and offers a handoff
+
+#### Scenario: Third clarification hands off
+- **WHEN** the customer sends a third consecutive message that still does not identify a charge
+- **THEN** the loop returns a handoff citing `fields.missing` and does not ask again
 
 ### Requirement: Demo outcomes are structural
 The three demo cases SHALL be distinguishable by outcome, in both `es-419` and `pt-BR`: a confirmed dispute yields a case number only after read-back, an ambiguous or unsupported request does not open a dispute, and a repeated request for a person yields a handoff. The first request SHALL offer help and SHALL NOT hand off. Traces to REQ-0009, REQ-0010, REQ-0011 (all P0, Pending), and REQ-0040 (P0, Pending).
@@ -72,3 +84,24 @@ The loop SHALL use deterministic grounding to choose the charge a statement refe
 #### Scenario: Person request is not grounded as a charge
 - **WHEN** the customer asks for a person
 - **THEN** the loop counts the request and does not select a charge from the wording
+
+### Requirement: Denied charges are not shown again
+The loop SHALL exclude every id in `rejected_ids` from the next clarification ranking. A customer denial (`not_mine` on a shown candidate) SHALL append that candidate id to `rejected_ids`. Traces to REQ-0001 (P0, In progress) and REQ-0010 (P0, Pending).
+
+#### Scenario: Denied candidate disappears
+- **WHEN** the customer denies a shown charge and the next clarification is built
+- **THEN** that charge is absent from the ranked candidates
+
+### Requirement: Correction re-anchors to the repaired candidate
+When a turn carries new amount or date facts that match a different charge than the previously shown one, the loop SHALL select the repaired match and SHALL append the superseded id to `rejected_ids`. Traces to REQ-0001 (P0, In progress) and REQ-0003 (P0, Pending).
+
+#### Scenario: Correction with a date wins
+- **WHEN** the customer corrects with a date or amount pointing at another charge
+- **THEN** the loop selects the newly matched charge and the old one is never shown again
+
+### Requirement: Phase is derived and reported
+The loop SHALL derive a phase (`collecting`, `clarifying`, `awaiting_confirmation`, `resolved`, `handed_off`) from the state plus the turn outcome and SHALL expose it on the handoff package and the turn record. The phase SHALL NOT be stored as separate mutable state. Traces to REQ-0001 (P0, In progress) and REQ-0033 (P0, Done).
+
+#### Scenario: Clarifying phase is visible
+- **WHEN** a turn ends in a clarification question
+- **THEN** the reported phase is `clarifying`

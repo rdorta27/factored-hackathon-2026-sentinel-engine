@@ -65,3 +65,15 @@ The rule above is kept and made precise for the run that applies it. Every point
 - **Repetitions:** selection runs once per candidate. Stability is measured on the held-out set (018).
 
 Consequence: the choice is reproducible from one development run, and the held-out result cannot have influenced it.
+
+### Result of the amendment (accepted 2026-10-02)
+
+Evidence: [`2024Q4-select-v1`](../../../evidence/evaluation-runs/2024Q4-select-v1/summary.json) and [`2024Q4-select-v2`](../../../evidence/evaluation-runs/2024Q4-select-v2/summary.json), development split, n = 164. Fields cited are under `candidates.<model>` and `routes.heuristic.per_route_accuracy` of `2024Q4-select-v2`.
+
+- **D1 · cheap model: GLM 5.3 Flash.** `json_failures.count` is 0 and it has the best cheap-route accuracy (0.7634, n = 131). gpt-oss-120b fails (a), with 37 of 164 replies that are not valid JSON.
+- **D2 · strong model: no strong candidate met the rule.** DeepSeek V4.1 Flash fails (a), with 9 of 164 replies invalid. GLM-5.3, measured next as this decision requires, passes (a) and (c), with a pt-BR net loss of 1 of 30. It fails (b): 0.697 on the strong route against a best of 0.8485 (n = 33).
+- **Resolution, chosen by the owner:** the original rule above reads "per route, the cheapest model that" meets (a), (b) and (c), without a candidate list. The amendment's list was narrower. Under the original reading, GLM 5.3 Flash meets all three on the strong route as well: 0.8485, 0 invalid replies, and a pt-BR net loss of −1. It serves both routes. The conflict is stated here, not resolved silently. Measuring Qwen 3.8 Max or Kimi K3 was set aside because it exceeds the USD 0.50 budget.
+- **D3 · route rule: heuristic**, the higher combined accuracy among the measured pairs. With one model on both routes, the rule only labels turns and does not change the replies.
+- **Observation, not a rule change:** on these cases, GLM 5.3 Flash alone (0.7805) beat every cheap-plus-strong pair. Routing to a larger model did not help.
+- **Call settings fixed by the token probe:** reasoning effort `low` and a 400-token output cap. At 200 tokens and no reasoning setting, 32 of 154 gpt-oss replies came back empty; those probe recordings were discarded before any selection run.
+- **Spend:** USD 0.055 (select-v1) and USD 0.063 (select-v2), plus about USD 0.03 for the two probes.
