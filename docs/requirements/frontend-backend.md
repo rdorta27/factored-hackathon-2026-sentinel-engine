@@ -10,7 +10,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0004](#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
 | [REQ-0006](#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](#req-0033) | Done |
 | [REQ-0008](#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
-| [REQ-0009](#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012) | In progress |
+| [REQ-0009](#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012) | Done |
 | [REQ-0010](#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](#req-0002) | Done |
 | [REQ-0011](#req-0011) | Demo: case requiring a human | P0 | ai | [REQ-0008](#req-0008), [REQ-0040](#req-0040) | Done |
 | [REQ-0012](#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](#req-0001) | Done |
@@ -107,15 +107,15 @@ When the system escalates, the advisor receives a structured JSON package with t
 
 The first of the three mandatory demo cases: a customer asks about a charge and the system resolves it end to end according to policy (here, opening a verified dispute).
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** AI Engineering · **Area:** ai
+**Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering · **Area:** ai
 
 **Source:** Problem statement: Scope · Kickoff p. 11
 
 **Depends on:** [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012). The normal case uses verified data, safe tools and policy, in both languages.
 
-**Evidence:** Proven by: the confirm box leads to a verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); replayed in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json). The normal case in es-MX, es-CO, es-AR and pt-BR confirms Cafe Central 320 MXN and returns a case number only after read-back (`tests/test_demo_pt_br.py`, [`eval/demo/pt-br.jsonl`](../../sentinel-ai-core/eval/demo/pt-br.jsonl)). The pt-BR line was back-translated by DeepSeek V4.1 Flash ([`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md)). Local real Gold (2026-10-02): health reported `duckdb`; the normal case in es-419 and pt-BR reached a verified case confirmation on the keyword baseline. The public link stays on the mock. Outcomes without identifiers: [MT-08](../../team/chat-manual-tests.md).
+**Evidence:** Proven by: the confirm box leads to a verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); the normal case in es-MX, es-CO, es-AR and pt-BR confirms Cafe Central 320 MXN and returns a case number only after read-back (`tests/test_demo_pt_br.py`); the resolution run [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) resolves the eligible situations with a verified case number; on real Gold the app reads the PII-free view, health reports `duckdb`, and the normal, ambiguous and handoff cases ran locally in es-419 and pt-BR ([MT-09](../../team/chat-manual-tests.md)).
 
-Missing: the video (REQ-0037).
+Missing: nothing for this requirement; the recording is REQ-0037.
 
 <a id="req-0010"></a>
 ### REQ-0010 · Demo: ambiguous or unsupported case

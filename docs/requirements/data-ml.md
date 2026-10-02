@@ -4,9 +4,9 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
-| [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | Done |
+| [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | In progress |
 | [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | Done |
-| [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | In progress |
+| [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | Done |
 | [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
 | [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | In progress |
 | [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | Done |
@@ -20,13 +20,15 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 A data preparation pipeline (Bronze, Silver, Gold) that runs the same way every time, enforces column contracts, checks quality, records lineage and freshness, and handles the dataset's declared issues: about 2% duplicates, 5% nulls and orphaned records.
 
-**Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
+**Priority:** P0 · **Status:** In progress · **Criterion:** Data Engineering · **Area:** data
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Dataset summary · Dictionary
 
 **Depends on:** [REQ-0031](#req-0031). The pipeline ingests approved, labeled data.
 
-**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`, with the [data quality & medallion audit report](../../sentinel-data-engine/data_quality_report.md). The report documents: null rates (0.00% across all mandatory fields), Bronze→Silver volume drop and justification (~11.5% drop explained by deduplication, quarantine, orphan filtering, and Bronze I/O aggregation), 40,515 country-name normalizations, 100% referential integrity, 373,443 eligible disputes (8.4%), and PII-free Gold service view verified against ADR 008. The `fraud_score` range constraint was corrected to 0–100 (per the data dictionary) eliminating false quarantines; the fix is verified by the full test suite (32/32 passing). The app reads that view locally when the file is present, excludes rows after the reference date, and `GET /api/v1/health` reports `duckdb`. The public link stays on the mock.
+**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`; a fresh local run on 2026-10-02 reproduced every Silver and Gold count; Silver keeps the call-center durations and `process_date` columns since PR #44; the [quality report](../../sentinel-data-engine/data_quality_report.md) documents the ~11.5% Bronze-to-Silver drop (deduplication, quarantine, orphans, late arrivals), null rates and the `Mexico` to `México` normalisation.
+
+Missing: the drop, quarantine, orphan, late-arrival and null sections were restored by hand (`89ca1d4`) and the pipeline's `--report-out` rewrites the file on every run without them; the generator and a `verify` mode are the `quality-report` change.
 
 <a id="req-0016"></a>
 ### REQ-0016 · Learned component vs baseline
@@ -48,17 +50,14 @@ Missing: nothing for the brief; the cases are model-written simulation, a limit 
 
 Labels must be trustworthy and the evaluation must not see information from the future or from training. Metrics, thresholds and splits must be justified.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Machine Learning · **Area:** ml
+**Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12
 
 **Depends on:** [REQ-0015](#req-0015). Labels come from the pipeline output.
 
-**Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; on 2026-10-02 `python3 evidence/evaluation/eval_measure.py verify` reproduced `2024Q4-v1` (label universe) and `2024Q4-v2` (thresholds) from the regenerated `gold_bank.duckdb`, with 0 complaint rows at or after the cut; the router's held-out set was sealed by hash and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); metrics, thresholds and splits are justified in section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
 
-The written justification of metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
-
-Missing: confirmation on real Gold after the pipeline re-run. The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing
