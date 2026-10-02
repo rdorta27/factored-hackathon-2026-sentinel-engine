@@ -566,9 +566,18 @@ def finish_turn(
             if candidate is not None:
                 update["verified_facts"] = _verified_facts(candidate, turn.session.country, turn.ref_date)
         reply = reply.model_copy(update={"package": reply.package.model_copy(update=update)})
-    request.app.state.conversation_store.save(turn.token, stored)
+    new_ticket = False
     if isinstance(reply, Handoff):
-        _save_ticket(request, turn, reply)
+        if turn.state.handoff_reference is None:
+            turn.state.handoff_reference = reply.reference
+            new_ticket = True
+        else:
+            # Already handed off: the advisor has the case, so repeated turns do
+            # not file another ticket and keep pointing at the first one.
+            reply = reply.model_copy(update={"reference": turn.state.handoff_reference})
+    request.app.state.conversation_store.save(turn.token, stored)
+    if new_ticket:
+        _save_ticket(request, turn, reply)  # type: ignore[arg-type]
     if isinstance(reply, ErrorReply):
         outcome = "failed"
     elif output is None:

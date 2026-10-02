@@ -51,6 +51,19 @@ def test_health_fails_when_the_state_store_is_unreachable(sqlite_env) -> None:  
     assert response.json()["status"] == "unavailable"
 
 
+def test_a_conversation_files_one_handoff_ticket(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    app = create_app()
+    api = TestClient(app)
+    login(api)
+    references = set()
+    for _ in range(6):
+        body = api.post("/api/v1/chat", json={"message": "quiero hablar con una persona"}).json()
+        if body["kind"] == "handoff":
+            references.add(body["reference"])
+    assert len(references) == 1, "every handoff reply points at the same ticket"
+    assert len(app.state.cases.handoffs()) == 1
+
+
 def test_session_conversation_and_case_survive_a_restart(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     login(api)
