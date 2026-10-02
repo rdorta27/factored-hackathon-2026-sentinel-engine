@@ -18,14 +18,19 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Literal, Optional, Union
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 StrictModel = ConfigDict(extra="forbid", str_strip_whitespace=True)
 Source = Literal["mock", "live"]
 
 
 class ChatInput(BaseModel):
-    """Body of ``POST /api/v1/chat``. Identity comes from the session cookie only."""
+    """Body of ``POST /api/v1/chat``. Identity comes from the session cookie only.
+
+    Exactly one of ``message`` or ``selected_reference`` is required, and a
+    provided message must carry visible text: blank or control-only payloads
+    are rejected with 422 instead of producing a clarification turn.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -36,6 +41,16 @@ class ChatInput(BaseModel):
         max_length=64,
         pattern=r"^[A-Za-z0-9\-]+$",
     )
+
+    @model_validator(mode="after")
+    def _exactly_one_meaningful_input(self) -> "ChatInput":
+        if self.message is None and self.selected_reference is None:
+            raise ValueError("message or selected_reference is required")
+        if self.message is not None and self.selected_reference is not None:
+            raise ValueError("message and selected_reference are mutually exclusive")
+        if self.message is not None and not self.message.strip():
+            raise ValueError("message must not be blank")
+        return self
 
 
 class CandidateTransaction(BaseModel):

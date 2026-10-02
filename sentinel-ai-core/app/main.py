@@ -55,7 +55,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     from app.routers.ui import mount_ui
     from app.session.audit import AuditLogger
     from app.session.clock import reference_date as get_reference_date
-    from app.session.limits import AttemptTracker
+    from app.session.limits import AttemptTracker, RateLimiter
     from app.session.router import router as session_router
     from app.session.service import SessionService
     from app.session.store import InMemorySessionStore, JsonUserRepository, SqliteSessionStore
@@ -104,6 +104,8 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
         cases = SqliteCaseRepository(engine)
     # Login attempts stay in memory: per process, documented limit with several workers.
     attempts = AttemptTracker()
+    # Write budget for chat/disputes, also per process (same documented limit).
+    write_limiter = RateLimiter()
     service = SessionService(users, sessions, attempts, audit)
     gold, gold_source = select_gold(as_of=ref_date.isoformat())
 
@@ -111,6 +113,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     application.state.audit = audit
     application.state.model = model if model is not None else DemoModel()
     application.state.session_service = service
+    application.state.write_limiter = write_limiter
     application.state.gold = gold
     application.state.gold_source = gold_source
     application.state.reference_date = ref_date

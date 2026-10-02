@@ -280,6 +280,21 @@ class TurnContext:
         return self.stored.state
 
 
+def rate_limited(request: Request, session: Session) -> JSONResponse | None:
+    """429 when the session exhausted its write budget, else None.
+
+    Shared by ``POST /api/v1/chat`` and ``POST /api/v1/disputes``: every
+    authenticated write costs one unit, so a script cannot burn unbounded
+    model calls or fill the case store from one session.
+    """
+    limiter = getattr(request.app.state, "write_limiter", None)
+    if limiter is None or limiter.allow(f"write:{session.token}"):
+        return None
+    trace_id: str = getattr(request.state, "trace_id", None) or secrets.token_hex(8)
+    request.app.state.audit.emit("rate_limited", trace_id)
+    return JSONResponse(status_code=429, content={"detail": "Too many requests"})
+
+
 def open_turn(request: Request, session: Session) -> TurnContext:
     app_state = request.app.state
     token: str = request.cookies.get(SESSION_COOKIE, "")
@@ -565,6 +580,9 @@ def chat(
     request: Request,
     session: Session = Depends(require_customer),
 ) -> JSONResponse:
+    blocked = rate_limited(request, session)
+    if blocked is not None:
+        return blocked
     turn = open_turn(request, session)
 
     if body.selected_reference is not None:

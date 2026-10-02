@@ -20,7 +20,14 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from app.orchestrator.types import CandidateIdInput, OutcomeKind
-from app.routers.demo_chat import finish_turn, open_turn, run_turn, select_charge, unknown_charge
+from app.routers.demo_chat import (
+    finish_turn,
+    open_turn,
+    rate_limited,
+    run_turn,
+    select_charge,
+    unknown_charge,
+)
 from app.schemas.chat import (
     CaseConfirmation,
     CaseSummary,
@@ -81,6 +88,9 @@ def _confirmation_from(row: CaseRow, reference_date: str) -> CaseConfirmation:
 
 @router.post("/preview")
 def preview(body: DisputePreviewInput, request: Request, session: Session = Depends(require_customer)) -> JSONResponse:
+    blocked = rate_limited(request, session)
+    if blocked is not None:
+        return blocked
     turn = open_turn(request, session)
     turn_input = CandidateIdInput(candidate_id=body.reference)
     if select_charge(turn, body.reference) is None:
@@ -97,6 +107,9 @@ def preview(body: DisputePreviewInput, request: Request, session: Session = Depe
 
 @router.post("")
 def create(body: DisputeCreateInput, request: Request, session: Session = Depends(require_customer)) -> JSONResponse:
+    blocked = rate_limited(request, session)
+    if blocked is not None:
+        return blocked
     turn = open_turn(request, session)
     turn_input = CandidateIdInput(candidate_id=body.reference)
     pending = turn.state.pending_confirmation

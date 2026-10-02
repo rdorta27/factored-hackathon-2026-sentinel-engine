@@ -46,18 +46,21 @@ def test_ambiguous_thousand_separator_asks_instead_of_opening(logged_in) -> None
 
 
 @pytest.mark.attack("E5", "blocked_verified")
-def test_empty_and_whitespace_messages_still_ask_a_question(logged_in) -> None:
-    """E5. Empty input is handled, and it cannot open a case.
+def test_empty_and_whitespace_messages_are_rejected(logged_in) -> None:
+    """E5. Empty input is rejected at the contract, and it cannot open a case.
 
-    FINDING (not a test bug): the schema allows an empty string
-    (`Field(default="", max_length=2000)`), so `""` and `"   "` return 200 with
-    a clarification instead of a 422. The outcome is safe — a question, never a
-    case — but the input contract is looser than the review assumed.
+    The schema rejects blank or missing input with 422, so no clarification
+    turn is spent on it: the outcome is still safe (never a case), and the
+    input contract now matches the review instead of being looser than it.
     """
-    for payload in ("", "   ", "\n\t"):
-        response = logged_in.post("/api/v1/chat", json={"message": payload})
-        assert response.status_code == 200, repr(payload)
-        assert response.json()["kind"] != "case_confirmation", repr(payload)
+    for payload in ("", "   ", "\n\t", None):
+        body = {} if payload is None else {"message": payload}
+        response = logged_in.post("/api/v1/chat", json=body)
+        assert response.status_code == 422, repr(payload)
+    # A message with real text still gets an answer, never a case on blank input.
+    ok = logged_in.post("/api/v1/chat", json={"message": "hola"})
+    assert ok.status_code == 200
+    assert ok.json()["kind"] != "case_confirmation"
 
 
 @pytest.mark.attack("E3", "blocked_verified")
