@@ -35,3 +35,40 @@ def test_labels_provenance_is_recorded() -> None:
     assert provenance.run_id.strip()
     assert provenance.summary_sha16.strip()
     assert provenance.claim_labels
+
+
+def _body(**extra):  # type: ignore[no-untyped-def]
+    body = {
+        "id": "v-1", "locale": "es-419", "country": "AR", "turns": ["che, no reconozco este débito"],
+        "expected_intent": "charge", "expected_outcome": "clarification", "split": "held_out",
+        "base_id": "b-01", "variant": "es-AR",
+    }
+    body.update(extra)
+    return body
+
+
+def test_variant_fields_are_loaded() -> None:
+    case = validate_case(_body(), "test")
+    assert (case.base_id, case.variant, case.perturbation) == ("b-01", "es-AR", None)
+    pt = validate_case(_body(locale="pt-BR", country="MX", variant="pt-BR"), "test")
+    assert pt.variant == "pt-BR"
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [{"locale": "pt-BR"}, {"country": "MX"}, {"base_id": None}, {"variant": "es-PE"}],
+)
+def test_variant_contradicting_locale_or_country_fails(extra) -> None:  # type: ignore[no-untyped-def]
+    with pytest.raises(ValueError, match="v-1"):
+        validate_case(_body(**extra), "test")
+
+
+def test_noisy_case_names_one_perturbation_and_its_base() -> None:
+    case = validate_case(_body(tags=["noisy"], perturbation="amount_shift"), "test")
+    assert case.perturbation == "amount_shift"
+    with pytest.raises(ValueError, match="perturbation"):
+        validate_case(_body(tags=["noisy"]), "test")
+    with pytest.raises(ValueError, match="base_id"):
+        validate_case(_body(tags=["noisy"], perturbation="date_shift", base_id=None, variant=None), "test")
+    with pytest.raises(ValueError, match="not tagged noisy"):
+        validate_case(_body(perturbation="date_shift"), "test")

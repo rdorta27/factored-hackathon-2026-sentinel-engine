@@ -19,7 +19,7 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 
 ## 3. Case schema and sealing tools
 
-- [ ] 3.1 Add `base_id`, `variant`, `perturbation` and the `noisy` tag to `ai-core/eval/cases.py`, and reject a variant that contradicts locale or country. Verify: `ai-core/tests/test_eval_cases.py` covers the contradiction and the noisy reference. Spec: evaluation-runner "Versioned labelled case set".
+- [x] 3.1 Add `base_id`, `variant`, `perturbation` and the `noisy` tag to `ai-core/eval/cases.py`, and reject a variant that contradicts locale or country. Verify: `ai-core/tests/test_eval_cases.py` covers the contradiction and the noisy reference. Spec: evaluation-runner "Versioned labelled case set".
 - [ ] 3.2 Move the 10 earlier held-out cases into development. Verify: `held_out.jsonl` is removed or empty, `check_splits` passes, and a test asserts no earlier held-out id is in `eval/cases/sealed/`. Spec: sealed-case-set "Earlier held-out cases are retired".
 - [ ] 3.3 Add a seal command that checks sizes (at least 70 bases, at least 25 per intent, 4 variants per base) and writes `ai-core/eval/cases/seal.json` with hash, counts, date and author. Add the append-only `ai-core/eval/measured.json`. Verify: tests show an undersized set is refused and an edited sealed file fails the hash check. Spec: sealed-case-set "Held-out set is sealed before measuring".
 
