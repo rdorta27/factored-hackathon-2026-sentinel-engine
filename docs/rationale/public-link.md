@@ -6,7 +6,7 @@ The deployed demo runs on Azure Container Apps, one container ([019](../build/de
 
 - **Model:** the keyword baseline. The router models are measured offline ([016](../build/decisions/016-router-models.md)); if the link serves them, it uses a separate, disposable Fireworks key with a spending cap, stored only as a Container App secret (`SENTINEL_LLM_API_KEY`) and revoked after evaluation.
 - **Data:** the labeled Gold mock (`gold_source: mock` on `/api/v1/health`). The dataset never leaves the gitignored `data/` folder.
-- **State:** SQLite on the container's ephemeral disk, one instance. A scale-to-zero or restart may lose sessions and cases; for a demo, logging in again is enough.
+- **State:** SQLite on the container's ephemeral disk, one instance (`maxReplicas 1`), under `/tmp/sentinel` owned by a non-root user. A scale-to-zero or restart loses sessions and cases; for a demo, logging in again is enough. `GET /api/v1/health` answers 503 when the state store does not respond.
 - **Date:** a configurable reference date (2026-06-17), because the dataset ends in June 2026.
 
 ## Why

@@ -121,7 +121,7 @@ flowchart LR
         handoff["5 · Escalate<br/>JSON handoff: facts,<br/>evidence, open questions"]
     end
     gold[("Gold<br/>charges")]
-    record[("Dispute record<br/>in memory in the demo")]
+    record[("Dispute record<br/>SQLite in the demo")]
     advisor(["Human advisor"])
 
     customer --> understand --> lookup --> decide

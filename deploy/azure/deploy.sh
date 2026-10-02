@@ -6,7 +6,8 @@ set -euo pipefail
 # the target subscription. Reads SENTINEL_SESSION_SALT from the repo .env
 # when set; otherwise generates a random one per run. The LLM router variables
 # (SENTINEL_LLM_*) are read from the same .env and passed through when set; the
-# API key goes in as a secret. State is SQLite inside the container, so the app
+# API key goes in as a secret. The served app does not read them yet (decision
+# 10 is open): they reach the container and are ignored. State is SQLite inside the container, so the app
 # runs a single replica and loses sessions and cases on restart.
 
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"

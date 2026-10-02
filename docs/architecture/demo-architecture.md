@@ -41,7 +41,7 @@ flowchart LR
 
 - **Data layer.** The same pipeline, run locally on DuckDB: it has run end to end on the full dataset into `data/gold_bank.duckdb` with a [quality report](../../sentinel-data-engine/data_quality_report.md). The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active. The adapter reads the view as a Delta table under `data/gold/`, while the local run writes a DuckDB file, so the demo still serves the mock until one of them changes.
 - **Service layer.** The same single process, run locally or in one container behind the public link.
-- **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only.
+- **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only. A conversation files at most one handoff ticket, and the file is owner-only. In the container the file lives on the ephemeral disk, so a restart there loses it.
 
 ## Components
 
