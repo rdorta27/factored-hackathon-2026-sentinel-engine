@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
-from typing import Union
+from typing import Any, Union
 
 
 class Language(StrEnum):
@@ -18,6 +18,7 @@ class TransactionStatus(StrEnum):
 class OutcomeKind(StrEnum):
     QUESTION = "question"
     EXPLAIN = "explain"
+    EXPLANATION = "explanation"
     CONFIRM_BOX = "confirm_box"
     CASE_NUMBER = "case_number"
     HANDOFF = "handoff"
@@ -65,6 +66,21 @@ class PendingConfirmation:
 
 
 @dataclass
+class LastDecision:
+    """The last policy decision shown to the customer (REQ-0033).
+
+    A snapshot, never recomputed: ``values`` holds only verified values read
+    from the country file and the verified candidate at decision time. Only
+    rules that have an explanation are recorded.
+    """
+
+    rule_id: str
+    candidate_id: str | None = None
+    policy_version: str | None = None
+    values: dict[str, Any] = field(default_factory=dict)
+
+
+@dataclass
 class ConversationState:
     language: Language
     turns: list[str] = field(default_factory=list)
@@ -83,6 +99,8 @@ class ConversationState:
     # Reference of the ticket filed for this conversation. A conversation files
     # at most one: later turns that hand off again point at the same ticket.
     handoff_reference: str | None = None
+    # Last explainable policy decision, kept for a "why" follow-up (REQ-0033).
+    last_decision: LastDecision | None = None
 
 
 @dataclass(frozen=True)
@@ -108,6 +126,9 @@ class TurnOutput:
     reason: str | None = None
     attempt: int | None = None
     category: str | None = None
+    # Explanation reply: a translation key plus verified values, no prose.
+    explanation_key: str | None = None
+    explanation_values: dict[str, Any] = field(default_factory=dict)
 
 
 def phase_of(state: ConversationState, output: TurnOutput | None = None) -> Phase:

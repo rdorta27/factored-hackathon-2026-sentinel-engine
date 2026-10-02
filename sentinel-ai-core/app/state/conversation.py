@@ -20,6 +20,7 @@ from app.orchestrator.types import (
     Candidate,
     ConversationState,
     Language,
+    LastDecision,
     PendingConfirmation,
     TransactionStatus,
 )
@@ -77,6 +78,7 @@ def _load(raw: str, pending_reason: str | None) -> StoredConversation:
 def from_json(raw: str) -> ConversationState:
     data = json.loads(raw)
     pending = data.get("pending_confirmation")
+    last = data.get("last_decision")
     return ConversationState(
         language=Language(data["language"]),
         turns=list(data.get("turns", [])),
@@ -92,6 +94,7 @@ def from_json(raw: str) -> ConversationState:
         rejected_ids=list(data.get("rejected_ids", [])),
         sys_questions=list(data.get("sys_questions", []))[-2:],
         handoff_reference=data.get("handoff_reference"),
+        last_decision=LastDecision(**last) if last else None,
     )
 
 

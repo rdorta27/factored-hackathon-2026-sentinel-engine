@@ -88,6 +88,29 @@ def test_day_91_expires() -> None:
     assert hit.outcome is HitOutcome.EXPLAIN
 
 
+def test_window_snapshot_on_day_90_and_day_91() -> None:
+    from app.policy.engine import decision_snapshot
+
+    policy = _policy()
+    charge = _charge(TransactionStatus.APPROVED, "2024-10-01")
+    day_90 = decision_snapshot("window.expired", charge, date(2024, 12, 30), policy)
+    day_91 = decision_snapshot("window.expired", charge, date(2024, 12, 31), policy)
+    assert day_90["window_days"] == 90
+    assert day_90["charge_date"] == "2024-10-01"
+    assert day_90["last_eligible_date"] == "2024-12-30"
+    assert day_90["age_days"] == 90
+    assert day_90["synthetic"] is True
+    assert day_91["age_days"] == 91
+    assert day_91["last_eligible_date"] == "2024-12-30"
+
+
+def test_non_window_rules_carry_no_figures() -> None:
+    from app.policy.engine import decision_snapshot
+
+    assert decision_snapshot("status.pending", _charge(TransactionStatus.PENDING), date(2024, 12, 30), _policy()) == {}
+    assert decision_snapshot("window.expired", None, date(2024, 12, 30), _policy()) == {}
+
+
 def test_null_threshold_does_not_fire() -> None:
     hit = evaluate(
         _request(candidate=_charge(TransactionStatus.APPROVED, amount="999999"))

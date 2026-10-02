@@ -26,6 +26,22 @@ function formatDate(value) {
   return String(value);
 }
 
+/* Explanation replies carry a key and verified values; fill placeholders here. */
+function fillTemplate(template, values) {
+  return String(template).replace(/\{(\w+)\}/g, (match, key) => {
+    const value = values ? values[key] : undefined;
+    return value === undefined || value === null ? match : String(value);
+  });
+}
+
+function explanationText(body) {
+  let text = fillTemplate(t(body.message_key), body.values);
+  if (body.values && body.values.synthetic) {
+    text = `${text} ${t("explanation.demo")}`;
+  }
+  return text;
+}
+
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
@@ -146,6 +162,8 @@ function renderReply(body) {
     card.append(el("p", "", t(body.messages.noFunds)));
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);
+  } else if (body.kind === "explanation") {
+    thread.append(el("div", "msg msg-bot", explanationText(body)));
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
     box.append(el("strong", "", t(body.message_key)));

@@ -51,6 +51,8 @@ from app.schemas.chat import (
     ConfirmBox,
     ConversationTurn,
     ErrorReply,
+    Explanation,
+    ExplanationValues,
     Handoff,
     HandoffAction,
     HandoffPackage,
@@ -234,6 +236,12 @@ def _to_reply(
         )
     if kind in (OutcomeKind.EXPLAIN, OutcomeKind.OFFER):
         return TextReply(message_key=_TEXT_KEYS.get(output.reason or "", "greetingHelp"))
+    if kind is OutcomeKind.EXPLANATION:
+        return Explanation(
+            message_key=output.explanation_key or "explanation.none",
+            rule_id=output.reason,
+            values=ExplanationValues(**output.explanation_values),
+        )
     if kind is OutcomeKind.CONFIRM_BOX and output.candidate is not None:
         return ConfirmBox(
             message_key="confirmCharge",
@@ -444,6 +452,7 @@ _CUSTOMER_PHRASES = {
     "selected_charge": "selected a charge",
     "selected_unknown_charge": "selected a charge not in their account",
     "asked_for_person": "asked for a person",
+    "asked_why": "asked why a decision was made",
     "out_of_scope": "asked for something outside disputes",
     "not_understood": "sent a message the system could not understand",
 }
@@ -470,13 +479,15 @@ def _turn_entry(
         customer = "out_of_scope"
     elif reason == "model_unavailable":
         customer = "not_understood"
+    elif isinstance(reply, Explanation):
+        customer = "asked_why"
     elif isinstance(reply, Clarification):
         customer = "unclear_charge"
     else:
         customer = "described_charge"
     if charge is None and output is not None and output.candidate is not None:
         charge = output.candidate.candidate_id
-    if isinstance(reply, (TextReply, Clarification, ConfirmBox, ErrorReply)):
+    if isinstance(reply, (TextReply, Clarification, ConfirmBox, ErrorReply, Explanation)):
         rule = reason or reply.message_key
     elif isinstance(reply, Handoff):
         rule = reason or reply.reason_key
@@ -498,6 +509,7 @@ def _system_phrase(entry: ConversationTurn) -> str:
     rule = f" ({entry.rule})" if entry.rule else ""
     return {
         "text": f"explained{rule}",
+        "explanation": f"explained the decision{rule}",
         "clarification": "asked which charge",
         "confirm_box": "showed the confirm box",
         "case_confirmation": "opened and verified a case",

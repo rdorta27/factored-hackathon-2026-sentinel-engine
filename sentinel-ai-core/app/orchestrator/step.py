@@ -7,17 +7,27 @@ from app.ai.grounding import extract_facts, ground, rank_candidates
 from app.ai.port import ModelInfo, ModelPort, UnderstandKind
 from app.ai.transport import ModelUnavailable
 from app.observability.observer import TurnObserver
+from app.orchestrator.explanation import explanation_for, is_why_followup
 from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
     ConversationState,
+    LastDecision,
     OutcomeKind,
     PendingConfirmation,
     TextInput,
     TurnInput,
     TurnOutput,
 )
-from app.policy.engine import HitOutcome, Intent, PolicyHit, PolicyRequest, evaluate
+from app.policy.engine import (
+    EXPLAINABLE_RULES,
+    HitOutcome,
+    Intent,
+    PolicyHit,
+    PolicyRequest,
+    decision_snapshot,
+    evaluate,
+)
 from app.policy.load import load_country
 from app.tools.ports import ToolStatus, TransactionLookup
 
@@ -178,10 +188,33 @@ def _person_request(state: ConversationState, ports: Ports) -> TurnOutput:
     return output
 
 
+def _explanation(state: ConversationState, ports: Ports) -> TurnOutput:
+    """Answer a why follow-up from the stored decision, never recomputing it."""
+    mapped = explanation_for(state.last_decision)
+    _emit(
+        ports,
+        state.language.value,
+        step="decide",
+        policy_rule=mapped.rule_id or mapped.message_key,
+    )
+    return TurnOutput(
+        kind=OutcomeKind.EXPLANATION,
+        language=state.language,
+        reason=mapped.rule_id,
+        explanation_key=mapped.message_key,
+        explanation_values=mapped.values,
+    )
+
+
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
     state.turns.append(turn.text)
     if len(state.turns) > MAX_TURNS:
         del state.turns[: len(state.turns) - MAX_TURNS]
+    today = ports.today or date.today()
+    merchants = [item.merchant for item in state.candidates]
+    if is_why_followup(turn.text, merchants, today.year):
+        # Answer from the stored decision only: no model, no lookup, no engine.
+        return _explanation(state, ports)
     if state.pending_confirmation is not None:
         # The box swallows everything except a person request. The model is not
         # consulted here for anything else, so a failure cannot change this.
@@ -413,6 +446,15 @@ def _hit(
         policy_version=None if policy is None else policy.version,
         policy_synthetic=None if policy is None else policy.synthetic,
     )
+    if hit.rule_id in EXPLAINABLE_RULES:
+        # Remember only decisions that have an explanation; confirmations and
+        # case creation must not overwrite the decision the customer saw.
+        state.last_decision = LastDecision(
+            rule_id=hit.rule_id,
+            candidate_id=None if candidate is None else candidate.candidate_id,
+            policy_version=None if policy is None else policy.version,
+            values=decision_snapshot(hit.rule_id, candidate, today, policy),
+        )
     return hit
 
 

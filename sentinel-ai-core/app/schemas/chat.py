@@ -2,7 +2,8 @@
 Canonical contract for ``/api/v1/chat`` and ``/api/v1/transactions``.
 
 Every chat answer is exactly one variant: ``text``, ``clarification``,
-``confirm_box``, ``case_confirmation``, ``handoff`` or ``error`` (spec ``chat``).
+``confirm_box``, ``case_confirmation``, ``explanation``, ``handoff`` or
+``error`` (spec ``chat``).
 Replies carry raw values and translation keys, never authored prose; the
 client renders the keys in its locale. Shapes follow the former
 ``sentinel-login`` chat contract (backend removed by decision 009), trimmed to
@@ -101,6 +102,33 @@ class ConfirmBox(BaseModel):
     kind: Literal["confirm_box"] = "confirm_box"
     message_key: str = Field(min_length=1, max_length=64)
     candidate: CandidateTransaction
+
+
+class ExplanationValues(BaseModel):
+    """Verified values an explanation may carry.
+
+    Read from the country file and the verified candidate at decision time.
+    Nothing from the model or the customer's words ever appears here.
+    """
+
+    model_config = StrictModel
+
+    window_days: Optional[int] = Field(default=None, ge=0, le=3650)
+    charge_date: Optional[str] = Field(default=None, max_length=32)
+    last_eligible_date: Optional[str] = Field(default=None, max_length=32)
+    age_days: Optional[int] = Field(default=None, ge=0)
+    synthetic: Optional[bool] = None
+
+
+class Explanation(BaseModel):
+    """Answer to a why follow-up: a key, the rule it explains and verified values."""
+
+    model_config = StrictModel
+
+    kind: Literal["explanation"] = "explanation"
+    message_key: str = Field(min_length=1, max_length=64)
+    rule_id: Optional[str] = Field(default=None, max_length=64)
+    values: ExplanationValues = Field(default_factory=ExplanationValues)
 
 
 class TransactionFacts(BaseModel):
@@ -229,7 +257,9 @@ class ErrorReply(BaseModel):
     trace_id: str = Field(min_length=1, max_length=64)
 
 
-ChatReply = Union[TextReply, Clarification, ConfirmBox, CaseConfirmation, Handoff, ErrorReply]
+ChatReply = Union[
+    TextReply, Clarification, ConfirmBox, CaseConfirmation, Explanation, Handoff, ErrorReply
+]
 
 
 # --- /api/v1/disputes -------------------------------------------------------

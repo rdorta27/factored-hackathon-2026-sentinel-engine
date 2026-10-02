@@ -13,6 +13,7 @@ from app.schemas.chat import (
     Clarification,
     ConfirmBox,
     ErrorReply,
+    Explanation,
     Handoff,
     TextReply,
     TransactionList,
@@ -130,6 +131,23 @@ def test_handoff_package_is_logged_on_the_turn_record() -> None:
     trace_id = response.headers["X-Trace-Id"]
     turn = [r for r in api.app.state.recorder.records_for(trace_id) if r.step == "turn"]
     assert turn and turn[-1].handoff == response.json()["package"]
+
+
+def test_why_followup_returns_a_strict_explanation() -> None:
+    api = logged_in()
+    chat(api, message="Hay un cobro de 2500 MXN en ACME Store")
+    raw = chat(api, message="¿en qué te basas, de dónde salen los 90 días?")
+    explanation = parsed(Explanation, raw)
+    assert explanation.rule_id == "window.expired"
+    assert explanation.values.window_days == 90
+    assert explanation.values.last_eligible_date == "2026-04-15"
+    assert explanation.values.synthetic is True
+    assert_translated(explanation.message_key)
+    assert "customer_id" not in json.dumps(raw)
+    with pytest.raises(Exception):
+        Explanation.model_validate({**raw, "customer_id": "CUST-0001"})
+    with pytest.raises(Exception):
+        Explanation.model_validate({**raw, "extra": "x"})
 
 
 def test_foreign_reference_is_a_handoff_without_disclosure() -> None:

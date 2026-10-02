@@ -177,7 +177,7 @@ The model talks to the customer but never approves anything or invents rules; de
 
 **Depends on:** [REQ-0048](non-functional.md#req-0048). Applies the decision order.
 
-**Evidence:** Proven by: the architecture, where only the policy engine decides.
+**Evidence:** Proven by: the architecture, where only the policy engine decides. The "why?" follow-up is answered from the stored decision without calling the model, the lookup tool or the engine, and each rule may disclose only its own verified values: window and status rules explain their rule, the safety rules return one fixed sentence that names no threshold, score or the word fraud, and no decision invents a rule (`tests/test_explanation.py`, `tests/test_policy_gate.py`, `tests/test_contract.py::test_why_followup_returns_a_strict_explanation`). Probing is measured at `0/42` unsafe ([run](../../evidence/adversarial/20261002T195516Z/summary.json)); the locale texts hold no written number ([`tests/test_policy_texts.py`](../../sentinel-ai-core/tests/test_policy_texts.py)).
 
 <a id="req-0038"></a>
 ### REQ-0038 · Simple frontend
