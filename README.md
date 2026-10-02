@@ -4,7 +4,7 @@ Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Prototype under active development. Status per requirement is tracked in Requirements coverage below; open decisions are marked as such.
 
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and the keyword baseline; it scales to zero when idle, so the first visit may take a few seconds ([decision 019](docs/build/decisions/019-azure-container-apps.md)).
+**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and the keyword baseline; it runs one replica and scales to zero when idle, so the first visit may take a few seconds and sessions do not survive a restart ([decision 019](docs/build/decisions/019-azure-container-apps.md)).
 
 ## What we are building
 
@@ -66,10 +66,22 @@ The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README
 
 | Status | Requirements |
 |---|---|
-| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate (fraud and high amount per currency) · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person, also with the confirm box open · REQ-0048 decision order. Demo: REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261001T222341Z/summary.json)) · REQ-0028 reproducible setup · REQ-0047 no personal data to the model (free text masked) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0018 incremental processing · REQ-0031 sources labeled by origin ([inventory](docs/data_inventory.md)) · REQ-0053 sizing ([capacity](docs/sizing_capacity.md)) · REQ-0054 no external data · Deployment: REQ-0035 [live link](docs/requirements/delivery.md#req-0035) |
+| **Done** | Conversation and safety: REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate (fraud and high amount per currency) · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person, also with the confirm box open · REQ-0048 decision order. Demo: REQ-0010 ambiguous · REQ-0011 human · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. Operations: REQ-0021 failure tests ([evidence](evidence/adversarial/20261002T120107Z/summary.json)) · REQ-0028 reproducible setup · REQ-0047 no personal data to the model (free text masked) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0049 country as configuration. Data: REQ-0014 flow analysis ([selection](docs/build/flows/03-flow-selection.md)) · REQ-0018 incremental processing · REQ-0031 sources labeled by origin ([inventory](docs/data_inventory.md)) · REQ-0053 sizing ([capacity](docs/sizing_capacity.md)) · REQ-0054 no external data · Deployment: REQ-0035 [live link](docs/requirements/delivery.md#req-0035) |
 | **In progress** | Normal demo case in Portuguese (REQ-0009, REQ-0012) · learned component vs baseline and the outcome metrics (router models decided in decision 016, run pending) · pipeline quality report (nulls, orphans, late arrivals) and Gold read on real data in the app (REQ-0015) · limitations (REQ-0013, REQ-0030) · deliverables: slides, video |
 
 Status per requirement and per type: [requirements](docs/requirements/requirements.md#status-by-priority).
+
+## Limitations
+
+What the prototype does not do, stated up front (REQ-0013, REQ-0030; capacity in the [sizing](docs/sizing_capacity.md)):
+
+- **Data:** synthetic and in Spanish only; accounts only in Mexico, Colombia and Argentina, and Mexican accounts only in USD. The public link runs on a labeled mock, not on real Gold; the DuckDB adapter exists but the served app has not been read against real data ([REQ-0015](docs/requirements/requirements.md)).
+- **Languages:** the Portuguese (`pt-BR`) cases are model-written, with no native-speaker review, and variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)).
+- **Model:** the served app uses the keyword baseline. The prompted router is measured offline and the served app does not read the `SENTINEL_LLM_*` variables yet (decision 10 is open).
+- **State:** SQLite, one instance. On the public link it sits on the container's ephemeral disk, so a restart or scale-to-zero loses sessions and cases. Login-attempt and write-rate counters are per process.
+- **Privacy:** free customer text is masked before the model, by pattern; personal data outside those patterns is not detected.
+- **Safety evidence:** the adversarial set has 36 attacks with `0/36` unsafe outcomes, but three have no defense yet (A3, A4b, D4) and three pass only because the stand-in model is the keyword baseline ([run](evidence/adversarial/20261002T120107Z/summary.json)).
+- **Deployment:** the live link has not been redeployed with the 10/02 hardening (one replica, non-root, health check on the state store).
 
 ## Reading guide
 

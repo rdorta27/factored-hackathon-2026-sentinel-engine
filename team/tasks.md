@@ -32,7 +32,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Fri 10/2 | Metrics, trade-offs and slides with a real delta | Pending: the served model is the keyword baseline; delta zero by construction |
 | 6 | Write the pt-BR twins of the key cases and check them by back-translation ([017](../docs/build/decisions/017-portuguese.md)); include the three demo cases | REQ-0012, REQ-0009 | Unassigned | Fri 10/2 | Normal case in Portuguese, the 3 demo cases in pt-BR | Pending |
 | 7 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
-| 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
+| 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | In progress: the README has the limitations section (10/02); the slides are pending |
 | 9 | Path to production write-up, including monitoring; handoff delivery decided ([015](../docs/build/decisions/015-handoff-delivery.md)) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Fri 10/2 | Public link, submission | Done: gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
 | 11 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
@@ -136,7 +136,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Labelled incremental fixture: late arrival, duplicate and schema change | Natalia | Done: `sentinel-data-engine/tests/test_incremental_fixture.py` (REQ-0018) |
 | Sizing and capacity specification | Natalia | Done: [sizing](../docs/sizing_capacity.md) (REQ-0053) |
 | Data setup in two steps: sync the raw tables, build the DuckDB file | Natalia | Done: [quickstart](../sentinel-data-engine/README.md#9-local-development-quickstart) (REQ-0028) |
-| Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261001T222341Z/summary.json` (REQ-0047) |
+| Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261002T120107Z/summary.json` (REQ-0047) |
 | Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/understand/dataset.md#assumptions); asked in the help channel |
 | A person request while the confirm box is open escalates like any other; insisting after other messages still escalates; the extra model call is logged | Felix (Rubén reviewed and fixed) | Done: `tests/test_person_while_confirming.py`, PR #30 (REQ-0040) |
 | Close pending decisions 10, 13, 14, 15, 16, 23, 27 and 28 | Rubén | Done: [012](../docs/build/decisions/012-public-deployment.md) to [017](../docs/build/decisions/017-portuguese.md) |
@@ -193,3 +193,8 @@ Need information, not a decision. Ordered by date.
 | Sessions, conversation and cases in SQLite with retention | Natalia (Rubén integrated) | Thu 10/1 |
 | Disputes API, handoff tickets with summary, advisor view and roles | Natalia, Felix (Rubén integrated) | Thu 10/1 |
 | Adversarial set at 36 attacks, `0/36` unsafe ([evidence](../evidence/adversarial/20261001T130342Z/summary.json)) | Rubén, Felix | Thu 10/1 |
+| Security hardening of the served app: cookie, headers and CSRF; write rate limit and chat input contract; customer text as data; owner-only database, turn log and salt; bounded stored turns | Rubén | Fri 10/2 |
+| Transactions panel shows only eligible charges and HTTP errors render as errors; checked in headless Chromium | Rubén | Fri 10/2 |
+| One handoff ticket per conversation | Rubén | Fri 10/2 |
+| Deploy: one replica, non-root user, ephemeral state under `/tmp/sentinel`, container healthcheck, health route that queries the state store; built and run locally, not yet redeployed | Rubén | Fri 10/2 |
+| Adversarial set re-frozen on the hardened code, `0/36` unsafe ([evidence](../evidence/adversarial/20261002T120107Z/summary.json)) | Rubén | Fri 10/2 |

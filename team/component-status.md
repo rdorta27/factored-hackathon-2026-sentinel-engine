@@ -1,6 +1,6 @@
 # Component status
 
-Where the build stands on Thu 10/1: the same components as the [System Architecture](../docs/architecture/system-architecture.md), painted by status. Evidence per item lives in [tasks](tasks.md) and the [requirements](../docs/requirements/requirements.md).
+Where the build stands on Fri 10/2: the same components as the [System Architecture](../docs/architecture/system-architecture.md), painted by status. Evidence per item lives in [tasks](tasks.md) and the [requirements](../docs/requirements/requirements.md).
 
 Legend: green = implemented and tested · amber = partial (works behind a mock, offline only, or not run on real data) · red = missing.
 
@@ -43,24 +43,23 @@ flowchart TB
     tests -.-> aview
     s3[("S3 raw data")] --> pipeline["Bronze → Silver → Gold<br/>end-to-end run, quality report partial"]
     pipeline --> gold
-    deploy["Public deployment"] -.-> chat
+    deploy["Public deployment<br/>live, hardening not redeployed"] -.-> chat
 
     classDef done fill:#d9f5e3,stroke:#1f9d55,stroke-width:2px,color:#12351f
     classDef partial fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#4a3200
     classDef missing fill:#ffe3e3,stroke:#d33f3f,stroke-width:2px,color:#4a1111
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
     class chat,dapi,session,orch,policy,config,lookup,open,verify,handoff,cases,aview,logs,evalr,tests done
-    class learned,gold,pipeline partial
-    class deploy missing
+    class learned,gold,pipeline,deploy partial
     class s3 done
     class client ext
 ```
 
 ## Reading it
 
-- **Done (16):** policy configuration with synthetic fraud and high-amount thresholds per account country and currency ([010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md)); the full demo path on one app and one API under `/api/v1`: chat and the two-step disputes API on the same turn cycle, password session with roles, conversation state in SQLite that survives a restart and is deleted on logout or expiry, the loop and policy engine, the four tools with one open dispute per charge and read-back verification, handoff tickets with a conversation summary and every attempted action, the read-only advisor view, the structured log, free-text personal-data masking before the model, the [latest evaluation run](../evidence/evaluation-runs/2024Q4-eval-v6/summary.json) (44 cases, 0 failures) and the [latest adversarial run](../evidence/adversarial/20261001T222341Z/summary.json) (36 attacks, `0/36` unsafe, A9 blocked); the S3 raw data synced locally.
-- **Partial (3):** understanding (the demo serves the keyword baseline; the prompted router is measured offline against mirrored fixtures, so the delta is zero by construction until the run of [016](../docs/build/decisions/016-router-models.md)); Gold (the pipeline writes the view into `data/gold_bank.duckdb`, but the adapter reads a Delta table under `data/gold/`, so the app still falls back to the mock); the pipeline (run end to end with incremental tests, sources inventoried and sizing written, but the quality report lacks nulls, orphans and late arrivals).
-- **Missing (1):** the public deployment.
+- **Done (16):** policy configuration with synthetic fraud and high-amount thresholds per account country and currency ([010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md)); the full demo path on one app and one API under `/api/v1`: chat and the two-step disputes API on the same turn cycle, password session with roles, conversation state in SQLite that survives a restart and is deleted on logout or expiry, the loop and policy engine, the four tools with one open dispute per charge and read-back verification, handoff tickets with a conversation summary and every attempted action, the read-only advisor view, the structured log, free-text personal-data masking before the model, the [latest evaluation run](../evidence/evaluation-runs/2024Q4-eval-v6/summary.json) (44 cases, 0 failures) and the [latest adversarial run](../evidence/adversarial/20261002T120107Z/summary.json) (36 attacks, `0/36` unsafe, A9 blocked); the S3 raw data synced locally.
+- **Partial (4):** understanding (the demo serves the keyword baseline; the prompted router is measured offline against mirrored fixtures, so the delta is zero by construction until the run of [016](../docs/build/decisions/016-router-models.md)); Gold (the pipeline writes the view into `data/gold_bank.duckdb`, but the adapter reads a Delta table under `data/gold/`, so the app still falls back to the mock); the pipeline (run end to end with incremental tests, sources inventoried and sizing written, but the quality report lacks nulls, orphans and late arrivals).
+- **Missing (0).** The public deployment is live (REQ-0035) but runs the image from before the 10/02 hardening; redeploying from `fix/security-e2e-integration` is what is left, which makes it partial.
 
 ## What unblocks what
 

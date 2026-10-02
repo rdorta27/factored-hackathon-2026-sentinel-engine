@@ -100,7 +100,7 @@ When the system escalates, the advisor receives a structured JSON package with t
 
 **Depends on:** [REQ-0003](#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047). The package carries verified facts, rule-based evidence and no PII.
 
-**Evidence:** Proven by: the `handoff` reply carries request, a deterministic summary, per-turn entries, verified facts, every action attempted (failed ones included), evidence, open questions, language and country, with no `customer_id` and no raw text; it is filed as an escalated case the advisor reads at `GET /api/v1/handoffs` (`tests/test_handoff_package.py`, `tests/test_handoffs_api.py`).
+**Evidence:** Proven by: the `handoff` reply carries request, a deterministic summary, per-turn entries, verified facts, every action attempted (failed ones included), evidence, open questions, language and country, with no `customer_id` and no raw text; it is filed as an escalated case the advisor reads at `GET /api/v1/handoffs` (`tests/test_handoff_package.py`, `tests/test_handoffs_api.py`); a conversation files one ticket, and later handoff replies reuse its reference (`test_a_conversation_files_one_handoff_ticket`).
 
 <a id="req-0009"></a>
 ### REQ-0009 · Demo: normal case
@@ -188,7 +188,7 @@ A simple way to use the system, such as a chat page. A dashboard is not required
 
 **Depends on:** [REQ-0027](non-functional.md#req-0027). The page runs on the test session.
 
-**Evidence:** Proven by: one page at `/ui/` served by the same process with the customer chat (confirm box, chips, transactions panel, handoff card) and the read-only advisor view (`tests/test_ui.py`, `tests/test_contract.py::test_served_app_is_the_full_app`); [009](../build/decisions/009-demo-ui-and-advisor-view.md).
+**Evidence:** Proven by: one page at `/ui/` served by the same process with the customer chat (confirm box, chips, transactions panel, handoff card) and the read-only advisor view (`tests/test_ui.py`, `tests/test_contract.py::test_served_app_is_the_full_app`); the transactions panel disables charges that are not eligible and shows why, and a non-2xx reply renders as an error bubble instead of a bot answer (checked on 10/02 in headless Chromium against the running app: 4 enabled, 3 disabled, a 429 bubble); [009](../build/decisions/009-demo-ui-and-advisor-view.md).
 
 <a id="req-0040"></a>
 ### REQ-0040 · Request for a person
