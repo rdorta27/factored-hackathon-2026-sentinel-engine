@@ -188,6 +188,20 @@ def test_dev_salt_persists_across_restarts(tmp_path, monkeypatch) -> None:
     assert (tmp_path / "var" / ".session_salt").is_file()
 
 
+def test_turn_log_and_dev_salt_are_owner_only(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    import os
+    import stat
+
+    from app.observability import Recorder
+
+    monkeypatch.delenv("SENTINEL_SESSION_SALT", raising=False)
+    monkeypatch.setenv("SENTINEL_VAR_DIR", str(tmp_path / "var"))
+    Recorder()
+    for name in ("turns.jsonl", ".session_salt"):
+        mode = stat.S_IMODE(os.stat(tmp_path / "var" / name).st_mode)
+        assert mode == 0o600, name
+
+
 def test_var_dir_ignores_process_cwd(tmp_path, monkeypatch) -> None:
     from app.observability import var_dir
 
