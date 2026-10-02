@@ -43,7 +43,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Platform: Microsoft Azure | Accepted | [001](../docs/build/decisions/001-azure-platform.md) |
 | Specs with OpenSpec, written in English (decision 18) | Accepted | [002](../docs/build/decisions/002-openspec.md) |
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
-| Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
+| Hybrid LLM with a router across models: open-weight models on Fireworks AI, chosen per route by measurement (closes decision 10) | Accepted | [016](../docs/build/decisions/016-router-models.md) |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | [cost](../docs/build/cost.md) |
 | Case store (disputes and handoff tickets), sessions and conversation state: SQLite for the submission (updated 10/1, mentor feedback: externalize conversation state), Postgres on Azure as the production backend of the same models; in memory only for tests and the offline eval. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [stack](../docs/architecture/system-architecture.md#stack-and-deployment) |
@@ -61,6 +61,8 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
 | One public repository (decision 21), organised by folders; no git submodules (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
+| Public link on Hugging Face Spaces, one Docker container; Azure stays the production target (closes decisions 13 and 16) | Accepted | [012](../docs/build/decisions/012-public-deployment.md) |
+| Keep `team/` in the submission, reviewed before submitting (closes decision 23) | Accepted | [pending decisions](pending-decisions.md) |
 | Demo UI with role landing and a read-only advisor view in the ai-core page; `sentinel-login/` backend removed; no admin panel (closes decision 29) | Accepted | [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 
 Product and technical decisions go in [decisions](../docs/build/decisions/), one file per decision. Team decisions (working method, owners) are recorded here.
@@ -100,7 +102,7 @@ That process serves one app from `sentinel-ai-core/app/main.py` (`app = create_a
 | `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Done: label universe `evidence/evaluation/2024Q4-v1/` and runner output frozen per run (latest `evidence/evaluation-runs/2024Q4-eval-v5/`) with verify |
 | `sentinel-ai-core/app/services/`, `tools/gold_duckdb.py`, `schemas/`, `db/`, `models/` | Natalia, Felix | PII-free Gold view reader behind `GoldTransactions` (fallback to the mock), the typed API contract (`schemas/chat.py`), and the SQLite models and stores for sessions, conversation and cases (`db/`, `models/`, `state/`). | Partial: contract, SQLite state and Gold adapter with tests; Gold not yet read from local data |
 | `sentinel-login/` | Felix | Original demo page kept as a reference; backend removed, not served ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)). | Reference only |
-| Infrastructure as code | Nobody yet | Do not create the folder unless decision 13 lands. | Not started |
+| Infrastructure as code | Nobody yet | Not needed for the submission: it runs on Hugging Face Spaces ([012](../docs/build/decisions/012-public-deployment.md)); Azure infrastructure is production work. | Not started |
 
 Evaluation lives inside `sentinel-ai-core/` because it drives `POST /api/v1/chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.
 
@@ -116,7 +118,7 @@ We start with well-documented mocks and swap them for the real thing one by one,
 | Tue 9/29 | Nothing was ready; the skeleton moves to Wed | — | — |
 | Wed 9/30 | Four tools in memory, test session, synthetic policy configuration, simulated advisor, `.env` | Chat and `POST /chat`, orchestrator loop, policy engine, JSON handoff | Identity provider, Key Vault |
 | Thu 10/1 | Test session with false credentials, synthetic policy, demo advisor user, Gold mock when the DuckDB view is absent | Case store, sessions and conversation out of the process (SQLite); DuckDB Gold adapter; advisor ticket view; structured confirmation, bounded retries, structured logs | PostgreSQL and more than one instance |
-| Fri 10/2 | Anything not reached, reported as a limitation | Evaluation runner and results. Incremental pipeline (tested), free-text masking before the model | Advisor delivery channel (decision 28) |
+| Fri 10/2 | Anything not reached, reported as a limitation | Evaluation runner and results. Incremental pipeline (tested), free-text masking before the model | Advisor delivery channel: queue to the CRM ([015](../docs/build/decisions/015-handoff-delivery.md)) |
 
 The dispute-record engine is SQLite for the submission; Postgres is the production step (URL change, same models).
 - **Rule:** every mock documents its contract and limitations, as the brief asks (Data and execution boundaries): REQ-0004 (safe tools), REQ-0007 (permissions in code), REQ-0032 (documented mocks).

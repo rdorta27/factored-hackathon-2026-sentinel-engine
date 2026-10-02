@@ -20,7 +20,7 @@ Checked on the 2024Q4 transactions: Colombian and Argentine charges come in loca
 
 - Any rule with a money value is set per account country **and** currency ([policy thresholds](policy-thresholds.md)).
 - Statistics about accounts group by `customers.country`, never by `transaction_country`.
-- Portuguese is a language requirement, not a market: there is no Brazilian account and no Portuguese text in the data, yet the system must serve Portuguese ([REQ-0012](../requirements/frontend-backend.md#req-0012)). How it does so is open (decision 15).
+- Portuguese is a language requirement, not a market: there is no Brazilian account and no Portuguese text in the data, yet the system must serve Portuguese ([REQ-0012](../requirements/frontend-backend.md#req-0012)). A Portuguese-speaking customer holds an MX, CO or AR account, and the Portuguese cases are checked through Spanish back-translation ([017](../build/decisions/017-portuguese.md)).
 
 ## Alternatives rejected
 

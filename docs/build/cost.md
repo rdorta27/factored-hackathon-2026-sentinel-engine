@@ -2,7 +2,7 @@
 
 Estimated cost of the **minimal Azure deployment behind the demo's public link** (REQ-0035). It is not a production cost estimate. The demo can also run locally at no cost.
 
-**Status:** working assumption ([decision 16](../../team/pending-decisions.md)), Natalia's estimate. Not validated against Azure pricing. The deployment itself is optional ([decision 13](../../team/pending-decisions.md)).
+**Status:** working assumption, Natalia's estimate, for the Azure production path. Not validated against Azure pricing. The submission runs on the free Hugging Face Spaces tier at no hosting cost ([012](decisions/012-public-deployment.md)); the only metered spend there is the LLM API, capped at the provider.
 
 | Component | Service | Estimate (USD) |
 |---|---|---|

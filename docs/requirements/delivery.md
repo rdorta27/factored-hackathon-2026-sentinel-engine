@@ -67,7 +67,7 @@ A link to the running tool, with usage and spending limits. A minimal deployment
 
 **Depends on:** [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034). A public link needs the session and a clean repo.
 
-**Evidence:** Missing: the deployment and its link.
+**Evidence:** Missing: the deployment and its link. Host decided: Hugging Face Spaces, one container ([012](../build/decisions/012-public-deployment.md)).
 
 <a id="req-0036"></a>
 ### REQ-0036 · Presentation, 4 to 6 slides
@@ -121,4 +121,4 @@ A credible account of how the prototype would be deployed, scaled, monitored and
 
 **Evidence:** Proven by: the [path to production](../architecture/specification.md#path-to-production).
 
-Missing: monitoring (REQ-0050) and handoff delivery (decision 28).
+Missing: monitoring (REQ-0050). Handoff delivery is specified ([015](../build/decisions/015-handoff-delivery.md)).
