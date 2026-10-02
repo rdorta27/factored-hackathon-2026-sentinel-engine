@@ -98,6 +98,26 @@ How to read it:
 - **Safe automated resolution is 0 of 75 for every version.** This is a property of the replay, not a result: no single-turn case reaches a confirmed dispute, so no case can count as resolved. The run therefore **does not show** a safe-resolution rate and cost per resolution is "not defined". The end-to-end claim rests on the live checks in [delivery](../requirements/delivery.md#req-0035) and the transcript replay, not on these numbers. No ROI figure is derived from this table (REQ-0057 stays a labelled projection).
 - **Latency caveat:** component latency comes from the recorded live calls (p50 about 1.1 s, p95 about 4.4 s). System latency for the router versions also includes live model calls, although the run's note says replay time ([018](decisions/018-evaluation-acceptance.md#result)). The baseline's sub-millisecond figures are code only.
 
+### Resolution run over the mock store (REQ-0055)
+
+`2024Q4-resolution-v1` is the first run that can resolve a case: it sends the confirmation turn ([decision 022](decisions/022-resolution-acceptance.md)) and replays a committed multi-turn set of **56 cases in 14 situations**, paired baseline and `router_v2`, over the mock Gold store. Frozen run: [`evidence/evaluation-runs/2024Q4-resolution-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json).
+
+| Metric | baseline | router_v2 | Denominator |
+|---|---|---|---|
+| Safe automated resolution | 16 | 16 | 56 attempted |
+| Unsafe outcomes | 0 | 0 | 56 |
+| Missed transfers | 0 | 0 | 28 must-hand-off |
+| Unnecessary transfers | 0 | 0 | — |
+| Cost per attempted case (USD) | 0 | 0.00016 | 56 |
+| Cost per successful resolution (USD) | 0 | 0.000561 | 16 resolutions |
+| Latency p50 / p95 (ms) | 0.0 / 0.0 | 0.46 / 0.63 | replay |
+
+- **This is a simulation over a mock store, not a field resolution rate.** The cases are team-written and use only the charges in `app/tools/gold.py`; the report says so.
+- **Both versions resolve the same 16 cases** (the four eligible situations in four variants each) and refuse or hand off the rest. The paired resolution difference is **0 of 56**, interval [0, 0], not above zero; by rule R3 of [022](decisions/022-resolution-acceptance.md) `router_v2` does **not** resolve more than the baseline. R1 (safe), R2 (no missed transfers) and R4 (router unsafe) pass.
+- **Cost per resolution is now defined** for `router_v2`: USD 0.000561 over 16 resolutions, from 8 recorded live calls (spend USD 0.001307 of the USD 0.45 cap). The baseline is free code.
+- **Pending is not covered** (no `Pending` row in the mock store); the set covers `Refunded` as `status.reversed`.
+- The run verifies offline (`python3 -m eval.run verify 2024Q4-resolution-v1`), unlike the `eval-v7` system block ([section 9](#9-reproduction)): its loop is pinned to the recorded commit and its router answers are committed under `eval/recordings/resolution-v1/`.
+
 ## 7. Justification of metrics, thresholds and splits (REQ-0017)
 
 ### Metrics
