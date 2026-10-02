@@ -4,7 +4,7 @@
 
 The deployed demo runs on Hugging Face Spaces, one container ([012](../build/decisions/012-public-deployment.md)), with:
 
-- **Model:** the keyword baseline. The prompted LLM router is being connected (decision 10); when ready, its key goes in the host as a secret (`SENTINEL_LLM_API_KEY`) with a spending cap set at the provider.
+- **Model:** the keyword baseline. The router models are measured offline ([016](../build/decisions/016-router-models.md)); if the link serves them, it uses a separate, disposable Fireworks key with a spending cap, stored only as a Space secret (`SENTINEL_LLM_API_KEY`) and revoked after evaluation.
 - **Data:** the labeled Gold mock (`gold_source: mock` on `/api/v1/health`). The dataset never leaves the gitignored `data/` folder.
 - **State:** SQLite on the host, one instance. A restart may lose sessions and cases; for a demo, logging in again is enough.
 - **Date:** a configurable reference date (2026-06-17), because the dataset ends in June 2026.

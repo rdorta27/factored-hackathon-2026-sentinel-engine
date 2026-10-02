@@ -43,7 +43,7 @@ At least one learned component evaluated against a simpler baseline on held-out 
 
 **Evidence:** Proven by: router and baseline run on the same held-out cases, plus a system replay, in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: the fixtures mirror the baseline, so the measured difference is zero by construction; a live-model run (decision 10) is needed.
+Missing: the fixtures mirror the baseline, so the measured difference is zero by construction; models and the selection rule are decided ([016](../build/decisions/016-router-models.md)); a live-model run (decision 10) is needed.
 
 <a id="req-0017"></a>
 ### REQ-0017 · Valid labels, no leakage
@@ -88,7 +88,7 @@ Record which model, prompt version, parameters and metrics produced each result,
 
 The frozen runs are the tracking record; no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
 
-Missing: the live model's parameters, once decision 10 lands.
+Missing: the live models' parameters, recorded in the run that measures [016](../build/decisions/016-router-models.md).
 
 <a id="req-0020"></a>
 ### REQ-0020 · Same held-out for baseline and system

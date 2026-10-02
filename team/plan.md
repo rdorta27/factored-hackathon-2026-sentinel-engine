@@ -43,7 +43,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Platform: Microsoft Azure | Accepted | [001](../docs/build/decisions/001-azure-platform.md) |
 | Specs with OpenSpec, written in English (decision 18) | Accepted | [002](../docs/build/decisions/002-openspec.md) |
 | Owners: Natalia, data and data analysis · Rubén, AI, architecture and ML · Felix, full-stack | Accepted | — |
-| Hybrid LLM with a router across models (models chosen on Tuesday) | Accepted | — |
+| Hybrid LLM with a router across models: open-weight models on Fireworks AI, chosen per route by measurement (closes decision 10) | Accepted | [016](../docs/build/decisions/016-router-models.md) |
 | Infrastructure budget: Natalia's estimate (USD 20-58, within the USD 200 Azure trial credit) as the working assumption | Accepted | [cost](../docs/build/cost.md) |
 | Case store (disputes and handoff tickets), sessions and conversation state: SQLite for the submission (updated 10/1, mentor feedback: externalize conversation state), Postgres on Azure as the production backend of the same models; in memory only for tests and the offline eval. Not written to Gold | Accepted | [demo](../docs/architecture/demo-architecture.md), [path to production](../docs/architecture/specification.md#path-to-production) |
 | No .NET: outside the team's stack (Python, FastAPI). Target is Azure; locally it runs on Linux | Accepted | [stack](../docs/architecture/system-architecture.md#stack-and-deployment) |

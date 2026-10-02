@@ -13,11 +13,10 @@ Open choices, each with its options, supporting material and deadline. The list 
 
 ## Overdue (due Wednesday 9/30)
 
-Includes the decisions due Tuesday 9/29 that were not settled. Decision 10 blocks the learned-component evidence (REQ-0016); decision 15 blocks the Portuguese demo case (REQ-0012, REQ-0009).
+Includes the decisions due Tuesday 9/29 that were not settled. Decision 15 blocks the Portuguese demo case (REQ-0012, REQ-0009).
 
 | # | Decision | Options or proposal | Supporting material |
 |---|---|---|---|
-| 10 | Hybrid LLM models | The router is implemented and archived (`openspec/specs/llm-router/spec.md`); which model serves each route is not. Natalia's proposal: Llama 3 on Databricks for frequent queries, GPT-4o for ambiguous cases, Portuguese and evaluation. Live-model comparison pending; mirrored fixtures hold zero delta meanwhile | [Decision 001](../docs/build/decisions/001-azure-platform.md) |
 | 15 | Portuguese | There is no Portuguese in the data, but the system must work in Portuguese (REQ-0012). There are no Brazilian accounts: `customers.country` is México, Colombia or Argentina only (data dictionary). Open: how a Portuguese-speaking customer is served (replies, country and currency, given there are no Brazilian customers), how it is tested, and who reviews the Portuguese. The 13 single-turn pt-BR utterances in `sentinel-ai-core/eval/cases/` are team-written, unreviewed and only exercise the router. Dropped: external pt-BR data | [Conversation: languages](../docs/build/conversation.md#languages) |
 
 ## Decided
@@ -50,3 +49,4 @@ Includes the decisions due Tuesday 9/29 that were not settled. Decision 10 block
 | 23 | `team/` in the submission | Kept: it shows the plan, decisions and evidence behind the build; reviewed before submitting | 10/1 |
 | 27 | Data staleness threshold | Off in the demo (Gold's age is always zero); per-country threshold in production ([014](../docs/build/decisions/014-data-staleness.md)) | 10/1 |
 | 28 | Handoff delivery in production | Ticket store and advisor view in the demo; queue to the bank's CRM in production ([015](../docs/build/decisions/015-handoff-delivery.md)) | 10/1 |
+| 10 | Router models | Open-weight models on Fireworks AI, cheap and strong route, chosen per route by a rule fixed before measuring; gpt-oss-120b as the starting cheap model ([016](../docs/build/decisions/016-router-models.md)) | 10/1 |

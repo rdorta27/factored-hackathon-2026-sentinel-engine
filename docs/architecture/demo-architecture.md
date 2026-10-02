@@ -149,7 +149,7 @@ Identical to the target: a prompted LLM that classifies the dispute category, co
 | Data pipeline | The same `sentinel_data` package on DuckDB |
 | Gold serving | DuckDB view, or the labelled mock |
 | Case store | SQLite |
-| LLM | Keyword baseline served; prompted router behind the same port, measured offline; model per route not decided (decision 10) |
+| LLM | Keyword baseline served; prompted router behind the same port, measured offline; models per route chosen by measurement on Fireworks AI ([016](../build/decisions/016-router-models.md)) |
 | Identity and secrets | Test session with password; `.env` |
 | Serving | One process, no autoscaling |
 | Observability | Structured logs in local files |

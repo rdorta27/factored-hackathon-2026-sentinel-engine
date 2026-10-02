@@ -227,7 +227,7 @@ REQ-0056. Where AI is used and where it is not.
 | Autonomy | Low by design: confirmation for every write, handoff on policy triggers | A wrong dispute or a missed fraud case costs more than a transfer |
 | Accuracy | Policy and status from code and data; LLM only for language and category | Deterministic where rules exist; the LLM where language is the problem |
 | Latency | One LLM call to understand, one to reply; tools are local reads | Keeps p95 bounded; the loop avoids open-ended agent chains |
-| Cost | Router sends frequent, simple turns to a cheaper model (decision 10) | Cost per resolution is a reported metric |
+| Cost | Router sends frequent, simple turns to a cheaper model ([016](../build/decisions/016-router-models.md)) | Cost per resolution is a reported metric |
 | Human oversight | Structured handoff with verified facts and open questions | The advisor starts from evidence, not from a transcript |
 
 ## Path to production
@@ -243,7 +243,7 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Handoff | Publish each ticket to a queue (for example Azure Service Bus) that creates it in the bank's CRM, routed by language and specialty (REQ-0046); same package format ([015](../build/decisions/015-handoff-delivery.md)) |
 | Personal data | Serving view without personal columns and free-text masking (built); a token vault if a tool ever needs the original value, and static masking in Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
 | Serving | The submission runs one container on Hugging Face Spaces ([012](../build/decisions/012-public-deployment.md)); production moves it to Azure Container Apps with autoscaling and Key Vault |
-| LLM | Per-route quotas and a model per route (decision 10) |
+| LLM | The chosen open-weight models served on Azure AI Foundry or Databricks, per-route quotas and a spending cap ([016](../build/decisions/016-router-models.md)) |
 | Observability | Centralised logs and traces, alerts by country (REQ-0050) |
 | Evaluation | Run the same harness as a release gate |
 | Data retention | Confirm the proposed retention periods ([data retention](#data-retention)) |
