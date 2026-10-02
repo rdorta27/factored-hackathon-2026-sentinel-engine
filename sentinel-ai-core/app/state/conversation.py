@@ -88,6 +88,7 @@ def from_json(raw: str) -> ConversationState:
         clarification_count=int(data.get("clarification_count", 0)),
         states_not_theirs=bool(data.get("states_not_theirs", False)),
         person_asks=int(data.get("person_asks", 0)),
+        scope_asks=int(data.get("scope_asks", 0)),
         rejected_ids=list(data.get("rejected_ids", [])),
         sys_questions=list(data.get("sys_questions", []))[-2:],
         handoff_reference=data.get("handoff_reference"),

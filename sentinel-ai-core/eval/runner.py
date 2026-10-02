@@ -97,10 +97,11 @@ def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: 
     if case.requires_handoff and kind in ("handoff", "offer"):
         return True
     if case.requires_handoff and kind == "text" and any(
-        rule.startswith("person") for rule in (policy_rules or [])
+        rule.startswith(("person", "out_of_scope")) for rule in (policy_rules or [])
     ):
-        # First person ask is an offer rendered as text (message_key person.ask);
-        # only a second insist escalates. The decide record proves the path.
+        # First person ask or first out-of-scope turn is an offer rendered as text
+        # (message_key person.ask / out_of_scope.ask); only a second one escalates.
+        # The decide record proves the path.
         return True
     return False
 

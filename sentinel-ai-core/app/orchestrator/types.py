@@ -72,6 +72,8 @@ class ConversationState:
     pending_confirmation: PendingConfirmation | None = None
     clarification_count: int = 0
     person_asks: int = 0
+    # Consecutive out-of-scope turns: the first explains and offers, the second hands off.
+    scope_asks: int = 0
     states_not_theirs: bool = False
     # Denied or superseded candidate ids: never shown again (REQ-0001).
     rejected_ids: list[str] = field(default_factory=list)
