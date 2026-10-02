@@ -85,20 +85,6 @@ The system SHALL read its notion of today from `SENTINEL_REFERENCE_DATE`, defaul
 - **WHEN** the variable is set to another date
 - **THEN** the window check and the displayed date both use it
 
-### Requirement: Role is stored and only the customer path is exercised
-
-The system SHALL store one role on the session. This change SHALL exercise only the `customer` role. A customer session SHALL be able to call chat and the transaction listing. Session routes SHALL be `POST /api/v1/session/login`, `POST /api/v1/session/logout`, and `GET /api/v1/session/me`; `me` SHALL return the role and country and SHALL NOT return `customer_id`. Traces to REQ-0027 (P0, In progress) and REQ-0047 (P0, In progress).
-
-#### Scenario: Customer session reaches chat
-
-- **WHEN** a customer session posts to `/api/v1/chat`
-- **THEN** the request is not rejected for role
-
-#### Scenario: Me does not expose the identifier
-
-- **WHEN** a customer session calls `GET /api/v1/session/me`
-- **THEN** the response contains the role and country only
-
 ### Requirement: Persistent state with retention
 
 Sessions, conversation state and cases SHALL be stored in a configurable backend (`SENTINEL_STATE_BACKEND`: `sqlite` by default at `SENTINEL_DB_PATH`, or `memory`), so a restart keeps live sessions, pending confirmations and cases. Stored session and conversation keys SHALL be hashes of the session token, never the token. The conversation state, which includes customer turns, SHALL be deleted on logout and when an expired session is presented, and conversations without a live session SHALL be purged on login. Login-attempt counters MAY stay per process. Traces to REQ-0027 (P0, In progress) and REQ-0001 (P0, In progress).
@@ -117,3 +103,22 @@ Sessions, conversation state and cases SHALL be stored in a configurable backend
 
 - **WHEN** an expired session is presented
 - **THEN** the system returns 401 and deletes that session's conversation state
+
+### Requirement: Roles and demo login
+
+The system SHALL expose `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` and `GET /api/v1/auth/me`, and SHALL always require a password; there SHALL be no login by customer number alone. The session SHALL store one role. Customer fixture users SHALL always load; non-customer demo users (the advisor) SHALL load only when `SENTINEL_DEMO_AUTH=1`, and otherwise SHALL fail like any unknown user. `me` SHALL return the role and country and SHALL NOT return `customer_id`. Traces to REQ-0027 (P0, In progress), REQ-0007 (P0, In progress), and REQ-0028 (P0, In progress).
+
+#### Scenario: Advisor does not exist without the flag
+
+- **WHEN** the advisor credential is used and `SENTINEL_DEMO_AUTH` is not `1`
+- **THEN** the system returns the generic 401
+
+#### Scenario: Password is always required
+
+- **WHEN** a login omits the password or sends `customer_id` instead of `login`
+- **THEN** the system returns 422
+
+#### Scenario: Old session paths are gone
+
+- **WHEN** a client posts to `/api/v1/session/login`
+- **THEN** the system returns 404
