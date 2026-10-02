@@ -37,6 +37,7 @@ from app.orchestrator.types import (
     ConversationState,
     Language,
     OutcomeKind,
+    Phase,
     TextInput,
     TurnOutput,
 )
@@ -102,6 +103,18 @@ _OPEN_QUESTIONS = {
     "model_unavailable": "intent_not_understood",
 }
 _ACTION_STEPS = {"decide", "act", "verify", "escalate"}
+# Per-session retention bound: oldest entries are discarded with an overflow
+# mark once exceeded (REQ-0001, REQ-0027).
+MAX_HISTORY = 50
+MAX_ACTIONS = 200
+
+# Reply kind → derived conversation phase carried on the turn record.
+_REPLY_PHASES = {
+    "clarification": Phase.CLARIFYING.value,
+    "confirm_box": Phase.AWAITING_CONFIRMATION.value,
+    "case_confirmation": Phase.RESOLVED.value,
+    "handoff": Phase.HANDED_OFF.value,
+}
 
 
 def _sla_date(ref_date: date) -> str:
@@ -165,6 +178,7 @@ def _handoff(
         open_questions=[_OPEN_QUESTIONS.get(reason or "", "review_required")],
         language=language,
         country=country,
+        phase=Phase.HANDED_OFF.value,
     )
     return Handoff(
         reference=f"HO-{trace_id[:8]}",
@@ -190,11 +204,14 @@ def _to_reply(
         if not state.candidates:
             # Nothing shown yet: offer the customer's own charges as chips.
             state.candidates = bound.lookup_transactions()
+        shown = [
+            item for item in state.candidates if item.candidate_id not in state.rejected_ids
+        ][:4]
         return Clarification(
             message_key="clarifyWhichCharge",
             missing="transaction",
             candidates=[
-                candidate_view(item, session.country, ref_date) for item in state.candidates[:4]
+                candidate_view(item, session.country, ref_date) for item in shown
             ],
         )
     if kind in (OutcomeKind.EXPLAIN, OutcomeKind.OFFER):
@@ -432,7 +449,14 @@ def _turn_entry(
         rule = reason or reply.reason_key
     else:
         rule = reason
-    return ConversationTurn(turn=number, customer=customer, charge=charge, system=reply.kind, rule=rule)
+    return ConversationTurn(
+        turn=number,
+        customer=customer,
+        charge=charge,
+        system=reply.kind,
+        rule=rule,
+        phase=_REPLY_PHASES.get(reply.kind, Phase.COLLECTING.value),
+    )
 
 
 def _system_phrase(entry: ConversationTurn) -> str:
@@ -489,6 +513,12 @@ def finish_turn(
         for record in turn.recorder.records_for(turn.trace_id)
         if record.step in _ACTION_STEPS
     )
+    if len(stored.history) > MAX_HISTORY:
+        del stored.history[: len(stored.history) - MAX_HISTORY]
+        stored.overflow = True
+    if len(stored.actions) > MAX_ACTIONS:
+        del stored.actions[: len(stored.actions) - MAX_ACTIONS]
+        stored.overflow = True
     if isinstance(reply, Handoff):
         conversation = [ConversationTurn.model_validate(item) for item in stored.history]
         update: dict = {

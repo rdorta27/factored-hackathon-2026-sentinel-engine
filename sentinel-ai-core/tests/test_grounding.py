@@ -15,7 +15,7 @@ from app.tools.fake import InMemoryTools
 
 
 class ChargeModel:
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(self, message: str, turns: list[str], context: dict | None = None) -> UnderstandResult:
         language = Language.PT_BR if "cobran" in message else Language.ES_419
         return UnderstandResult(UnderstandKind.CHARGE, language)
 

@@ -16,7 +16,9 @@ class DemoModel:
     def describe(self) -> ModelInfo:
         return ModelInfo(model="keyword-baseline", route="baseline", prompt_version="v1")
 
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(
+        self, message: str, turns: list[str], context: dict | None = None
+    ) -> UnderstandResult:
         text = message.lower()
         language = Language.PT_BR if any(mark in text for mark in _PT) else Language.ES_419
         if any(phrase in text for phrase in _NOT_MINE):

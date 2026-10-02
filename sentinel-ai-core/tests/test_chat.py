@@ -35,7 +35,18 @@ def test_clarification_then_selection_shows_the_box() -> None:
     chosen = api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"})
     body = chosen.json()
     assert body["kind"] == "confirm_box"
-    assert "fields.missing" not in str(body)
+
+
+def test_third_vague_turn_hands_off_with_fields_missing() -> None:
+    api = client()
+    login(api)
+    assert api.post("/api/v1/chat", json={"message": "HOLA"}).json()["kind"] == "clarification"
+    assert api.post("/api/v1/chat", json={"message": "HOLA OTRA VEZ"}).json()["kind"] == "clarification"
+    body = api.post("/api/v1/chat", json={"message": "HOLA DE NUEVO"}).json()
+    assert body["kind"] == "handoff"
+    assert body["reason_key"] == "fields.missing"
+    assert body["package"]["open_questions"] == ["mandatory_fields_missing"]
+    assert body["package"]["phase"] == "handed_off"
 
 
 def test_selection_does_not_open() -> None:

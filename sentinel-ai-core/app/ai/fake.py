@@ -43,7 +43,9 @@ class FakeModel:
     def describe(self) -> ModelInfo:
         return ModelInfo(model="fake", route="mock", prompt_version="none")
 
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(
+        self, message: str, turns: list[str], context: dict | None = None
+    ) -> UnderstandResult:
         if message in self.scripts:
             return self.scripts[message]
         for key, result in sorted(self.scripts.items(), key=lambda item: len(item[0]), reverse=True):

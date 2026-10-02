@@ -142,7 +142,7 @@ def test_foreign_reference_is_a_handoff_without_disclosure() -> None:
 
 def test_pipeline_failure_is_a_generic_error_with_trace() -> None:
     class BrokenModel:
-        def understand(self, message, turns):  # type: ignore[no-untyped-def]
+        def understand(self, message, turns, context=None):  # type: ignore[no-untyped-def]
             raise RuntimeError("boom")
 
         def classify(self, message):  # type: ignore[no-untyped-def]

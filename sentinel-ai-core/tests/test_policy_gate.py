@@ -18,7 +18,7 @@ class ChargeModel:
     def __init__(self) -> None:
         self.classify_calls = 0
 
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(self, message: str, turns: list[str], context: dict | None = None) -> UnderstandResult:
         return UnderstandResult(UnderstandKind.CHARGE, Language.ES_419)
 
     def classify(self, message: str) -> str:

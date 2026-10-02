@@ -230,7 +230,7 @@ def test_model_unavailable_falls_back_to_handoff() -> None:
     from app.tools.fake import InMemoryTools
 
     class FailingModel:
-        def understand(self, message: str, turns: list[str]):  # type: ignore[no-untyped-def]
+        def understand(self, message: str, turns: list[str], context: dict | None = None):  # type: ignore[no-untyped-def]
             raise ModelUnavailable("down")
 
         def classify(self, message: str) -> str:
@@ -432,3 +432,45 @@ def test_recording_refuses_to_write_a_secret(tmp_path) -> None:  # type: ignore[
         with pytest.raises(SecretInRecording):
             recorder.complete(model="m", messages=_messages())
     assert list(tmp_path.iterdir()) == []
+
+
+def test_model_port_accepts_optional_digest_and_two_arg_calls() -> None:
+    """Contract: understand(message, turns, context=None); old two-arg calls keep working."""
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+
+    digest = {"sys_questions": ["missing"], "shown_ids": ["TXN-1006"]}
+    assert DemoModel().understand("hola", [], digest).kind.value == "charge"
+    assert FakeModel().understand("hay un problema", [], digest).kind.value == "missing"
+    assert DemoModel().understand("hola", []).kind.value == "charge"
+
+    stub = StubTransport('{"intent": "missing", "language": "es-419"}')
+    router = PromptedLLMRouter(stub, RouterConfig(cheap_model="c", prompt_version="v1"))
+    assert router.understand("hola", ["hola"], digest).kind.value == "missing"
+    assert router.understand("hola", []).kind.value == "missing"
+
+
+def test_digest_travels_in_the_router_request() -> None:
+    import json
+
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+
+    stub = StubTransport('{"intent": "charge", "language": "es-419"}')
+    router = PromptedLLMRouter(stub, RouterConfig(cheap_model="c", prompt_version="v1"))
+    digest = {"sys_questions": ["missing", "which_charge"], "shown_ids": ["TXN-1", "TXN-2"]}
+    router.understand("hola de nuevo", ["hola"], digest)
+    user_body = json.loads(stub.calls[0]["messages"][-1]["content"])
+    assert user_body["digest"] == digest
+    assert user_body["turns"] == ["hola"]
+
+
+def test_digest_rejects_unknown_fields_and_personal_data() -> None:
+    import pytest
+
+    from app.ai.llm import build_messages
+
+    with pytest.raises(ValueError, match="not allowed"):
+        build_messages("hola", [], None, context={"cot": "I think..."})  # type: ignore[dict-item]
+    with pytest.raises(ValueError, match="must be a list"):
+        build_messages("hola", [], None, context={"sys_questions": "missing"})  # type: ignore[dict-item]
+    with pytest.raises(ValueError, match="forbidden"):
+        build_messages("hola", [], None, context={"sys_questions": [], "customer_id": "CUST-1"})  # type: ignore[dict-item]

@@ -23,6 +23,8 @@ from app.tools.ports import ToolStatus, TransactionLookup
 
 MAX_ATTEMPTS = 3
 OPEN_ACTION = "open_dispute"
+# At most two clarification rounds: the third vague turn hands off (REQ-0001).
+MAX_CLARIFICATIONS = 2
 
 
 @dataclass
@@ -78,6 +80,47 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
 UNDERSTAND_RETRIES = 2
 
 
+def _digest(state: ConversationState) -> dict:
+    """Deterministic system-side context for the model (REQ-0001).
+
+    The last two system question codes plus the shown candidate ids. Codes
+    and references only: never customer words, identifiers, or reasoning.
+    """
+    return {
+        "sys_questions": list(state.sys_questions[-2:]),
+        "shown_ids": [item.candidate_id for item in state.candidates[:4]],
+    }
+
+
+def _remember_rejected(
+    state: ConversationState, candidate_ids: list[str], keep: str | None = None
+) -> None:
+    for candidate_id in candidate_ids:
+        if candidate_id != keep and candidate_id not in state.rejected_ids:
+            state.rejected_ids.append(candidate_id)
+
+
+def _forget_rejected(state: ConversationState, candidate_id: str) -> None:
+    if candidate_id in state.rejected_ids:
+        state.rejected_ids.remove(candidate_id)
+
+
+def _record_question(state: ConversationState, code: str) -> None:
+    state.sys_questions = [*state.sys_questions, code][-2:]
+
+
+def _capped(state: ConversationState, ports: Ports) -> TurnOutput | None:
+    """Third vague turn: handoff instead of another question (REQ-0001)."""
+    if state.clarification_count >= MAX_CLARIFICATIONS:
+        _emit(ports, state.language.value, step="escalate", policy_rule="fields.missing")
+        return TurnOutput(
+            kind=OutcomeKind.HANDOFF,
+            language=state.language,
+            reason="fields.missing",
+        )
+    return None
+
+
 def _model_says_person(message: str, state: ConversationState, ports: Ports) -> bool | None:
     """Ask the model whether this message requests a person.
 
@@ -88,7 +131,7 @@ def _model_says_person(message: str, state: ConversationState, ports: Ports) -> 
     started = perf_counter()
     for _ in range(UNDERSTAND_RETRIES + 1):
         try:
-            understood = ports.model.understand(message, state.turns)
+            understood = ports.model.understand(message, state.turns, context=_digest(state))
         except ModelUnavailable:
             continue
         # Same record as the main path, so this call's tokens, cost and latency
@@ -142,7 +185,7 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     understood = None
     for _ in range(UNDERSTAND_RETRIES + 1):
         try:
-            understood = ports.model.understand(turn.text, state.turns)
+            understood = ports.model.understand(turn.text, state.turns, context=_digest(state))
             break
         except ModelUnavailable:
             continue
@@ -173,7 +216,11 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     if understood.not_mine:
         state.states_not_theirs = True
     if understood.kind is UnderstandKind.MISSING:
+        capped = _capped(state, ports)
+        if capped is not None:
+            return capped
         state.clarification_count += 1
+        _record_question(state, "missing")
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
     if understood.kind is UnderstandKind.OUT_OF_SCOPE:
         _emit(ports, state.language.value, step="escalate", policy_rule=None)
@@ -197,9 +244,27 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
     result = ground(facts, candidates)
     if result.outcome != "matched" or result.match is None:
+        capped = _capped(state, ports)
+        if capped is not None:
+            return capped
         state.clarification_count += 1
-        state.candidates = rank_candidates(facts, result.candidates or candidates, today)[:4]
+        _record_question(state, "which_charge")
+        if understood.not_mine:
+            # The customer denied what was shown: never show it again.
+            _remember_rejected(state, [item.candidate_id for item in state.candidates])
+        ranked = rank_candidates(facts, result.candidates or candidates, today)
+        state.candidates = [
+            item for item in ranked if item.candidate_id not in state.rejected_ids
+        ][:4]
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
+    # Repair: new facts re-anchor to this charge; any previously shown charge
+    # that is not the match is superseded and joins the rejected list.
+    _remember_rejected(
+        state,
+        [item.candidate_id for item in state.candidates],
+        keep=result.match.candidate_id,
+    )
+    _forget_rejected(state, result.match.candidate_id)
     state.candidates = candidates
     return _after_policy(state, ports, Intent.CHARGE, result.match, turn.text)
 
