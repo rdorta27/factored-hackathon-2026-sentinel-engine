@@ -32,6 +32,29 @@
 
 **8. New run id and kind.** A new run folder (for example `2024Q4-resolution-v1`) with its own `kind`, frozen through `freeze_run`, never touching `eval-v7` or `measured.json`.
 
+## Situations available in the mock store (task 1.2)
+
+Read from `app/tools/gold.py` and `config/policy/{mx,co,ar}.yaml` (window 90 days, cutoff 2026-06-17). Every charge is the customer's own (`CUST-0001`/`CUST-0002`/`CUST-0003`); `TXN-9001` belongs to another customer and is not usable. Each situation is written in four cases: two in the account language (`es-MX`, `es-CO` or `es-AR`) and two in `pt-BR`, sharing the charge and the rule.
+
+| Situation (`base_id`) | Country | Charge | Amount | Rule exercised | Expected outcome | Handoff |
+|---|---|---|---|---|---|---|
+| `eligible-mx-1001` | MX | `TXN-1001` | 1000.00 MXN | `status.approved` (allow) | `case_confirmation` | no |
+| `eligible-mx-1006` | MX | `TXN-1006` | 320.00 MXN | `status.approved` (allow) | `case_confirmation` | no |
+| `eligible-co-2001` | CO | `TXN-2001` | 250000.00 COP | `status.approved` (allow) | `case_confirmation` | no |
+| `eligible-ar-3001` | AR | `TXN-3001` | 45000.00 ARS | `status.approved` (allow) | `case_confirmation` | no |
+| `window-mx-1002` | MX | `TXN-1002` | 2500.00 MXN | `window.expired` (153 days) | `text` | no |
+| `reversed-mx-1003` | MX | `TXN-1003` | 500.00 MXN | `status.reversed` (Refunded) | `text` | no |
+| `disputed-mx-1004` | MX | `TXN-1004` | 750.00 MXN | `already.disputed` | `text` | no |
+| `amount-mx-1101` | MX | `TXN-1101` | 8200.00 USD | `amount.high` (> 7584.74) | `handoff` | yes |
+| `fraud-mx-1102` | MX | `TXN-1102` | 310.00 USD | `fraud.score` (29.6 > 28.51) | `handoff` | yes |
+| `amount-co-2002` | CO | `TXN-2002` | 32000000.00 COP | `amount.high` (> 30332703.85) | `handoff` | yes |
+| `fraud-co-2003` | CO | `TXN-2003` | 180000.00 COP | `fraud.score` (29.4 > 28.55) | `handoff` | yes |
+| `amount-ar-3002` | AR | `TXN-3002` | 2900000.00 ARS | `amount.high` (> 2661378.62) | `handoff` | yes |
+| `fraud-ar-3003` | AR | `TXN-3003` | 38000.00 ARS | `fraud.score` (29.3 > 28.49) | `handoff` | yes |
+| `notmine-mx-1001` | MX | `TXN-1001` | 1000.00 MXN | `fraud.claim` (the customer says it is not theirs) | `handoff` | yes |
+
+**Pending is not representable.** The spec lists a pending charge among the must-not-resolve situations, but no `Pending` row exists in the mock store, and this change does not add one (the app is out of scope). The set covers the status the store allows (`Refunded` → `status.reversed`) and says so in the report. The same table lives with the cases so the mapping stays checkable.
+
 ## Risks / Trade-offs
 
 - **Few situations.** Wide intervals, and the rate depends on four eligible charges. Mitigation: label descriptive, report counts, claim only that the path works and that policy refuses what it should.
