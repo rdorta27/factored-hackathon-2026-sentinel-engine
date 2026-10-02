@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Builds the Sentinel Engine image in Azure Container Registry and deploys
+# it to Azure Container Apps. Requires an active Azure login (az login) on
+# the target subscription. Reads SENTINEL_SESSION_SALT from the repo .env
+# when set; otherwise generates a random one per run.
+
+REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+
+LOCATION="${LOCATION:-eastus}"
+RESOURCE_GROUP="${RESOURCE_GROUP:-rg-sentinel-demo}"
+ACR_NAME="${ACR_NAME:-sentinelenginerdorta}"
+APP_ENV="${APP_ENV:-sentinel-engine-env}"
+APP_NAME="${APP_NAME:-sentinel-engine}"
+IMAGE_NAME="${IMAGE_NAME:-sentinel-engine:latest}"
+
+stage() {
+	local dst="$1"
+	rm -rf "$dst"
+	mkdir -p "$dst"
+	rsync -a \
+		--exclude '/tests/' \
+		--exclude '/eval/' \
+		--exclude '/var/' \
+		--exclude '/data/' \
+		--exclude '*.egg-info/' \
+		--exclude '__pycache__/' \
+		--exclude '.pytest_cache/' \
+		--exclude '.env*' \
+		--exclude '.gitignore' \
+		"$REPO_DIR/sentinel-ai-core/" "$dst/sentinel-ai-core/"
+	rsync -a "$REPO_DIR/branding/" "$dst/branding/"
+	cp "$REPO_DIR/deploy/azure/Dockerfile" "$dst/Dockerfile"
+}
+
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+
+stage "$tmp/staged"
+
+az group create --name "$RESOURCE_GROUP" --location "$LOCATION" --output none
+
+az acr show --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" --output none 2>/dev/null ||
+	az acr create --name "$ACR_NAME" --resource-group "$RESOURCE_GROUP" \
+		--sku Basic --admin-enabled true --output none
+
+# Built locally: ACR Tasks (az acr build) is not permitted on this
+# subscription, so the image is built by the local Docker daemon and pushed.
+az acr login --name "$ACR_NAME" --output none
+docker build -t "$ACR_NAME.azurecr.io/$IMAGE_NAME" "$tmp/staged"
+docker push "$ACR_NAME.azurecr.io/$IMAGE_NAME"
+
+az containerapp env create --name "$APP_ENV" --resource-group "$RESOURCE_GROUP" \
+	--location "$LOCATION" --output none 2>/dev/null || true
+
+salt="$(sed -n 's/^SENTINEL_SESSION_SALT=//p' "$REPO_DIR/.env" | tail -n 1)"
+if [[ -z "$salt" ]]; then
+	salt="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+fi
+
+acr_user="$(az acr credential show --name "$ACR_NAME" --query username -o tsv)"
+acr_pass="$(az acr credential show --name "$ACR_NAME" --query 'passwords[0].value' -o tsv)"
+
+az containerapp delete --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
+	--yes --output none 2>/dev/null || true
+
+az containerapp create \
+	--name "$APP_NAME" \
+	--resource-group "$RESOURCE_GROUP" \
+	--environment "$APP_ENV" \
+	--image "$ACR_NAME.azurecr.io/$IMAGE_NAME" \
+	--target-port 7860 \
+	--ingress external \
+	--transport auto \
+	--min-replicas 0 \
+	--max-replicas 2 \
+	--registry-server "$ACR_NAME.azurecr.io" \
+	--registry-username "$acr_user" \
+	--registry-password "$acr_pass" \
+	--secrets "session-salt=$salt" \
+	--env-vars SENTINEL_SECURE_COOKIES=true SENTINEL_SESSION_SALT=secretref:session-salt \
+	--output none
+
+fqdn="$(az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
+	--query configuration.ingress.fqdn -o tsv)"
+echo "deployed: https://$fqdn"

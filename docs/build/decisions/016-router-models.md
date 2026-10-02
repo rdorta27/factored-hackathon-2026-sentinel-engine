@@ -40,7 +40,7 @@ Larger models (Qwen 3.8 Max, Kimi K3) cost 10 to 60 times more and stay out unle
 
 **Measurement:** the same evaluation cases for the baseline and every candidate, three repetitions, recorded once and frozen as a new run with model, route, prompt version, tokens, cost and latency per turn ([013](013-experiment-tracking.md)). The recorded responses replay offline; no key is stored in the repository.
 
-**Keys:** the measurement runs on the owner's machine with a personal key that never leaves `.env`. The public link keeps the keyword baseline ([012](012-public-deployment.md)) unless a separate, disposable Fireworks key with a spending cap is created for it, stored only as a Space secret and revoked after evaluation.
+**Keys:** the measurement runs on the owner's machine with a personal key that never leaves `.env`. The public link keeps the keyword baseline ([019](019-azure-container-apps.md)) unless a separate, disposable Fireworks key with a spending cap is created for it, stored only as a Container App secret and revoked after evaluation.
 
 ## Consequences
 
