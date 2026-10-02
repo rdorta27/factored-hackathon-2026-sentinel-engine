@@ -116,11 +116,11 @@ Data preparation, sources and freshness, and the learned component with its labe
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
 | [REQ-0015](data-ml.md#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](data-ml.md#req-0031) | In progress |
-| [REQ-0016](data-ml.md#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](data-ml.md#req-0017), [REQ-0020](data-ml.md#req-0020) | In progress |
+| [REQ-0016](data-ml.md#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](data-ml.md#req-0017), [REQ-0020](data-ml.md#req-0020) | Done |
 | [REQ-0017](data-ml.md#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](data-ml.md#req-0015) | In progress |
 | [REQ-0018](data-ml.md#req-0018) | Real incremental processing | P0 | data | [REQ-0015](data-ml.md#req-0015) | Done |
 | [REQ-0019](data-ml.md#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](data-ml.md#req-0016) | In progress |
-| [REQ-0020](data-ml.md#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](data-ml.md#req-0017) | In progress |
+| [REQ-0020](data-ml.md#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](data-ml.md#req-0017) | Done |
 | [REQ-0023](data-ml.md#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](data-ml.md#req-0016) | Pending |
 | [REQ-0031](data-ml.md#req-0031) | Approved data, labeled by origin | P0 | data | — | Done |
 | [REQ-0039](data-ml.md#req-0039) | Declare data freshness | P0 | ai, data | [REQ-0015](data-ml.md#req-0015) | Done |
@@ -133,7 +133,7 @@ Analysis that justifies the flow and the metrics that prove the system works. Ca
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
 | [REQ-0014](analytics.md#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
-| [REQ-0022](analytics.md#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](analytics.md#req-0055) | In progress |
+| [REQ-0022](analytics.md#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](analytics.md#req-0055) | Done |
 | [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | In progress |
 | [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
 | [REQ-0053](analytics.md#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](analytics.md#req-0014) | Done |

@@ -30,15 +30,15 @@ Use the dataset to show the chosen flow matters: contact reasons, demand, data q
 
 Every reported metric states how many cases it covers, their mix, the versions used and how much it varies between runs, and failures are included rather than hidden.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Data Analytics · **Area:** analysis
+**Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: What your solution should demonstrate 5; Evaluation evidence
 
 **Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055). Reports the held-out metrics with n and failures.
 
-**Evidence:** Proven by: n, mix, versions and failures per metric in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: n, case mix, model and prompt versions, failures, base-level 95% intervals and stability over 3 recorded repetitions on 100 cases in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.router_v2.stability`).
 
-Missing: run-to-run variability, on the final run. Planned: three recorded repetitions on 25 held-out bases, with 95% intervals that resample bases ([018](../build/decisions/018-evaluation-acceptance.md)).
+Missing: nothing for the router component.
 
 <a id="req-0024"></a>
 ### REQ-0024 · Breakdown by language, country and segment
@@ -51,9 +51,9 @@ Compare outcomes by language, country and authorized customer segment (the `segm
 
 **Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022). Breakdown of the reported metrics by language and country.
 
-**Evidence:** Proven by: metrics by locale and country with small-sample limits in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json), labeled as offline simulation.
+**Evidence:** Proven by: accuracy per variant (es-MX, es-CO, es-AR, pt-BR) and per intent with intervals and a paired per-variant loss in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.breakdown`, `variant_losses`).
 
-Missing: the segment breakdown and the disparity analysis. Planned: metrics per variant with a paired per-variant loss (D6 in [018](../build/decisions/018-evaluation-acceptance.md)).
+Missing: the segment breakdown.
 
 <a id="req-0050"></a>
 ### REQ-0050 · Monitoring by country

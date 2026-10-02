@@ -26,7 +26,7 @@ State openly what the data cannot support: the dataset is synthetic, Spanish onl
 
 **Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD.
 
-Missing: the limitations section in the README and the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): no native-speaker review and no strict equivalence between variants.
+Missing: the limitations section in the README and the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing

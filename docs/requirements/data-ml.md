@@ -35,15 +35,15 @@ Missing: the report does not yet count nulls, orphaned records or late arrivals,
 
 At least one learned component evaluated against a simpler baseline on held-out cases. A prompted LLM counts if it is defined, evaluated and justified (help channel, 9/28). Ours is the prompted router against a keyword baseline.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Machine Learning · **Area:** ml
+**Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28)
 
 **Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). Comparison needs valid labels and a shared held-out.
 
-**Evidence:** Proven by: router and baseline run on the same held-out cases, plus a system replay, in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md).
 
-Missing: the fixtures mirror the baseline, so the measured difference is zero by construction; models and the selection rule are decided ([016](../build/decisions/016-router-models.md)); a live-model run is needed. Planned in [`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md): selection on development under the 016 amendment, then one held-out measurement judged by D4 and D5 in [018](../build/decisions/018-evaluation-acceptance.md).
+Missing: nothing for the brief; the cases are model-written simulation, a limit stated in [018](../build/decisions/018-evaluation-acceptance.md).
 
 <a id="req-0017"></a>
 ### REQ-0017 · Valid labels, no leakage
@@ -58,7 +58,7 @@ Labels must be trustworthy and the evaluation must not see information from the 
 
 **Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: one written justification of metrics, thresholds and splits, confirmed on real Gold. The router's held-out set is sealed by hash before it is measured, and the earlier 10 held-out cases move to development ([`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md), [018](../build/decisions/018-evaluation-acceptance.md)).
+Missing: one written justification of metrics, thresholds and splits, confirmed on real Gold. The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing
@@ -95,15 +95,15 @@ Missing: the live models' parameters, recorded in the run that measures [016](..
 
 Compare the baseline and the system on exactly the same held-out cases, and make that set resemble the real distribution.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Machine Learning · **Area:** ml
+**Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: Evaluation evidence · Kickoff p. 12
 
 **Depends on:** [REQ-0017](#req-0017). Held-out built on valid labels.
 
-**Evidence:** Proven by: the same 35 team-written cases for both models and the loop in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); held-out measured once.
+**Evidence:** Proven by: baseline, router v1 and router v2 on the identical 280 sealed cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.case_ids`); the case mix and its model-written origin are declared in [018](../build/decisions/018-evaluation-acceptance.md).
 
-Missing: a justification that the case mix is realistic, or a declared limitation. Planned: baseline and both router versions on the same sealed 280 cases ([018](../build/decisions/018-evaluation-acceptance.md)).
+Missing: nothing for the brief; the mix is a designed simulation (70 bases by 4 variants, at least 25 per intent), stated as a limit in [018](../build/decisions/018-evaluation-acceptance.md).
 
 <a id="req-0023"></a>
 ### REQ-0023 · Validated LLM judge, if used

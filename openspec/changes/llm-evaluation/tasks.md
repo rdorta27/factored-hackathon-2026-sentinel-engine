@@ -59,7 +59,7 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 - [x] 8.1 Record `v1` and `v2` on the sealed set, with 3 repetitions of `v2` on 25 bases. Verify: the spend stays under the cap, and the staged recordings pass the secret grep from 2.6.
 - [x] 8.2 Run `measure` and freeze `evidence/evaluation-runs/2024Q4-eval-v7/`. Verify: `measured.json` gains the seal hash, and a second `measure` is refused.
 - [x] 8.3 Accept or reject D4 to D7 in 018, citing `2024Q4-eval-v7` fields, including the failures and the per-variant losses. Verify: every number in 018 is a cited field path.
-- [ ] 8.4 Update the REQ-0016, 0017, 0020, 0022 and 0024 status rows, and the limits note for REQ-0013 (no native-speaker review, no strict equivalence between variants). Verify: the rows link `2024Q4-eval-v7`.
+- [x] 8.4 Update the REQ-0016, 0017, 0020, 0022 and 0024 status rows, and the limits note for REQ-0013 (no native-speaker review, no strict equivalence between variants). Verify: the rows link `2024Q4-eval-v7`.
 
 ## 9. Integration check
 
