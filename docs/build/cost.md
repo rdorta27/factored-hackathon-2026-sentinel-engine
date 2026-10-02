@@ -2,7 +2,7 @@
 
 Estimated cost of the **minimal Azure deployment behind the demo's public link** (REQ-0035). It is not a production cost estimate. The demo can also run locally at no cost.
 
-**Status:** working assumption, Natalia's estimate, for the Azure production path. Not validated against Azure pricing. The submission runs on the free Hugging Face Spaces tier at no hosting cost ([012](decisions/012-public-deployment.md)); the only metered spend there is the LLM API, capped at the provider.
+**Status:** working assumption, Natalia's estimate, for the Azure production path. Not validated against Azure pricing. The submission runs on Azure Container Apps: the app stays inside the monthly free grant (180,000 vCPU-seconds, 360,000 GiB-seconds, 2 million requests) and the container registry costs about USD 0.08/day, both inside the USD 200 trial credit ([019](decisions/019-azure-container-apps.md)); the only metered spend beyond hosting is the LLM API, capped at the provider.
 
 | Component | Service | Estimate (USD) |
 |---|---|---|
