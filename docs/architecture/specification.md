@@ -197,7 +197,7 @@ The system is measured offline on held-out, labelled conversations, with the sam
 | Unsafe outcomes | Unauthorized disclosure or action, or materially wrong outcome, with count and denominator |
 | Operating efficiency | p50/p95 end-to-end latency; cost per attempted case and per safe resolution ("not defined" when there are none) |
 
-Every metric is broken down by language and country with n. Results are frozen in `evidence/` like the flow measurements and labelled as offline simulation, never as production improvement.
+Every metric is broken down by language and country with n: intent accuracy per variant is in `2024Q4-eval-v7`; system outcomes per language and country are planned in `evaluation-final`. Results are frozen in `evidence/` like the flow measurements and labelled as offline simulation, never as production improvement.
 
 ## Data retention
 
