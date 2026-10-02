@@ -1,8 +1,9 @@
 import os
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict, Field
+from urllib.parse import urlsplit
 
 from app.session.models import Session
 from app.session.service import (
@@ -18,6 +19,12 @@ router = APIRouter(prefix="/api/v1/auth", tags=["session"])
 
 _GENERIC = {"detail": "Invalid credentials"}
 _LOCKED = {"detail": "Too many failed attempts. Try again later."}
+_CSRF = {"detail": "CSRF check failed"}
+
+# The session cookie lifetime mirrors the server-side TTL (service.SESSION_TTL).
+SESSION_MAX_AGE = 30 * 60
+
+_SAFE_METHODS = frozenset({"GET", "HEAD", "OPTIONS"})
 
 
 class LoginRequest(BaseModel):
@@ -28,7 +35,39 @@ class LoginRequest(BaseModel):
 
 
 def _secure() -> bool:
-    return os.environ.get("SENTINEL_SECURE_COOKIES", "false").lower() == "true"
+    # Secure by default (production is HTTPS); local HTTP dev sets
+    # SENTINEL_SECURE_COOKIES=false explicitly. Tests do the same in conftest.
+    return os.environ.get("SENTINEL_SECURE_COOKIES", "true").lower() != "false"
+
+
+def _host_of(value: str) -> str:
+    try:
+        return (urlsplit(value).hostname or "").lower()
+    except ValueError:
+        return ""
+
+
+def _csrf_ok(request: Request) -> bool:
+    """Reject cross-site state-changing requests carrying the session cookie.
+
+    Browsers always attach Origin (fetch/POST) or Referer on cross-site
+    requests, while non-browser clients (tests, curl, smoke scripts) send
+    neither and stay unaffected. Same-origin requests pass; anything else 403s.
+    """
+    if request.method in _SAFE_METHODS:
+        return True
+    if request.cookies.get(SESSION_COOKIE) is None:
+        return True
+    host = (request.headers.get("host") or "").split(":")[0].lower()
+    origin = request.headers.get("origin")
+    referer = request.headers.get("referer")
+    if origin is None and referer is None:
+        return True
+    if origin is not None and _host_of(origin) != host:
+        return False
+    if referer is not None and _host_of(referer) != host:
+        return False
+    return True
 
 
 def _ip(request: Request) -> str:
@@ -54,6 +93,9 @@ def require_session(request: Request) -> Session:
     if token is None:
         request.app.state.audit.emit("access_denied", trace_id)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
+    if not _csrf_ok(request):
+        request.app.state.audit.emit("access_denied", trace_id)
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="CSRF check failed")
     try:
         return get_service(request).validate(token, trace_id, ip)
     except SessionExpired:
@@ -105,19 +147,23 @@ def login(body: LoginRequest, request: Request) -> JSONResponse:
         httponly=True,
         samesite="lax",
         secure=_secure(),
+        max_age=SESSION_MAX_AGE,
         path="/",
     )
     return response
 
 
 @router.post("/logout")
-def logout(request: Request, response: Response) -> JSONResponse:
+def logout(request: Request) -> JSONResponse:
     token = request.cookies.get(SESSION_COOKIE)
     get_service(request).logout(token, _trace(request), _ip(request))
     if token is not None:
         request.app.state.conversation_store.delete(token)
-    response.delete_cookie(SESSION_COOKIE, path="/")
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "Logged out"})
+    response = JSONResponse(status_code=status.HTTP_200_OK, content={"detail": "Logged out"})
+    # The endpoint returns its own JSONResponse, so the cookie must be cleared
+    # on it: the injected Response's headers would be discarded.
+    response.delete_cookie(SESSION_COOKIE, path="/", httponly=True, samesite="lax", secure=_secure())
+    return response
 
 
 @router.get("/me")

@@ -70,6 +70,18 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
         request.state.trace_id = secrets.token_hex(8)
         response = await call_next(request)
         response.headers["X-Trace-Id"] = request.state.trace_id
+        # Transport hardening: clickjacking, MIME sniffing and referrer leaks
+        # are mitigated for every response, including the served page.
+        # HSTS is only honored on HTTPS; on local HTTP it is ignored.
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "no-referrer"
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; connect-src 'self'; frame-ancestors 'deny'; "
+            "base-uri 'self'; form-action 'self'"
+        )
         return response
 
     recorder = Recorder()
