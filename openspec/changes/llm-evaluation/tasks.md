@@ -25,7 +25,7 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 
 ## 4. Development cases (written by the prompt author)
 
-- [ ] 4.1 Write 30 development bases in es-MX, spread across intents and with ambiguous wording. Verify: the cases load and the intent counts show in `case_mix`. Glossary: `docs/understand/glossary/`.
+- [x] 4.1 Write 30 development bases in es-MX, spread across intents and with ambiguous wording. Verify: the cases load and the intent counts show in `case_mix`. Glossary: `docs/understand/glossary/`.
 - [ ] 4.2 Generate the es-CO, es-AR and pt-BR variants with one model and back-translate them with another, then record the review per case and fix or drop any drift. Verify: 120 development cases load, and each non-team variant has a review record. Decision: 017.
 
 ## 5. Held-out cases (written by someone other than the prompt author)

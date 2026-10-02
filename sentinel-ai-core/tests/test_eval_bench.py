@@ -12,7 +12,8 @@ FIXTURES = Path(__file__).parent.parent / "app" / "ai" / "fixtures"
 
 
 def test_both_models_ran_the_identical_set() -> None:
-    cases = [c for c in load_dir(CASES_DIR) if c.split == "development" and c.fault == "none"]
+    # The v1 fixtures cover the legacy cases only; variant cases replay from rec- recordings.
+    cases = [c for c in load_dir(CASES_DIR) if c.split == "development" and c.fault == "none" and c.base_id is None]
     result = run_bench(cases, repetitions=2, fixtures_dir=FIXTURES)
     assert result["identical_set"] is True
     assert result["router"]["n"] == result["baseline"]["n"] == len(cases)

@@ -43,7 +43,8 @@ def case_mix(cases: list) -> dict:  # type: ignore[no-untyped-def]
 
 
 def main(run_id: str) -> Path:
-    cases = load_dir(CASES_DIR)
+    # Legacy run: the v1 fixtures cover only the cases without a base situation.
+    cases = [c for c in load_dir(CASES_DIR) if c.base_id is None]
     check_splits(cases)
     provenance = load_labels(LABELS_PATH)
     measurable = [c for c in cases if c.fault == "none"]
