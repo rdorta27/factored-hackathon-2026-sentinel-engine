@@ -133,6 +133,16 @@ function humanStatement(candidate) {
   return `${t("referToCharge")} ${candidate.merchant} - ${formatAmount(candidate.amount, candidate.currency)} (${formatDate(candidate.date)})`;
 }
 
+/* The receipt states the charge in the bank's voice, so the card never repeats
+   what the customer typed. Same amount and date formatting as everywhere else. */
+function receiptCharge(tx) {
+  return fill(t("receiptCharge"), {
+    merchant: tx.merchant,
+    amount: formatAmount(tx.amount, tx.currency),
+    date: formatDate(tx.date),
+  });
+}
+
 function addBubble(text) {
   document.getElementById("thread").append(el("div", "msg msg-user", text));
 }
@@ -203,7 +213,9 @@ function renderReply(body) {
     card.append(el("h3", "chat-title", t("receiptOutcome")));
     card.append(el("strong", "", body.case_id));
     const tx = body.transaction;
-    card.append(el("p", "", humanStatement(tx)));
+    // The bank's own voice, not the customer's sentence echoed back. The
+    // customer's bubble above keeps its wording; only this line changes.
+    card.append(el("p", "", receiptCharge(tx)));
     card.append(el("p", "", t(body.messages.noFunds)));
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);
