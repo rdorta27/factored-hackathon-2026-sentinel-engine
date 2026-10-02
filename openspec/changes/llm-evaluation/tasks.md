@@ -42,7 +42,7 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 ## 6. Runner metrics and guards
 
 - [x] 6.1 Report per-variant and per-intent metrics with n and a 95% base-level bootstrap interval, and label breakdowns wider than ±10 points as descriptive. Verify: tests in `ai-core/tests/test_eval_metrics.py` with a fixed seed. Spec: evaluation-runner "Every result carries n, mix, versions and variability".
-- [ ] 6.2 Add the paired comparison (fixed and broken ids, net difference and interval) and the per-variant net loss in shared bases. Verify: a hand-built example gives the expected lists and counts. Spec: evaluation-runner "Paired comparison with intervals".
+- [x] 6.2 Add the paired comparison (fixed and broken ids, net difference and interval) and the per-variant net loss in shared bases. Verify: a hand-built example gives the expected lists and counts. Spec: evaluation-runner "Paired comparison with intervals".
 - [ ] 6.3 Run three versions (baseline, `v1`, `v2`) in the bench on identical ids, and compute stability from recorded repetitions only. Verify: a test proves identical ids, and a single-recording case is left out of the stability n. Spec: evaluation-runner "Stability comes from recorded repetitions".
 - [ ] 6.4 Add the spend cap (default 0.45) and refuse to freeze a capped run. Verify: a test with a fake priced transport stops at the cap and writes no summary. Spec: evaluation-runner "Spend cap".
 - [ ] 6.5 Split the freeze into `select` (development only, fails on a held-out case) and `measure` (checks the seal hash and `measured.json`, then appends). Verify: tests for both refusals. Spec: evaluation-runner "Selection runs on development only" and "Baseline and system on the same held-out set".

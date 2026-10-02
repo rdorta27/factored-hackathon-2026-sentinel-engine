@@ -107,3 +107,40 @@ def test_thin_breakdown_is_labelled_descriptive() -> None:
     block = breakdown(cases, predicted)["by_variant"]["es-MX"]
     assert block["n"] == 8
     assert block["descriptive"] is True
+
+
+def test_paired_comparison_names_fixed_and_broken_cases() -> None:
+    from eval.paired import paired
+
+    cases = [_vcase(f"b{b}-es-MX", f"b{b}", "es-MX") for b in range(5)]
+    baseline = ["charge", "missing", "missing", "charge", "charge"]
+    router = ["charge", "charge", "charge", "missing", "charge"]
+    result = paired(cases, baseline, router)
+    assert result["fixed"] == ["b1-es-MX", "b2-es-MX"]
+    assert result["broken"] == ["b3-es-MX"]
+    assert (result["n"], result["net"], result["net_share"]) == (5, 1, 0.2)
+    assert len(result["interval_95"]) == 2
+
+
+def test_clear_gain_has_an_interval_above_zero() -> None:
+    from eval.paired import paired
+
+    cases = [_vcase(f"b{b}-{v}", f"b{b}", v) for b in range(40) for v in VARIANT_NAMES]
+    baseline = ["missing" if int(c.base_id[1:]) % 3 == 0 else "charge" for c in cases]
+    router = ["charge"] * len(cases)
+    assert paired(cases, baseline, router)["above_zero"] is True
+
+
+def test_variant_loss_is_counted_in_shared_bases() -> None:
+    from eval.paired import variant_losses
+
+    cases = [_vcase(f"b{b}-{v}", f"b{b}", v) for b in range(4) for v in VARIANT_NAMES]
+    # es-AR wrong on b0 and b2; pt-BR wrong on b1; es-MX and es-CO always right.
+    wrong = {("b0", "es-AR"), ("b2", "es-AR"), ("b1", "pt-BR")}
+    predicted = ["missing" if (c.base_id, c.variant) in wrong else "charge" for c in cases]
+    result = variant_losses(cases, predicted)
+    assert result["best"] in ("es-CO", "es-MX")
+    assert result["by_variant"]["es-AR"]["lost_bases"] == ["b0", "b2"]
+    assert result["by_variant"]["es-AR"]["net_loss"] == 2
+    assert result["by_variant"]["pt-BR"]["net_loss"] == 1
+    assert result["by_variant"][result["best"]]["net_loss"] == 0
