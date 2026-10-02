@@ -35,7 +35,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 8 | Final metrics report on the frozen run: n, mix, variability, failures, justified splits and thresholds | REQ-0055, REQ-0022, REQ-0017, REQ-0020 | Natalia, Rubén | Fri 10/2 | Trade-offs, slides | Pending |
 | 9 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | Pending |
 | 10 | Path to production write-up, including monitoring and handoff delivery (decision 28) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
-| 11 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Unassigned | Fri 10/2 | Public link, submission | Pending |
+| 11 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Fri 10/2 | Public link, submission | Done: gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
 | 12 | Final README update: results and limitations | REQ-0030 | Rubén | Fri 10/2 | — | Pending |
 | 13 | Start the video script | REQ-0037 | Rubén | Thu 10/1 | Video | Pending |
 | 14 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Rubén | Thu 10/1 | Validation Fri | Pending |

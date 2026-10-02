@@ -6,7 +6,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 |---|---|---|---|---|---|
 | [REQ-0013](#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | In progress |
 | [REQ-0030](#req-0030) | Declare what is missing | P0 | all | [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
-| [REQ-0034](#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | In progress |
+| [REQ-0034](#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Pending |
 | [REQ-0036](#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
 | [REQ-0037](#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035) | Pending |
@@ -46,15 +46,15 @@ An honest list of what the prototype lacks before real use: capacity, data, lang
 
 The repository is delivered public as `factored-hackathon-2026-sentinel-engine`, with all links sent to `hackathon.admin@factored.ai`, so it must hold no secrets, private records or restricted data.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
 **Depends on:** [REQ-0031](data-ml.md#req-0031). No restricted data in the public repo.
 
-**Evidence:** Proven by: the current tree has no bucket name or account id.
+**Evidence:** Proven by: the current tree holds no bucket name or account id; `gitleaks git --redact` over the full history reports 0 findings across the 246 commits, with no AWS key shapes, no private key material and no real passwords; no dataset rows were ever committed (no `.csv`, `.parquet`, `.duckdb` or database blob, and no `data/` or `raw/` folder, in any commit); `.gitignore` covers `data/`, `.env` and the local data formats; and `.github/workflows/gitleaks.yml` scans the commits each push and pull request adds, so a new secret is caught as it enters the repository. The review and its blind spot are recorded in [security](../build/security.md#history-review-req-0034-101).
 
-Missing: a final secrets and data review, and a decision on the bucket id still present in older commits.
+Accepted residual risk, documented: the dataset bucket name is visible in commits before `d070faa`. The bucket is private, no credentials were exposed, and the team decided not to rewrite history. The name is public; access is not.
 
 <a id="req-0035"></a>
 ### REQ-0035 · Deployed tool link

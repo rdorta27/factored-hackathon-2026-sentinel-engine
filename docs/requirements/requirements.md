@@ -47,10 +47,10 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 24 | 13 | 4 | 59% |
+| P0 | 41 | 25 | 12 | 4 | 61% |
 | P1 | 12 | 7 | 3 | 2 | 58% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 32 | 16 | 9 | 56% |
+| **Total** | **57** | 33 | 15 | 9 | 58% |
 
 ## Status by type
 
@@ -60,8 +60,8 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
 | [Data and ML](data-ml.md) | 10 | 4 | 5 | 1 | 40% |
 | [Analytics](analytics.md) | 7 | 2 | 4 | 1 | 29% |
-| [Delivery](delivery.md) | 8 | 0 | 4 | 4 | 0% |
-| **Total** | **57** | 32 | 16 | 9 | 56% |
+| [Delivery](delivery.md) | 8 | 1 | 3 | 4 | 13% |
+| **Total** | **57** | 33 | 15 | 9 | 58% |
 
 ## Frontend and backend
 
@@ -148,7 +148,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 |---|---|---|---|---|---|
 | [REQ-0013](delivery.md#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | In progress |
 | [REQ-0030](delivery.md#req-0030) | Declare what is missing | P0 | all | [REQ-0013](delivery.md#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
-| [REQ-0034](delivery.md#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | In progress |
+| [REQ-0034](delivery.md#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0035](delivery.md#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](delivery.md#req-0034) | Pending |
 | [REQ-0036](delivery.md#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
 | [REQ-0037](delivery.md#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](delivery.md#req-0035) | Pending |

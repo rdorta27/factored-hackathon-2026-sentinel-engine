@@ -20,4 +20,4 @@ A pre-commit check that rejects bucket URLs, account ids and key patterns, so th
 
 ## On the slide
 
-Not a slide of its own; one line in limitations: "Old history mentions the data bucket by name; keys and data were checked across the whole history, and the bucket is not public." Use this line only after both checks pass (pending: the history scan and the confirmation from the data owner).
+Not a slide of its own; one line in limitations: "Old history mentions the data bucket by name; keys and data were checked across the whole history, and the bucket is not public." Both checks pass: the history scan found no keys or dataset rows ([security](../build/security.md#history-review-req-0034-101)) and the data owner confirmed the bucket is private.
