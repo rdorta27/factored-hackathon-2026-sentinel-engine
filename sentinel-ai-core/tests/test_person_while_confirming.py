@@ -186,3 +186,49 @@ def test_the_same_rule_without_a_box_still_offers_then_hands_off() -> None:
     assert second.kind is OutcomeKind.HANDOFF
     assert second.reason == "person.insist"
     assert tools.open_calls == 0
+
+
+def test_insisting_after_another_message_still_escalates() -> None:
+    """A single offer: a second ask escalates even with other messages between (REQ-0040)."""
+    tools = InMemoryTools([candidate("TXN-1001")])
+    ports = Ports("s1", tools, DemoModel(), country="MX", today=TODAY)
+    state = ConversationState(language=Language.ES_419)
+    assert step(TextInput(PERSON_ES), state, ports).kind is not OutcomeKind.HANDOFF
+    step(TextInput("no reconozco un cargo"), state, ports)
+    assert step(TextInput(PERSON_ES), state, ports).kind is OutcomeKind.HANDOFF
+    assert tools.open_calls == 0
+
+
+class _ListObserver:
+    def __init__(self) -> None:
+        self.records: list[dict] = []
+
+    def emit(self, **fields) -> None:  # type: ignore[no-untyped-def]
+        self.records.append(fields)
+
+
+def test_model_call_with_the_box_open_is_logged() -> None:
+    """The extra understand call counts in the turn log: model, tokens, cost, latency."""
+    state, ports, _ = opened_box()
+    observer = _ListObserver()
+    ports.observer = observer
+    step(TextInput(PERSON_ES), state, ports)
+    understand = [r for r in observer.records if r.get("step") == "understand"]
+    assert len(understand) == 1
+    assert understand[0].get("outcome", "ok") == "ok"
+    assert {"model", "route", "prompt_version", "tokens_in", "cost_usd", "latency_ms"} <= set(understand[0])
+
+
+def test_failed_model_call_with_the_box_open_is_logged_as_failed() -> None:
+    class Down(DemoModel):
+        def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+            raise ModelUnavailable("down")
+
+    state, ports, tools = opened_box()
+    ports.model = Down()
+    observer = _ListObserver()
+    ports.observer = observer
+    out = step(TextInput(PERSON_ES), state, ports)
+    assert out.kind is OutcomeKind.QUESTION and state.pending_confirmation is not None
+    assert [r.get("outcome") for r in observer.records if r.get("step") == "understand"] == ["failed"]
+    assert tools.open_calls == 0

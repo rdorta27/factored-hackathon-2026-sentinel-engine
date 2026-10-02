@@ -85,12 +85,30 @@ def _model_says_person(message: str, state: ConversationState, ports: Ports) -> 
     decides what an unavailable model means; here it never escalates, so a
     failure while the box is open keeps today's behaviour.
     """
+    started = perf_counter()
     for _ in range(UNDERSTAND_RETRIES + 1):
         try:
             understood = ports.model.understand(message, state.turns)
-            return understood.kind is UnderstandKind.PERSON
         except ModelUnavailable:
             continue
+        # Same record as the main path, so this call's tokens, cost and latency
+        # count in the turn log (REQ-0025, REQ-0055).
+        _emit(
+            ports,
+            state.language.value,
+            step="understand",
+            latency_ms=(perf_counter() - started) * 1000,
+            **_identity_fields(_describe(ports.model), understood),
+        )
+        return understood.kind is UnderstandKind.PERSON
+    _emit(
+        ports,
+        state.language.value,
+        step="understand",
+        outcome="failed",
+        latency_ms=(perf_counter() - started) * 1000,
+        **_identity_fields(_describe(ports.model)),
+    )
     return None
 
 
@@ -154,11 +172,6 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     state.language = understood.language
     if understood.not_mine:
         state.states_not_theirs = True
-    if understood.kind is not UnderstandKind.PERSON:
-        # The customer moved on from the offer: the counter tracks *consecutive*
-        # asks, so an offer that was not followed by another ask does not leak
-        # into the next decision (which could be the confirmation button).
-        state.person_asks = 0
     if understood.kind is UnderstandKind.MISSING:
         state.clarification_count += 1
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
