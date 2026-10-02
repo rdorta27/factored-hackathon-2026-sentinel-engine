@@ -1,6 +1,7 @@
 """Acceptance tests for the structured turn log (observability)."""
 
 import json
+import os
 
 import pytest
 
@@ -188,6 +189,9 @@ def test_dev_salt_persists_across_restarts(tmp_path, monkeypatch) -> None:
     assert (tmp_path / "var" / ".session_salt").is_file()
 
 
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
 def test_turn_log_and_dev_salt_are_owner_only(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     import os
     import stat
