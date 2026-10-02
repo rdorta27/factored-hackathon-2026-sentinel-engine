@@ -260,6 +260,180 @@ def test_router_request_never_carries_the_fraud_score() -> None:
     assert "fraud" not in SYSTEM_PROMPT
 
 
+def _record(tmp_path, model: str, repetition: int, intent: str, message: str = "no reconozco este cargo"):  # type: ignore[no-untyped-def]
+    from app.ai.llm import build_messages
+    from app.ai.recording import RecordedTransport, write_recording
+
+    messages = build_messages(message, [message])
+    replay = RecordedTransport(tmp_path, "v1", repetition=repetition)
+    path, digest = replay.path_for(model, messages)
+    write_recording(
+        path,
+        model=model,
+        prompt_version="v1",
+        digest=digest,
+        repetition=repetition,
+        messages=messages,
+        response=LLMResponse(content=f'{{"intent": "{intent}", "language": "es-419"}}', tokens_in=10, tokens_out=5),
+    )
+    return path, messages
+
+
+def test_two_models_do_not_share_a_recording(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordedTransport
+
+    path_a, messages = _record(tmp_path, "cheap-model", 0, "charge")
+    path_b, _ = _record(tmp_path, "strong-model", 0, "missing")
+    assert path_a != path_b
+    replay = RecordedTransport(tmp_path, "v1")
+    assert '"charge"' in replay.complete(model="cheap-model", messages=messages).content
+    assert '"missing"' in replay.complete(model="strong-model", messages=messages).content
+
+
+def test_two_repetitions_do_not_share_a_recording(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import json
+
+    from app.ai.recording import RecordedTransport
+
+    path_0, messages = _record(tmp_path, "cheap-model", 0, "charge")
+    path_1, _ = _record(tmp_path, "cheap-model", 1, "person")
+    assert path_0 != path_1
+    body = json.loads(path_1.read_text(encoding="utf-8"))
+    assert (body["model"], body["prompt_version"], body["repetition"]) == ("cheap-model", "v1", 1)
+    assert '"person"' in RecordedTransport(tmp_path, "v1", repetition=1).complete(
+        model="cheap-model", messages=messages
+    ).content
+    with pytest.raises(ModelUnavailable):
+        RecordedTransport(tmp_path, "v1", repetition=2).complete(model="cheap-model", messages=messages)
+
+
+class _FakeHttpResponse:
+    def __init__(self, body: dict, status_code: int = 200) -> None:
+        self._body = body
+        self.status_code = status_code
+
+    def json(self) -> dict:
+        return self._body
+
+
+def _serve(monkeypatch: pytest.MonkeyPatch, body: dict, sent: list | None = None) -> None:
+    def _post(self, url, json=None, headers=None):  # type: ignore[no-untyped-def]
+        if sent is not None:
+            sent.append({"url": url, "json": json, "headers": headers})
+        return _FakeHttpResponse(body)
+
+    monkeypatch.setattr("httpx.Client.post", _post)
+
+
+_USAGE_BODY = {
+    "choices": [{"message": {"content": '{"intent": "charge", "language": "es-419"}'}}],
+    "usage": {"prompt_tokens": 1_000_000, "completion_tokens": 1_000_000},
+}
+
+
+def test_cost_follows_the_serving_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES
+
+    _serve(monkeypatch, _USAGE_BODY)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    cheap = transport.complete(model="accounts/fireworks/models/gpt-oss-120b", messages=[])
+    strong = transport.complete(model="accounts/fireworks/models/deepseek-v4p1-flash", messages=[])
+    assert cheap.cost_usd == pytest.approx(0.15 + 0.60)
+    assert strong.cost_usd == pytest.approx(0.30 + 1.20)
+
+
+def test_cached_input_uses_the_cached_price(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES
+
+    body = {**_USAGE_BODY, "usage": {**_USAGE_BODY["usage"], "prompt_tokens_details": {"cached_tokens": 1_000_000}}}
+    _serve(monkeypatch, body)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    reply = transport.complete(model="accounts/fireworks/models/deepseek-v4p1-flash", messages=[])
+    assert reply.cost_usd == pytest.approx(0.006 + 1.20)
+
+
+def test_unpriced_model_is_refused_before_the_call(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.prices import PRICES, UnknownPrice
+
+    sent: list = []
+    _serve(monkeypatch, _USAGE_BODY, sent)
+    transport = HttpTransport(base_url="http://fake", prices=PRICES, require_price=True)
+    with pytest.raises(UnknownPrice, match="accounts/fireworks/models/unknown"):
+        transport.complete(model="accounts/fireworks/models/unknown", messages=[])
+    assert sent == []
+
+
+def test_request_asks_for_bounded_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    sent: list = []
+    _serve(monkeypatch, _USAGE_BODY, sent)
+    HttpTransport(base_url="http://fake", max_tokens=200, reasoning_effort="low").complete(
+        model="m", messages=[{"role": "user", "content": "hola"}]
+    )
+    body = sent[0]["json"]
+    assert body["max_tokens"] == 200
+    assert body["response_format"] == {"type": "json_object"}
+    assert body["reasoning_effort"] == "low"
+
+
+def test_invalid_reply_is_a_json_failure_and_still_unavailable() -> None:
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+    from app.ai.transport import InvalidReply
+
+    for content in ("not json", "[1, 2]", '{"intent": "refund", "language": "es-419"}'):
+        router = PromptedLLMRouter(StubTransport(content), RouterConfig(cheap_model="m"))
+        with pytest.raises(InvalidReply):
+            router.understand("no reconozco este cargo", [])
+        assert issubclass(InvalidReply, ModelUnavailable)
+
+
+class _CountingLive:
+    def __init__(self, content: str = '{"intent": "charge", "language": "es-419"}') -> None:
+        self.calls = 0
+        self.content = content
+
+    def complete(self, *, model: str, messages: list[dict], temperature: float = 0.0) -> LLMResponse:
+        self.calls += 1
+        return LLMResponse(content=self.content, tokens_in=10, tokens_out=5, cost_usd=0.001)
+
+
+def _messages(text: str = "no reconozco este cargo") -> list[dict]:
+    from app.ai.llm import build_messages
+
+    return build_messages(text, [text])
+
+
+def test_recording_hit_makes_no_live_call(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport
+
+    live = _CountingLive()
+    recorder = RecordingTransport(tmp_path, "v1", live, record=True)
+    first = recorder.complete(model="m", messages=_messages())
+    second = recorder.complete(model="m", messages=_messages())
+    assert live.calls == 1
+    assert first.content == second.content
+    assert recorder.spent_usd == pytest.approx(0.001)
+
+
+def test_recording_miss_outside_recording_mode_raises(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport
+
+    live = _CountingLive()
+    with pytest.raises(ModelUnavailable, match="not recording"):
+        RecordingTransport(tmp_path, "v1", live, record=False).complete(model="m", messages=_messages())
+    assert live.calls == 0
+
+
+def test_recording_refuses_to_write_a_secret(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport, SecretInRecording
+
+    key = "fw_test_not_a_real_key_123"
+    for content in (f'{{"intent": "charge", "note": "{key}"}}', '{"intent": "charge", "h": "Authorization: x"}'):
+        recorder = RecordingTransport(tmp_path, "v1", _CountingLive(content), record=True, api_key=key)
+        with pytest.raises(SecretInRecording):
+            recorder.complete(model="m", messages=_messages())
+    assert list(tmp_path.iterdir()) == []
+
+
 def test_model_port_accepts_optional_digest_and_two_arg_calls() -> None:
     """Contract: understand(message, turns, context=None); old two-arg calls keep working."""
     from app.ai.llm import PromptedLLMRouter, RouterConfig
@@ -295,8 +469,8 @@ def test_digest_rejects_unknown_fields_and_personal_data() -> None:
     from app.ai.llm import build_messages
 
     with pytest.raises(ValueError, match="not allowed"):
-        build_messages("hola", [], None, {"cot": "I think..."})  # type: ignore[dict-item]
+        build_messages("hola", [], None, context={"cot": "I think..."})  # type: ignore[dict-item]
     with pytest.raises(ValueError, match="must be a list"):
-        build_messages("hola", [], None, {"sys_questions": "missing"})  # type: ignore[dict-item]
+        build_messages("hola", [], None, context={"sys_questions": "missing"})  # type: ignore[dict-item]
     with pytest.raises(ValueError, match="forbidden"):
-        build_messages("hola", [], None, {"sys_questions": [], "customer_id": "CUST-1"})  # type: ignore[dict-item]
+        build_messages("hola", [], None, context={"sys_questions": [], "customer_id": "CUST-1"})  # type: ignore[dict-item]

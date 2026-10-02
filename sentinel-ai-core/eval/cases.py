@@ -17,7 +17,11 @@ COUNTRIES = ("MX", "CO", "AR")
 INTENTS = ("charge", "missing", "out_of_scope", "person")
 SPLITS = ("development", "held_out")
 FAULTS = ("none", "gold_unavailable", "expired_session", "tool_failure")
-KNOWN_TAGS = ("edge", "adversarial")
+KNOWN_TAGS = ("edge", "adversarial", "noisy")
+# A variant is the language a base situation is rendered in, tied to the
+# account country (decision 017: a pt-BR writer holds an MX, CO or AR account).
+VARIANTS = {"es-MX": ("es-419", "MX"), "es-CO": ("es-419", "CO"), "es-AR": ("es-419", "AR"), "pt-BR": ("pt-BR", None)}
+PERTURBATIONS = ("date_shift", "amount_shift", "truncated_name", "self_correction")
 
 REQUIRED = (
     "id",
@@ -48,6 +52,11 @@ class Case:
     # charge (amount, fraud score, claim) can fire. Then expected_rule names the rule.
     selected_reference: str | None = None
     expected_rule: str | None = None
+    # Sealed-set fields: the base situation, its rendering, and for noisy twins
+    # the single declared perturbation.
+    base_id: str | None = None
+    variant: str | None = None
+    perturbation: str | None = None
 
     @property
     def message(self) -> str:
@@ -74,6 +83,26 @@ def validate_case(body: dict, source: str) -> Case:
     for tag in tags:
         if tag not in KNOWN_TAGS:
             raise ValueError(f"case {case_id} has unknown tag {tag!r}")
+    variant = body.get("variant") or None
+    base_id = body.get("base_id") or None
+    perturbation = body.get("perturbation") or None
+    if variant is not None:
+        if variant not in VARIANTS:
+            raise ValueError(f"case {case_id} has unknown variant {variant!r}")
+        locale, country = VARIANTS[variant]
+        if body["locale"] != locale or (country is not None and body["country"] != country):
+            raise ValueError(
+                f"case {case_id} has variant {variant} but locale {body['locale']} and country {body['country']}"
+            )
+        if base_id is None:
+            raise ValueError(f"case {case_id} has a variant but no base_id")
+    if "noisy" in tags:
+        if perturbation not in PERTURBATIONS:
+            raise ValueError(f"noisy case {case_id} must name one perturbation of {PERTURBATIONS}")
+        if base_id is None or variant is None:
+            raise ValueError(f"noisy case {case_id} must reference its base_id and variant")
+    elif perturbation is not None:
+        raise ValueError(f"case {case_id} names a perturbation but is not tagged noisy")
     turns = body["turns"]
     if not isinstance(turns, list) or not all(isinstance(t, str) and t.strip() for t in turns):
         raise ValueError(f"case {case_id} needs non-empty string turns")
@@ -92,6 +121,9 @@ def validate_case(body: dict, source: str) -> Case:
         must_not_pass=bool(body.get("must_not_pass", False)),
         selected_reference=body.get("selected_reference") or None,
         expected_rule=body.get("expected_rule") or None,
+        base_id=base_id,
+        variant=variant,
+        perturbation=perturbation,
     )
 
 
@@ -147,7 +179,9 @@ __all__ = [
     "FAULTS",
     "INTENTS",
     "LOCALES",
+    "PERTURBATIONS",
     "SPLITS",
+    "VARIANTS",
     "Case",
     "LabelProvenance",
     "check_splits",

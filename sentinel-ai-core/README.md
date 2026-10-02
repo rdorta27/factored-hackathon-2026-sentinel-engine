@@ -59,10 +59,36 @@ chosen model on `app.state.model` and defaults to the keyword baseline
 (`DemoModel`), so the same loop runs with either implementation and no code
 edit is needed to switch.
 
-Set the `SENTINEL_LLM_*` variables (see the repo `.env.example`, names only,
-no values) to run the prompted router; leave `SENTINEL_LLM_BASE_URL` empty to
-stay on the baseline. The router picks a model per route (cheap frequent turns
+The `SENTINEL_LLM_*` variables (see the repo `.env.example`, names only, no
+values) configure the prompted router for the evaluation's recording runs.
+The served app does not read them yet: `create_app` still defaults to the
+baseline, so leaving `SENTINEL_LLM_BASE_URL` empty changes nothing. The router picks a model per route (cheap frequent turns
 vs. strong ambiguous or pt-BR turns) with a configured default fallback, and
 reports `model`, `route`, `prompt_version`, tokens and cost on every
 `understand` record. Tests replay committed fixtures under
 `app/ai/fixtures/` and open no network connection.
+
+## Recording live router replies
+
+Live calls happen only on the owner's machine, once per recording, and the
+key never enters the repository (decision
+[016](../docs/build/decisions/016-router-models.md)). Everything else replays
+the recordings offline.
+
+1. From the repo root, create the env file and make it readable only by you:
+   `cp .env.example .env && chmod 600 .env`. Edit it with an editor, not with
+   `echo`, so the key stays out of the shell history. Set
+   `SENTINEL_LLM_BASE_URL=https://api.fireworks.ai/inference/v1`, the key, and
+   the model ids from 016.
+2. Check that git ignores it: `git check-ignore -v .env` prints the
+   `.gitignore` rule, and `git status --short` does not list `.env`.
+3. Set a spending limit of USD 1 on the Fireworks account. The runner's own
+   cap is a second guard, not the first.
+4. Load the variables into the current shell only: `set -a; source .env; set +a`.
+5. Recordings land in `app/ai/fixtures/` as `rec-<key>.json`, keyed by model,
+   prompt version, input and repetition. The recorder refuses to write a reply
+   that contains the key, an authorization header or a bearer token.
+6. Before every commit that adds recordings, check what is staged:
+   `git diff --cached | grep -iE "fw_|authorization|bearer"` must print
+   nothing. If a key ever reaches a commit, revoke it on Fireworks: removing
+   it from the file leaves it in the history.

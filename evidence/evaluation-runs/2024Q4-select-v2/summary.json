@@ -1,0 +1,2606 @@
+{
+  "baseline": {
+    "breakdown": {
+      "by_intent": {
+        "charge": {
+          "accuracy": 1.0,
+          "clusters": 36,
+          "descriptive": false,
+          "interval_95": [
+            1.0,
+            1.0
+          ],
+          "n": 69
+        },
+        "missing": {
+          "accuracy": 0.0,
+          "clusters": 11,
+          "descriptive": false,
+          "interval_95": [
+            0.0,
+            0.0
+          ],
+          "n": 23
+        },
+        "out_of_scope": {
+          "accuracy": 0.5897,
+          "clusters": 15,
+          "descriptive": true,
+          "interval_95": [
+            0.3333,
+            0.8611
+          ],
+          "n": 39
+        },
+        "person": {
+          "accuracy": 0.6061,
+          "clusters": 12,
+          "descriptive": true,
+          "interval_95": [
+            0.3333,
+            0.9
+          ],
+          "n": 33
+        }
+      },
+      "by_variant": {
+        "es-AR": {
+          "accuracy": 0.5667,
+          "clusters": 30,
+          "descriptive": true,
+          "interval_95": [
+            0.4,
+            0.7333
+          ],
+          "n": 30
+        },
+        "es-CO": {
+          "accuracy": 0.7,
+          "clusters": 30,
+          "descriptive": true,
+          "interval_95": [
+            0.5333,
+            0.8667
+          ],
+          "n": 30
+        },
+        "es-MX": {
+          "accuracy": 0.6,
+          "clusters": 30,
+          "descriptive": true,
+          "interval_95": [
+            0.4333,
+            0.7667
+          ],
+          "n": 30
+        },
+        "pt-BR": {
+          "accuracy": 0.6333,
+          "clusters": 30,
+          "descriptive": true,
+          "interval_95": [
+            0.4667,
+            0.8
+          ],
+          "n": 30
+        }
+      },
+      "method": "cluster bootstrap over bases, 2000 resamples, seed 20261001",
+      "overall": {
+        "accuracy": 0.6829,
+        "clusters": 74,
+        "descriptive": true,
+        "interval_95": [
+          0.5549,
+          0.8054
+        ],
+        "n": 164
+      }
+    },
+    "cost_usd": {
+      "mean": 0.0,
+      "n": 164,
+      "p50": 0.0,
+      "p95": 0.0,
+      "total": 0.0
+    },
+    "example_ids": [],
+    "intent": {
+      "accuracy": 0.6829,
+      "confusion": {
+        "charge": {
+          "charge": 69,
+          "missing": 0,
+          "out_of_scope": 0,
+          "person": 0
+        },
+        "missing": {
+          "charge": 23,
+          "missing": 0,
+          "out_of_scope": 0,
+          "person": 0
+        },
+        "out_of_scope": {
+          "charge": 13,
+          "missing": 0,
+          "out_of_scope": 23,
+          "person": 3
+        },
+        "person": {
+          "charge": 13,
+          "missing": 0,
+          "out_of_scope": 0,
+          "person": 20
+        }
+      },
+      "n": 164,
+      "per_class": {
+        "charge": {
+          "f1": 0.738,
+          "n": 69,
+          "precision": 0.5847,
+          "recall": 1.0,
+          "support": 69
+        },
+        "missing": {
+          "f1": 0.0,
+          "n": 23,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 23
+        },
+        "out_of_scope": {
+          "f1": 0.7419,
+          "n": 39,
+          "precision": 1.0,
+          "recall": 0.5897,
+          "support": 39
+        },
+        "person": {
+          "f1": 0.7143,
+          "n": 33,
+          "precision": 0.8696,
+          "recall": 0.6061,
+          "support": 33
+        }
+      }
+    },
+    "json_failures": {
+      "count": 0,
+      "n": 164
+    },
+    "latency_ms": {
+      "mean": 0.0346,
+      "n": 164,
+      "p50": 0.0,
+      "p95": 0.01
+    },
+    "models": {
+      "count": {
+        "keyword-baseline": 164
+      },
+      "n": 164
+    },
+    "n": 164,
+    "predicted": [
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "person",
+      "person",
+      "person",
+      "charge",
+      "out_of_scope",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "out_of_scope",
+      "out_of_scope",
+      "person",
+      "person",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "out_of_scope",
+      "out_of_scope",
+      "charge",
+      "out_of_scope",
+      "person",
+      "out_of_scope",
+      "person",
+      "person",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "out_of_scope",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "person",
+      "person",
+      "person",
+      "person",
+      "person",
+      "person",
+      "person",
+      "person",
+      "charge",
+      "person",
+      "charge",
+      "person",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "person",
+      "person",
+      "person",
+      "person",
+      "charge",
+      "person",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge",
+      "charge"
+    ],
+    "prompt_version": "v1",
+    "routes": {
+      "count": {
+        "baseline": 164
+      },
+      "n": 164
+    },
+    "stability": {
+      "agreement": 1.0,
+      "n": 0,
+      "recorded_repetitions": 0,
+      "runs": 0
+    },
+    "unavailable": {
+      "count": 0,
+      "n": 164
+    },
+    "variant_losses": {
+      "best": "es-CO",
+      "by_variant": {
+        "es-AR": {
+          "accuracy": 0.5667,
+          "lost_bases": [
+            "dv-b17",
+            "dv-b18",
+            "dv-b26",
+            "dv-b29"
+          ],
+          "n": 30,
+          "net_loss": 4,
+          "won_bases": []
+        },
+        "es-CO": {
+          "accuracy": 0.7,
+          "lost_bases": [],
+          "n": 30,
+          "net_loss": 0,
+          "won_bases": []
+        },
+        "es-MX": {
+          "accuracy": 0.6,
+          "lost_bases": [
+            "dv-b18",
+            "dv-b26",
+            "dv-b29"
+          ],
+          "n": 30,
+          "net_loss": 3,
+          "won_bases": []
+        },
+        "pt-BR": {
+          "accuracy": 0.6333,
+          "lost_bases": [
+            "dv-b18",
+            "dv-b29"
+          ],
+          "n": 30,
+          "net_loss": 2,
+          "won_bases": []
+        }
+      },
+      "n": 30
+    }
+  },
+  "candidates": {
+    "accounts/fireworks/models/deepseek-v4p1-flash": {
+      "breakdown": {
+        "by_intent": {
+          "charge": {
+            "accuracy": 0.8261,
+            "clusters": 36,
+            "descriptive": true,
+            "interval_95": [
+              0.6795,
+              0.9545
+            ],
+            "n": 69
+          },
+          "missing": {
+            "accuracy": 0.0435,
+            "clusters": 11,
+            "descriptive": false,
+            "interval_95": [
+              0.0,
+              0.125
+            ],
+            "n": 23
+          },
+          "out_of_scope": {
+            "accuracy": 0.8974,
+            "clusters": 15,
+            "descriptive": true,
+            "interval_95": [
+              0.6923,
+              1.0
+            ],
+            "n": 39
+          },
+          "person": {
+            "accuracy": 0.8182,
+            "clusters": 12,
+            "descriptive": true,
+            "interval_95": [
+              0.5556,
+              1.0
+            ],
+            "n": 33
+          }
+        },
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7333,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.5667,
+              0.8667
+            ],
+            "n": 30
+          },
+          "es-CO": {
+            "accuracy": 0.6667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.5,
+              0.8333
+            ],
+            "n": 30
+          },
+          "es-MX": {
+            "accuracy": 0.6667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.5,
+              0.8333
+            ],
+            "n": 30
+          },
+          "pt-BR": {
+            "accuracy": 0.7667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.6,
+              0.9
+            ],
+            "n": 30
+          }
+        },
+        "method": "cluster bootstrap over bases, 2000 resamples, seed 20261001",
+        "overall": {
+          "accuracy": 0.7317,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6228,
+            0.8412
+          ],
+          "n": 164
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0002,
+        "n": 164,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.040459
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.7317,
+        "confusion": {
+          "charge": {
+            "charge": 57,
+            "invalid": 6,
+            "missing": 4,
+            "out_of_scope": 2,
+            "person": 0
+          },
+          "invalid": {
+            "charge": 0,
+            "invalid": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "missing": {
+            "charge": 0,
+            "invalid": 2,
+            "missing": 1,
+            "out_of_scope": 20,
+            "person": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "invalid": 0,
+            "missing": 4,
+            "out_of_scope": 35,
+            "person": 0
+          },
+          "person": {
+            "charge": 3,
+            "invalid": 1,
+            "missing": 0,
+            "out_of_scope": 2,
+            "person": 27
+          }
+        },
+        "n": 164,
+        "per_class": {
+          "charge": {
+            "f1": 0.8837,
+            "n": 69,
+            "precision": 0.95,
+            "recall": 0.8261,
+            "support": 69
+          },
+          "invalid": {
+            "f1": 0.0,
+            "n": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "missing": {
+            "f1": 0.0625,
+            "n": 23,
+            "precision": 0.1111,
+            "recall": 0.0435,
+            "support": 23
+          },
+          "out_of_scope": {
+            "f1": 0.7143,
+            "n": 39,
+            "precision": 0.5932,
+            "recall": 0.8974,
+            "support": 39
+          },
+          "person": {
+            "f1": 0.9,
+            "n": 33,
+            "precision": 1.0,
+            "recall": 0.8182,
+            "support": 33
+          }
+        }
+      },
+      "json_failures": {
+        "count": 9,
+        "n": 164
+      },
+      "latency_ms": {
+        "mean": 3745.5024,
+        "n": 164,
+        "p50": 2909.25,
+        "p95": 8427.24
+      },
+      "models": {
+        "count": {
+          "accounts/fireworks/models/deepseek-v4p1-flash": 164
+        },
+        "n": 164
+      },
+      "n": 164,
+      "predicted": [
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "invalid",
+        "charge",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "invalid",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "person"
+      ],
+      "prompt_version": "v1",
+      "pt_loss": {
+        "lost_bases": [],
+        "n": 30,
+        "net_loss": -3,
+        "won_bases": [
+          "dv-b03",
+          "dv-b09",
+          "dv-b14"
+        ]
+      },
+      "routes": {
+        "count": {
+          "strong": 164
+        },
+        "n": 164
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "unavailable": {
+        "count": 0,
+        "n": 164
+      },
+      "variant_losses": {
+        "best": "pt-BR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7333,
+            "lost_bases": [
+              "dv-b14",
+              "dv-b30"
+            ],
+            "n": 30,
+            "net_loss": 1,
+            "won_bases": [
+              "dv-b04"
+            ]
+          },
+          "es-CO": {
+            "accuracy": 0.6667,
+            "lost_bases": [
+              "dv-b09",
+              "dv-b14",
+              "dv-b30"
+            ],
+            "n": 30,
+            "net_loss": 3,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.6667,
+            "lost_bases": [
+              "dv-b03",
+              "dv-b09",
+              "dv-b14"
+            ],
+            "n": 30,
+            "net_loss": 3,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.7667,
+            "lost_bases": [],
+            "n": 30,
+            "net_loss": 0,
+            "won_bases": []
+          }
+        },
+        "n": 30
+      }
+    },
+    "accounts/fireworks/models/glm-5p3": {
+      "breakdown": {
+        "by_intent": {
+          "charge": {
+            "accuracy": 0.8696,
+            "clusters": 36,
+            "descriptive": true,
+            "interval_95": [
+              0.7361,
+              0.9697
+            ],
+            "n": 69
+          },
+          "missing": {
+            "accuracy": 0.1304,
+            "clusters": 11,
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.375
+            ],
+            "n": 23
+          },
+          "out_of_scope": {
+            "accuracy": 0.8974,
+            "clusters": 15,
+            "descriptive": true,
+            "interval_95": [
+              0.6923,
+              1.0
+            ],
+            "n": 39
+          },
+          "person": {
+            "accuracy": 0.4242,
+            "clusters": 12,
+            "descriptive": true,
+            "interval_95": [
+              0.2,
+              0.7037
+            ],
+            "n": 33
+          }
+        },
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.5333,
+              0.8667
+            ],
+            "n": 30
+          },
+          "es-CO": {
+            "accuracy": 0.6,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.4,
+              0.7667
+            ],
+            "n": 30
+          },
+          "es-MX": {
+            "accuracy": 0.6667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.5,
+              0.8333
+            ],
+            "n": 30
+          },
+          "pt-BR": {
+            "accuracy": 0.6333,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.4667,
+              0.8
+            ],
+            "n": 30
+          }
+        },
+        "method": "cluster bootstrap over bases, 2000 resamples, seed 20261001",
+        "overall": {
+          "accuracy": 0.6829,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5642,
+            0.8026
+          ],
+          "n": 164
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0004,
+        "n": 164,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.064504
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.6829,
+        "confusion": {
+          "charge": {
+            "charge": 60,
+            "missing": 4,
+            "out_of_scope": 2,
+            "person": 0,
+            "unavailable": 3
+          },
+          "missing": {
+            "charge": 2,
+            "missing": 3,
+            "out_of_scope": 18,
+            "person": 0,
+            "unavailable": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 4,
+            "out_of_scope": 35,
+            "person": 0,
+            "unavailable": 0
+          },
+          "person": {
+            "charge": 4,
+            "missing": 0,
+            "out_of_scope": 15,
+            "person": 14,
+            "unavailable": 0
+          },
+          "unavailable": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "unavailable": 0
+          }
+        },
+        "n": 164,
+        "per_class": {
+          "charge": {
+            "f1": 0.8889,
+            "n": 69,
+            "precision": 0.9091,
+            "recall": 0.8696,
+            "support": 69
+          },
+          "missing": {
+            "f1": 0.1765,
+            "n": 23,
+            "precision": 0.2727,
+            "recall": 0.1304,
+            "support": 23
+          },
+          "out_of_scope": {
+            "f1": 0.6422,
+            "n": 39,
+            "precision": 0.5,
+            "recall": 0.8974,
+            "support": 39
+          },
+          "person": {
+            "f1": 0.5957,
+            "n": 33,
+            "precision": 1.0,
+            "recall": 0.4242,
+            "support": 33
+          },
+          "unavailable": {
+            "f1": 0.0,
+            "n": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 164
+      },
+      "latency_ms": {
+        "mean": 2428.896,
+        "n": 164,
+        "p50": 1328.51,
+        "p95": 5020.85
+      },
+      "models": {
+        "count": {
+          "accounts/fireworks/models/glm-5p3": 164
+        },
+        "n": 164
+      },
+      "n": 164,
+      "predicted": [
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "unavailable",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "unavailable",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "unavailable",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "charge",
+        "out_of_scope",
+        "missing",
+        "out_of_scope",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope"
+      ],
+      "prompt_version": "v1",
+      "pt_loss": {
+        "lost_bases": [
+          "dv-b03",
+          "dv-b26"
+        ],
+        "n": 30,
+        "net_loss": 1,
+        "won_bases": [
+          "dv-b27"
+        ]
+      },
+      "routes": {
+        "count": {
+          "strong": 164
+        },
+        "n": 164
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "unavailable": {
+        "count": 3,
+        "n": 164
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7,
+            "lost_bases": [],
+            "n": 30,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.6,
+            "lost_bases": [
+              "dv-b08",
+              "dv-b14",
+              "dv-b29"
+            ],
+            "n": 30,
+            "net_loss": 3,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.6667,
+            "lost_bases": [
+              "dv-b29"
+            ],
+            "n": 30,
+            "net_loss": 1,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.6333,
+            "lost_bases": [
+              "dv-b03",
+              "dv-b26",
+              "dv-b29"
+            ],
+            "n": 30,
+            "net_loss": 2,
+            "won_bases": [
+              "dv-b27"
+            ]
+          }
+        },
+        "n": 30
+      }
+    },
+    "accounts/fireworks/models/glm-5p3-flash": {
+      "breakdown": {
+        "by_intent": {
+          "charge": {
+            "accuracy": 0.913,
+            "clusters": 36,
+            "descriptive": true,
+            "interval_95": [
+              0.7826,
+              1.0
+            ],
+            "n": 69
+          },
+          "missing": {
+            "accuracy": 0.0,
+            "clusters": 11,
+            "descriptive": false,
+            "interval_95": [
+              0.0,
+              0.0
+            ],
+            "n": 23
+          },
+          "out_of_scope": {
+            "accuracy": 0.8974,
+            "clusters": 15,
+            "descriptive": true,
+            "interval_95": [
+              0.6923,
+              1.0
+            ],
+            "n": 39
+          },
+          "person": {
+            "accuracy": 0.9091,
+            "clusters": 12,
+            "descriptive": true,
+            "interval_95": [
+              0.7143,
+              1.0
+            ],
+            "n": 33
+          }
+        },
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.6,
+              0.9
+            ],
+            "n": 30
+          },
+          "es-CO": {
+            "accuracy": 0.7667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.6,
+              0.9
+            ],
+            "n": 30
+          },
+          "es-MX": {
+            "accuracy": 0.7667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.6,
+              0.9
+            ],
+            "n": 30
+          },
+          "pt-BR": {
+            "accuracy": 0.8,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.6667,
+              0.9333
+            ],
+            "n": 30
+          }
+        },
+        "method": "cluster bootstrap over bases, 2000 resamples, seed 20261001",
+        "overall": {
+          "accuracy": 0.7805,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6702,
+            0.8882
+          ],
+          "n": 164
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 164,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.007083
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.7805,
+        "confusion": {
+          "charge": {
+            "charge": 63,
+            "missing": 4,
+            "out_of_scope": 2,
+            "person": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 21,
+            "person": 2
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 4,
+            "out_of_scope": 35,
+            "person": 0
+          },
+          "person": {
+            "charge": 3,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 30
+          }
+        },
+        "n": 164,
+        "per_class": {
+          "charge": {
+            "f1": 0.9333,
+            "n": 69,
+            "precision": 0.9545,
+            "recall": 0.913,
+            "support": 69
+          },
+          "missing": {
+            "f1": 0.0,
+            "n": 23,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 23
+          },
+          "out_of_scope": {
+            "f1": 0.7216,
+            "n": 39,
+            "precision": 0.6034,
+            "recall": 0.8974,
+            "support": 39
+          },
+          "person": {
+            "f1": 0.9231,
+            "n": 33,
+            "precision": 0.9375,
+            "recall": 0.9091,
+            "support": 33
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 164
+      },
+      "latency_ms": {
+        "mean": 1355.9476,
+        "n": 164,
+        "p50": 1039.9,
+        "p95": 3011.78
+      },
+      "models": {
+        "count": {
+          "accounts/fireworks/models/glm-5p3-flash": 164
+        },
+        "n": 164
+      },
+      "n": 164,
+      "predicted": [
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "missing",
+        "missing",
+        "missing",
+        "missing",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "charge",
+        "charge",
+        "charge",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person",
+        "person"
+      ],
+      "prompt_version": "v1",
+      "pt_loss": {
+        "lost_bases": [],
+        "n": 30,
+        "net_loss": -1,
+        "won_bases": [
+          "dv-b28"
+        ]
+      },
+      "routes": {
+        "count": {
+          "strong": 164
+        },
+        "n": 164
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "unavailable": {
+        "count": 0,
+        "n": 164
+      },
+      "variant_losses": {
+        "best": "pt-BR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.7667,
+            "lost_bases": [
+              "dv-b28"
+            ],
+            "n": 30,
+            "net_loss": 1,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.7667,
+            "lost_bases": [
+              "dv-b28"
+            ],
+            "n": 30,
+            "net_loss": 1,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.7667,
+            "lost_bases": [
+              "dv-b28"
+            ],
+            "n": 30,
+            "net_loss": 1,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.8,
+            "lost_bases": [],
+            "n": 30,
+            "net_loss": 0,
+            "won_bases": []
+          }
+        },
+        "n": 30
+      }
+    },
+    "accounts/fireworks/models/gpt-oss-120b": {
+      "breakdown": {
+        "by_intent": {
+          "charge": {
+            "accuracy": 0.7101,
+            "clusters": 36,
+            "descriptive": true,
+            "interval_95": [
+              0.5714,
+              0.8406
+            ],
+            "n": 69
+          },
+          "missing": {
+            "accuracy": 0.0435,
+            "clusters": 11,
+            "descriptive": false,
+            "interval_95": [
+              0.0,
+              0.125
+            ],
+            "n": 23
+          },
+          "out_of_scope": {
+            "accuracy": 0.7179,
+            "clusters": 15,
+            "descriptive": true,
+            "interval_95": [
+              0.5111,
+              0.9167
+            ],
+            "n": 39
+          },
+          "person": {
+            "accuracy": 0.0606,
+            "clusters": 12,
+            "descriptive": false,
+            "interval_95": [
+              0.0,
+              0.1852
+            ],
+            "n": 33
+          }
+        },
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.5,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.3333,
+              0.6667
+            ],
+            "n": 30
+          },
+          "es-CO": {
+            "accuracy": 0.5,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.3333,
+              0.6667
+            ],
+            "n": 30
+          },
+          "es-MX": {
+            "accuracy": 0.4,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.2333,
+              0.5667
+            ],
+            "n": 30
+          },
+          "pt-BR": {
+            "accuracy": 0.3667,
+            "clusters": 30,
+            "descriptive": true,
+            "interval_95": [
+              0.2,
+              0.5333
+            ],
+            "n": 30
+          }
+        },
+        "method": "cluster bootstrap over bases, 2000 resamples, seed 20261001",
+        "overall": {
+          "accuracy": 0.4878,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.3742,
+            0.6076
+          ],
+          "n": 164
+        }
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 164,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.010556
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.4878,
+        "confusion": {
+          "charge": {
+            "charge": 49,
+            "invalid": 15,
+            "missing": 3,
+            "out_of_scope": 1,
+            "person": 1
+          },
+          "invalid": {
+            "charge": 0,
+            "invalid": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0
+          },
+          "missing": {
+            "charge": 0,
+            "invalid": 8,
+            "missing": 1,
+            "out_of_scope": 14,
+            "person": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "invalid": 9,
+            "missing": 2,
+            "out_of_scope": 28,
+            "person": 0
+          },
+          "person": {
+            "charge": 4,
+            "invalid": 5,
+            "missing": 0,
+            "out_of_scope": 22,
+            "person": 2
+          }
+        },
+        "n": 164,
+        "per_class": {
+          "charge": {
+            "f1": 0.8033,
+            "n": 69,
+            "precision": 0.9245,
+            "recall": 0.7101,
+            "support": 69
+          },
+          "invalid": {
+            "f1": 0.0,
+            "n": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          },
+          "missing": {
+            "f1": 0.069,
+            "n": 23,
+            "precision": 0.1667,
+            "recall": 0.0435,
+            "support": 23
+          },
+          "out_of_scope": {
+            "f1": 0.5385,
+            "n": 39,
+            "precision": 0.4308,
+            "recall": 0.7179,
+            "support": 39
+          },
+          "person": {
+            "f1": 0.1111,
+            "n": 33,
+            "precision": 0.6667,
+            "recall": 0.0606,
+            "support": 33
+          }
+        }
+      },
+      "json_failures": {
+        "count": 37,
+        "n": 164
+      },
+      "latency_ms": {
+        "mean": 1293.7988,
+        "n": 164,
+        "p50": 989.1,
+        "p95": 2154.28
+      },
+      "models": {
+        "count": {
+          "accounts/fireworks/models/gpt-oss-120b": 164
+        },
+        "n": 164
+      },
+      "n": 164,
+      "predicted": [
+        "charge",
+        "charge",
+        "invalid",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "person",
+        "out_of_scope",
+        "person",
+        "charge",
+        "out_of_scope",
+        "missing",
+        "charge",
+        "out_of_scope",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "person",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "out_of_scope",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "invalid",
+        "invalid",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "invalid",
+        "charge",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "out_of_scope",
+        "missing",
+        "invalid",
+        "missing",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "missing",
+        "invalid",
+        "missing",
+        "invalid",
+        "missing",
+        "invalid",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "invalid",
+        "invalid",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "charge",
+        "charge",
+        "charge",
+        "charge",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "out_of_scope",
+        "invalid",
+        "out_of_scope"
+      ],
+      "prompt_version": "v1",
+      "pt_loss": {
+        "lost_bases": [
+          "dv-b05",
+          "dv-b08",
+          "dv-b17",
+          "dv-b22"
+        ],
+        "n": 30,
+        "net_loss": 1,
+        "won_bases": [
+          "dv-b04",
+          "dv-b06",
+          "dv-b18"
+        ]
+      },
+      "routes": {
+        "count": {
+          "strong": 164
+        },
+        "n": 164
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "unavailable": {
+        "count": 0,
+        "n": 164
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.5,
+            "lost_bases": [],
+            "n": 30,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.5,
+            "lost_bases": [
+              "dv-b06",
+              "dv-b08",
+              "dv-b14"
+            ],
+            "n": 30,
+            "net_loss": 0,
+            "won_bases": [
+              "dv-b05",
+              "dv-b18",
+              "dv-b23"
+            ]
+          },
+          "es-MX": {
+            "accuracy": 0.4,
+            "lost_bases": [
+              "dv-b01",
+              "dv-b04",
+              "dv-b06",
+              "dv-b14"
+            ],
+            "n": 30,
+            "net_loss": 3,
+            "won_bases": [
+              "dv-b05"
+            ]
+          },
+          "pt-BR": {
+            "accuracy": 0.3667,
+            "lost_bases": [
+              "dv-b01",
+              "dv-b08",
+              "dv-b14",
+              "dv-b17",
+              "dv-b22"
+            ],
+            "n": 30,
+            "net_loss": 4,
+            "won_bases": [
+              "dv-b18"
+            ]
+          }
+        },
+        "n": 30
+      }
+    }
+  },
+  "case_mix": {
+    "by_intent": {
+      "charge": 69,
+      "missing": 23,
+      "out_of_scope": 39,
+      "person": 33
+    },
+    "by_split": {
+      "development": 164
+    },
+    "by_variant": {
+      "es-419": 29,
+      "es-AR": 30,
+      "es-CO": 30,
+      "es-MX": 30,
+      "pt-BR": 45
+    },
+    "n": 164
+  },
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "selection",
+  "n": 164,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Selection run on the development split only (016 amendment)."
+  ],
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "routes": {
+    "heuristic": {
+      "combined": {
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.7805,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6703,
+            0.8882
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.75,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6429,
+            0.8581
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.5671,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.4573,
+            0.6788
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.5366,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.4194,
+            0.6529
+          ],
+          "n": 164
+        }
+      },
+      "n": 164,
+      "per_route_accuracy": {
+        "accounts/fireworks/models/deepseek-v4p1-flash": {
+          "cheap": {
+            "accuracy": 0.7023,
+            "clusters": 62,
+            "descriptive": true,
+            "interval_95": [
+              0.5682,
+              0.8235
+            ],
+            "n": 131
+          },
+          "strong": {
+            "accuracy": 0.8485,
+            "clusters": 33,
+            "descriptive": true,
+            "interval_95": [
+              0.7273,
+              0.9697
+            ],
+            "n": 33
+          }
+        },
+        "accounts/fireworks/models/glm-5p3": {
+          "cheap": {
+            "accuracy": 0.6794,
+            "clusters": 62,
+            "descriptive": true,
+            "interval_95": [
+              0.542,
+              0.8058
+            ],
+            "n": 131
+          },
+          "strong": {
+            "accuracy": 0.697,
+            "clusters": 33,
+            "descriptive": true,
+            "interval_95": [
+              0.5455,
+              0.8485
+            ],
+            "n": 33
+          }
+        },
+        "accounts/fireworks/models/glm-5p3-flash": {
+          "cheap": {
+            "accuracy": 0.7634,
+            "clusters": 62,
+            "descriptive": true,
+            "interval_95": [
+              0.6311,
+              0.8828
+            ],
+            "n": 131
+          },
+          "strong": {
+            "accuracy": 0.8485,
+            "clusters": 33,
+            "descriptive": true,
+            "interval_95": [
+              0.697,
+              0.9697
+            ],
+            "n": 33
+          }
+        },
+        "accounts/fireworks/models/gpt-oss-120b": {
+          "cheap": {
+            "accuracy": 0.4962,
+            "clusters": 62,
+            "descriptive": true,
+            "interval_95": [
+              0.3684,
+              0.6259
+            ],
+            "n": 131
+          },
+          "strong": {
+            "accuracy": 0.4545,
+            "clusters": 33,
+            "descriptive": true,
+            "interval_95": [
+              0.303,
+              0.6061
+            ],
+            "n": 33
+          }
+        }
+      },
+      "strong_share": 0.2012
+    },
+    "keyword_miss": {
+      "combined": {
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.7317,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6228,
+            0.8412
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.7134,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5978,
+            0.8323
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.6463,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5353,
+            0.7578
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.628,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5063,
+            0.7429
+          ],
+          "n": 164
+        }
+      },
+      "n": 164,
+      "per_route_accuracy": {
+        "accounts/fireworks/models/deepseek-v4p1-flash": {
+          "cheap": {
+            "accuracy": 0.9143,
+            "clusters": 19,
+            "descriptive": true,
+            "interval_95": [
+              0.7273,
+              1.0
+            ],
+            "n": 35
+          },
+          "strong": {
+            "accuracy": 0.6822,
+            "clusters": 64,
+            "descriptive": true,
+            "interval_95": [
+              0.5593,
+              0.7987
+            ],
+            "n": 129
+          }
+        },
+        "accounts/fireworks/models/glm-5p3": {
+          "cheap": {
+            "accuracy": 0.7714,
+            "clusters": 19,
+            "descriptive": true,
+            "interval_95": [
+              0.5366,
+              1.0
+            ],
+            "n": 35
+          },
+          "strong": {
+            "accuracy": 0.6589,
+            "clusters": 64,
+            "descriptive": true,
+            "interval_95": [
+              0.5274,
+              0.7803
+            ],
+            "n": 129
+          }
+        },
+        "accounts/fireworks/models/glm-5p3-flash": {
+          "cheap": {
+            "accuracy": 0.9143,
+            "clusters": 19,
+            "descriptive": true,
+            "interval_95": [
+              0.7273,
+              1.0
+            ],
+            "n": 35
+          },
+          "strong": {
+            "accuracy": 0.7442,
+            "clusters": 64,
+            "descriptive": true,
+            "interval_95": [
+              0.6063,
+              0.8661
+            ],
+            "n": 129
+          }
+        },
+        "accounts/fireworks/models/gpt-oss-120b": {
+          "cheap": {
+            "accuracy": 0.5143,
+            "clusters": 19,
+            "descriptive": true,
+            "interval_95": [
+              0.2812,
+              0.7576
+            ],
+            "n": 35
+          },
+          "strong": {
+            "accuracy": 0.4806,
+            "clusters": 64,
+            "descriptive": true,
+            "interval_95": [
+              0.3586,
+              0.609
+            ],
+            "n": 129
+          }
+        }
+      },
+      "strong_share": 0.7866
+    },
+    "strong": {
+      "combined": {
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.7317,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6228,
+            0.8412
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/glm-5p3-flash + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.6829,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5642,
+            0.8026
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/deepseek-v4p1-flash": {
+          "accuracy": 0.7317,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.6228,
+            0.8412
+          ],
+          "n": 164
+        },
+        "accounts/fireworks/models/gpt-oss-120b + accounts/fireworks/models/glm-5p3": {
+          "accuracy": 0.6829,
+          "clusters": 74,
+          "descriptive": true,
+          "interval_95": [
+            0.5642,
+            0.8026
+          ],
+          "n": 164
+        }
+      },
+      "n": 164,
+      "per_route_accuracy": {
+        "accounts/fireworks/models/deepseek-v4p1-flash": {
+          "cheap": {
+            "accuracy": 0.0,
+            "clusters": 0,
+            "descriptive": true,
+            "interval_95": null,
+            "n": 0
+          },
+          "strong": {
+            "accuracy": 0.7317,
+            "clusters": 74,
+            "descriptive": true,
+            "interval_95": [
+              0.6228,
+              0.8412
+            ],
+            "n": 164
+          }
+        },
+        "accounts/fireworks/models/glm-5p3": {
+          "cheap": {
+            "accuracy": 0.0,
+            "clusters": 0,
+            "descriptive": true,
+            "interval_95": null,
+            "n": 0
+          },
+          "strong": {
+            "accuracy": 0.6829,
+            "clusters": 74,
+            "descriptive": true,
+            "interval_95": [
+              0.5642,
+              0.8026
+            ],
+            "n": 164
+          }
+        },
+        "accounts/fireworks/models/glm-5p3-flash": {
+          "cheap": {
+            "accuracy": 0.0,
+            "clusters": 0,
+            "descriptive": true,
+            "interval_95": null,
+            "n": 0
+          },
+          "strong": {
+            "accuracy": 0.7805,
+            "clusters": 74,
+            "descriptive": true,
+            "interval_95": [
+              0.6702,
+              0.8882
+            ],
+            "n": 164
+          }
+        },
+        "accounts/fireworks/models/gpt-oss-120b": {
+          "cheap": {
+            "accuracy": 0.0,
+            "clusters": 0,
+            "descriptive": true,
+            "interval_95": null,
+            "n": 0
+          },
+          "strong": {
+            "accuracy": 0.4878,
+            "clusters": 74,
+            "descriptive": true,
+            "interval_95": [
+              0.3742,
+              0.6076
+            ],
+            "n": 164
+          }
+        }
+      },
+      "strong_share": 1.0
+    }
+  },
+  "run_id": "2024Q4-select-v2",
+  "spend": {
+    "cap_usd": 0.15,
+    "capped": false,
+    "n": 157,
+    "spent_usd": 0.063074
+  },
+  "split": "development"
+}

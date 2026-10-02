@@ -242,7 +242,7 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Policy | Replace the synthetic configuration with the bank's approved policy, same format: per-currency values, `source` pointing to the bank policy, `synthetic: false`; decide staleness (decision 27). Each decision already records the policy file version |
 | Handoff | Publish each ticket to a queue (for example Azure Service Bus) that creates it in the bank's CRM, routed by language and specialty (REQ-0046); same package format ([015](../build/decisions/015-handoff-delivery.md)) |
 | Personal data | Serving view without personal columns and free-text masking (built); a token vault if a tool ever needs the original value, and static masking in Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
-| Serving | The submission runs one container on Hugging Face Spaces ([012](../build/decisions/012-public-deployment.md)); production moves it to Azure Container Apps with autoscaling and Key Vault |
+| Serving | The submission runs one container on Azure Container Apps, scale-to-zero ([019](../build/decisions/019-azure-container-apps.md)); production keeps the same service with autoscaling, Key Vault and PostgreSQL |
 | LLM | The chosen open-weight models served on Azure AI Foundry or Databricks, per-route quotas and a spending cap ([016](../build/decisions/016-router-models.md)) |
 | Observability | Centralised logs and traces, alerts by country (REQ-0050) |
 | Evaluation | Run the same harness as a release gate |

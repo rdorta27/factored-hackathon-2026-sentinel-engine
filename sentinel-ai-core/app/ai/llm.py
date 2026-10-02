@@ -7,7 +7,7 @@ import os
 from dataclasses import dataclass
 
 from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
-from app.ai.transport import ModelTransport, ModelUnavailable
+from app.ai.transport import InvalidReply, ModelTransport
 from app.orchestrator.types import Language
 
 PROMPT_VERSION_DEFAULT = "v1"
@@ -70,6 +70,25 @@ def pick_route(message: str) -> str:
     return "cheap"
 
 
+def keyword_miss_route(message: str) -> str:
+    """Route rule (ii) of the 016 amendment: Portuguese, or no baseline keyword matched."""
+    from app.ai import demo
+
+    text = message.lower()
+    if any(mark in text for mark in _PT_MARKS):
+        return "strong"
+    cues = demo._PERSON + demo._OUT + demo._NOT_MINE
+    return "cheap" if any(cue in text for cue in cues) else "strong"
+
+
+# Candidates for D3 in the 016 amendment; the chosen one is set by name.
+ROUTE_RULES = {
+    "heuristic": pick_route,
+    "keyword_miss": keyword_miss_route,
+    "strong": lambda message: "strong",
+}
+
+
 def assert_no_forbidden(payload: object) -> None:
     if isinstance(payload, dict):
         for key, value in payload.items():
@@ -79,6 +98,26 @@ def assert_no_forbidden(payload: object) -> None:
     elif isinstance(payload, (list, tuple)):
         for item in payload:
             assert_no_forbidden(item)
+
+
+@dataclass(frozen=True)
+class Example:
+    """One worked example for the prompt: a development case id, its text and the JSON reply."""
+
+    case_id: str
+    message: str
+    reply: dict
+
+
+def example_messages(examples: tuple[Example, ...]) -> list[dict[str, str]]:
+    """A fixed block placed before the customer turn, so providers can cache it."""
+    block: list[dict[str, str]] = []
+    for example in examples:
+        block.append(
+            {"role": "user", "content": json.dumps({"message": example.message, "turns": [example.message]}, ensure_ascii=False)}
+        )
+        block.append({"role": "assistant", "content": json.dumps(example.reply, ensure_ascii=False)})
+    return block
 
 
 # Digest keys the loop may attach next to the turn window: the last system
@@ -106,6 +145,7 @@ def build_messages(
     message: str,
     turns: list[str],
     charge: dict | None = None,
+    examples: tuple[Example, ...] = (),
     context: dict | None = None,
 ) -> list[dict[str, str]]:
     window = [turn for turn in turns[-4:] if isinstance(turn, str)][:4]
@@ -127,6 +167,7 @@ def build_messages(
     assert_no_forbidden({"content": content} if False else user_body)
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
+        *example_messages(examples),
         {"role": "user", "content": content},
     ]
 
@@ -134,8 +175,10 @@ def build_messages(
 def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
     try:
         body = json.loads(content)
+        if not isinstance(body, dict):
+            raise json.JSONDecodeError("not an object", content, 0)
     except json.JSONDecodeError as exc:
-        raise ModelUnavailable(f"unparsable model reply: {exc}") from exc
+        raise InvalidReply(f"unparsable model reply: {exc}") from exc
     intent = str(body.get("intent", "")).lower()
     language = str(body.get("language", ""))
     kinds = {
@@ -145,13 +188,13 @@ def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
         "person": UnderstandKind.PERSON,
     }
     if intent not in kinds:
-        raise ModelUnavailable(f"unknown intent: {intent!r}")
+        raise InvalidReply(f"unknown intent: {intent!r}")
     if language == "pt-BR":
         lang = Language.PT_BR
     elif language in ("es-419", "es"):
         lang = Language.ES_419
     else:
-        raise ModelUnavailable(f"unknown language: {language!r}")
+        raise InvalidReply(f"unknown language: {language!r}")
     return kinds[intent], lang, body.get("not_mine") is True
 
 
@@ -162,6 +205,13 @@ class RouterConfig:
     default_model: str = ""
     prompt_version: str = PROMPT_VERSION_DEFAULT
     temperature: float = 0.0
+    # Prompt version v2 carries examples; their ids are recorded with the run.
+    examples: tuple[Example, ...] = ()
+    route_rule: str = "heuristic"
+
+    @property
+    def example_ids(self) -> tuple[str, ...]:
+        return tuple(example.case_id for example in self.examples)
 
     @classmethod
     def from_env(cls) -> RouterConfig:
@@ -171,6 +221,7 @@ class RouterConfig:
             default_model=os.environ.get("SENTINEL_LLM_DEFAULT_MODEL", ""),
             prompt_version=os.environ.get("SENTINEL_LLM_PROMPT_VERSION", PROMPT_VERSION_DEFAULT)
             or PROMPT_VERSION_DEFAULT,
+            route_rule=os.environ.get("SENTINEL_LLM_ROUTE_RULE", "heuristic") or "heuristic",
         )
 
 
@@ -202,9 +253,12 @@ class PromptedLLMRouter:
     def understand(
         self, message: str, turns: list[str], context: dict | None = None
     ) -> UnderstandResult:
-        route = pick_route(message)
+        rule = ROUTE_RULES.get(self._config.route_rule)
+        if rule is None:
+            raise ValueError(f"unknown route rule {self._config.route_rule!r}; choose one of {sorted(ROUTE_RULES)}")
+        route = rule(message)
         model = self._model_for(route)
-        messages = build_messages(message, turns, context=context)
+        messages = build_messages(message, turns, examples=self._config.examples, context=context)
         response = self._transport.complete(
             model=model, messages=messages, temperature=self._config.temperature
         )

@@ -7,7 +7,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 | [REQ-0013](#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | In progress |
 | [REQ-0030](#req-0030) | Declare what is missing | P0 | all | [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
 | [REQ-0034](#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | Done |
-| [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Pending |
+| [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Done |
 | [REQ-0036](#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
 | [REQ-0037](#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035) | Pending |
 | [REQ-0051](#req-0051) | Everything in English | P0 | all | [REQ-0036](#req-0036), [REQ-0037](#req-0037) | Pending |
@@ -26,7 +26,7 @@ State openly what the data cannot support: the dataset is synthetic, Spanish onl
 
 **Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD.
 
-Missing: the limitations section in the README and the slides.
+Missing: the limitations section in the README and the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
@@ -61,13 +61,13 @@ Accepted residual risk, documented: the dataset bucket name is visible in commit
 
 A link to the running tool, with usage and spending limits. A minimal deployment is enough; cloud is not mandatory (help channel, 9/28).
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** AI Engineering · **Area:** ai
+**Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering · **Area:** ai
 
 **Source:** Kickoff p. 18 · Help channel (9/28)
 
 **Depends on:** [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034). A public link needs the session and a clean repo.
 
-**Evidence:** Missing: the deployment and its link. Host decided: Hugging Face Spaces, one container ([012](../build/decisions/012-public-deployment.md)).
+**Evidence:** Proven by: the live link at `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`, deployed 10/02 from [deploy/azure](../../deploy/azure/deploy.sh) under [019](../build/decisions/019-azure-container-apps.md) (Hugging Face dropped its free Docker tier, so [012](../build/decisions/012-public-deployment.md) is superseded). Verified remotely on 10/02: `GET /api/v1/health` returns `{"status":"ok","gold_source":"mock","state_backend":"sqlite","reference_date":"2026-06-17"}`, the page and branding load, `CUST-0001` logs in and creates a dispute (201), and `ADV-0001` sees the handoffs. Usage and spending limits: hosting sits inside the Azure monthly free grant plus about USD 0.08/day for the registry, all within the USD 200 trial credit ([cost](../build/cost.md)).
 
 <a id="req-0036"></a>
 ### REQ-0036 · Presentation, 4 to 6 slides

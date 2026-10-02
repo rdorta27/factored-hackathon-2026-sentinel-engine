@@ -41,14 +41,15 @@ class RaisingGold:
         raise self._error
 
 
-def build_client(fixtures_dir: Path | str) -> TestClient:
+def build_client(fixtures_dir: Path | str, model=None) -> TestClient:  # type: ignore[no-untyped-def]
+    """A fresh app per case; ``model`` replaces the fixture-backed router when given."""
     config = RouterConfig(
         cheap_model="cheap-eval",
         strong_model="strong-eval",
         default_model="default-eval",
         prompt_version="v1",
     )
-    router = PromptedLLMRouter(FixtureTransport(fixtures_dir), config)
+    router = model if model is not None else PromptedLLMRouter(FixtureTransport(fixtures_dir), config)
     # Each case on its own in-memory state: cases never share sessions or cases.
     return TestClient(create_app(model=router, state_backend="memory"))
 
@@ -141,10 +142,11 @@ def run_case(client: TestClient, case: Case) -> dict:
     }
 
 
-def run_system(cases: list[Case], fixtures_dir: Path | str) -> list[dict]:
+def run_system(cases: list[Case], fixtures_dir: Path | str, model_factory=None) -> list[dict]:  # type: ignore[no-untyped-def]
     turns = []
     for case in cases:
-        turns.append(run_case(build_client(fixtures_dir), case))
+        model = model_factory() if model_factory is not None else None
+        turns.append(run_case(build_client(fixtures_dir, model), case))
     return turns
 
 

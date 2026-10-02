@@ -162,7 +162,7 @@ The system must serve customers in Spanish and in Portuguese (brief: Scope; kick
 
 How a Portuguese-speaking customer is served and how pt-BR cases are reviewed is decided ([017](../build/decisions/017-portuguese.md)): an MX, CO or AR account answered in pt-BR, with cases checked through Spanish back-translation.
 
-Missing: the pt-BR twins of the key cases, written and checked that way.
+Missing: the pt-BR twins of the key cases, written and checked that way. Planned in [`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md): every base case in es-MX, es-CO, es-AR and pt-BR, judged per variant by D6 in [018](../build/decisions/018-evaluation-acceptance.md).
 
 <a id="req-0033"></a>
 ### REQ-0033 · Policy decides, the LLM converses
