@@ -48,3 +48,20 @@ Larger models (Qwen 3.8 Max, Kimi K3) cost 10 to 60 times more and stay out unle
 - The model choice is defensible by a rule and a frozen run, not by preference.
 - Model calls carry only masked customer text and a bounded turn window; the fraud score and identifiers never leave ([what the model never receives](../../rationale/model-data-minimization.md)). Fireworks' data retention terms for serverless calls are checked and stated before the run.
 - If no strong candidate meets the rule, the larger models are measured next; if the router cannot beat the baseline, the baseline stays served and the result is reported as is.
+
+## Amendment · selection on development, paired pt-BR rule
+
+**Date:** 2026-10-01
+**Status:** Proposed (accepted only by citing a `2024Q4-select-*` run committed after this text)
+**Change:** [`llm-evaluation`](../../../openspec/changes/llm-evaluation/design.md)
+
+The rule above is kept and made precise for the run that applies it. Every point here is fixed before any candidate is measured.
+
+- **Where it is measured:** the development split only (30 bases × 4 variants: es-MX, es-CO, es-AR, pt-BR, 120 cases). The held-out set is never used to choose a model or a route; it is measured once afterwards under [018](018-evaluation-acceptance.md).
+- **Candidates:** gpt-oss-120b and GLM 5.3 Flash for the cheap route, DeepSeek V4.1 Flash for the strong route. Nemotron is left out. GLM-5.3 and the larger models are measured only if the strong candidate fails the rule.
+- **D1 · cheap model:** (a) and (b) above, on the turns the route rule sends to the cheap route.
+- **D2 · strong model:** (a) and (b), and condition (c) restated as a paired loss: across the 30 development bases, the bases where pt-BR is wrong and es-MX is right, minus the opposite, are at most 3. With 30 bases, 5 points is 1.5 cases; 3 leaves room for chance in a set used for choosing, not for claims.
+- **D3 · route rule:** candidates are (i) today's heuristic in `app/ai/llm.py` (Portuguese markers or more than 120 characters → strong), and (ii) pt-BR detected or no baseline keyword matched → strong. The rule kept is the one with the higher development accuracy; on a tie, the one sending fewer turns to the strong route. If neither reaches the accuracy of sending every turn to the strong route minus 2 points, every turn goes to the strong route.
+- **Repetitions:** selection runs once per candidate. Stability is measured on the held-out set (018).
+
+Consequence: the choice is reproducible from one development run, and the held-out result cannot have influenced it.
