@@ -38,7 +38,7 @@ Every reported metric states how many cases it covers, their mix, the versions u
 
 **Evidence:** Proven by: n, mix, versions and failures per metric in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: run-to-run variability, on the final run.
+Missing: run-to-run variability, on the final run. Planned: three recorded repetitions on 25 held-out bases, with 95% intervals that resample bases ([018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0024"></a>
 ### REQ-0024 · Breakdown by language, country and segment
@@ -53,7 +53,7 @@ Compare outcomes by language, country and authorized customer segment (the `segm
 
 **Evidence:** Proven by: metrics by locale and country with small-sample limits in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json), labeled as offline simulation.
 
-Missing: the segment breakdown and the disparity analysis.
+Missing: the segment breakdown and the disparity analysis. Planned: metrics per variant with a paired per-variant loss (D6 in [018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0050"></a>
 ### REQ-0050 · Monitoring by country

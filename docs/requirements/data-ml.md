@@ -43,7 +43,7 @@ At least one learned component evaluated against a simpler baseline on held-out 
 
 **Evidence:** Proven by: router and baseline run on the same held-out cases, plus a system replay, in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: the fixtures mirror the baseline, so the measured difference is zero by construction; models and the selection rule are decided ([016](../build/decisions/016-router-models.md)); a live-model run (decision 10) is needed.
+Missing: the fixtures mirror the baseline, so the measured difference is zero by construction; models and the selection rule are decided ([016](../build/decisions/016-router-models.md)); a live-model run is needed. Planned in [`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md): selection on development under the 016 amendment, then one held-out measurement judged by D4 and D5 in [018](../build/decisions/018-evaluation-acceptance.md).
 
 <a id="req-0017"></a>
 ### REQ-0017 · Valid labels, no leakage
@@ -58,7 +58,7 @@ Labels must be trustworthy and the evaluation must not see information from the 
 
 **Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: one written justification of metrics, thresholds and splits, confirmed on real Gold.
+Missing: one written justification of metrics, thresholds and splits, confirmed on real Gold. The router's held-out set is sealed by hash before it is measured, and the earlier 10 held-out cases move to development ([`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md), [018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing
@@ -103,7 +103,7 @@ Compare the baseline and the system on exactly the same held-out cases, and make
 
 **Evidence:** Proven by: the same 35 team-written cases for both models and the loop in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); held-out measured once.
 
-Missing: a justification that the case mix is realistic, or a declared limitation.
+Missing: a justification that the case mix is realistic, or a declared limitation. Planned: baseline and both router versions on the same sealed 280 cases ([018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0023"></a>
 ### REQ-0023 · Validated LLM judge, if used
