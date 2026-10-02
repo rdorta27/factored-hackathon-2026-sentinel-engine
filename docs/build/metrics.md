@@ -2,7 +2,7 @@
 
 System metrics catalog.
 
-**Purpose:** what we measure and how we report it. **Related:** [ML](areas/ml.md), [analysis](areas/analysis.md).
+**Purpose:** what we measure and how we report it. The measured results are in the [metrics report](metrics-report.md). **Related:** [ML](areas/ml.md), [analysis](areas/analysis.md).
 
 Numeric targets are set together with the held-out set. Until then, only the zero-tolerance rows in section 2 (unauthorized access, unverified actions, restricted data in external LLMs) have a target.
 

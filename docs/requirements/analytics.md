@@ -90,9 +90,9 @@ Report the brief's outcome metrics: safe automated resolution (plus the share at
 
 **Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025). Metrics on the held-out, latency and cost from the logs.
 
-**Evidence:** Proven by: the full set with denominators in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); the router reports tokens and cost per turn (`tests/test_ai_router.py`).
+**Evidence:** Proven by: the [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json), with every mandatory metric and its denominator (section 6); the router reports tokens and cost per turn (`tests/test_ai_router.py`).
 
-Missing: the final [metrics](../build/metrics.md) report on the final run.
+Missing: a safe automated resolution rate. The frozen runs report 0 of 75 because the system runner stops before the confirmation turn, so cost per resolution is "not defined"; the `resolution-eval` change measures it. The system block of `eval-v7` also does not replay offline (report section 9).
 
 <a id="req-0057"></a>
 ### REQ-0057 · Business outcomes and ROI

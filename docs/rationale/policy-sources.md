@@ -27,8 +27,9 @@ with no code change. Until then the chat must not present the values as a bank's
 ## Known defects
 
 - **An invented citation** ("within the 90-day window (Art. 4)", `ruleEligible`). No such article exists in the repository. *Fixed 2026-10-02:* removed from es-419 and pt-BR.
-- **The window was written twice.** The customer texts repeated "90 días" while the value is `window_days`. *Fixed 2026-10-02:* the texts no longer carry a number; `tests/test_policy_texts.py` fails if one does. The number comes back, read from `window_days`, with the follow-up "why?" answer in the [chat plan](../../team/chat-behavior-plan.md).
-- **One window for three countries,** although real windows differ by country and product. Open until the verification table is filled.
+- **The window was written twice.** The customer texts repeated "90 días" while the value is `window_days`. *Fixed 2026-10-02:* the texts no longer carry a number; `tests/test_policy_texts.py` fails if one does. *Implemented 2026-10-02:* the follow-up "why?" answer reads the number from `window_days` and the dates from the verified charge, and states the demonstration label when `synthetic: true` (`explanation.window.expired`; `tests/test_explanation.py`). The rest of the Explain capability stays in the [chat plan](../../team/chat-behavior-plan.md).
+- **One window for three countries,** although the sources read on 2026-10-02 differ: Argentina counts 30 days from receiving the statement, and no fixed window was found for Colombia (see the [verification table](#verification-table)). The value stays 90 as a declared demonstration policy ([021](../build/decisions/021-dispute-policy-sources.md)).
+- **The engine cannot express what the sources say.** It counts days from the transaction date only, and it has no bank obligation (provisional credit, response time). The 5-day estimated time matches no source. Recorded in [021](../build/decisions/021-dispute-policy-sources.md#consequences); not built.
 - **The estimated time** was a demo value presented without a label. *Fixed 2026-10-02:* the field reads "estimated time (demonstration value)" in es-419 and pt-BR. The 5-day value itself is still invented.
 
 ## Where real values could come from
@@ -45,22 +46,43 @@ memory: every value below is filled only from the official text.
 
 ## Verification table
 
-Empty until someone reads the official source. One row per datum and country.
+Filled on 2026-10-02 from a web search and page reads, not from a lawyer's review. **No value is loaded into a country file from this table until a person fills "Verified by".** One row per datum and source.
 
-| Country | Datum | Value | Norm | Link | Read on | Verified by |
-|---|---|---|---|---|---|---|
-| MX | customer dispute window | | | | | |
-| MX | bank response time | | | | | |
-| CO | customer dispute window | | | | | |
-| CO | bank response time | | | | | |
-| AR | customer dispute window | | | | | |
-| AR | bank response time | | | | | |
+**Status** says how far each row is backed:
+
+- `read in official source`: the official page or text was opened and the value read there.
+- `secondary source only`: the value appears in news or search results, or in an official page that did not state it when read. It is not a citation.
+- `not found`: no value was found. The cell is left empty on purpose, and no figure is estimated.
+
+**Binds** says who the rule obliges: the bank toward the customer, or one bank toward another (card networks). A network time limit is not the customer's window.
+
+| Country or network | Datum | Value | Binds | Norm | Link | Read on | Status | Verified by |
+|---|---|---|---|---|---|---|---|---|
+| MX | customer dispute window | 90 calendar days from the statement cut-off date or, where it applies, from the charge date | bank to customer | not cited by the page read | [CONDUSEF](https://www.gob.mx/condusef/es/articulos/cargos-no-reconocidos?idiom=es%2F1000) | 2026-10-02 | secondary source only: the official page read did not state the 90 days | |
+| MX | provisional credit | the bank credits the amount about 48 hours after the claim | bank to customer | not cited by the page read | same | 2026-10-02 | read in official source | |
+| MX | bank response time | investigation of up to 45 days; with no ruling after 45 days the claim is upheld | bank to customer | not cited by the page read | same | 2026-10-02 | read in official source | |
+| CO | customer dispute window | | bank to customer | | [SFC FAQ](https://www.superfinanciera.gov.co/preguntas-frecuentes/14/14-tarjetas-debito-y-credito-fraudes-informaticos/) states none | 2026-10-02 | not found | |
+| CO | bank response time | | bank to customer | | same | 2026-10-02 | not found. The "15 business days" seen in search results is the step before a complaint to the regulator, not a dispute window | |
+| AR | customer dispute window (credit card) | 30 days from receiving the statement | bank to customer | Ley 25.065, art. 26 | [argentina.gob.ar](https://www.argentina.gob.ar/normativa/nacional/ley-25065-55556/actualizacion) | 2026-10-02 | read in official source | |
+| AR | bank response time (credit card) | acknowledge within 7 days; correct or explain within 15 days (60 for foreign transactions) | bank to customer | Ley 25.065, arts. 26 to 27; the two reads disagreed on the article numbers and one result said 10 business days | same | 2026-10-02 | read in official source, article numbers to re-read | |
+| AR | during the claim | the issuer cannot block the card for the amounts not contested | bank to customer | Ley 25.065, art. 28 | same | 2026-10-02 | read in official source | |
+| AR | debit card | | bank to customer | | | | not found; not searched in the central bank's own rules | |
+| Visa | issuer dispute time limit | 120 calendar days from the transaction, with exceptions by reason | bank to bank | Visa dispute rules | [Visa guidelines](https://usa.visa.com/dam/VCOM/global/support-legal/documents/merchants-dispute-management-guidelines.pdf) (PDF not readable by the tool) | 2026-10-02 | secondary source only | |
+| Mastercard | issuer chargeback time frame | 120 days in some cases; 90 days from the settlement date for "all other" transactions, per a search result | bank to bank | Mastercard Chargeback Guide | [Mastercard guide](https://www.mastercard.com/content/dam/public/mastercardcom/na/global-site/documents/chargeback-guide.pdf) | 2026-10-02 | secondary source only: the search result and Visa's figure differ, and the guide was not opened | |
+
+Read this table with three limits:
+
+- The rows describe card claims. No row covers debit versus credit in every country, and Argentina's debit card rules were not searched.
+- No card network field was found in the code, configuration or pipeline; the official data dictionary was not checked. Until it is, a network limit is a cited source and is not applied per card.
+- The country sources count the window from different dates (statement cut-off, statement receipt, charge). The engine counts from the transaction date only.
 
 ## In production
 
 A bank edits the YAML (`source`, `synthetic: false`) and the chat reads the window from
-`window_days` instead of from a text. Each decision already records the version of the
-country file. A change of a value is recorded as a new decision that replaces 003.
+`window_days` instead of from a text: the "why?" answer carries the stored `window_days`,
+the charge date and the last eligible date, and drops the demonstration label when
+`synthetic` is false. Each decision already records the version of the country file. A
+change of a value is recorded as a new decision that replaces 003.
 
 ## On the slide
 

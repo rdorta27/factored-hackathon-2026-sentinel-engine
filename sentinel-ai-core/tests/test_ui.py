@@ -59,3 +59,23 @@ def test_handoff_card_shows_the_reference() -> None:
     assert 't("field_reference")' in APP_JS
     assert "body.reference" in APP_JS
 
+
+def test_explanation_renders_verified_values_not_prose() -> None:
+    assert 'body.kind === "explanation"' in APP_JS
+    assert "explanationText" in APP_JS
+    assert "fillTemplate" in APP_JS
+    assert "body.values" in APP_JS
+    assert "explanation.demo" in APP_JS
+    assert "innerHTML" not in APP_JS
+
+
+def test_the_why_followup_returns_an_explanation_over_http() -> None:
+    api = TestClient(create_app())
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
+    api.post("/api/v1/chat", json={"message": "Hay un cobro de 2500 MXN en ACME Store"})
+    body = api.post("/api/v1/chat", json={"message": "¿de dónde salen los 90 días?"}).json()
+    assert body["kind"] == "explanation"
+    assert body["message_key"] == "explanation.window.expired"
+    assert body["values"]["window_days"] == 90
+    assert body["values"]["synthetic"] is True
+

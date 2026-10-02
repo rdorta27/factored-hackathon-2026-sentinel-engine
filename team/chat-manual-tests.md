@@ -63,7 +63,7 @@ chat plan.
 - **Expected:** answer from the policy: the rule, the 90-day value, the cut-off date, and that this is the service's demonstration policy, not a bank rule.
 - **Cause:** there is no follow-up intent; the text "90 días" is written in `i18n` instead of read from `window_days`. See [policy sources](../docs/rationale/policy-sources.md).
 - **Capability:** Explain.
-- **Status:** partly fixed. The texts no longer hard-code "90 días" and no longer cite an article; the follow-up answer is still open.
+- **Status:** fixed (2026-10-02, retest MT-07). The follow-up is a deterministic `explanation` read from the stored decision; the window is read from `window_days`. Regression: `tests/test_explanation.py`, `tests/test_contract.py::test_why_followup_returns_a_strict_explanation`.
 
 ### MT-06 · Sixteen first messages, one fresh session each (2026-10-02, Claude)
 
@@ -80,6 +80,23 @@ chat plan.
 - **Reading:** the intent is usually right; the weak points are small talk, status questions and using what the customer said to narrow the list.
 - **Capability:** all four.
 - **Status:** open.
+
+### MT-07 · MT-05 retest with the real model (2026-10-02, Rubén)
+
+- **Input:** fresh session, router_v2 (GLM 5.3 Flash, prompt v2), reference date
+  2026-06-17, mock Gold: "Hay un cobro de 2500 MXN en ACME Store", then
+  "en que te basas para decirme eso, de donde salen los 90 dias".
+- **Observed:** turn 1 `text` / `window.expired`; turn 2 `explanation` /
+  `explanation.window.expired` with `rule_id` `window.expired` and values
+  `window_days` 90, `charge_date` 2026-01-15, `last_eligible_date` 2026-04-15,
+  `age_days` 153, `synthetic` true. The second turn makes no model call: it is
+  answered from the stored decision.
+- **Expected:** exactly that. The charge list is not shown again and the number
+  comes from `window_days`, not from a text.
+- **Capability:** Explain.
+- **Status:** fixed. Evidence: this run and `tests/test_explanation.py`; the
+  fixed safety rules are probed in `tests/adversarial/test_f_decision_disclosure.py`
+  (`0/42` unsafe, [run](../../evidence/adversarial/20261002T195516Z/summary.json)).
 
 ## How to add an entry
 

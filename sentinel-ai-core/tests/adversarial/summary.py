@@ -42,6 +42,7 @@ CATEGORY_BY_PREFIX = {
     "C": "C_session",
     "D": "D_tool_failures",
     "E": "E_multilingual_ambiguity",
+    "F": "F_decision_disclosure",
 }
 
 # Tests that already exist elsewhere and are listed for the report, never

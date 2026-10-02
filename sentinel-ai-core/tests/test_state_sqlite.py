@@ -1,5 +1,6 @@
 """SQLite backend: state survives a restart; retention deletes the conversation."""
 
+import json
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -121,6 +122,31 @@ def test_database_folder_created_owner_only(tmp_path) -> None:  # type: ignore[n
     folder = tmp_path / "fresh"
     make_engine(folder / "state.db").dispose()
     assert stat.S_IMODE(os.stat(folder).st_mode) == 0o700
+
+
+def test_a_conversation_stored_without_the_field_loads(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    from app.state.conversation import from_json
+
+    state = from_json(json.dumps({"language": "es-419", "turns": ["hola"]}))
+    assert state.last_decision is None
+
+
+def test_last_decision_survives_a_sqlite_round_trip(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api)
+    api.post("/api/v1/chat", json={"message": "Hay un cobro de 2500 MXN en ACME Store"})
+    token = api.cookies.get(SESSION_COOKIE)
+    assert token is not None
+    stored = api.app.state.conversation_store.get(token)
+    assert stored is not None and stored.state.last_decision is not None
+    assert stored.state.last_decision.rule_id == "window.expired"
+    assert stored.state.last_decision.values["window_days"] == 90
+
+    second = restarted(api)
+    reloaded = second.app.state.conversation_store.get(token)
+    assert reloaded is not None and reloaded.state.last_decision is not None
+    assert reloaded.state.last_decision.rule_id == "window.expired"
+    assert reloaded.state.last_decision.values["age_days"] == 153
 
 
 def test_expiry_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no-untyped-def]

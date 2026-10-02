@@ -1,7 +1,8 @@
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from enum import StrEnum
+from typing import Any
 
 from app.orchestrator.types import Candidate, TransactionStatus
 
@@ -79,6 +80,46 @@ class PolicyHit:
     outcome: HitOutcome
     rule_id: str
     provisional: bool = False
+
+
+# Rules that explain their rule and the verified values they used.
+RULE_EXPLANATIONS = frozenset(
+    {
+        "window.expired",
+        "status.pending",
+        "status.reversed",
+        "status.declined",
+        "already.disputed",
+    }
+)
+# Safety rules: one fixed sentence, no threshold, score or amount limit.
+WITHHELD_EXPLANATIONS = frozenset({"amount.high", "fraud.score", "fraud.claim"})
+# Only these rules are remembered as a last decision (REQ-0033).
+EXPLAINABLE_RULES = RULE_EXPLANATIONS | WITHHELD_EXPLANATIONS
+
+
+def decision_snapshot(
+    rule_id: str,
+    candidate: Candidate | None,
+    today: date,
+    policy: "CountryPolicy | None",
+) -> dict[str, Any]:
+    """Verified values behind a decision, read from the file and the candidate.
+
+    Only ``window.expired`` carries figures today; other explainable rules are
+    described by the rule itself. Never reads the model or the customer's words.
+    """
+    if rule_id == "window.expired" and candidate is not None and policy is not None:
+        charge_date = date.fromisoformat(candidate.date)
+        last_eligible = charge_date + timedelta(days=policy.window_days)
+        return {
+            "window_days": policy.window_days,
+            "charge_date": candidate.date,
+            "last_eligible_date": last_eligible.isoformat(),
+            "age_days": (today - charge_date).days,
+            "synthetic": policy.synthetic,
+        }
+    return {}
 
 
 def evaluate(request: PolicyRequest) -> PolicyHit:

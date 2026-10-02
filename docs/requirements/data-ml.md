@@ -56,7 +56,9 @@ Labels must be trustworthy and the evaluation must not see information from the 
 
 **Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
 
-Missing: one written justification of metrics, thresholds and splits, confirmed on real Gold. The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)).
+The written justification of metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
+
+Missing: confirmation on real Gold after the pipeline re-run. The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)).
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing
