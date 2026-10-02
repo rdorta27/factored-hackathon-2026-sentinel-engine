@@ -384,3 +384,51 @@ def test_invalid_reply_is_a_json_failure_and_still_unavailable() -> None:
         with pytest.raises(InvalidReply):
             router.understand("no reconozco este cargo", [])
         assert issubclass(InvalidReply, ModelUnavailable)
+
+
+class _CountingLive:
+    def __init__(self, content: str = '{"intent": "charge", "language": "es-419"}') -> None:
+        self.calls = 0
+        self.content = content
+
+    def complete(self, *, model: str, messages: list[dict], temperature: float = 0.0) -> LLMResponse:
+        self.calls += 1
+        return LLMResponse(content=self.content, tokens_in=10, tokens_out=5, cost_usd=0.001)
+
+
+def _messages(text: str = "no reconozco este cargo") -> list[dict]:
+    from app.ai.llm import build_messages
+
+    return build_messages(text, [text])
+
+
+def test_recording_hit_makes_no_live_call(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport
+
+    live = _CountingLive()
+    recorder = RecordingTransport(tmp_path, "v1", live, record=True)
+    first = recorder.complete(model="m", messages=_messages())
+    second = recorder.complete(model="m", messages=_messages())
+    assert live.calls == 1
+    assert first.content == second.content
+    assert recorder.spent_usd == pytest.approx(0.001)
+
+
+def test_recording_miss_outside_recording_mode_raises(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport
+
+    live = _CountingLive()
+    with pytest.raises(ModelUnavailable, match="not recording"):
+        RecordingTransport(tmp_path, "v1", live, record=False).complete(model="m", messages=_messages())
+    assert live.calls == 0
+
+
+def test_recording_refuses_to_write_a_secret(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport, SecretInRecording
+
+    key = "fw_test_not_a_real_key_123"
+    for content in (f'{{"intent": "charge", "note": "{key}"}}', '{"intent": "charge", "h": "Authorization: x"}'):
+        recorder = RecordingTransport(tmp_path, "v1", _CountingLive(content), record=True, api_key=key)
+        with pytest.raises(SecretInRecording):
+            recorder.complete(model="m", messages=_messages())
+    assert list(tmp_path.iterdir()) == []

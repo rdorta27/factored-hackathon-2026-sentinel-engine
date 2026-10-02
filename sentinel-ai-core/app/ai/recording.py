@@ -15,7 +15,7 @@ import re
 from pathlib import Path
 
 from app.ai.fixtures import _underlying, input_hash
-from app.ai.transport import LLMResponse, ModelUnavailable
+from app.ai.transport import LLMResponse, ModelTransport, ModelUnavailable
 
 PREFIX = "rec-"
 
@@ -109,8 +109,82 @@ class RecordedTransport:
         return self.read(path, model)
 
 
+class SecretInRecording(RuntimeError):
+    """A recording would carry the API key or a credential header."""
+
+
+_CREDENTIAL_MARKS = ("authorization", "bearer ")
+
+
+def assert_no_secret(text: str, api_key: str) -> None:
+    lowered = text.lower()
+    if api_key and api_key in text:
+        raise SecretInRecording("recording would contain the API key; nothing was written")
+    for mark in _CREDENTIAL_MARKS:
+        if mark in lowered:
+            raise SecretInRecording(f"recording would contain {mark.strip()!r}; nothing was written")
+
+
+class RecordingTransport(RecordedTransport):
+    """Serve a recording on a hit; call the live transport on a miss only when recording.
+
+    Outside recording mode a miss raises, so an evaluation never makes an
+    unplanned live call. The API key is passed in only to check that it never
+    reaches a written file.
+    """
+
+    def __init__(
+        self,
+        recordings_dir: Path | str,
+        prompt_version: str,
+        live: ModelTransport | None = None,
+        *,
+        record: bool = False,
+        api_key: str = "",
+        repetition: int = 0,
+    ) -> None:
+        super().__init__(recordings_dir, prompt_version, repetition)
+        self._live = live
+        self._record = record
+        self._api_key = api_key
+        self.live_calls = 0
+        self.spent_usd = 0.0
+
+    def complete(
+        self,
+        *,
+        model: str,
+        messages: list[dict[str, str]],
+        temperature: float = 0.0,
+    ) -> LLMResponse:
+        path, digest = self.path_for(model, messages)
+        if path.is_file():
+            return self.read(path, model)
+        if not self._record or self._live is None:
+            raise ModelUnavailable(
+                f"no recording for {model} input {digest} repetition {self.repetition} (not recording)"
+            )
+        response = self._live.complete(model=model, messages=messages, temperature=temperature)
+        self.live_calls += 1
+        self.spent_usd += response.cost_usd
+        assert_no_secret(response.content + json.dumps(messages, ensure_ascii=False), self._api_key)
+        write_recording(
+            path,
+            model=model,
+            prompt_version=self.prompt_version,
+            digest=digest,
+            repetition=self.repetition,
+            messages=messages,
+            response=response,
+        )
+        return response
+
+
 __all__ = [
     "PREFIX",
+    "RecordingTransport",
+    "SecretInRecording",
+    "assert_no_secret",
     "RecordedTransport",
     "recording_filename",
     "recording_key",
