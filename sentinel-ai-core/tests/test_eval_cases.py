@@ -79,6 +79,21 @@ def test_variant_contradicting_locale_or_country_fails(extra) -> None:  # type: 
         validate_case(_body(**extra), "test")
 
 
+def test_confirm_field_is_loaded_and_defaults_false() -> None:
+    assert validate_case(_body(), "test").confirm is False
+    assert validate_case(_body(confirm=True), "test").confirm is True
+    assert validate_case(_body(confirm=False), "test").confirm is False
+
+
+def test_resolution_file_is_not_part_of_the_directory_load() -> None:
+    # The resolution set is loaded explicitly; the development load never sees it.
+    from eval.cases import RESOLUTION_FILE
+
+    assert RESOLUTION_FILE == "resolution.jsonl"
+    ids = {c.id for c in load_dir(CASES_DIR)}
+    assert not any(case_id.startswith("res-") for case_id in ids)
+
+
 def test_noisy_case_names_one_perturbation_and_its_base() -> None:
     case = validate_case(_body(tags=["noisy"], perturbation="amount_shift"), "test")
     assert case.perturbation == "amount_shift"

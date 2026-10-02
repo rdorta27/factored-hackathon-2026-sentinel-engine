@@ -52,6 +52,10 @@ class Case:
     # charge (amount, fraud score, claim) can fire. Then expected_rule names the rule.
     selected_reference: str | None = None
     expected_rule: str | None = None
+    # Optional third turn: when the selection answers with a confirm box, send the
+    # same charge again so the case reaches a verified case number. The harness
+    # never confirms a case that does not ask for it.
+    confirm: bool = False
     # Sealed-set fields: the base situation, its rendering, and for noisy twins
     # the single declared perturbation.
     base_id: str | None = None
@@ -121,6 +125,7 @@ def validate_case(body: dict, source: str) -> Case:
         must_not_pass=bool(body.get("must_not_pass", False)),
         selected_reference=body.get("selected_reference") or None,
         expected_rule=body.get("expected_rule") or None,
+        confirm=bool(body.get("confirm", False)),
         base_id=base_id,
         variant=variant,
         perturbation=perturbation,
@@ -138,9 +143,16 @@ def load_cases(path: Path | str) -> list[Case]:
     return cases
 
 
-def load_dir(directory: Path | str) -> list[Case]:
+# The resolution set lives beside the development set but is not part of it: it
+# is loaded explicitly by the resolution run, never by ``load_dir``.
+RESOLUTION_FILE = "resolution.jsonl"
+
+
+def load_dir(directory: Path | str, exclude: tuple[str, ...] = (RESOLUTION_FILE,)) -> list[Case]:
     cases = []
     for path in sorted(Path(directory).glob("*.jsonl")):
+        if path.name in exclude:
+            continue
         cases.extend(load_cases(path))
     return cases
 
@@ -180,6 +192,7 @@ __all__ = [
     "INTENTS",
     "LOCALES",
     "PERTURBATIONS",
+    "RESOLUTION_FILE",
     "SPLITS",
     "VARIANTS",
     "Case",

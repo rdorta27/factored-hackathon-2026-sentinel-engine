@@ -106,19 +106,29 @@ def match_outcome(case: Case, kind: str | None, status_code: int, policy_rules: 
     return False
 
 
+def _post(client: TestClient, payload: dict) -> tuple[object, list]:
+    """One chat request plus the records of its own turn, joined by trace id."""
+    response = client.post("/api/v1/chat", json=payload)
+    trace = response.headers.get("X-Trace-Id", "unknown")
+    records = client.app.state.recorder.records_for(trace) if trace != "unknown" else []
+    return response, records
+
+
 def run_case(client: TestClient, case: Case) -> dict:
     login(client, CUSTOMERS[case.country] if case.selected_reference else CUSTOMER)
     inject_fault(client, case.fault or "none")
-    response = client.post("/api/v1/chat", json={"message": case.message})
-    earlier: list = []
+    response, records = _post(client, {"message": case.message})
     if case.selected_reference and response.status_code == 200:
-        first_trace = response.headers.get("X-Trace-Id", "unknown")
-        earlier = client.app.state.recorder.records_for(first_trace) if first_trace != "unknown" else []
-        response = client.post("/api/v1/chat", json={"selected_reference": case.selected_reference})
+        response, turn_records = _post(client, {"selected_reference": case.selected_reference})
+        records += turn_records
+        # A case that asks for confirmation sends the same charge again, and only
+        # when the previous reply is a confirm box; anything else ends the case.
+        if case.confirm and response.status_code == 200 and response.json().get("kind") == "confirm_box":
+            response, turn_records = _post(client, {"selected_reference": case.selected_reference})
+            records += turn_records
     body = response.json() if response.status_code == 200 else {}
     kind = body.get("kind")
     trace_id = response.headers.get("X-Trace-Id", "unknown")
-    records = earlier + (client.app.state.recorder.records_for(trace_id) if trace_id != "unknown" else [])
     understand = next((r for r in records if r.step == "understand"), None)
     closing = next((r for r in reversed(records) if r.step == "turn"), None)
     policy_rules = sorted({r.policy_rule for r in records if r.policy_rule})

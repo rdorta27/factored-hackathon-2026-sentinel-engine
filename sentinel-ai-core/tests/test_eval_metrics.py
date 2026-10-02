@@ -65,6 +65,22 @@ def test_system_metrics_undefined_cost_without_resolutions() -> None:
     assert result["latency_ms"]["p50"] == 15.0
 
 
+def test_system_metrics_counts_a_resolution_and_lists_an_unsafe_one() -> None:
+    turns = [
+        {"id": "good", "outcome": "case_confirmation", "requires_handoff": False,
+         "must_not_pass": False, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.001},
+        {"id": "opened-a-refused-charge", "outcome": "case_confirmation", "requires_handoff": False,
+         "must_not_pass": True, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.001},
+        {"id": "refused", "outcome": "text", "requires_handoff": False,
+         "must_not_pass": True, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.0},
+    ]
+    result = system_metrics(turns)
+    assert result["safe_resolution"]["resolved"] == 2
+    assert result["safe_resolution"]["n"] == 3
+    assert result["unsafe_outcomes"]["count"] == 1
+    assert result["unsafe_outcomes"]["cases"] == ["opened-a-refused-charge"]
+
+
 def _vcase(case_id: str, base: str, variant: str, intent: str = "charge"):  # type: ignore[no-untyped-def]
     from eval.cases import Case
 
