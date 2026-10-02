@@ -22,12 +22,16 @@ The submission runs the same code with a few documented mocks (test session, SQL
 
 ## Quickstart
 
-Run the service (from the repository root):
+Install and run the service (Python 3.12 or newer, from the repository root):
 
 ```bash
 cd sentinel-ai-core
+python3 -m venv .venv && source .venv/bin/activate
+pip install -e ".[dev]"
 uvicorn app.main:app
 ```
+
+Without a model configured the service serves the keyword baseline. To serve the measured router, copy `.env.example` to `.env`, fill in the `SENTINEL_LLM_*` values (see [`.env.example`](.env.example) and [the secrets guide](sentinel-ai-core/README.md)), load it with `set -a; source ../.env; set +a` and start `uvicorn` again; `GET /api/v1/health` shows the active model. To publish to Azure, see [`deploy/azure/README.md`](deploy/azure/README.md).
 
 Open `http://localhost:8000/ui` and log in with a test customer (`CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`). These credentials are false and test-only.
 

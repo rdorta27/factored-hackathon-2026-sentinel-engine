@@ -21,10 +21,10 @@ The service itself did not change: one process (`python -m uvicorn app.main:app`
 
 ## Decision
 
-Azure Container Apps, one container, `minReplicas 0` and `maxReplicas 1` (amended 10/2: SQLite is per instance, so a second replica would not know the first one's sessions), image stored in Azure Container Registry (Basic).
+Azure Container Apps, one container, `minReplicas 1` and `maxReplicas 1` (amended 10/2: SQLite is per instance, so a second replica would not know the first one's sessions; amended again 10/2: one replica stays up until the awards on 10/16, so the first visit does not wait about 24 s for a cold start and the state is not lost to idle time, at about USD 1 to 2 per day, then it goes back to `minReplicas 0`), image stored in Azure Container Registry (Basic).
 
 - **Aligned with [001](001-azure-platform.md):** the submission runs on the platform already chosen for production; the 012 exception exists no more.
-- **Works when an evaluator opens it:** scale-to-zero wakes in seconds, not Render's minute, and the free grant covers the demo's traffic.
+- **Works when an evaluator opens it:** one replica stays up until the awards, so there is no cold start; the earlier scale-to-zero woke in about 24 s here, and the free grant no longer covers an always-on replica.
 - **Cost inside published limits (REQ-0035):** ACR Basic is about 0.08 USD/day for the image, Container Apps stays inside the monthly free grant at this traffic, and both are covered by the trial credit. Hosting cannot run a few USD per month, with no usage surprises beyond the published free grant.
 - **Same container, same code:** the Dockerfile from 012 moved to [deploy/azure](../../deploy/azure/Dockerfile); [deploy.sh](../../deploy/azure/deploy.sh) stages the build context, builds and pushes the image, and creates the app.
 - **Secrets stay out of the image and the repo:** `SENTINEL_SESSION_SALT` is a Container App secret and `SENTINEL_SECURE_COOKIES=true` an app setting. The image bakes only non-secret defaults (mock Gold, SQLite, reference date, demo auth).
@@ -35,7 +35,7 @@ Configuration: `SENTINEL_DEMO_AUTH=1`, `SENTINEL_SECURE_COOKIES=true`, `SENTINEL
 ## Consequences
 
 - The link serves labeled mock data and router_v2 with a keyword-baseline fallback; the submission says so ([what the public link runs](../../rationale/public-link.md)).
-- An idle app scales to zero; the first visit after that waits a few seconds and finds an empty database, so the demo user logs in again.
+- Until 10/16 the app does not scale to zero; after that it goes back to zero, and the first visit then waits for a cold start and finds an empty database, so the demo user logs in again. A redeploy recreates the app and empties the database as well.
 - [Cost](../cost.md) records the Azure lines (registry plus free grant) instead of a free Hugging Face tier.
 - Production stays on Azure, now one configuration away from the demo itself ([path to production](../../architecture/specification.md#path-to-production)).
 - The HF attempt leaves no product trace: the Space is deleted and `deploy/hf-space/` is gone; only decision 012's history records it.

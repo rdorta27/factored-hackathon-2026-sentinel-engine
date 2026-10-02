@@ -23,7 +23,7 @@ The deployed demo runs on Azure Container Apps, one container ([019](../build/de
 
 ## In production
 
-Real Gold through the DuckDB or Databricks reader, Postgres, a key vault for secrets, several instances.
+Real Gold through the DuckDB or Databricks reader, Postgres, a key vault for secrets, several instances. How to publish the demo: [deploy/azure/README.md](../../deploy/azure/README.md).
 
 ## On the slide
 
