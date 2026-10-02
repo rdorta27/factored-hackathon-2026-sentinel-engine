@@ -118,6 +118,39 @@ def test_measurement_report_shows_variant_paired_and_stability_sections(
     assert f"| baseline | {overall['accuracy']} |" in report
 
 
+def test_resolution_run_builds_offline_with_a_model_factory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.ai.demo import DemoModel
+    from eval.report import render_resolution
+
+    def _no_network(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("no connection may be opened")
+
+    monkeypatch.setattr("httpx.Client.post", _no_network)
+    summary = run.resolution(
+        "test-resolution",
+        record=False,
+        freeze=False,
+        router_factory=lambda: DemoModel(),
+        recordings_dir=tmp_path / "recordings",
+    )
+    assert summary["kind"] == "resolution"
+    assert summary["n"] == 56
+    assert summary["situations"]["n"] == 14
+    assert summary["spend"]["n"] == 0
+    for name, block in summary["system"].items():
+        assert block["safe_resolution"]["resolved"] == 16, name
+        assert block["unsafe_outcomes"]["count"] == 0, name
+        assert block["escalation_quality"]["missed_transfers"] == [], name
+    assert summary["paired_resolution"]["net"] == 0
+    report = render_resolution(summary)
+    assert "simulation over a mock store" in report
+    assert "n=56 cases in 14 situations" in report
+    assert "R1 safe: PASS" in report
+    assert "| router_v2 | 16 of 56 |" in report
+
+
 def test_verify_ignores_spend_and_latency_only() -> None:
     a = {"spend": {"n": 3}, "x": {"latency_ms": {"p50": 1.0}, "accuracy": 0.9}}
     b = {"spend": {"n": 0}, "x": {"latency_ms": {"p50": 900.0}, "accuracy": 0.9}}

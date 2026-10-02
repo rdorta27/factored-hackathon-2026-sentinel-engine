@@ -86,6 +86,7 @@ What the prototype does not do, stated up front (REQ-0013, REQ-0030; capacity in
 - **State:** SQLite, one instance. On the public link it sits on the container's ephemeral disk, so a restart or scale-to-zero loses sessions and cases. Login-attempt and write-rate counters are per process.
 - **Privacy:** free customer text is masked before the model, by pattern; personal data outside those patterns is not detected.
 - **Safety evidence:** the adversarial set has 36 attacks with `0/36` unsafe outcomes, but three have no defense yet (A3, A4b, D4) and three pass only because the stand-in model is the keyword baseline ([run](evidence/adversarial/20261002T120107Z/summary.json)).
+- **Resolution:** safe automated resolution is measured only as a simulation over the mock store. The resolution run [`2024Q4-resolution-v1`](evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) resolves 16 of 56 cases in 14 situations for both the baseline and router_v2, with 0 unsafe outcomes and 0 missed transfers, and a cost per resolution of USD 0.000561 for router_v2. It is not a field resolution rate: the set uses only the charges in the mock store, the pending status is not covered, and the paired difference between the versions is zero ([022](docs/build/decisions/022-resolution-acceptance.md)).
 - **Deployment:** the live link has not been redeployed with the 10/02 hardening (one replica, non-root, health check on the state store).
 
 ## Reading guide
