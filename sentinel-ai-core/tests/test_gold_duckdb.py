@@ -42,15 +42,19 @@ def test_unknown_status_is_not_disputable() -> None:
 
 def test_missing_view_falls_back_to_the_mock(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setenv("SENTINEL_GOLD_SOURCE", "auto")
+    monkeypatch.delenv("SENTINEL_GOLD_DUCKDB", raising=False)
     monkeypatch.setattr(gold_service, "_GOLD_DIR", tmp_path / "nowhere")
+    monkeypatch.setattr(gold_service, "_DUCKDB_CANDIDATES", ())
     store, source = select_gold(AS_OF)
     assert source == "mock" and isinstance(store, MockGoldStore)
 
 
 def test_unreadable_view_falls_back_to_the_mock(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
     monkeypatch.setenv("SENTINEL_GOLD_SOURCE", "duckdb")
+    monkeypatch.delenv("SENTINEL_GOLD_DUCKDB", raising=False)
     (tmp_path / gold_service._VIEW_TABLE).mkdir()
     monkeypatch.setattr(gold_service, "_GOLD_DIR", tmp_path)
+    monkeypatch.setattr(gold_service, "_DUCKDB_CANDIDATES", ())
     store, source = select_gold(AS_OF)
     assert source == "mock" and isinstance(store, MockGoldStore)
 
