@@ -51,6 +51,12 @@ function activeLocale() {
   return locale === "es-419" ? "es" : locale;
 }
 
+/* The selector's own value, exactly as the API accepts it. */
+function selectorLocale() {
+  const selected = document.getElementById("locale");
+  return selected && selected.value ? selected.value : "es-419";
+}
+
 /* Fill a template's {placeholders} without touching the rest of the text. */
 function fill(template, values) {
   return Object.entries(values).reduce(
@@ -144,7 +150,9 @@ async function postChat(payload) {
     const response = await api("/api/v1/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      // The selector's language rides with every turn, so the answer comes back
+      // in the language the customer chose, whatever the message looks like.
+      body: JSON.stringify({ ...payload, language: selectorLocale() }),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
