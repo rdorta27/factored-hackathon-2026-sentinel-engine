@@ -4,7 +4,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
-| [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | In progress |
+| [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | Done |
 | [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | Done |
 | [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | In progress |
 | [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
@@ -20,15 +20,13 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 A data preparation pipeline (Bronze, Silver, Gold) that runs the same way every time, enforces column contracts, checks quality, records lineage and freshness, and handles the dataset's declared issues: about 2% duplicates, 5% nulls and orphaned records.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Data Engineering · **Area:** data
+**Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Dataset summary · Dictionary
 
 **Depends on:** [REQ-0031](#req-0031). The pipeline ingests approved, labeled data.
 
-**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`, with its [quality report](../../sentinel-data-engine/data_quality_report.md); a second local run reproduced the same report. Silver normalizes `Mexico` to `México` and the Gold service view is PII-free.
-
-Missing: the report does not yet count nulls, orphaned records or late arrivals, and omits Bronze counts for partitioned tables, so the drop from the declared volumes (for example transactions) is not explained.
+**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`, with the [data quality & medallion audit report](../../sentinel-data-engine/data_quality_report.md). The report documents: null rates (0.00% across all mandatory fields), Bronze→Silver volume drop and justification (~11.5% drop explained by deduplication, quarantine, orphan filtering, and Bronze I/O aggregation), 40,515 country-name normalizations, 100% referential integrity, 373,443 eligible disputes (8.4%), and PII-free Gold service view verified against ADR 008. The `fraud_score` range constraint was corrected to 0–100 (per the data dictionary) eliminating false quarantines; the fix is verified by the full test suite (32/32 passing).
 
 <a id="req-0016"></a>
 ### REQ-0016 · Learned component vs baseline

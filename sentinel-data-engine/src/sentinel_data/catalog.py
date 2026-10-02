@@ -243,7 +243,7 @@ TABLE_REGISTRY: Final[dict[str, TableDefinition]] = {
             ("transaction_country_not_null","transaction_country","transaction_country IS NOT NULL AND LENGTH(TRIM(transaction_country)) > 0"),
             ("transaction_status_not_null","transaction_status","transaction_status IS NOT NULL AND LENGTH(TRIM(transaction_status)) > 0"),
             ("is_fraud_not_null",         "is_fraud",         "is_fraud IS NOT NULL"),
-            ("fraud_score_range",         "fraud_score",      "fraud_score IS NULL OR (fraud_score >= 0.0 AND fraud_score <= 1.0)"),
+            ("fraud_score_range",         "fraud_score",      "fraud_score IS NULL OR (fraud_score >= 0.0 AND fraud_score <= 100.0)"),
         ),
     ),
 
