@@ -19,7 +19,7 @@ class ScriptModel:
         self.kind = kind
         self.classify_calls = 0
 
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(self, message: str, turns: list[str], context: dict | None = None) -> UnderstandResult:
         return UnderstandResult(kind=self.kind, language=Language.ES_419)
 
     def classify(self, message: str) -> str:

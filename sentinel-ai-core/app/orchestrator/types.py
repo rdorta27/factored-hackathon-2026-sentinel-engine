@@ -25,6 +25,20 @@ class OutcomeKind(StrEnum):
     FAILURE = "failure"
 
 
+class Phase(StrEnum):
+    """Named conversation phase, derived from state plus turn outcome (REQ-0001).
+
+    Never stored as separate mutable state: ``phase_of`` computes it, and only
+    the handoff package and the turn record carry the value.
+    """
+
+    COLLECTING = "collecting"
+    CLARIFYING = "clarifying"
+    AWAITING_CONFIRMATION = "awaiting_confirmation"
+    RESOLVED = "resolved"
+    HANDED_OFF = "handed_off"
+
+
 @dataclass(frozen=True)
 class Candidate:
     candidate_id: str
@@ -59,6 +73,11 @@ class ConversationState:
     clarification_count: int = 0
     person_asks: int = 0
     states_not_theirs: bool = False
+    # Denied or superseded candidate ids: never shown again (REQ-0001).
+    rejected_ids: list[str] = field(default_factory=list)
+    # Last system question codes (e.g. "missing", "which_charge"), newest last,
+    # capped at two: the system-side half of the model digest (REQ-0001).
+    sys_questions: list[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -84,3 +103,22 @@ class TurnOutput:
     reason: str | None = None
     attempt: int | None = None
     category: str | None = None
+
+
+def phase_of(state: ConversationState, output: TurnOutput | None = None) -> Phase:
+    """Derive the named phase from state plus, when given, the turn outcome."""
+    if output is not None:
+        if output.kind is OutcomeKind.HANDOFF:
+            return Phase.HANDED_OFF
+        if output.kind is OutcomeKind.CASE_NUMBER:
+            return Phase.RESOLVED
+        if output.kind is OutcomeKind.CONFIRM_BOX:
+            return Phase.AWAITING_CONFIRMATION
+        if output.kind is OutcomeKind.QUESTION:
+            return Phase.CLARIFYING if state.clarification_count > 0 else Phase.COLLECTING
+        return Phase.COLLECTING
+    if state.pending_confirmation is not None:
+        return Phase.AWAITING_CONFIRMATION
+    if state.clarification_count > 0:
+        return Phase.CLARIFYING
+    return Phase.COLLECTING

@@ -134,7 +134,7 @@ def test_model_failure_with_the_box_open_does_not_escalate() -> None:
     """`model_unavailable` must not become a handoff while the box is open."""
 
     class UnavailableModel:
-        def understand(self, message: str, turns: list[str]):  # type: ignore[no-untyped-def]
+        def understand(self, message: str, turns: list[str], context: dict | None = None):  # type: ignore[no-untyped-def]
             raise ModelUnavailable("down")
 
         def classify(self, message: str) -> str:
@@ -221,7 +221,7 @@ def test_model_call_with_the_box_open_is_logged() -> None:
 
 def test_failed_model_call_with_the_box_open_is_logged_as_failed() -> None:
     class Down(DemoModel):
-        def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+        def understand(self, message: str, turns: list[str], context: dict | None = None) -> UnderstandResult:
             raise ModelUnavailable("down")
 
     state, ports, tools = opened_box()

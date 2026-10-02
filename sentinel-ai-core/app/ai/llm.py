@@ -81,11 +81,39 @@ def assert_no_forbidden(payload: object) -> None:
             assert_no_forbidden(item)
 
 
+# Digest keys the loop may attach next to the turn window: the last system
+# question codes plus the shown candidate ids. Codes and references only,
+# never customer words or identifiers.
+ALLOWED_DIGEST_KEYS = frozenset({"sys_questions", "shown_ids"})
+
+
+def assert_digest(context: dict | None) -> None:
+    if context is None:
+        return
+    assert_no_forbidden(context)
+    unknown = set(context) - ALLOWED_DIGEST_KEYS
+    if unknown:
+        raise ValueError(f"digest field not allowed in model request: {sorted(unknown)}")
+    questions = context.get("sys_questions", [])
+    shown = context.get("shown_ids", [])
+    if not isinstance(questions, list) or not all(isinstance(item, str) for item in questions):
+        raise ValueError("digest sys_questions must be a list of str")
+    if not isinstance(shown, list) or not all(isinstance(item, str) for item in shown):
+        raise ValueError("digest shown_ids must be a list of str")
+
+
 def build_messages(
-    message: str, turns: list[str], charge: dict | None = None
+    message: str,
+    turns: list[str],
+    charge: dict | None = None,
+    context: dict | None = None,
 ) -> list[dict[str, str]]:
     window = [turn for turn in turns[-4:] if isinstance(turn, str)][:4]
     user_body: dict = {"message": message, "turns": window}
+    if context is not None:
+        assert_digest(context)
+        user_body["digest"] = {"sys_questions": list(context.get("sys_questions", []))[:2],
+                               "shown_ids": list(context.get("shown_ids", []))[:4]}
     if charge:
         unknown = set(charge) - ALLOWED_CHARGE_KEYS
         if unknown:
@@ -171,10 +199,12 @@ class PromptedLLMRouter:
         fallback = (self._config.default_model or self._config.cheap_model or "").strip()
         return fallback or "default"
 
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult:
+    def understand(
+        self, message: str, turns: list[str], context: dict | None = None
+    ) -> UnderstandResult:
         route = pick_route(message)
         model = self._model_for(route)
-        messages = build_messages(message, turns)
+        messages = build_messages(message, turns, context=context)
         response = self._transport.complete(
             model=model, messages=messages, temperature=self._config.temperature
         )

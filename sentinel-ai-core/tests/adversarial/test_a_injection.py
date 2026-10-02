@@ -175,7 +175,7 @@ def test_national_id_in_the_message_never_reaches_the_model(logged_in, monkeypat
     captured: dict[str, str] = {}
 
     class CapturingModel:
-        def understand(self, message: str, turns: list[str]):  # type: ignore[no-untyped-def]
+        def understand(self, message: str, turns: list[str], context: dict | None = None):  # type: ignore[no-untyped-def]
             captured["message"] = message
             from app.ai.port import UnderstandKind, UnderstandResult
             from app.orchestrator.types import Language

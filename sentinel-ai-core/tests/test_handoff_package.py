@@ -64,6 +64,7 @@ def test_unknown_reference_never_enters_the_ticket() -> None:
     package = chat(api, message="quiero una persona")["package"]
     assert package["conversation"][0] == {
         "turn": 1, "customer": "selected_unknown_charge", "charge": None, "system": "handoff", "rule": "unknownCharge",
+        "phase": "handed_off",
     }
     assert "TXN-9001" not in json.dumps(package)
 

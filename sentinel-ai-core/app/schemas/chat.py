@@ -169,6 +169,7 @@ class ConversationTurn(BaseModel):
     charge: Optional[str] = Field(default=None, description="Charge reference involved, if any")
     system: str = Field(description="Reply kind the system gave")
     rule: Optional[str] = Field(default=None, description="Policy rule or message key behind the reply")
+    phase: Optional[str] = Field(default=None, description="Derived conversation phase after this turn")
 
 
 class HandoffPackage(BaseModel):
@@ -187,6 +188,7 @@ class HandoffPackage(BaseModel):
     open_questions: list[str] = Field(default_factory=list)
     language: str
     country: str
+    phase: str = Field(default="handed_off", description="Derived conversation phase at handoff")
 
 
 class Handoff(BaseModel):

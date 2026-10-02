@@ -31,7 +31,9 @@ class UnderstandResult:
 
 
 class ModelPort(Protocol):
-    def understand(self, message: str, turns: list[str]) -> UnderstandResult: ...
+    def understand(
+        self, message: str, turns: list[str], context: dict | None = None
+    ) -> UnderstandResult: ...
 
     def classify(self, message: str) -> str: ...
 

@@ -38,6 +38,8 @@ class StoredConversation:
     pending_reason: str | None = None
     history: list[dict[str, Any]] = field(default_factory=list)
     actions: list[dict[str, Any]] = field(default_factory=list)
+    # Set once the history/actions bound has discarded entries (REQ-0001/REQ-0027).
+    overflow: bool = False
 
 
 def token_key(token: str) -> str:
@@ -50,7 +52,12 @@ def to_json(state: ConversationState) -> str:
 
 def _dump(conversation: StoredConversation) -> str:
     return json.dumps(
-        {"state": asdict(conversation.state), "history": conversation.history, "actions": conversation.actions}
+        {
+            "state": asdict(conversation.state),
+            "history": conversation.history,
+            "actions": conversation.actions,
+            "overflow": conversation.overflow,
+        }
     )
 
 
@@ -63,6 +70,7 @@ def _load(raw: str, pending_reason: str | None) -> StoredConversation:
         pending_reason,
         list(data.get("history", [])),
         list(data.get("actions", [])),
+        bool(data.get("overflow", False)),
     )
 
 
@@ -80,6 +88,8 @@ def from_json(raw: str) -> ConversationState:
         clarification_count=int(data.get("clarification_count", 0)),
         states_not_theirs=bool(data.get("states_not_theirs", False)),
         person_asks=int(data.get("person_asks", 0)),
+        rejected_ids=list(data.get("rejected_ids", [])),
+        sys_questions=list(data.get("sys_questions", []))[-2:],
     )
 
 
