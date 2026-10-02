@@ -14,6 +14,14 @@ class ModelUnavailable(Exception):
     """The model call failed or timed out after bounded retries."""
 
 
+class InvalidReply(ModelUnavailable):
+    """The model answered, but not with the JSON the router expects.
+
+    A subclass of ModelUnavailable so the loop degrades the same way; the
+    evaluation counts it separately as a JSON failure.
+    """
+
+
 @dataclass(frozen=True)
 class LLMResponse:
     content: str
@@ -50,6 +58,9 @@ class HttpTransport:
         price_out_per_1k: float = _DEFAULT_PRICE_OUT_PER_1K,
         prices: dict[str, ModelPrice] | None = None,
         require_price: bool = False,
+        max_tokens: int | None = 200,
+        json_mode: bool = True,
+        reasoning_effort: str | None = None,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
@@ -61,6 +72,11 @@ class HttpTransport:
         # an unpriced model fail instead of falling back to the flat default.
         self._prices = prices
         self._require_price = require_price
+        # Bounded JSON: the cap covers reasoning tokens too, which is what keeps
+        # a reasoning model's cost near the estimate in decision 016.
+        self._max_tokens = max_tokens
+        self._json_mode = json_mode
+        self._reasoning_effort = reasoning_effort
 
     def _cost(self, model: str, tokens_in: int, tokens_out: int, cached_in: int) -> float:
         if self._prices is not None or self._require_price:
@@ -83,6 +99,12 @@ class HttpTransport:
             "messages": messages,
             "temperature": temperature,
         }
+        if self._max_tokens:
+            payload["max_tokens"] = self._max_tokens
+        if self._json_mode:
+            payload["response_format"] = {"type": "json_object"}
+        if self._reasoning_effort:
+            payload["reasoning_effort"] = self._reasoning_effort
         headers = {"Content-Type": "application/json"}
         if self._api_key:
             headers["Authorization"] = f"Bearer {self._api_key}"

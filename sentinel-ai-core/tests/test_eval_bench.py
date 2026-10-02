@@ -36,3 +36,25 @@ def test_repeated_case_reports_agreement_and_variability(
     assert 0.0 <= stability["agreement"] <= 1.0
     assert result["router"]["latency_ms"]["n"] == 4 * 3
     assert result["router"]["cost_usd"]["n"] == 4 * 3
+
+
+def test_invalid_reply_is_counted_as_json_failure() -> None:
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+    from app.ai.transport import LLMResponse
+    from eval.bench_router import INVALID, predict, run_bench
+    from eval.cases import Case
+
+    class Broken:
+        def complete(self, *, model, messages, temperature=0.0):  # type: ignore[no-untyped-def]
+            return LLMResponse(content="sure! here is the intent: charge")
+
+    router = PromptedLLMRouter(Broken(), RouterConfig(cheap_model="m"))
+    case = Case(
+        id="t-1", locale="es-419", country="MX", turns=("no reconozco este cargo",),
+        expected_intent="charge", expected_category=None, expected_outcome="clarification",
+        requires_handoff=False,
+    )
+    assert predict(router, case)[0] == INVALID
+    result = run_bench([case], router=router, repetitions=2)
+    assert result["router"]["json_failures"] == {"n": 2, "count": 2}
+    assert result["router"]["intent"]["accuracy"] == 0.0

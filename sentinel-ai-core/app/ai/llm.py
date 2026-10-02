@@ -7,7 +7,7 @@ import os
 from dataclasses import dataclass
 
 from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
-from app.ai.transport import ModelTransport, ModelUnavailable
+from app.ai.transport import InvalidReply, ModelTransport
 from app.orchestrator.types import Language
 
 PROMPT_VERSION_DEFAULT = "v1"
@@ -106,8 +106,10 @@ def build_messages(
 def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
     try:
         body = json.loads(content)
+        if not isinstance(body, dict):
+            raise json.JSONDecodeError("not an object", content, 0)
     except json.JSONDecodeError as exc:
-        raise ModelUnavailable(f"unparsable model reply: {exc}") from exc
+        raise InvalidReply(f"unparsable model reply: {exc}") from exc
     intent = str(body.get("intent", "")).lower()
     language = str(body.get("language", ""))
     kinds = {
@@ -117,13 +119,13 @@ def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
         "person": UnderstandKind.PERSON,
     }
     if intent not in kinds:
-        raise ModelUnavailable(f"unknown intent: {intent!r}")
+        raise InvalidReply(f"unknown intent: {intent!r}")
     if language == "pt-BR":
         lang = Language.PT_BR
     elif language in ("es-419", "es"):
         lang = Language.ES_419
     else:
-        raise ModelUnavailable(f"unknown language: {language!r}")
+        raise InvalidReply(f"unknown language: {language!r}")
     return kinds[intent], lang, body.get("not_mine") is True
 
 

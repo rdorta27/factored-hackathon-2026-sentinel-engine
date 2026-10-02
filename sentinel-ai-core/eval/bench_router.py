@@ -12,13 +12,21 @@ from time import perf_counter
 from app.ai.demo import DemoModel
 from app.ai.fixtures import FixtureTransport
 from app.ai.llm import PromptedLLMRouter, RouterConfig
+from app.ai.transport import InvalidReply
 from eval import metrics
 from eval.cases import Case
 
 
+INVALID = "invalid"
+
+
 def predict(model, case: Case) -> tuple[str, str, float, float]:
+    """One understanding call; a reply that is not the expected JSON predicts ``invalid``."""
     started = perf_counter()
-    result = model.understand(case.message, list(case.turns))
+    try:
+        result = model.understand(case.message, list(case.turns))
+    except InvalidReply:
+        return INVALID, INVALID, (perf_counter() - started) * 1000, 0.0
     latency_ms = (perf_counter() - started) * 1000
     return result.kind.value, result.language.value, latency_ms, float(result.cost_usd)
 
@@ -81,6 +89,10 @@ def run_bench(
             "by_locale": by_locale,
             "safety": metrics.safety_pass_rate(safety_items),
             "stability": metrics.stability_agreement(rep_intents),
+            "json_failures": {
+                "n": sum(len(rep) for rep in rep_intents),
+                "count": sum(rep.count(INVALID) for rep in rep_intents),
+            },
             "latency_ms": metrics.variability(latencies),
             "cost_usd": metrics.variability(costs),
             "model": model.describe().model,
@@ -91,4 +103,4 @@ def run_bench(
     return comparison
 
 
-__all__ = ["default_router", "predict", "run_bench"]
+__all__ = ["INVALID", "default_router", "predict", "run_bench"]

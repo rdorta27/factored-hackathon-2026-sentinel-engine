@@ -361,3 +361,26 @@ def test_unpriced_model_is_refused_before_the_call(monkeypatch: pytest.MonkeyPat
     with pytest.raises(UnknownPrice, match="accounts/fireworks/models/unknown"):
         transport.complete(model="accounts/fireworks/models/unknown", messages=[])
     assert sent == []
+
+
+def test_request_asks_for_bounded_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    sent: list = []
+    _serve(monkeypatch, _USAGE_BODY, sent)
+    HttpTransport(base_url="http://fake", max_tokens=200, reasoning_effort="low").complete(
+        model="m", messages=[{"role": "user", "content": "hola"}]
+    )
+    body = sent[0]["json"]
+    assert body["max_tokens"] == 200
+    assert body["response_format"] == {"type": "json_object"}
+    assert body["reasoning_effort"] == "low"
+
+
+def test_invalid_reply_is_a_json_failure_and_still_unavailable() -> None:
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+    from app.ai.transport import InvalidReply
+
+    for content in ("not json", "[1, 2]", '{"intent": "refund", "language": "es-419"}'):
+        router = PromptedLLMRouter(StubTransport(content), RouterConfig(cheap_model="m"))
+        with pytest.raises(InvalidReply):
+            router.understand("no reconozco este cargo", [])
+        assert issubclass(InvalidReply, ModelUnavailable)
