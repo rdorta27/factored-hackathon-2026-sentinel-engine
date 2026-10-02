@@ -12,7 +12,7 @@ OUTCOMES = frozenset({"ok", "rejected", "failed", "timeout"})
 LANGUAGES = frozenset({"es-419", "pt-BR"})
 COUNTRIES = frozenset({"MX", "CO", "AR"})
 HEX16 = re.compile(r"^[0-9a-f]{16}$")
-_CUSTOMER_ID = re.compile(r"CUST-\d+")
+_CUSTOMER_ID = re.compile(r"CUST-\d+|CLI-[A-Z0-9]{8,}")
 _IPV4 = re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b")
 
 

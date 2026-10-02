@@ -109,5 +109,5 @@ az containerapp create \
 	--output none
 
 fqdn="$(az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
-	--query configuration.ingress.fqdn -o tsv)"
+	--query properties.configuration.ingress.fqdn -o tsv)"
 echo "deployed: https://$fqdn"

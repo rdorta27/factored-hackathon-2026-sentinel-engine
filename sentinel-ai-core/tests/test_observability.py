@@ -48,11 +48,17 @@ def test_record_serializes_to_stable_json() -> None:
         ("model", "CUST-0003"),
         ("event", "login from 192.168.0.10"),
         ("route", "10.0.0.1"),
+        ("tool", "lookup for CLI-AB12CD34"),
     ],
 )
 def test_record_rejects_pii(field: str, value: str) -> None:
     with pytest.raises(ValueError, match="personal data is never logged"):
         _valid(**{field: value})
+
+
+def test_record_rejects_a_dataset_customer_id() -> None:
+    with pytest.raises(ValueError, match="personal data is never logged"):
+        _valid(handoff={"note": "CLI-AB12CD34"})
 
 
 def test_record_rejects_bad_identifiers_and_enums() -> None:
