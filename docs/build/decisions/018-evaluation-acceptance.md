@@ -42,7 +42,8 @@ No person wrote or reviewed the cases. Nobody on the team speaks Portuguese ([01
 
 | Step | Who |
 |---|---|
-| Plan, prompt and development cases | Claude Opus (the prompt author) |
+| Plan and prompt | Claude Opus (the prompt author) |
+| Development cases | A Claude Sonnet subagent, with labels and amounts corrected by the prompt author |
 | Held-out cases, noisy twins and attacks | A Claude Sonnet subagent that could not read the prompt, the development cases, the examples or decisions 016 and 018 |
 | Back-translation of every non-MX variant | A Claude Haiku subagent, a different model from the writer |
 | Check of back-translations and of every label | A separate Claude Opus subagent under the same isolation, recorded in `sentinel-ai-core/eval/review/` |
