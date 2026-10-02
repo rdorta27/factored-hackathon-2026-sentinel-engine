@@ -163,14 +163,16 @@ def test_understand_is_called_once_and_after_masking() -> None:
     The count is not the invariant: `step.py` may legitimately call the model
     from more than one branch (the confirm box asks for a person request). What
     matters is that no model call happens anywhere else, and that the only text
-    it can receive entered through the masker.
+    it can receive entered through the masker. The one other file is the
+    per-turn fallback wrapper in `app/ai/serving.py`: it only forwards the
+    arguments `step.py` passed, to the router or to the baseline.
     """
     calls = []
     for path in APP.rglob("*.py"):
         for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
             if re.search(r"\.understand\(", line):
                 calls.append(path.name)
-    assert set(calls) == {"step.py"}, f"model called outside step.py: {sorted(set(calls))}"
+    assert set(calls) == {"step.py", "serving.py"}, f"model called outside step.py: {sorted(set(calls))}"
 
     step_source = (APP / "orchestrator" / "step.py").read_text(encoding="utf-8")
     assert "ports.model.understand(" in step_source

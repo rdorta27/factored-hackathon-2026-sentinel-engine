@@ -8,7 +8,9 @@ policy → session-bound tools; only the adapters behind the ports change:
 
   - Gold: DuckDB view when readable, in-memory mock otherwise
     (``SENTINEL_GOLD_SOURCE``, see ``app.tools.gold_duckdb``).
-  - Model: keyword baseline by default, any ``ModelPort`` via ``create_app(model=...)``.
+  - Model: router_v2 with baseline fallback when ``SENTINEL_LLM_BASE_URL`` and
+    ``SENTINEL_LLM_API_KEY`` are set (``app.ai.serving``), keyword baseline
+    otherwise; any ``ModelPort`` via ``create_app(model=...)``.
   - Users: test fixture, or ``SENTINEL_USERS_PATH`` (keep real-Gold users under
     the gitignored ``data/``).
   - State (sessions, conversation, cases): SQLite at ``SENTINEL_DB_PATH`` or in
@@ -43,11 +45,11 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
 
     Each call returns an independent FastAPI app with its own in-memory state,
     so test cases can spin up isolated instances. The model is selectable per
-    app (keyword baseline by default) without editing code. ``state_backend``
+    app (see ``app.ai.serving``) without editing code. ``state_backend``
     overrides ``SENTINEL_STATE_BACKEND`` (the offline eval replays each case on
     ``memory`` so cases never share a database).
     """
-    from app.ai.demo import DemoModel
+    from app.ai.serving import model_from_env
     from app.observability import Recorder
     from app.routers.demo_chat import router as chat_router
     from app.routers.disputes import router as disputes_router
@@ -113,7 +115,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
 
     application.state.recorder = recorder
     application.state.audit = audit
-    application.state.model = model if model is not None else DemoModel()
+    application.state.model = model if model is not None else model_from_env()
     application.state.session_service = service
     application.state.write_limiter = write_limiter
     application.state.gold = gold
@@ -143,8 +145,12 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
             except Exception:  # noqa: BLE001 - any store failure means not ready
                 status = "unavailable"
                 response.status_code = 503
+        info = application.state.model.describe()
         return {
             "status": status,
+            "model": info.model,
+            "route": info.route,
+            "prompt_version": info.prompt_version,
             "gold_source": gold_source,
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),
