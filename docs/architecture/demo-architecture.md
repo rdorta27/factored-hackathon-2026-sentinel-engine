@@ -137,7 +137,7 @@ Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-c
 
 ## Learned component
 
-Identical to the target: a prompted LLM that classifies the dispute category, compared with a keyword baseline and the same LLM zero-shot on the same held-out conversations. The served demo runs the keyword baseline behind the model port; the prompted router is measured offline by the evaluation runner, replaying recorded fixtures that mirror the baseline until a live model is configured (decision 10), so the measured delta is zero by construction. Serving the router needs only `create_app(model=...)`, no code change in the loop. Evaluation conversations are team-written in `es-419` and `pt-BR` and labelled as simulation.
+Identical to the target: a prompted LLM that classifies the dispute category, compared with a keyword baseline and the same LLM zero-shot on the same held-out conversations. The served demo runs the keyword baseline behind the model port; the prompted router is measured offline by the evaluation runner, replaying recorded fixtures that mirror the baseline until the models chosen in [016](../build/decisions/016-router-models.md) are recorded, so the measured delta is zero by construction. Serving the router needs only `create_app(model=...)`, no code change in the loop. Evaluation conversations are team-written in `es-419` and `pt-BR` and labelled as simulation.
 
 ## Stack and deployment
 
