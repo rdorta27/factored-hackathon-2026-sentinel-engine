@@ -46,6 +46,16 @@
 - No credentials, API keys, or restricted data in the repo. `.gitignore` and `.env` from the **first commit**: anything that enters git history stays exposed even if we delete it later.
 - The deployed link is an attack surface (evaluators may try injection). We use rate limits, a spending cap, and test sessions.
 
+### History review (REQ-0034, 10/1)
+
+The full history was scanned before submission. `gitleaks git --redact` covered **250 commits (~5.7 MB) and reported 0 findings**; a manual review of the same history found no AWS key shapes (`AKIA…`), no private key material, and no real passwords (only the documented demo credentials such as `Testpass-001`). **No file with dataset rows was ever committed:** no `.csv`, `.parquet`, `.duckdb`, `.db` or `sqlite` blob exists in the history, and no `data/` or `raw/` folder was ever tracked.
+
+**One residual exposure, accepted and documented.** The dataset's S3 bucket name is visible in commits before `d070faa` (it was replaced with a placeholder). The data owner confirmed the bucket is private and that no credentials were exposed, and the team decided **not to rewrite history**. Residual risk: the resource name is public; access is not.
+
+**Why the scanner did not flag it.** `gitleaks` matches shapes of *credentials* — keys, tokens, private keys. A bucket name is an *identifier of a resource*, not a credential, so no default rule covers it. That blind spot is why the manual review exists alongside the scanner, and why a passing scan is not, on its own, evidence that nothing sensitive is in the history.
+
+**Prevention.** `.gitignore` covers `data/`, `.env` and the local data formats (`*.duckdb`, `*.parquet`, `*.csv`) so a file cannot be tracked by living outside `data/`. A GitHub Actions workflow (`.github/workflows/gitleaks.yml`) runs `gitleaks git` on every push and pull request, so the property is checked on every change instead of once before submission.
+
 ## Audit
 
 - Execution logs: tools called, data returned, rule applied.
