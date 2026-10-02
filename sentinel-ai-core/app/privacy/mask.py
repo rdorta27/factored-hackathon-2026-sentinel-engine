@@ -9,7 +9,8 @@ Precedence, in order:
 1. Typed identifiers with a check digit (card, CURP, CLABE, CPF, CUIT, RFC).
 2. Email.
 3. Bare-number identifiers (cedula, DNI, phone) **only** near a trigger word.
-4. Everything else is left untouched, including amounts and dates.
+4. Names the customer introduces ("me llamo Karl", "soy Karl", "meu nome é Karl").
+5. Everything else is left untouched, including amounts and dates.
 
 A trigger word beats amount protection on purpose: "mi DNI es 12.345.678" is a
 document even though it is shaped like an amount, because the customer said so.
@@ -37,6 +38,7 @@ from app.privacy.detectors import (
     has_document_trigger,
     has_trigger,
     luhn_ok,
+    name_findings,
 )
 
 MARKERS = {
@@ -49,6 +51,7 @@ MARKERS = {
     "document": "[DOC_ID]",
     "phone": "[PHONE]",
     "email": "[EMAIL]",
+    "name": "[NAME]",
 }
 
 # Amounts and dates the grounding depends on. They are never masked unless a
@@ -125,6 +128,11 @@ def _find(text: str) -> list[Finding]:
             continue
         if len(re.sub(r"\D", "", match.group(0))) >= 9:
             record("phone", match)
+
+    # 4. Names the customer introduces ("me llamo Karl"); never guessed.
+    for finding in name_findings(text):
+        if not any(s < finding.end and finding.start < e for s, e in taken):
+            findings.append(finding)
 
     return findings
 

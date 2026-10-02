@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+import threading
 from dataclasses import dataclass
 
 from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
@@ -248,14 +249,15 @@ class PromptedLLMRouter:
     def __init__(self, transport: ModelTransport, config: RouterConfig) -> None:
         self._transport = transport
         self._config = config
-        fallback = config.default_model or config.cheap_model or config.strong_model or "default"
-        self._last_model = fallback
-        self._last_route = "default"
+        # Who answered the last call, per thread: one router serves every session,
+        # so a shared field would attribute a turn to another request's model.
+        self._fallback_model = config.default_model or config.cheap_model or config.strong_model or "default"
+        self._last = threading.local()
 
     def describe(self) -> ModelInfo:
         return ModelInfo(
-            model=self._last_model,
-            route=self._last_route,
+            model=getattr(self._last, "model", self._fallback_model),
+            route=getattr(self._last, "route", "default"),
             prompt_version=self._config.prompt_version,
         )
 
@@ -282,8 +284,8 @@ class PromptedLLMRouter:
         kind, language, not_mine = parse_content(response.content)
         if not_mine and not claim_cued(message):
             not_mine = False
-        self._last_route = route
-        self._last_model = model
+        self._last.route = route
+        self._last.model = model
         return UnderstandResult(
             kind=kind,
             language=language,

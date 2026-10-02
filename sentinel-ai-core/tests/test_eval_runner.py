@@ -21,7 +21,7 @@ def _case(case_id: str):  # type: ignore[no-untyped-def]
 def test_full_case_is_replayed_and_matched() -> None:
     case = _case("dev-oos-01")
     turn = run_case(build_client(FIXTURES), case)
-    assert turn["outcome"] == "handoff"
+    assert turn["outcome"] == "text"
     assert turn["matched"] is True
     assert turn["trace_id"] != "unknown"
     assert turn["model"] == "cheap-eval"

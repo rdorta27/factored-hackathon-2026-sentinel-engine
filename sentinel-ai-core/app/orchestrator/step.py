@@ -81,6 +81,8 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
 
 
 UNDERSTAND_RETRIES = 2
+# Out-of-scope turns in a row that are answered with the offer; the next one hands off.
+MAX_SCOPE_OFFERS = 2
 
 
 def _digest(state: ConversationState) -> dict:
@@ -218,6 +220,9 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         **_identity_fields(info, understood),
     )
     state.language = understood.language
+    offered_scope = state.scope_asks > 0
+    if understood.kind is not UnderstandKind.OUT_OF_SCOPE:
+        state.scope_asks = 0
     if understood.not_mine:
         state.states_not_theirs = True
     if understood.kind is UnderstandKind.MISSING:
@@ -228,6 +233,14 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         _record_question(state, "missing")
         return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
     if understood.kind is UnderstandKind.OUT_OF_SCOPE:
+        # Decision 008: say what is out of scope and offer the advisor; a model
+        # error costs a sentence, not a ticket. The customer can ask for the
+        # advisor at any time; without that, a third out-of-scope turn in a
+        # row hands off.
+        state.scope_asks += 1
+        if state.scope_asks <= MAX_SCOPE_OFFERS:
+            _emit(ports, state.language.value, step="decide", policy_rule="out_of_scope.ask")
+            return TurnOutput(kind=OutcomeKind.OFFER, language=state.language, reason="out_of_scope.ask")
         _emit(ports, state.language.value, step="escalate", policy_rule=None)
         return TurnOutput(
             kind=OutcomeKind.HANDOFF,
@@ -235,6 +248,9 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
             reason="out_of_scope",
         )
     if understood.kind is UnderstandKind.PERSON:
+        if offered_scope:
+            # Answering the out-of-scope offer with "an advisor" is the second ask.
+            state.person_asks = max(state.person_asks, 1)
         return _person_request(state, ports)
     started = perf_counter()
     candidates = ports.tools.lookup_transactions()

@@ -6,9 +6,13 @@ set -euo pipefail
 # the target subscription. Reads SENTINEL_SESSION_SALT from the repo .env
 # when set; otherwise generates a random one per run. The LLM router variables
 # (SENTINEL_LLM_*) are read from the same .env and passed through when set; the
-# API key goes in as a secret. The served app does not read them yet (decision
-# 10 is open): they reach the container and are ignored. State is SQLite inside the container, so the app
-# runs a single replica and loses sessions and cases on restart.
+# API key goes in as a secret. With the base URL and the key set, the app serves
+# router_v2 (prompt v2 with its examples) and answers a turn with the keyword
+# baseline when the model fails; without them it serves the baseline
+# (app/ai/serving.py). State is SQLite inside the container, so the app runs a
+# single replica and loses sessions and cases on restart; one replica stays up
+# (--min-replicas 1) so the state survives idle time and the first visit does not
+# wait for a cold start. Set it back to 0 after the awards (see docs/rationale/public-link.md).
 
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
@@ -76,7 +80,7 @@ if [[ -n "$llm_key" ]]; then
 fi
 for name in SENTINEL_LLM_BASE_URL SENTINEL_LLM_CHEAP_MODEL SENTINEL_LLM_STRONG_MODEL \
 	SENTINEL_LLM_DEFAULT_MODEL SENTINEL_LLM_PROMPT_VERSION SENTINEL_LLM_ROUTE_RULE \
-	SENTINEL_LLM_REASONING_EFFORT SENTINEL_LLM_TIMEOUT_S SENTINEL_LLM_MAX_RETRIES; do
+	SENTINEL_LLM_REASONING_EFFORT SENTINEL_LLM_MAX_TOKENS SENTINEL_LLM_TIMEOUT_S SENTINEL_LLM_MAX_RETRIES; do
 	value="$(env_value "$name")"
 	[[ -n "$value" ]] && env_vars+=("$name=$value")
 done
@@ -95,7 +99,7 @@ az containerapp create \
 	--target-port 7860 \
 	--ingress external \
 	--transport auto \
-	--min-replicas 0 \
+	--min-replicas 1 \
 	--max-replicas 1 \
 	--registry-server "$ACR_NAME.azurecr.io" \
 	--registry-username "$acr_user" \

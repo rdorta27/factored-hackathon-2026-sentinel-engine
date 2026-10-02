@@ -1,0 +1,86 @@
+{
+  "prompt_version": "v2",
+  "note": "Copy of the development examples of eval/examples_v2.json, so the image does not need eval/ or the cases. tests/test_model_serving.py fails if it drifts from the eval loader.",
+  "examples": [
+    {
+      "case_id": "dv-b01-es-MX",
+      "message": "No reconozco un cargo de $849 de Tienda Lumbre en mi estado de cuenta, ¿me ayudas a revisarlo?",
+      "reply": {
+        "intent": "charge",
+        "language": "es-419",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b03-pt-BR",
+      "message": "Gente, na Cafeteria Brisa apareceu a mesma cobrança duas vezes no mesmo dia, $ 215 cada",
+      "reply": {
+        "intent": "charge",
+        "language": "pt-BR",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b10-pt-BR",
+      "message": "Oi, tô com um problema na conta e nem sei por onde começar",
+      "reply": {
+        "intent": "missing",
+        "language": "pt-BR",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b14-es-CO",
+      "message": "Pasó algo raro con mi plata, no sé qué fue",
+      "reply": {
+        "intent": "missing",
+        "language": "es-419",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b17-pt-BR",
+      "message": "Qual é o meu saldo disponível?",
+      "reply": {
+        "intent": "out_of_scope",
+        "language": "pt-BR",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b20-es-MX",
+      "message": "Quiero subir el límite de mi tarjeta de crédito",
+      "reply": {
+        "intent": "out_of_scope",
+        "language": "es-419",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b24-es-CO",
+      "message": "Quiero hablar con un asesor, por favor",
+      "reply": {
+        "intent": "person",
+        "language": "es-419",
+        "amount": null,
+        "not_mine": false
+      }
+    },
+    {
+      "case_id": "dv-b27-es-AR",
+      "message": "¿Hay alguien real ahí? no quiero hablar con una máquina",
+      "reply": {
+        "intent": "person",
+        "language": "es-419",
+        "amount": null,
+        "not_mine": false
+      }
+    }
+  ]
+}
