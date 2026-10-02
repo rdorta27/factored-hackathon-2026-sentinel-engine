@@ -24,8 +24,9 @@ from app.ai.transport import HttpTransport, ModelTransport, ModelUnavailable
 log = logging.getLogger("sentinel.model")
 
 PROMPT_WITH_EXAMPLES = "v2"
-EXAMPLES_PATH = Path(__file__).resolve().parents[2] / "eval" / "examples_v2.json"
-CASES_DIR = EXAMPLES_PATH.parent / "cases"
+# A copy of the eval examples, so the image needs neither eval/ nor the case files
+# (and never ships the sealed held-out set). A test keeps it equal to the eval loader.
+EXAMPLES_PATH = Path(__file__).resolve().parent / "examples_v2.json"
 
 # Worst case per model call is timeout x (retries + 1). One model failure ends
 # the turn on the baseline, so the loop's own retries never multiply it.
@@ -69,14 +70,11 @@ class FallbackModel:
 
 
 def load_examples() -> tuple[Example, ...]:
-    """The v2 examples, built by the same loader as the eval; fail rather than serve another v2."""
-    from eval.cases import load_dir
-    from eval.examples import build_examples
-
+    """The v2 examples measured in eval-v7; fail rather than serve another v2."""
     try:
-        ids = json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"]
-        examples = build_examples(load_dir(CASES_DIR), ids)
-    except (OSError, KeyError, ValueError) as exc:
+        rows = json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["examples"]
+        examples = tuple(Example(case_id=row["case_id"], message=row["message"], reply=row["reply"]) for row in rows)
+    except (OSError, KeyError, TypeError, ValueError) as exc:
         raise RuntimeError(f"prompt v2 needs its development examples: {exc}") from exc
     if not examples:
         raise RuntimeError("prompt v2 needs its development examples: the list is empty")

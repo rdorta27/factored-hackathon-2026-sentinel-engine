@@ -139,3 +139,15 @@ def test_who_answered_is_kept_per_thread() -> None:
     for thread in threads:
         thread.join()
     assert seen == {"failing": "fallback", "succeeding": "cheap"}
+
+
+def test_the_served_examples_equal_what_the_eval_loader_builds() -> None:
+    """The image carries a copy of the examples; the eval loader stays the source."""
+    from eval.cases import load_dir
+    from eval.examples import build_examples
+
+    ids = json.loads(serving.EXAMPLES_PATH.with_name("examples_v2.json").read_text(encoding="utf-8"))
+    eval_ids = json.loads((serving.EXAMPLES_PATH.parents[2] / "eval" / "examples_v2.json").read_text(encoding="utf-8"))["ids"]
+    expected = build_examples(load_dir(serving.EXAMPLES_PATH.parents[2] / "eval" / "cases"), eval_ids)
+    assert serving.load_examples() == expected
+    assert [row["case_id"] for row in ids["examples"]] == list(EVAL_V7_EXAMPLE_IDS)
