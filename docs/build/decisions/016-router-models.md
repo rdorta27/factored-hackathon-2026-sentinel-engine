@@ -24,15 +24,15 @@ Option 3.
 
 **Provider:** Fireworks AI serverless, OpenAI-compatible, so the router needs only a base URL, key and model name per route. All candidates are open-weight models, so production can serve the same weights on Azure AI Foundry or Databricks (decision 12) without depending on Fireworks.
 
-**Candidates** (prices per million tokens, input / output, from Fireworks on 2026-10-01):
+**Candidates** (prices per million tokens, input / output, from the [Fireworks model library](https://fireworks.ai/models) on 2026-10-01; endpoint `https://api.fireworks.ai/inference/v1`):
 
-| Route | Model | Price |
-|---|---|---|
-| Cheap (frequent turns) | OpenAI gpt-oss-120b (starting point) | 0.15 / 0.60 |
-| Cheap | GLM 5.3 Flash | 0.15 / 0.50 |
-| Cheap | Nemotron Lightning 3.5 30B A3B | 0.05 / 0.20 |
-| Strong (ambiguous, pt-BR) | DeepSeek V4.1 Flash | 0.30 / 1.20 |
-| Strong | GLM-5.3 | 1.40 / 4.40 |
+| Route | Model | Model ID | Price |
+|---|---|---|---|
+| Cheap (frequent turns) | OpenAI gpt-oss-120b (starting point) | `accounts/fireworks/models/gpt-oss-120b` | 0.15 / 0.60 |
+| Cheap | GLM 5.3 Flash | `accounts/fireworks/models/glm-5p3-flash` | 0.15 / 0.50 |
+| Cheap | Nemotron Lightning 3.5 30B A3B | not looked up | 0.05 / 0.20 |
+| Strong (ambiguous, pt-BR) | DeepSeek V4.1 Flash | `accounts/fireworks/models/deepseek-v4p1-flash` (the library listing shows `accounts/deepseek-ai/models/deepseek-v4p1-flash`; the first live call confirms which one resolves) | 0.30 / 1.20, cached input 0.006 |
+| Strong | GLM-5.3 | `accounts/fireworks/models/glm-5p3` | 1.40 / 4.40 |
 
 Larger models (Qwen 3.8 Max, Kimi K3) cost 10 to 60 times more and stay out unless the strong route fails the rule.
 
