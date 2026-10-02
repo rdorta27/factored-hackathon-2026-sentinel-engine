@@ -1,4 +1,4 @@
-# 018 · Conversational context trade-offs for REQ-0001
+# 020 · Conversational context trade-offs for REQ-0001
 
 **Date:** 2026-10-02
 **Status:** Accepted
