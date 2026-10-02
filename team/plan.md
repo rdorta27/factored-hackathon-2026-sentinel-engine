@@ -61,7 +61,7 @@ Per-person work is in [tasks](tasks.md), not on this chart. We want **code, resu
 | Code: branch, push, Slack authorization, author merges. No direct push to `main` (decision 7) | Accepted | [pending decisions](pending-decisions.md) |
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
 | One public repository (decision 21), organised by folders; no git submodules (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
-| Public link on Hugging Face Spaces, one Docker container; Azure stays the production target (closes decisions 13 and 16) | Accepted | [012](../docs/build/decisions/012-public-deployment.md) |
+| Public link on Azure Container Apps, one Docker container; supersedes 012 after Hugging Face dropped its free Docker tier (closes decisions 13 and 16) | Accepted | [019](../docs/build/decisions/019-azure-container-apps.md) |
 | Keep `team/` in the submission, reviewed before submitting (closes decision 23) | Accepted | [pending decisions](pending-decisions.md) |
 | Demo UI with role landing and a read-only advisor view in the ai-core page; `sentinel-login/` backend removed; no admin panel (closes decision 29) | Accepted | [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 
@@ -102,7 +102,7 @@ That process serves one app from `sentinel-ai-core/app/main.py` (`app = create_a
 | `evidence/` (evaluation runs) | Natalia | Metrics by language and country from the runner's output, frozen per run; cost per resolution (REQ-0055, REQ-0057). | Done: label universe `evidence/evaluation/2024Q4-v1/` and runner output frozen per run (latest `evidence/evaluation-runs/2024Q4-eval-v5/`) with verify |
 | `sentinel-ai-core/app/services/`, `tools/gold_duckdb.py`, `schemas/`, `db/`, `models/` | Natalia, Felix | PII-free Gold view reader behind `GoldTransactions` (fallback to the mock), the typed API contract (`schemas/chat.py`), and the SQLite models and stores for sessions, conversation and cases (`db/`, `models/`, `state/`). | Partial: contract, SQLite state and Gold adapter with tests; Gold not yet read from local data |
 | `sentinel-login/` | Felix | Original demo page kept as a reference; backend removed, not served ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)). | Reference only |
-| Infrastructure as code | Nobody yet | Not needed for the submission: it runs on Hugging Face Spaces ([012](../docs/build/decisions/012-public-deployment.md)); Azure infrastructure is production work. | Not started |
+| Infrastructure as code | Nobody yet | Not needed for the submission: it runs on Azure Container Apps from `deploy/azure/deploy.sh` ([019](../docs/build/decisions/019-azure-container-apps.md)); scaled-out Azure infrastructure stays production work. | Not started |
 
 Evaluation lives inside `sentinel-ai-core/` because it drives `POST /api/v1/chat`; it is not a third code folder. Its results follow the write-once rule of `evidence/`.
 

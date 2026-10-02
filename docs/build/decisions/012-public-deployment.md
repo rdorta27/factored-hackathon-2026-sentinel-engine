@@ -1,7 +1,7 @@
 # 012 · Public deployment on Hugging Face Spaces
 
 **Date:** 2026-10-01
-**Status:** Accepted
+**Status:** Superseded by 019
 **Participants:** Rubén (owner); Felix deploys
 
 Closes pending decisions 13 (deployment target for the submission) and 16 (who provides the subscription). An exception to [decision 001](001-azure-platform.md) for the submission only: Azure stays the production target.

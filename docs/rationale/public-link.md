@@ -2,11 +2,11 @@
 
 ## Choice
 
-The deployed demo runs on Hugging Face Spaces, one container ([012](../build/decisions/012-public-deployment.md)), with:
+The deployed demo runs on Azure Container Apps, one container ([019](../build/decisions/019-azure-container-apps.md)), with:
 
-- **Model:** the keyword baseline. The router models are measured offline ([016](../build/decisions/016-router-models.md)); if the link serves them, it uses a separate, disposable Fireworks key with a spending cap, stored only as a Space secret (`SENTINEL_LLM_API_KEY`) and revoked after evaluation.
+- **Model:** the keyword baseline. The router models are measured offline ([016](../build/decisions/016-router-models.md)); if the link serves them, it uses a separate, disposable Fireworks key with a spending cap, stored only as a Container App secret (`SENTINEL_LLM_API_KEY`) and revoked after evaluation.
 - **Data:** the labeled Gold mock (`gold_source: mock` on `/api/v1/health`). The dataset never leaves the gitignored `data/` folder.
-- **State:** SQLite on the host, one instance. A restart may lose sessions and cases; for a demo, logging in again is enough.
+- **State:** SQLite on the container's ephemeral disk, one instance. A scale-to-zero or restart may lose sessions and cases; for a demo, logging in again is enough.
 - **Date:** a configurable reference date (2026-06-17), because the dataset ends in June 2026.
 
 ## Why

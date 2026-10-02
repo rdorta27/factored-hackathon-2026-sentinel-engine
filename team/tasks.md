@@ -25,7 +25,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Public link on Hugging Face Spaces: `Dockerfile`, Space secrets, demo variables ([012](../docs/build/decisions/012-public-deployment.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Pending |
+| 1 | Public link: `Dockerfile`, container secrets, demo variables ([019](../docs/build/decisions/019-azure-container-apps.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Done: live on Azure Container Apps; remote check on 10/02 covered health, login, dispute and advisor handoffs ([evidence](../docs/requirements/delivery.md#req-0035)) |
 | 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | In progress: end-to-end run and [report](../sentinel-data-engine/data_quality_report.md) exist and reproduce locally |
 | 3 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | In progress: the DuckDB adapter reads the view as Delta under `data/gold/`, but the pipeline writes `data/gold_bank.duckdb`; export the view as Delta or point the adapter at the DuckDB file |
 | 4 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | In progress: verified end to end on the mock Gold store; waits on the Gold read |
