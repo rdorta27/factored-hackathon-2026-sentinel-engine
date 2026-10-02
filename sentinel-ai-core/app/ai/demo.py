@@ -1,8 +1,12 @@
+import re
+
 from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
 from app.orchestrator.types import Language
 
 _PERSON = ("persona", "pessoa", "asesor", "atendente", "agente")
 _OUT = ("saldo", "balance", "tarjeta", "cartao", "cartão", "credito", "crédito", "producto", "produto")
+# Word, not a substring: "pixelmart" is a merchant in the sealed set.
+_PIX = re.compile(r"\bpix\b")
 _PT = ("não", "nao", "cobrança", "cobranca", "pessoa", "junho", "qual é", "quero")
 # An explicit "it was not me" claim. "No reconozco" alone is the normal dispute intent.
 _NOT_MINE = (
@@ -25,7 +29,7 @@ class DemoModel:
             return UnderstandResult(UnderstandKind.CHARGE, language, not_mine=True)
         if any(word in text for word in _PERSON):
             return UnderstandResult(UnderstandKind.PERSON, language)
-        if any(word in text for word in _OUT):
+        if any(word in text for word in _OUT) or _PIX.search(text):
             return UnderstandResult(UnderstandKind.OUT_OF_SCOPE, language)
         return UnderstandResult(UnderstandKind.CHARGE, language)
 

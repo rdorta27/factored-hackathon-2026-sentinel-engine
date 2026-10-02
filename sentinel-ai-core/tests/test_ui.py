@@ -27,7 +27,11 @@ def test_page_uses_confirm_box_and_hides_the_identifier() -> None:
 def test_agent_control_is_two_step_and_session_is_not_stored() -> None:
     assert "localStorage" not in APP_JS
     assert "sessionStorage" not in APP_JS
-    assert "quiero una persona" in APP_JS
+    assert 't("agentMessage")' in APP_JS
+    assert "quiero una persona" not in APP_JS
+    assert "function clearThread()" in APP_JS
+    start = APP_JS.index('getElementById("logout").addEventListener')
+    assert 'clearThread();\n  show("view-login")' in APP_JS[start:start + 220]
     api = TestClient(create_app())
     assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200
     first = api.post("/api/v1/chat", json={"message": "quiero una persona"})

@@ -39,8 +39,8 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions.
 
 1. The problem, in one sentence and with one data point.
-2. Demo of the **normal case** (es-419).
-3. Demo of the **ambiguous case** (pt-BR).
+2. Demo of the **normal case** (es-419; type the es-MX line in [replay](../../sentinel-ai-core/eval/demo/replay.md)).
+3. Demo of the **ambiguous case** (pt-BR; same sheet).
 4. Demo of the **human case**, showing the JSON handoff.
 5. A prompt injection attempt that fails.
 6. Key architecture decisions (from [decisions](decisions/)).
