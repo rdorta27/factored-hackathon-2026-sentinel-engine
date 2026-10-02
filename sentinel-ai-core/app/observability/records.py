@@ -44,6 +44,9 @@ class StepRecord:
     country: str
     event: str | None = None
     handoff: dict | None = None
+    # What the model detected from the text, kept beside the answered `language`
+    # so the record reports both and contradicts neither.
+    detected_language: str | None = None
     # Country policy file version and whether it is the team's synthetic policy.
     policy_version: str | None = None
     policy_synthetic: bool | None = None

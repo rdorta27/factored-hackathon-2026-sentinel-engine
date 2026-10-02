@@ -90,9 +90,9 @@ Report the brief's outcome metrics: safe automated resolution (plus the share at
 
 **Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025). Metrics on the held-out, latency and cost from the logs.
 
-**Evidence:** Proven by: the [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json), with every mandatory metric and its denominator (section 6); the router reports tokens and cost per turn (`tests/test_ai_router.py`).
+**Evidence:** Proven by: the [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json), with every mandatory metric and its denominator (section 6); the resolution run [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) measures safe automated resolution over 56 cases in 14 situations (16 of 56 for both versions, 0 unsafe, 0 missed transfers, cost per resolution USD 0.000561 for `router_v2`), labelled a simulation over a mock store; the router reports tokens and cost per turn (`tests/test_ai_router.py`).
 
-Missing: a safe automated resolution rate. The frozen runs report 0 of 75 because the system runner stops before the confirmation turn, so cost per resolution is "not defined"; the `resolution-eval` change measures it. The system block of `eval-v7` also does not replay offline (report section 9).
+Missing: the rate is a simulation over a mock store, not a field resolution rate; the pending status is not covered (no `Pending` row in the mock store). The system block of `eval-v7` does not replay offline (report section 9); the resolution run does.
 
 <a id="req-0057"></a>
 ### REQ-0057 · Business outcomes and ROI
@@ -105,6 +105,6 @@ The intended customer and business outcomes, with cost-per-resolution ROI agains
 
 **Depends on:** [REQ-0055](#req-0055). ROI uses cost per resolution.
 
-**Evidence:** Proven by: cost per attempted case and per resolution measured in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json) ("not defined" without resolutions).
+**Evidence:** Proven by: cost per attempted case and per resolution measured in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json) ("not defined" without resolutions) and in [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) (USD 0.000561 per resolution for `router_v2` on the mock store; the baseline is free code).
 
-Missing: the ROI write-up, labeled as a projection.
+Missing: the ROI write-up, labeled as a projection, and any field resolution rate.
