@@ -26,15 +26,15 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 ## 4. Development cases (written by the prompt author)
 
 - [x] 4.1 Write 30 development bases in es-MX, spread across intents and with ambiguous wording. Verify: the cases load and the intent counts show in `case_mix`. Glossary: `docs/understand/glossary/`.
-- [ ] 4.2 Generate the es-CO, es-AR and pt-BR variants with one model and back-translate them with another, then record the review per case and fix or drop any drift. Verify: 120 development cases load, and each non-team variant has a review record. Decision: 017.
+- [x] 4.2 Generate the es-CO, es-AR and pt-BR variants with one model and back-translate them with another, then record the review per case and fix or drop any drift. Verify: 120 development cases load, and each non-team variant has a review record. Decision: 017.
 
 ## 5. Held-out cases (written by someone other than the prompt author)
 
 - [x] 5.1 Write held-out bases 1 to 35 in es-MX. Verify: they load under `eval/cases/sealed/`. Decision: 017.
 - [x] 5.2 Write held-out bases 36 to 70 in es-MX. Verify: 70 bases load and every intent has at least 7 bases.
 - [x] 5.3 Generate and back-translate the three other variants for all 70 bases. Verify: 280 cases load.
-- [ ] 5.4 Review back-translations for bases 1 to 35, fixing or dropping drift. Verify: each case has a review record.
-- [ ] 5.5 Review back-translations for bases 36 to 70. Verify: each case has a review record.
+- [x] 5.4 Review back-translations for bases 1 to 35, fixing or dropping drift. Verify: each case has a review record.
+- [x] 5.5 Review back-translations for bases 36 to 70. Verify: each case has a review record.
 - [x] 5.6 Write 50 noisy twins of held-out cases, one declared perturbation each. Verify: each names its base, variant and perturbation, and the loader accepts them.
 - [x] 5.7 Write 75 attacks, including pt-BR injection, from the patterns in `ai-core/tests/adversarial/`, and mark the code-decided ones. Verify: the loader accepts them and the count is 75.
 - [ ] 5.8 Seal the held-out, noisy and attack files. Verify: `seal.json` is committed and its commit predates task 8.2. If 70 bases are not ready by 2026-10-03 18:00 UTC-5, stop and amend this change to 50 bases first (design, Risks).
