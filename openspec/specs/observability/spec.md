@@ -22,12 +22,17 @@ Each pass through the charge-inquiry loop SHALL emit one JSON record per step (`
 
 ### Requirement: One closing record per turn
 
-Every `POST /chat` turn SHALL emit exactly one closing record with the final outcome and aggregated cost and latency, sharing the turn `trace_id`, including turns that end in error or handoff so failures stay measurable. Traces to REQ-0055 (P0, Pending) and REQ-0025 (P0, In progress).
+Every `POST /api/v1/chat` turn SHALL emit exactly one closing record with the final outcome and aggregated cost and latency, sharing the turn `trace_id`, including turns that end in error or handoff so failures stay measurable. When the turn ends in `handoff`, the closing record SHALL carry the same advisor package the reply carries, checked for personal data like every other field. Traces to REQ-0055 (P0, In progress), REQ-0025 (P1, In progress), and REQ-0008 (P0, In progress).
 
 #### Scenario: Failed turns stay measurable
 
 - **WHEN** a turn ends in an error or an unknown-charge handoff
 - **THEN** a closing record with that outcome and numeric aggregates still exists under the turn `trace_id`
+
+#### Scenario: Handoff package is in the log
+
+- **WHEN** a turn ends in `handoff`
+- **THEN** its closing record carries the package equal to the reply's package
 
 ### Requirement: Records never carry personal data
 
@@ -46,3 +51,17 @@ Records SHALL append to an in-memory list and to a JSON-lines file whose path is
 
 - **WHEN** the runner filters the file by one `trace_id`
 - **THEN** it recovers every step record plus the closing record of that turn
+
+### Requirement: Decisions record the policy version
+
+Every `decide` record SHALL carry, next to `policy_rule`, the version of the country policy file that produced the decision (a content hash or version id) and whether that file is synthetic. Traces to REQ-0029 (P1, Done), REQ-0025 (P1, Done) and REQ-0006 (P0, In progress); decisions 25 and 26.
+
+#### Scenario: A past case shows the values in force
+
+- **WHEN** a policy file value changes after a case was decided
+- **THEN** the earlier `decide` record still names the previous file version, so the case can be traced to the values then in force
+
+#### Scenario: Synthetic flag is visible
+
+- **WHEN** the engine decides with the team's synthetic policy
+- **THEN** the `decide` record marks the policy as synthetic

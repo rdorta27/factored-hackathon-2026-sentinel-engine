@@ -22,12 +22,17 @@ The system SHALL read transaction eligibility through a single seam returning de
 
 ### Requirement: Mock labeled, real deferred
 
-Phase 1 SHALL serve invented rows from an in-memory mock labeled `source=mock`; the DuckDB and Delta Lake adapters SHALL remain a documented later swap with unchanged contracts. Traces to REQ-0032 (P1, Pending) and REQ-0028 (P0, Pending).
+The system SHALL read Gold through the `GoldTransactions` seam with two interchangeable adapters: a DuckDB adapter over the PII-free view `v_service_dispute_eligible_transactions`, used when the view answers a probe at startup, and the in-memory mock otherwise. `SENTINEL_GOLD_SOURCE` (`auto`, `mock`, `duckdb`) SHALL select the adapter, and `GET /api/v1/health` SHALL report which one is active. Confirmations SHALL keep `source=mock` while the dispute store is in memory. Traces to REQ-0032 (P1, In progress), REQ-0028 (P0, In progress), and REQ-0015 (P0, In progress).
 
 #### Scenario: Mock source is visible
 
-- **WHEN** any confirmation is produced in Phase 1
+- **WHEN** any confirmation is produced with the in-memory dispute store
 - **THEN** its source field reads `mock`
+
+#### Scenario: Missing view falls back to the mock
+
+- **WHEN** the Gold view is absent or DuckDB cannot read it
+- **THEN** the app starts on the mock and the health route reports `mock`
 
 ### Requirement: Per-customer isolation on reads
 
@@ -40,17 +45,22 @@ Gold reads SHALL filter by the session customer; a customer SHALL never see anot
 
 ### Requirement: Per-country demo customers
 
-The Gold mock SHALL provide coherent customers for Mexico, Colombia, and Argentina, each with transactions denominated in that country's currency and dated relative to the configured reference date. Traces to REQ-0041 (P0, Pending), REQ-0049 (P2, Pending), and REQ-0032 (P1, Pending).
+The Gold mock SHALL provide coherent customers for Mexico, Colombia, and Argentina, the only account countries in the dataset (data dictionary, `customers.country`). Each customer's transactions SHALL be denominated in the currency of the product they belong to: the country's local currency, or USD for a USD product. Rows SHALL be dated relative to the configured reference date. For each demo country, the mock SHALL include at least one charge above each configured fraud-score threshold and one above each configured high-amount threshold, so every rule can be shown. Traces to REQ-0041 (P0, Done), REQ-0049 (P2, Done), REQ-0032 (P1, Done) and REQ-0006 (P0, In progress).
 
 #### Scenario: Each country reads its own currency
 
 - **WHEN** the CO customer lists transactions
-- **THEN** every row is denominated in COP, and the MX and AR customers read MXN and ARS respectively
+- **THEN** every row is denominated in COP or USD, and the MX and AR customers read MXN or USD and ARS or USD respectively
 
 #### Scenario: Merchant lookup is country-neutral
 
 - **WHEN** the customer lists candidate transactions
 - **THEN** each candidate carries date, amount, currency, and merchant for the interface to display
+
+#### Scenario: Every configured rule has a demo row
+
+- **WHEN** a fraud-score or high-amount value is configured for a country and currency
+- **THEN** the mock holds a charge of that country and currency above it
 
 ### Requirement: Transaction listing for the interface
 
@@ -63,11 +73,11 @@ The seam SHALL support listing every transaction of one session customer, ordere
 
 ### Requirement: Session listing endpoint
 
-The submission app SHALL expose `GET /transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, each with date, amount, currency, merchant, status, and the as-of mark. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, Pending), REQ-0032 (P1, Pending), REQ-0039 (P0, Pending), and REQ-0047 (P0, Pending).
+The app SHALL expose `GET /api/v1/transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, and the as-of mark; each row SHALL have the same shape as a chat candidate: reference, date, amount, currency, merchant, status, `eligible`, and `ineligibleKey`. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, In progress), REQ-0032 (P1, In progress), REQ-0039 (P0, In progress), and REQ-0047 (P0, In progress).
 
 #### Scenario: Listing stays inside the session
 
-- **WHEN** a customer requests `GET /transactions`
+- **WHEN** a customer requests `GET /api/v1/transactions`
 - **THEN** the response contains only their own rows and the as-of mark
 
 #### Scenario: Another customer's row is absent
@@ -79,3 +89,22 @@ The submission app SHALL expose `GET /transactions` for the signed-in customer. 
 
 - **WHEN** the listing request includes a customer identifier
 - **THEN** the system rejects the request and does not use that identifier to choose rows
+
+#### Scenario: Ineligible rows say why
+
+- **WHEN** a row is outside the window, reversed, declined, pending, or already disputed
+- **THEN** it has `eligible=false` and a translated `ineligibleKey`
+
+### Requirement: Rows carry the fraud score
+
+Every Gold row SHALL carry the transaction's `fraud_score` (or empty when the source has none) from both the mock and the DuckDB source, and the candidate the policy engine reads SHALL carry it unchanged. The score SHALL NOT be shown to the customer or sent to the model. `is_fraud` SHALL NOT be read, since it is a label known only after investigation. Traces to REQ-0006 (P0, In progress), REQ-0047 (P0, In progress) and REQ-0017 (P0, In progress).
+
+#### Scenario: Score reaches the engine
+
+- **WHEN** a charge above the fraud threshold is selected
+- **THEN** the engine receives its score and cites `fraud.score`
+
+#### Scenario: Score stays internal
+
+- **WHEN** the customer lists transactions or receives a reply
+- **THEN** no fraud score appears in the response
