@@ -195,3 +195,4 @@ def test_history_is_bounded_with_an_overflow_mark() -> None:
     assert len(stored.history) == 50
     assert stored.overflow is True
     assert stored.history[0]["turn"] == 6, "oldest entries are discarded first"
+    assert len(stored.state.turns) == 50, "the stored turn window is bounded too"

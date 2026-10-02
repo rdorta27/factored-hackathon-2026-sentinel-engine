@@ -70,6 +70,31 @@ def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no
     assert store.count() == 0
 
 
+def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-untyped-def]
+    import os
+    import stat
+
+    os.chmod(sqlite_env, 0o755)
+    api = TestClient(create_app())
+    login(api)
+    for suffix in ("", "-wal", "-shm"):
+        path = sqlite_env / f"state.db{suffix}"
+        if path.exists():
+            assert stat.S_IMODE(os.stat(path).st_mode) == 0o600, path.name
+    assert stat.S_IMODE(os.stat(sqlite_env).st_mode) == 0o755, "an existing folder is left as is"
+
+
+def test_database_folder_created_owner_only(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import os
+    import stat
+
+    from app.db.session import make_engine
+
+    folder = tmp_path / "fresh"
+    make_engine(folder / "state.db").dispose()
+    assert stat.S_IMODE(os.stat(folder).st_mode) == 0o700
+
+
 def test_expiry_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     api = TestClient(create_app())
     login(api)
