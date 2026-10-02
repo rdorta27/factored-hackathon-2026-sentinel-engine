@@ -35,5 +35,5 @@ Serving router_v2 showed a gap the measurement never covered: a greeting ("hola"
 
 ## Assumptions
 
-- Loop changes still in flight (`refuse-prompt-extraction`, `adversarial-gaps`, `charge-narrowing`, `resolution-eval`) land before the v8 seal, so v8 measures the loop that is served.
+- `chat-loop`, `real-gold` and `evaluation-final` land before the v8 seal, so v8 measures the loop that is served; the resolution set of `resolution-eval` is re-run on v3 in the same measurement.
 - The spend cap and the author of the sealed set are fixed by the owner before sealing.

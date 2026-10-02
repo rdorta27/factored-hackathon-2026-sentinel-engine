@@ -22,5 +22,5 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 - [ ] 4.1 Measure baseline, v2 and v3 once as `2024Q4-eval-v8`, recording the measured commit. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`.
 - [ ] 4.2 Judge the result by the amendment and write the verdict. Evidence: the amendment's result section.
 - [ ] 4.3 If v3 passes, serve it with the loader guarantee and pin its example ids; otherwise keep v2. Evidence: `app/ai/serving.py` tests.
-- [ ] 4.4 Regenerate the metrics report on v8 and update README and REQ-0016 evidence. Evidence: those files.
+- [ ] 4.4 Run the resolution set on v3 in the same measurement, regenerate the metrics report on v8 (breakdown included) and update README and REQ-0016 evidence. Evidence: those files.
 - [ ] 4.5 Run the existing test suite and report counts, including any failure. Evidence: pytest output in the commit body.
