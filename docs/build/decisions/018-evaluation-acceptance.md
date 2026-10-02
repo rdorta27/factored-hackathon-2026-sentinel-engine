@@ -36,6 +36,20 @@ Option 2. Each rule reads `summary.json` of `2024Q4-eval-v7`.
 
 **Stability.** `v2` is recorded three times on 25 bases (100 cases) and once on the rest. Stability is reported with that n, and it is not an acceptance rule.
 
+## Case provenance (declared before sealing)
+
+No person wrote or reviewed the cases. Nobody on the team speaks Portuguese ([017](017-portuguese.md)), and the owner chose a fully model-made set over a partial human check. This replaces the team-member check of 017 for this measurement, and the submission states it (REQ-0013).
+
+| Step | Who |
+|---|---|
+| Plan, prompt and development cases | Claude Opus (the prompt author) |
+| Held-out cases, noisy twins and attacks | A Claude Sonnet subagent that could not read the prompt, the development cases, the examples or decisions 016 and 018 |
+| Back-translation of every non-MX variant | A Claude Haiku subagent, a different model from the writer |
+| Check of back-translations and of every label | A separate Claude Opus subagent under the same isolation, recorded in `sentinel-ai-core/eval/review/` |
+| Measured models | Open-weight models on Fireworks ([016](016-router-models.md)); none of them wrote or reviewed a case |
+
+Limits this leaves: labels reflect one model family's reading of the definitions, fluency is not checked by a native speaker, and a shared model bias between author and reviewer would not be caught.
+
 ## Consequences
 
 - Each answer can be checked against one frozen run, and the rules cannot have been fitted to it.

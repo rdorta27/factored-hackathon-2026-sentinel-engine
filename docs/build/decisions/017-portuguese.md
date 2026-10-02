@@ -30,3 +30,4 @@ Option 3.
 - The team can verify every Portuguese case in a language it reads, which a single model review would not allow.
 - Fluency is not verified by a native speaker: the submission says so (REQ-0013), and the review method is part of the presentation.
 - The router's strong route ([016](016-router-models.md)) handles Portuguese turns, and the selection rule already requires no more than a 5-point drop in pt-BR.
+- For the held-out measurement of [018](018-evaluation-acceptance.md), the team-member check was replaced by an isolated model review, by the owner's choice; 018 records who wrote and reviewed each part.
