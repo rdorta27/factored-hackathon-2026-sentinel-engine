@@ -8,6 +8,9 @@ Runs the fixture-backed router and the keyword baseline over the identical
 case set, replays every case through POST /chat, and freezes ``summary.json``
 plus ``report.md`` write-once under ``evidence/evaluation-runs/<run-id>/``.
 No connection is opened: the only model transport is ``FixtureTransport``.
+
+The live router evaluation does not use this module: model selection and the
+sealed held-out measurement run through ``eval.run`` (decision 018).
 """
 
 from __future__ import annotations

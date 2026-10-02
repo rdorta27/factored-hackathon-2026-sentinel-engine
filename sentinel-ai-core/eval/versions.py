@@ -31,7 +31,7 @@ class Version:
     repeat_ids: frozenset[str] = field(default_factory=frozenset)
 
 
-def _call(model, case: Case) -> tuple[str, float, float, str, str]:  # type: ignore[no-untyped-def]
+def _call(model, case: Case, transport=None) -> tuple[str, float, float, str, str]:  # type: ignore[no-untyped-def]
     started = perf_counter()
     try:
         result = model.understand(case.message, list(case.turns))
@@ -42,13 +42,17 @@ def _call(model, case: Case) -> tuple[str, float, float, str, str]:  # type: ign
     else:
         intent, cost = result.kind.value, float(result.cost_usd)
     info = model.describe()
-    return intent, (perf_counter() - started) * 1000, cost, info.model, info.route
+    latency_ms = (perf_counter() - started) * 1000
+    recorded = getattr(transport, "last_latency_ms", None)
+    if recorded:
+        latency_ms = recorded
+    return intent, latency_ms, cost, info.model, info.route
 
 
 def run_version(cases: list[Case], version: Version) -> dict:
     if version.transport is not None:
         version.transport.repetition = 0
-    first = [_call(version.model, case) for case in cases]
+    first = [_call(version.model, case, version.transport) for case in cases]
     predicted = [row[0] for row in first]
     passes: dict[str, list[str]] = {case.id: [row[0]] for case, row in zip(cases, first)}
     for repetition in range(1, max(1, version.repetitions)):

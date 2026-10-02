@@ -13,6 +13,7 @@ import hashlib
 import json
 import re
 from pathlib import Path
+from time import perf_counter
 
 from app.ai.fixtures import _underlying, input_hash
 from app.ai.transport import LLMResponse, ModelTransport, ModelUnavailable
@@ -48,6 +49,7 @@ def write_recording(
     repetition: int,
     messages: list[dict[str, str]],
     response: LLMResponse,
+    latency_ms: float = 0.0,
 ) -> None:
     user_text = next(
         (str(e.get("content", "")) for e in reversed(messages) if e.get("role") == "user"), ""
@@ -63,6 +65,7 @@ def write_recording(
         "tokens_in": response.tokens_in,
         "tokens_out": response.tokens_out,
         "cost_usd": response.cost_usd,
+        "latency_ms": round(float(latency_ms), 1),
     }
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(body, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -79,6 +82,9 @@ class RecordedTransport:
         self._dir = Path(recordings_dir)
         self.prompt_version = prompt_version
         self.repetition = repetition
+        # Latency of the live call behind the last reply served, so a replay
+        # reports model latency instead of the time to read a file.
+        self.last_latency_ms = 0.0
 
     def path_for(self, model: str, messages: list[dict[str, str]]) -> tuple[Path, str]:
         digest = user_digest(messages)
@@ -89,6 +95,7 @@ class RecordedTransport:
         body = json.loads(path.read_text(encoding="utf-8"))
         if body.get("model") != model or body.get("prompt_version") != self.prompt_version:
             raise ModelUnavailable(f"recording {path.name} does not match its key")
+        self.last_latency_ms = float(body.get("latency_ms", 0.0) or 0.0)
         return LLMResponse(
             content=str(body.get("content", "")),
             tokens_in=int(body.get("tokens_in", 0) or 0),
@@ -103,6 +110,7 @@ class RecordedTransport:
         messages: list[dict[str, str]],
         temperature: float = 0.0,
     ) -> LLMResponse:
+        self.last_latency_ms = 0.0
         path, digest = self.path_for(model, messages)
         if not path.is_file():
             raise ModelUnavailable(f"no recording for {model} input {digest} repetition {self.repetition}")
@@ -157,6 +165,7 @@ class RecordingTransport(RecordedTransport):
         messages: list[dict[str, str]],
         temperature: float = 0.0,
     ) -> LLMResponse:
+        self.last_latency_ms = 0.0
         path, digest = self.path_for(model, messages)
         if path.is_file():
             return self.read(path, model)
@@ -164,7 +173,9 @@ class RecordingTransport(RecordedTransport):
             raise ModelUnavailable(
                 f"no recording for {model} input {digest} repetition {self.repetition} (not recording)"
             )
+        started = perf_counter()
         response = self._live.complete(model=model, messages=messages, temperature=temperature)
+        self.last_latency_ms = (perf_counter() - started) * 1000
         self.live_calls += 1
         self.spent_usd += response.cost_usd
         assert_no_secret(response.content + json.dumps(messages, ensure_ascii=False), self._api_key)
@@ -176,6 +187,7 @@ class RecordingTransport(RecordedTransport):
             repetition=self.repetition,
             messages=messages,
             response=response,
+            latency_ms=self.last_latency_ms,
         )
         return response
 

@@ -130,4 +130,16 @@ def freeze_run(repo_root: Path | str, run_id: str, summary: dict, report_md: str
     return folder
 
 
-__all__ = ["EVAL_VERSION", "build_summary", "freeze_run", "render_report", "validate_has_n"]
+__all__ = ["EVAL_VERSION", "build_summary", "freeze_run", "render_measurement", "render_report", "validate_has_n"]
+
+
+def render_measurement(summary: dict) -> str:
+    """Readable view of a held-out measurement; every number comes from ``summary``."""
+    lines = [
+        f"# Held-out measurement {summary['run_id']}",
+        "",
+        f"Eval {summary['eval_version']} · seal {summary['seal']['hash'][:16]} · n={summary['n']}",
+    ]
+    if summary.get("notes"):
+        lines += ["", "## Notes"] + [f"- {note}" for note in summary["notes"]]
+    return "\n".join(lines) + "\n"

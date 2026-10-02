@@ -70,6 +70,25 @@ def pick_route(message: str) -> str:
     return "cheap"
 
 
+def keyword_miss_route(message: str) -> str:
+    """Route rule (ii) of the 016 amendment: Portuguese, or no baseline keyword matched."""
+    from app.ai import demo
+
+    text = message.lower()
+    if any(mark in text for mark in _PT_MARKS):
+        return "strong"
+    cues = demo._PERSON + demo._OUT + demo._NOT_MINE
+    return "cheap" if any(cue in text for cue in cues) else "strong"
+
+
+# Candidates for D3 in the 016 amendment; the chosen one is set by name.
+ROUTE_RULES = {
+    "heuristic": pick_route,
+    "keyword_miss": keyword_miss_route,
+    "strong": lambda message: "strong",
+}
+
+
 def assert_no_forbidden(payload: object) -> None:
     if isinstance(payload, dict):
         for key, value in payload.items():
@@ -162,6 +181,7 @@ class RouterConfig:
     temperature: float = 0.0
     # Prompt version v2 carries examples; their ids are recorded with the run.
     examples: tuple[Example, ...] = ()
+    route_rule: str = "heuristic"
 
     @property
     def example_ids(self) -> tuple[str, ...]:
@@ -175,6 +195,7 @@ class RouterConfig:
             default_model=os.environ.get("SENTINEL_LLM_DEFAULT_MODEL", ""),
             prompt_version=os.environ.get("SENTINEL_LLM_PROMPT_VERSION", PROMPT_VERSION_DEFAULT)
             or PROMPT_VERSION_DEFAULT,
+            route_rule=os.environ.get("SENTINEL_LLM_ROUTE_RULE", "heuristic") or "heuristic",
         )
 
 
@@ -204,7 +225,10 @@ class PromptedLLMRouter:
         return fallback or "default"
 
     def understand(self, message: str, turns: list[str]) -> UnderstandResult:
-        route = pick_route(message)
+        rule = ROUTE_RULES.get(self._config.route_rule)
+        if rule is None:
+            raise ValueError(f"unknown route rule {self._config.route_rule!r}; choose one of {sorted(ROUTE_RULES)}")
+        route = rule(message)
         model = self._model_for(route)
         messages = build_messages(message, turns, examples=self._config.examples)
         response = self._transport.complete(
