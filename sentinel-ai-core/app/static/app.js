@@ -1,5 +1,4 @@
 let strings = {};
-let personPresses = 0;
 
 function t(key) {
   return strings[key] || key;
@@ -39,10 +38,15 @@ async function loadLocale(locale) {
 async function api(path, options) {
   const response = await fetch(path, options);
   if (response.status === 401) {
+    clearThread();
     show("view-login");
     document.getElementById("login-error").textContent = t("sessionExpired");
   }
   return response;
+}
+
+function clearThread() {
+  document.getElementById("thread").textContent = "";
 }
 
 function show(id) {
@@ -245,6 +249,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     loadQueue();
     return;
   }
+  clearThread();
   show("view-chat");
   await loadContext();
   loadTransactions();
@@ -261,14 +266,14 @@ document.getElementById("chat-form").addEventListener("submit", (event) => {
 });
 
 document.getElementById("agent").addEventListener("click", () => {
-  personPresses += 1;
-  const message = personPresses === 1 ? "quiero una persona" : "quiero una persona";
+  const message = t("agentMessage");
   addBubble(t("agentButton"));
   postChat({ message });
 });
 
 document.getElementById("logout").addEventListener("click", async () => {
   await fetch("/api/v1/auth/logout", { method: "POST" });
+  clearThread();
   show("view-login");
 });
 

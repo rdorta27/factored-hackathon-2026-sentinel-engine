@@ -98,7 +98,7 @@ CHAT_SCRIPTS = {
         {"selected_reference": "TXN-1006"},
     ],
     "normal pt-BR": [
-        {"message": "não reconheço uma cobrança de R$ 320,00 no Cafe Central em 12 de junho"},
+        {"message": "não reconheço uma cobrança de 320 no Cafe Central em 12 de junho"},
         {"selected_reference": "TXN-1006"},
     ],
     "ambiguous": [{"message": "no reconozco un cargo en ACME Store"}, {"message": "hola"}],

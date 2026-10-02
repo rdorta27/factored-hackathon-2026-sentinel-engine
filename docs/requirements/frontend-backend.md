@@ -13,7 +13,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0009](#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012) | In progress |
 | [REQ-0010](#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](#req-0002) | Done |
 | [REQ-0011](#req-0011) | Demo: case requiring a human | P0 | ai | [REQ-0008](#req-0008), [REQ-0040](#req-0040) | Done |
-| [REQ-0012](#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](#req-0001) | In progress |
+| [REQ-0012](#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](#req-0001) | Done |
 | [REQ-0033](#req-0033) | Policy decides, the LLM converses | P0 | ai, ml | [REQ-0048](non-functional.md#req-0048) | Done |
 | [REQ-0038](#req-0038) | Simple frontend | P0 | ai | [REQ-0027](non-functional.md#req-0027) | Done |
 | [REQ-0040](#req-0040) | Request for a person | P0 | ai | [REQ-0006](#req-0006) | Done |
@@ -113,9 +113,9 @@ The first of the three mandatory demo cases: a customer asks about a charge and 
 
 **Depends on:** [REQ-0003](#req-0003), [REQ-0004](#req-0004), [REQ-0006](#req-0006), [REQ-0012](#req-0012). The normal case uses verified data, safe tools and policy, in both languages.
 
-**Evidence:** Proven by: the confirm box leads to a verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); replayed in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: the confirm box leads to a verified `case_confirmation` (`tests/test_contract.py`, `tests/test_facts_grounding.py`); replayed in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json). The normal case in es-MX, es-CO, es-AR and pt-BR confirms Cafe Central 320 MXN and returns a case number only after read-back (`tests/test_demo_pt_br.py`, [`eval/demo/pt-br.jsonl`](../../sentinel-ai-core/eval/demo/pt-br.jsonl)). The pt-BR line was back-translated by DeepSeek V4.1 Flash ([`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md)).
 
-Missing: the same case in Portuguese (REQ-0012) and the video (REQ-0037).
+Missing: the video (REQ-0037).
 
 <a id="req-0010"></a>
 ### REQ-0010 · Demo: ambiguous or unsupported case
@@ -152,17 +152,19 @@ Missing: shown in the video (REQ-0037).
 
 The system must serve customers in Spanish and in Portuguese (brief: Scope; kickoff p. 10). There is no Portuguese in the data: the dataset is Spanish only and covers MX, CO and AR, so the system must work in Portuguese without data to learn from, and any Portuguese test material is team-generated and labeled as such.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** AI Engineering / ML · **Area:** ai, ml
+**Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering / ML · **Area:** ai, ml
 
 **Source:** Problem statement: Scope · Kickoff p. 10 · Dataset summary
 
 **Depends on:** [REQ-0001](#req-0001). Language is detected and kept in the conversation state.
 
-**Evidence:** Proven by: Spanish (es-419) on the whole demo path; router language detection includes pt-BR (`tests/test_ai_router.py`).
+**Evidence:** Proven by: Spanish (es-419) on the whole demo path; router language detection includes pt-BR (`tests/test_ai_router.py`). Each of the three demo cases has four variants, es-MX, es-CO, es-AR and pt-BR, on the keyword baseline (`tests/test_demo_pt_br.py`, [`eval/demo/pt-br.jsonl`](../../sentinel-ai-core/eval/demo/pt-br.jsonl)). The account stays with the charge; the variant is the wording.
 
-How a Portuguese-speaking customer is served and how pt-BR cases are reviewed is decided ([017](../build/decisions/017-portuguese.md)): an MX, CO or AR account answered in pt-BR, with cases checked through Spanish back-translation.
+How a Portuguese-speaking customer is served and how pt-BR cases are reviewed is decided ([017](../build/decisions/017-portuguese.md)): an MX, CO or AR account answered in pt-BR, with cases checked through Spanish back-translation. The demo pt-BR lines were back-translated by DeepSeek V4.1 Flash, a different model from the writer, recorded in [`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md). That follows the isolated-model method of [018](../build/decisions/018-evaluation-acceptance.md). A Colombian teammate accepted the three es-CO lines. The same model found no drift on es-MX and es-AR; nobody on the team speaks those varieties.
 
-Missing: the pt-BR twins of the key cases, written and checked that way. Planned in [`llm-evaluation`](../../openspec/changes/llm-evaluation/proposal.md): every base case in es-MX, es-CO, es-AR and pt-BR, judged per variant by D6 in [018](../build/decisions/018-evaluation-acceptance.md).
+Pix is understood as a word and hands off, because the account has no Pix (`tests/test_demo_pt_br.py`). `extrato` and `fatura` are the statement words inside sealed charge inquiries, so they are not marked out of scope; a bare ask shows the account's charges. A 2% replay (280 of 14023 development openings, seed 20261002), on the development side of the 70/30 time split (held-out cut 2025-07-01), is in [`evidence/transcript-chats/20261002T144836Z/summary.json`](../../evidence/transcript-chats/20261002T144836Z/summary.json): 280 handoffs, 2 distinct prefixes, 0 held-out rows on disk. No customer text was written into the repo. The text is templated Spanish, not customer language. That limit is reported under [REQ-0013](delivery.md#req-0013).
+
+Missing: nothing. The video is [REQ-0037](delivery.md#req-0037). Serving the measured router is [REQ-0016](data-ml.md#req-0016).
 
 <a id="req-0033"></a>
 ### REQ-0033 · Policy decides, the LLM converses

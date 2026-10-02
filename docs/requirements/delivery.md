@@ -28,6 +28,8 @@ State openly what the data cannot support: the dataset is synthetic, Spanish onl
 
 Proven by (also): the README [limitations](../../README.md#limitations) section.
 
+The three demo pt-BR lines were written by grok-4.7 and back-translated by DeepSeek V4.1 Flash ([`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md)): no native speaker. A Colombian teammate accepted the three es-CO lines on 2026-10-02 after the normal line named the peso as mexicano. The same model found no drift on es-MX and es-AR; nobody on the team speaks those varieties. A 2% replay of `customer_text` on the development side of the 70/30 time split (held-out cut 2025-07-01) is in [`evidence/transcript-chats/20261002T144836Z/summary.json`](../../evidence/transcript-chats/20261002T144836Z/summary.json): 280 handoffs out of 280, and 2 distinct prefixes. The engine data directory has no transcript files, so the read was the analysis working copy; no customer data was copied into the repo. The local files are the 2024Q4 window only, so no held-out row was present to exclude. The 14,023 transcripts are two templates, not customer language. Pix hands off. `extrato` and `fatura` are not marked out of scope, because the sealed set uses them inside charge inquiries.
+
 Missing: the limits on the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
 
 <a id="req-0030"></a>
