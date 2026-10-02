@@ -63,5 +63,5 @@ Paths under `ai-core/` mean `sentinel-ai-core/`. Run tests from `sentinel-ai-cor
 
 ## 9. Integration check
 
-- [ ] 9.1 With no network and `SENTINEL_LLM_BASE_URL` empty, run the full suite and replay `2024Q4-eval-v7` offline. Verify: tests pass and the replayed summary matches the frozen one.
+- [x] 9.1 With no network and `SENTINEL_LLM_BASE_URL` empty, run the full suite and replay `2024Q4-eval-v7` offline. Verify: tests pass and the replayed summary matches the frozen one.
 - [ ] 9.2 Run `openspec validate llm-evaluation --strict` and grep the branch diff for the key prefix, `Authorization` and `Bearer`. Verify: validation passes and the grep is empty.

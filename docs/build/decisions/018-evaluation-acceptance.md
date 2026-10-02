@@ -77,5 +77,5 @@ What the numbers rest on:
 Limits to state with these numbers (REQ-0013):
 - The cases were written and reviewed by Claude models, and the label definitions were given to both author and reviewer (see case provenance). A 0.98 accuracy on such a set shows the router agrees with those definitions. It is not a field accuracy.
 - The run's own note says "team-written simulation"; the cases are model-written simulation, as stated above. The frozen run is not edited.
-- System outcome metrics replay the loop offline with mock Gold, so cost per resolution is "not defined" (no case reaches a confirmed dispute in a single turn) and system latency is replay time.
+- System outcome metrics replay the loop offline with mock Gold, so cost per resolution is "not defined" (no case reaches a confirmed dispute in a single turn). In the frozen run, system latency for the router versions includes the live model calls (`system.<version>.latency_ms`, p50 about 0.95 s), despite the run note saying replay time. An offline replay reproduces every field except spend and latency (`python3 -m eval.run verify 2024Q4-eval-v7`).
 

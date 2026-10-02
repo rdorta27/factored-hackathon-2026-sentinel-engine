@@ -310,10 +310,20 @@ def measure(run_id: str, record: bool = False, cap_usd: float = DEFAULT_CAP_USD)
     return summary
 
 
+def _strip(node):  # type: ignore[no-untyped-def]
+    if isinstance(node, dict):
+        return {k: _strip(v) for k, v in node.items() if k != "latency_ms"}
+    if isinstance(node, list):
+        return [_strip(v) for v in node]
+    return node
+
+
 def _comparable(summary: dict) -> dict:
+    """Everything a replay must reproduce: spend and wall-clock latency are left out,
+    since a replay makes no live call and reads latency from rounded recordings."""
     body = json.loads(json.dumps(summary, sort_keys=True))
     body.pop("spend", None)
-    return body
+    return _strip(body)
 
 
 def verify(run_id: str) -> bool:

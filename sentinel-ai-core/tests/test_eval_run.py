@@ -116,3 +116,11 @@ def test_measurement_report_shows_variant_paired_and_stability_sections(
     # Every number in the report is read from the summary.
     overall = summary["component"]["versions"]["baseline"]["breakdown"]["overall"]
     assert f"| baseline | {overall['accuracy']} |" in report
+
+
+def test_verify_ignores_spend_and_latency_only() -> None:
+    a = {"spend": {"n": 3}, "x": {"latency_ms": {"p50": 1.0}, "accuracy": 0.9}}
+    b = {"spend": {"n": 0}, "x": {"latency_ms": {"p50": 900.0}, "accuracy": 0.9}}
+    assert run._comparable(a) == run._comparable(b)
+    b["x"]["accuracy"] = 0.8
+    assert run._comparable(a) != run._comparable(b)
