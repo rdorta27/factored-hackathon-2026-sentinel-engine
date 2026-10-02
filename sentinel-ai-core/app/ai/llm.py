@@ -81,8 +81,31 @@ def assert_no_forbidden(payload: object) -> None:
             assert_no_forbidden(item)
 
 
+@dataclass(frozen=True)
+class Example:
+    """One worked example for the prompt: a development case id, its text and the JSON reply."""
+
+    case_id: str
+    message: str
+    reply: dict
+
+
+def example_messages(examples: tuple[Example, ...]) -> list[dict[str, str]]:
+    """A fixed block placed before the customer turn, so providers can cache it."""
+    block: list[dict[str, str]] = []
+    for example in examples:
+        block.append(
+            {"role": "user", "content": json.dumps({"message": example.message, "turns": [example.message]}, ensure_ascii=False)}
+        )
+        block.append({"role": "assistant", "content": json.dumps(example.reply, ensure_ascii=False)})
+    return block
+
+
 def build_messages(
-    message: str, turns: list[str], charge: dict | None = None
+    message: str,
+    turns: list[str],
+    charge: dict | None = None,
+    examples: tuple[Example, ...] = (),
 ) -> list[dict[str, str]]:
     window = [turn for turn in turns[-4:] if isinstance(turn, str)][:4]
     user_body: dict = {"message": message, "turns": window}
@@ -99,6 +122,7 @@ def build_messages(
     assert_no_forbidden({"content": content} if False else user_body)
     return [
         {"role": "system", "content": SYSTEM_PROMPT},
+        *example_messages(examples),
         {"role": "user", "content": content},
     ]
 
@@ -136,6 +160,12 @@ class RouterConfig:
     default_model: str = ""
     prompt_version: str = PROMPT_VERSION_DEFAULT
     temperature: float = 0.0
+    # Prompt version v2 carries examples; their ids are recorded with the run.
+    examples: tuple[Example, ...] = ()
+
+    @property
+    def example_ids(self) -> tuple[str, ...]:
+        return tuple(example.case_id for example in self.examples)
 
     @classmethod
     def from_env(cls) -> RouterConfig:
@@ -176,7 +206,7 @@ class PromptedLLMRouter:
     def understand(self, message: str, turns: list[str]) -> UnderstandResult:
         route = pick_route(message)
         model = self._model_for(route)
-        messages = build_messages(message, turns)
+        messages = build_messages(message, turns, examples=self._config.examples)
         response = self._transport.complete(
             model=model, messages=messages, temperature=self._config.temperature
         )

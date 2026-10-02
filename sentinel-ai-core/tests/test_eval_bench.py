@@ -58,3 +58,47 @@ def test_invalid_reply_is_counted_as_json_failure() -> None:
     result = run_bench([case], router=router, repetitions=2)
     assert result["router"]["json_failures"] == {"n": 2, "count": 2}
     assert result["router"]["intent"]["accuracy"] == 0.0
+
+
+def _case(case_id: str, split: str, intent: str = "charge"):  # type: ignore[no-untyped-def]
+    from eval.cases import Case
+
+    return Case(
+        id=case_id, locale="es-419", country="MX", turns=(f"texto {case_id}",),
+        expected_intent=intent, expected_category=None, expected_outcome="clarification",
+        requires_handoff=False, split=split,
+    )
+
+
+def test_examples_come_only_from_development() -> None:
+    import pytest
+
+    from eval.examples import HeldOutExample, build_examples
+
+    cases = [_case("dev-1", "development"), _case("ho-1", "held_out")]
+    assert [e.case_id for e in build_examples(cases, ["dev-1"])] == ["dev-1"]
+    with pytest.raises(HeldOutExample):
+        build_examples(cases, ["dev-1", "ho-1"])
+
+
+def test_v2_prompt_places_examples_before_the_turn_and_records_ids() -> None:
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+    from eval.examples import build_examples
+
+    class Spy:
+        messages: list = []
+
+        def complete(self, *, model, messages, temperature=0.0):  # type: ignore[no-untyped-def]
+            from app.ai.transport import LLMResponse
+
+            Spy.messages = messages
+            return LLMResponse(content='{"intent": "missing", "language": "es-419"}')
+
+    examples = build_examples([_case("dev-7", "development", "missing")], ["dev-7"])
+    config = RouterConfig(cheap_model="m", prompt_version="v2", examples=examples)
+    PromptedLLMRouter(Spy(), config).understand("no veo mi cargo", [])
+    roles = [m["role"] for m in Spy.messages]
+    assert roles == ["system", "user", "assistant", "user"]
+    assert "texto dev-7" in Spy.messages[1]["content"]
+    assert "no veo mi cargo" in Spy.messages[-1]["content"]
+    assert config.example_ids == ("dev-7",)
