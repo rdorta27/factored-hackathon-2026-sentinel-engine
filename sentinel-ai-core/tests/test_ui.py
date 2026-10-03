@@ -137,6 +137,15 @@ def test_advisor_view_lists_tickets_and_opens_a_read_only_detail() -> None:
         assert method not in block, f"the advisor view issues a write: {method}"
 
 
+def test_product_screens_are_captured() -> None:
+    screens = Path(__file__).resolve().parents[2] / "docs" / "build" / "screenshots" / "ui-product"
+    for locale in ("es-MX", "pt-BR"):
+        for size in ("desktop", "phone"):
+            for name in ("entry", "chat", "advisor-list", "advisor-detail"):
+                path = screens / f"{name}-{locale}-{size}.png"
+                assert path.is_file() and path.stat().st_size > 1000, path
+
+
 def test_the_why_followup_returns_an_explanation_over_http() -> None:
     api = TestClient(create_app())
     assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200

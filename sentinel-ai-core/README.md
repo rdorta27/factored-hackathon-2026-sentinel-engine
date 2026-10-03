@@ -45,6 +45,15 @@ Limitation: a persona id alone proves nothing about identity. One-click
 sign-in is a demo shortcut for evaluators, never an authentication method;
 keep the flag off outside the demo.
 
+## Screens
+
+Four screens: the demo entry, the chat with the "Cómo lo resolví" panel, the
+advisor ticket list and the advisor detail (package and turn trace). They are
+captured in es-MX and pt-BR at desktop and phone width under
+[`docs/build/screenshots/ui-product/`](../docs/build/screenshots/ui-product/),
+regenerated from the repository root with
+`python3 scripts/capture_ui_product.py` (headless Chromium, demo mode).
+
 ## API
 
 One app, one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`,

@@ -116,6 +116,27 @@ chat plan.
   `tests/test_handoffs_api.py`,
   `tests/test_ui.py::test_advisor_view_lists_tickets_and_opens_a_read_only_detail`.
 
+### MT-09 · Product interface screens vs. the mockup (2026-10-03, ui-product)
+
+- **Input:** the four screens captured in demo mode with
+  `python3 scripts/capture_ui_product.py`, in es-MX (normal persona) and pt-BR
+  (ambiguous persona), at desktop (1280×900) and phone (390×844) width.
+- **Observed:** entry shows the mark, the purpose line, the named language
+  buttons and the four persona chips under the demo banner, with the
+  user-and-password form collapsed as a secondary link. Chat shows the
+  per-turn "Cómo lo resolví" panel with the closed steps in plain language and
+  a neutral "Estado: …" label on each charge. Advisor list shows one row per
+  ticket (id, reason, country, language, created date); the detail is
+  read-only and shows the handoff package plus the turn trace (step, outcome,
+  latency, model, prompt version, cost, policy version). The panel, the
+  neutral labels and the two advisor screens match the reviewed mockup; the
+  entry adds the persona chips the mockup asks for.
+- **Expected:** exactly that, in both languages and both widths, with no
+  external font request and no internal identifier on screen.
+- **Capability:** product interface (change `ui-product`, task 4.1).
+- **Status:** fixed. Files: `docs/build/screenshots/ui-product/*.png`
+  (16 images); evidence for REQ-0038.
+
 ## How to add an entry
 
 Copy a block: input, observed, expected, cause, capability, status. Name the

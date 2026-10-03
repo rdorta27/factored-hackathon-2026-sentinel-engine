@@ -15,7 +15,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 ## 3. Advisor (PR 3)
 
 - [x] 3.1 Store the escalating turn's `trace_id` on the ticket and add the advisor-only trace route. Evidence: `tests/test_handoffs_api.py` (customer refused, steps listed, no text or identifier).
-- [ ] 3.2 Ticket list by age with reason, country and language, and the detail with package and trace; read-only. Evidence: `tests/test_ui.py` and a manual run recorded in `team/chat-manual-tests.md`.
+- [x] 3.2 Ticket list by age with reason, country and language, and the detail with package and trace; read-only. Evidence: `tests/test_ui.py` and a manual run recorded in `team/chat-manual-tests.md`.
 
 ## 4. Close
 
