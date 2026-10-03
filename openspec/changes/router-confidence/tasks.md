@@ -18,4 +18,4 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 
 ## 4. Close
 
-- [ ] 4.1 Hand the cut-offs to `router-v3` for the `eval-v8` measurement; update README limitations and REQ-0016 evidence with the calibration result. Evidence: those files.
+- [x] 4.1 Hand the cut-offs to `router-v3` for the `eval-v8` measurement; update README limitations and REQ-0016 evidence with the calibration result. Evidence: those files.
