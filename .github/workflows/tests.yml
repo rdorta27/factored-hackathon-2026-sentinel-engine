@@ -1,0 +1,70 @@
+name: tests
+
+# Both suites, on every push and pull request, with no model keys, cloud
+# credentials or data, and without writing evidence (REQ-0028, REQ-0021).
+# A run is listed under replayable only when `python3 -m eval.run verify`
+# reproduces it offline. 2024Q4-eval-v7 stays out until resolution-eval is
+# merged: its system block does not reproduce (docs/build/metrics-report.md).
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  SENTINEL_WRITE_EVIDENCE: "0"
+
+jobs:
+  ai-core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sentinel-ai-core
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: sentinel-ai-core/pyproject.toml
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Test
+        run: python -m pytest -q
+
+      - name: Verify replayable runs
+        run: |
+          # Add a run id here only after it replays offline.
+          runs=()
+          if [ "${#runs[@]}" -eq 0 ]; then
+            echo "no replayable runs listed"
+            exit 0
+          fi
+          for run_id in "${runs[@]}"; do
+            python3 -m eval.run verify "$run_id"
+          done
+
+  data-engine:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: sentinel-data-engine
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: sentinel-data-engine/pyproject.toml
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Test
+        run: python -m pytest -q

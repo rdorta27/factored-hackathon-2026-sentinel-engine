@@ -1,6 +1,7 @@
 """SQLite backend: state survives a restart; retention deletes the conversation."""
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
 
 import pytest
@@ -99,6 +100,9 @@ def test_logout_deletes_the_conversation(sqlite_env) -> None:  # type: ignore[no
     assert store.count() == 0
 
 
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
 def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-untyped-def]
     import os
     import stat
@@ -113,6 +117,39 @@ def test_database_file_is_owner_only(sqlite_env) -> None:  # type: ignore[no-unt
     assert stat.S_IMODE(os.stat(sqlite_env).st_mode) == 0o755, "an existing folder is left as is"
 
 
+def test_journal_mode_delete(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from sqlalchemy import text
+
+    from app.db.session import make_engine
+
+    monkeypatch.setenv("SENTINEL_SQLITE_JOURNAL", "DELETE")
+    engine = make_engine(tmp_path / "state.db")
+    with engine.connect() as connection:
+        mode = connection.execute(text("PRAGMA journal_mode")).scalar()
+    engine.dispose()
+    assert mode == "delete"
+    assert not (tmp_path / "state.db-wal").exists()
+
+
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
+def test_unwritable_state_path_fails_fast(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.db.session import make_engine
+
+    locked = tmp_path / "locked"
+    locked.mkdir()
+    os.chmod(locked, 0o555)
+    try:
+        with pytest.raises(OSError, match="not writable"):
+            make_engine(locked / "state.db")
+    finally:
+        os.chmod(locked, 0o755)
+
+
+@pytest.mark.skipif(
+    os.name == "nt", reason="POSIX file modes are not enforced on Windows"
+)
 def test_database_folder_created_owner_only(tmp_path) -> None:  # type: ignore[no-untyped-def]
     import os
     import stat
