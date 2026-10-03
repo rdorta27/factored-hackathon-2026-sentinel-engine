@@ -353,19 +353,75 @@ function renderDemoPrompts(transactions) {
   box.hidden = prompts.length === 0;
 }
 
-/* Advisor view: the escalated tickets with why they came and what was tried. */
-function ticketCard(ticket) {
-  const pkg = ticket.package;
+/* Advisor view: escalated tickets, newest first. The list shows why each case
+   came (reason, country, language, age); the detail is read-only and adds the
+   handoff package and the trace of the turn that filed it. */
+function ticketRow(ticket) {
+  const row = el("button", "candidate queue-row");
+  row.type = "button";
+  row.setAttribute("data-testid", "queue-row");
+  row.setAttribute("data-case-id", ticket.case_id);
+  row.append(el("strong", "", ticket.case_id));
+  row.append(el("span", "chat-sub", ` · ${t("q_reason")}: ${t(ticket.reason_key)}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${ticket.country}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${ticket.package.language}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_created")}: ${formatDate(ticket.created_at)}`));
+  row.addEventListener("click", () => openTicket(ticket.case_id));
+  return row;
+}
+
+async function loadQueue() {
+  const response = await api("/api/v1/handoffs");
+  if (!response.ok) return;
+  const tickets = await response.json();
+  document.getElementById("queue-detail").hidden = true;
+  document.getElementById("queue-list").hidden = false;
+  const box = document.getElementById("queue");
+  box.textContent = "";
+  if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
+  tickets.forEach((ticket) => box.append(ticketRow(ticket)));
+}
+
+function field(labelKey, value) {
+  return el("p", "", `${t(labelKey)}: ${value}`);
+}
+
+function traceBlock(trace) {
   const card = el("div", "msg msg-audit");
-  card.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
-  card.append(el("p", "chat-sub", `${t("q_customer")}: ${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
-  const rule = pkg.evidence && pkg.evidence.policy_rule ? ` (${pkg.evidence.policy_rule})` : "";
-  card.append(el("p", "", `${t("q_reason")}: ${t(ticket.reason_key)}${rule}`));
-  card.append(el("p", "", `${t("q_summary")}: ${pkg.summary}`));
+  card.append(el("h4", "chat-title", t("q_trace")));
+  if (!trace.available) {
+    card.append(el("p", "chat-sub", t("q_traceUnavailable")));
+    return card;
+  }
+  const list = el("ul", "chat-sub");
+  trace.steps.forEach((step) => {
+    const parts = [
+      step.step,
+      step.tool,
+      step.outcome,
+      `${t("q_latency")}: ${Number(step.latency_ms).toFixed(1)}`,
+      `${t("q_model")}: ${step.model}`,
+      `${t("q_prompt")}: ${step.prompt_version}`,
+      `${t("q_cost")}: ${Number(step.cost_usd).toFixed(4)}`,
+    ];
+    if (step.policy_version) parts.push(`${t("q_policyVersion")}: ${step.policy_version}`);
+    list.append(el("li", "", parts.filter(Boolean).join(" · ")));
+  });
+  card.append(list);
+  return card;
+}
+
+function packageBlock(pkg) {
+  const card = el("div", "msg msg-audit");
+  card.append(el("h4", "chat-title", t("q_package")));
+  card.append(field("q_summary", pkg.summary));
   const facts = pkg.verified_facts;
   if (facts) {
     card.append(
-      el("p", "", `${t("q_transaction")}: ${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`)
+      field(
+        "q_transaction",
+        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`
+      )
     );
   }
   const actions = el("ul", "chat-sub");
@@ -375,18 +431,30 @@ function ticketCard(ticket) {
   });
   card.append(el("p", "", t("q_actions")));
   card.append(actions);
-  card.append(el("p", "", `${t("q_openQuestions")}: ${pkg.open_questions.join(", ")}`));
+  card.append(field("q_openQuestions", pkg.open_questions.join(", ")));
   return card;
 }
 
-async function loadQueue() {
-  const response = await api("/api/v1/handoffs");
+async function openTicket(caseId) {
+  const detail = document.getElementById("queue-detail");
+  const response = await api(`/api/v1/handoffs/${caseId}`);
   if (!response.ok) return;
-  const tickets = await response.json();
-  const box = document.getElementById("queue");
-  box.textContent = "";
-  if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
-  tickets.forEach((ticket) => box.append(ticketCard(ticket)));
+  const ticket = await response.json();
+  const traceResponse = await api(`/api/v1/handoffs/${caseId}/trace`);
+  const trace = traceResponse.ok ? await traceResponse.json() : { available: false, steps: [] };
+  detail.textContent = "";
+  const back = el("button", "theme-toggle", t("q_back"));
+  back.type = "button";
+  back.setAttribute("data-testid", "queue-back");
+  back.addEventListener("click", loadQueue);
+  detail.append(back);
+  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
+  detail.append(field("q_customer", `${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
+  detail.append(field("q_reason", t(ticket.reason_key)));
+  detail.append(packageBlock(ticket.package));
+  detail.append(traceBlock(trace));
+  document.getElementById("queue-list").hidden = true;
+  detail.hidden = false;
 }
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {

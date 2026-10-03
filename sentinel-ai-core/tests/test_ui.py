@@ -121,6 +121,22 @@ def test_transaction_status_label_is_neutral() -> None:
         assert signal not in code, f"a fraud signal leaked into the page: {signal}"
 
 
+def test_advisor_view_lists_tickets_and_opens_a_read_only_detail() -> None:
+    assert 'data-testid="queue-detail"' in INDEX
+    assert "queue-row" in APP_JS
+    assert "openTicket" in APP_JS
+    assert "/trace" in APP_JS and "traceBlock" in APP_JS
+    assert "packageBlock" in APP_JS
+    for key in ("q_language", "q_country", "q_reason", "q_created"):
+        assert f't("{key}")' in APP_JS, f"the list must show {key}"
+    # Read-only: the advisor block only issues GETs, never a write.
+    start = APP_JS.index("function ticketRow")
+    end = APP_JS.index('document.getElementById("login-form")')
+    block = APP_JS[start:end]
+    for method in ('method: "POST"', 'method: "PUT"', 'method: "PATCH"', 'method: "DELETE"'):
+        assert method not in block, f"the advisor view issues a write: {method}"
+
+
 def test_the_why_followup_returns_an_explanation_over_http() -> None:
     api = TestClient(create_app())
     assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200

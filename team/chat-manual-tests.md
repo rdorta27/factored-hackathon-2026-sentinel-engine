@@ -98,6 +98,24 @@ chat plan.
   fixed safety rules are probed in `tests/adversarial/test_f_decision_disclosure.py`
   (`0/42` unsafe, [run](../../evidence/adversarial/20261002T195516Z/summary.json)).
 
+### MT-08 · Advisor ticket list and trace (2026-10-03, ui-product)
+
+- **Input:** demo persona `high-amount` (CUST-0002, es-CO) escalates a high
+  amount (`TXN-2002`), then the advisor signs in with `ADV-0001`.
+- **Observed:** the list is newest first with one row: `HO-1a588a6d`, country
+  `CO`, language `es-419` (the conversation language), reason
+  `handoff.amountHigh`, and the created date. The read-only detail shows the
+  handoff package (`act/lookup_transactions/ok`, `decide`, `escalate`) and the
+  trace of the escalating turn: `decide ok fake 0.0ms`, `escalate ok fake
+  0.0ms`, `turn ok fake 0.6ms`, with model, prompt version, cost and policy
+  version per step. No customer text or identifier appears.
+- **Expected:** exactly that; the view never writes (only GETs), and a ticket
+  with no stored trace shows "Traza no disponible." instead of failing.
+- **Capability:** advisor trace (change `ui-product`, task 3.2).
+- **Status:** fixed. Evidence: this run and
+  `tests/test_handoffs_api.py`,
+  `tests/test_ui.py::test_advisor_view_lists_tickets_and_opens_a_read_only_detail`.
+
 ## How to add an entry
 
 Copy a block: input, observed, expected, cause, capability, status. Name the
