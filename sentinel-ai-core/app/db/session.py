@@ -63,4 +63,23 @@ def make_engine(path: Path | str | None = None) -> Engine:
     from app.models import conversation, dispute_case, session_state  # noqa: F401
 
     Base.metadata.create_all(engine)
+    _ensure_columns(engine)
     return engine
+
+
+def _ensure_columns(engine: Engine) -> None:
+    """Add columns that predate the current model, idempotently.
+
+    ``create_all`` never alters an existing table, so a database created
+    before ``dispute_cases.trace_id`` would miss it. The advisor trace route
+    treats the missing value as "unavailable"; this keeps an old file usable.
+    """
+    from sqlalchemy import inspect, text
+
+    inspector = inspect(engine)
+    if "dispute_cases" not in inspector.get_table_names():
+        return
+    columns = {column["name"] for column in inspector.get_columns("dispute_cases")}
+    if "trace_id" not in columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE dispute_cases ADD COLUMN trace_id VARCHAR(64)"))

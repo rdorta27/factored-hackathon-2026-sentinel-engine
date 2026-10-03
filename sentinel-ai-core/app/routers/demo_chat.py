@@ -505,6 +505,7 @@ def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
             transaction_date=facts.transaction_date if facts else None,
             reason_key=reply.reason_key,
             package=reply.package.model_dump(mode="json"),
+            trace_id=turn.trace_id,
         )
     )
 

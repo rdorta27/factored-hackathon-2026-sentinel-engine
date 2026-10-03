@@ -1,10 +1,12 @@
 """Advisor side: /api/v1/handoffs, role enforcement, and the demo login flag (decision 009)."""
 
+import json
+
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import create_app
-from app.schemas.chat import AdvisorTicket
+from app.schemas.chat import AdvisorTicket, AdvisorTrace
 
 CUSTOMER_PASSWORD = "Testpass-001"
 ADVISOR_PASSWORD = "Advisor-001"
@@ -113,3 +115,55 @@ def test_advisor_cannot_use_customer_endpoints(demo_auth, method, path, body) ->
 
 def test_handoffs_need_a_session() -> None:
     assert TestClient(create_app()).get("/api/v1/handoffs").status_code == 401
+
+
+def test_a_customer_cannot_read_a_trace(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    handoff = escalate(api)
+    login(api, "CUST-0001", CUSTOMER_PASSWORD)
+    assert api.get(f"/api/v1/handoffs/{handoff['reference']}/trace").status_code == 403
+    assert api.app.state.audit.records[-1].event == "access_denied"
+
+
+def test_advisor_sees_the_trace_steps_without_text_or_identifier(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    handoff = escalate(api)
+    login(api, "ADV-0001", ADVISOR_PASSWORD)
+    trace = AdvisorTrace.model_validate(
+        api.get(f"/api/v1/handoffs/{handoff['reference']}/trace").json()
+    )
+    assert trace.available is True and trace.trace_id
+    assert trace.steps, "the escalating turn recorded steps"
+    assert any(step.step == "escalate" for step in trace.steps)
+    assert all(step.latency_ms >= 0 and step.model and step.prompt_version for step in trace.steps)
+    raw = json.dumps(trace.model_dump(mode="json"))
+    assert "CUST-" not in raw
+    assert "quiero una persona" not in raw
+    assert "session_ref" not in raw
+
+
+def test_trace_of_a_missing_ticket_is_404(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    login(api, "ADV-0001", ADVISOR_PASSWORD)
+    assert api.get("/api/v1/handoffs/HO-missing/trace").status_code == 404
+
+
+def test_trace_reports_unavailable_when_the_row_has_none(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    from datetime import datetime, timezone
+
+    from app.state.cases import CaseRow
+
+    api = TestClient(create_app())
+    api.app.state.cases.add(
+        CaseRow(
+            case_id="HO-old",
+            customer_id="CUST-0001",
+            kind="handoff",
+            status="Escalated",
+            created_at=datetime.now(timezone.utc),
+            package={"request": "dispute", "language": "es-419", "country": "MX"},
+        )
+    )
+    login(api, "ADV-0001", ADVISOR_PASSWORD)
+    body = api.get("/api/v1/handoffs/HO-old/trace").json()
+    assert body["available"] is False and body["steps"] == []

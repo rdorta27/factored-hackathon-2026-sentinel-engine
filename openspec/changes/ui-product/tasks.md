@@ -10,7 +10,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 ## 2. Chat and panel (PR 2, after chat-loop)
 
 - [x] 2.1 Map each turn's records to the closed step keys and add `steps` to the reply. Evidence: `tests/test_contract.py` (strict field) and tests per outcome kind that no rule id, model or threshold appears.
-- [ ] 2.2 Render the "Cómo lo resolví" panel and neutral status labels; show chips only for supported flows. Evidence: `tests/test_ui.py` and `tests/test_demo_prompts.py`.
+- [x] 2.2 Render the "Cómo lo resolví" panel and neutral status labels; show chips only for supported flows. Evidence: `tests/test_ui.py` and `tests/test_demo_prompts.py`.
 
 ## 3. Advisor (PR 3)
 

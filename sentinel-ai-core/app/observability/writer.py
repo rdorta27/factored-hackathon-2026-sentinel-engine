@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
 import os
 import secrets
@@ -93,3 +94,30 @@ class Recorder:
 
     def records_for(self, trace_id: str) -> list[StepRecord]:
         return [record for record in self._records if record.trace_id == trace_id]
+
+    def persisted_for(self, trace_id: str) -> list[StepRecord]:
+        """Read one trace back from the JSONL log.
+
+        Used when the turn is no longer in memory (a restart): the advisor
+        trace route falls back to the file. Unknown or corrupt lines are
+        skipped rather than failing the request.
+        """
+        if self._path is None or not self._path.is_file():
+            return []
+        found: list[StepRecord] = []
+        with self._path.open("r", encoding="utf-8") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    data = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if data.get("trace_id") != trace_id:
+                    continue
+                try:
+                    found.append(StepRecord(**data))
+                except (TypeError, ValueError):
+                    continue
+        return found

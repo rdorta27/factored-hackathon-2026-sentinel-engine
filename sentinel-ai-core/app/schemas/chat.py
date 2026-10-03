@@ -325,3 +325,36 @@ class AdvisorTicket(BaseModel):
     reason_key: Optional[str] = None
     reason_detail: Optional[str] = None
     package: HandoffPackage
+
+
+class TraceStep(BaseModel):
+    """One step of the escalating turn, as the advisor reads it.
+
+    The execution record without the salted session reference: no customer
+    text, no identifier (REQ-0008, REQ-0025).
+    """
+
+    model_config = StrictModel
+
+    step: str
+    tool: Optional[str] = None
+    outcome: str
+    attempt: int = Field(ge=1)
+    latency_ms: float = Field(ge=0)
+    model: str
+    route: str
+    prompt_version: str
+    cost_usd: float = Field(ge=0)
+    policy_version: Optional[str] = None
+    ts: str
+
+
+class AdvisorTrace(BaseModel):
+    """Trace of the turn that filed a ticket. Advisor role only."""
+
+    model_config = StrictModel
+
+    case_id: str
+    trace_id: Optional[str] = None
+    available: bool
+    steps: list[TraceStep] = Field(default_factory=list)
