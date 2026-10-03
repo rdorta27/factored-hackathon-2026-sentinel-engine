@@ -16,7 +16,7 @@ import threading
 from pathlib import Path
 
 from app.ai.demo import DemoModel
-from app.ai.llm import Example, PromptedLLMRouter, RouterConfig
+from app.ai.llm import Cutoffs, Example, PromptedLLMRouter, RouterConfig
 from app.ai.port import ModelInfo, ModelPort, UnderstandResult
 from app.ai.prices import PRICES
 from app.ai.transport import HttpTransport, ModelTransport, ModelUnavailable
@@ -27,6 +27,9 @@ PROMPT_WITH_EXAMPLES = "v2"
 # A copy of the eval examples, so the image needs neither eval/ nor the case files
 # (and never ships the sealed held-out set). A test keeps it equal to the eval loader.
 EXAMPLES_PATH = Path(__file__).resolve().parent / "examples_v2.json"
+# The calibrated cut-offs, next to the examples, with the run that chose them
+# (018 amendment). Loaded only when the setting below is on.
+CUTOFFS_PATH = Path(__file__).resolve().parent / "router_config.json"
 
 # Worst case per model call is timeout x (retries + 1). One model failure ends
 # the turn on the baseline, so the loop's own retries never multiply it.
@@ -81,10 +84,30 @@ def load_examples() -> tuple[Example, ...]:
     return examples
 
 
+def cutoffs_enabled() -> bool:
+    """Off by default: without the setting the app serves v2 without cut-offs."""
+    return os.environ.get("SENTINEL_LLM_CUTOFFS", "").strip().lower() in ("1", "true", "on", "yes")
+
+
+def load_cutoffs() -> Cutoffs:
+    """The calibrated cut-offs; fail rather than serve a partial configuration."""
+    try:
+        body = json.loads(CUTOFFS_PATH.read_text(encoding="utf-8"))
+        return Cutoffs(
+            t_act=float(body["t_act"]),
+            t_abstain=float(body["t_abstain"]),
+            calibration_run=str(body["calibration_run"]),
+        )
+    except (OSError, KeyError, TypeError, ValueError) as exc:
+        raise RuntimeError(f"cut-offs need a valid router configuration: {exc}") from exc
+
+
 def router_config() -> RouterConfig:
     config = RouterConfig.from_env()
     if config.prompt_version == PROMPT_WITH_EXAMPLES:
         config.examples = load_examples()
+    if cutoffs_enabled():
+        config.cutoffs = load_cutoffs()
     return config
 
 

@@ -129,6 +129,7 @@ def _router(content: str, **overrides):  # type: ignore[no-untyped-def]
         strong_model=overrides.get("strong_model", "strong-test"),
         default_model=overrides.get("default_model", "default-test"),
         prompt_version=overrides.get("prompt_version", "v1"),
+        cutoffs=overrides.get("cutoffs"),
     )
     return PromptedLLMRouter(StubTransport(content, overrides.get("logprobs")), config)
 
@@ -185,6 +186,118 @@ def test_router_without_logprobs_has_no_confidence() -> None:
     result = router.understand("hay un problema", [])
     assert result.kind.value == "missing"
     assert result.confidence is None
+
+
+def _cutoffs(t_act: float = 0.9, t_abstain: float = 0.0):  # type: ignore[no-untyped-def]
+    from app.ai.llm import Cutoffs
+
+    return Cutoffs(t_act=t_act, t_abstain=t_abstain, calibration_run="2024Q4-calibration-v1")
+
+
+def _confidence_top(label: str, probability: float) -> tuple[tuple[str, float], ...]:
+    other = "missing" if label != "missing" else "charge"
+    return ((label, math.log(probability)), (other, math.log(1.0 - probability)))
+
+
+def test_cutoffs_turn_a_borderline_charge_into_missing() -> None:
+    router = _router(
+        '{"intent": "charge", "language": "es-419"}',
+        logprobs=_label_logprobs("charge", _confidence_top("charge", 0.5)),
+        cutoffs=_cutoffs(0.9),
+    )
+    result = router.understand("no reconozco un cargo", [])
+    assert result.kind.value == "missing"
+    assert result.confidence == pytest.approx(0.5)
+
+
+def test_cutoffs_keep_a_confident_charge() -> None:
+    router = _router(
+        '{"intent": "charge", "language": "es-419"}',
+        logprobs=_label_logprobs("charge", _confidence_top("charge", 0.99)),
+        cutoffs=_cutoffs(0.9),
+    )
+    assert router.understand("no reconozco un cargo", []).kind.value == "charge"
+
+
+def test_cutoffs_never_downgrade_a_person_request() -> None:
+    router = _router(
+        '{"intent": "person", "language": "es-419"}',
+        logprobs=_label_logprobs("person", _confidence_top("person", 0.4)),
+        cutoffs=_cutoffs(0.9),
+    )
+    assert router.understand("quiero hablar con una persona", []).kind.value == "person"
+
+
+def test_without_cutoffs_a_borderline_label_is_used_as_v2() -> None:
+    router = _router(
+        '{"intent": "charge", "language": "es-419"}',
+        logprobs=_label_logprobs("charge", _confidence_top("charge", 0.5)),
+    )
+    assert router.understand("no reconozco un cargo", []).kind.value == "charge"
+
+
+def test_a_borderline_charge_asks_before_the_charge_path() -> None:
+    from datetime import date
+
+    from app.orchestrator.step import Ports, step
+    from app.orchestrator.types import (
+        Candidate,
+        ConversationState,
+        Language,
+        OutcomeKind,
+        TextInput,
+        TransactionStatus,
+    )
+    from app.tools.fake import InMemoryTools
+
+    router = _router(
+        '{"intent": "charge", "language": "es-419"}',
+        logprobs=_label_logprobs("charge", _confidence_top("charge", 0.5)),
+        cutoffs=_cutoffs(0.9),
+    )
+    tools = InMemoryTools(
+        [Candidate("c1", TransactionStatus.APPROVED, "10", "MXN", "ACME", "2024-11-01", "2024-11-02")]
+    )
+    ports = Ports("s1", tools, router, today=date(2024, 12, 1))  # type: ignore[arg-type]
+    output = step(
+        TextInput("no reconozco un cargo ACME 10.00 2024-11-01"),
+        ConversationState(language=Language.ES_419),
+        ports,
+    )
+    assert output.kind is OutcomeKind.QUESTION
+    assert tools.open_calls == 0
+
+
+def test_a_confident_charge_still_meets_the_policy_refusal() -> None:
+    from datetime import date
+
+    from app.orchestrator.step import Ports, step
+    from app.orchestrator.types import (
+        Candidate,
+        ConversationState,
+        Language,
+        OutcomeKind,
+        TextInput,
+        TransactionStatus,
+    )
+    from app.tools.fake import InMemoryTools
+
+    router = _router(
+        '{"intent": "charge", "language": "es-419"}',
+        logprobs=_label_logprobs("charge", _confidence_top("charge", 0.99)),
+        cutoffs=_cutoffs(0.9),
+    )
+    tools = InMemoryTools(
+        [Candidate("c1", TransactionStatus.REVERSED, "10", "MXN", "ACME", "2024-11-01", "2024-11-02")]
+    )
+    ports = Ports("s1", tools, router, today=date(2024, 12, 1))  # type: ignore[arg-type]
+    output = step(
+        TextInput("no reconozco un cargo ACME 10.00 2024-11-01"),
+        ConversationState(language=Language.ES_419),
+        ports,
+    )
+    assert output.kind is OutcomeKind.EXPLAIN
+    assert output.reason == "status.reversed"
 
 
 def test_router_detects_portuguese_and_selects_strong_route() -> None:

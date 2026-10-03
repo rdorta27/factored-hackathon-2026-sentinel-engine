@@ -284,6 +284,19 @@ def label_confidence(
     return min(1.0, chosen / mass)
 
 
+@dataclass(frozen=True)
+class Cutoffs:
+    """The calibrated cut-offs for the label confidence, with their run id."""
+
+    t_act: float
+    t_abstain: float
+    calibration_run: str
+
+    def __post_init__(self) -> None:
+        if not 0.0 <= self.t_abstain <= self.t_act <= 1.0:
+            raise ValueError("cut-offs must satisfy 0 <= t_abstain <= t_act <= 1")
+
+
 @dataclass
 class RouterConfig:
     cheap_model: str = ""
@@ -294,6 +307,8 @@ class RouterConfig:
     # Prompt version v2 carries examples; their ids are recorded with the run.
     examples: tuple[Example, ...] = ()
     route_rule: str = "heuristic"
+    # None serves v2 exactly: the label is used whatever its confidence.
+    cutoffs: Cutoffs | None = None
 
     @property
     def example_ids(self) -> tuple[str, ...]:
@@ -337,6 +352,19 @@ class PromptedLLMRouter:
         fallback = (self._config.default_model or self._config.cheap_model or "").strip()
         return fallback or "default"
 
+    def _apply_cutoffs(self, kind: UnderstandKind, confidence: float | None) -> UnderstandKind:
+        """A label below ``t_act`` becomes ``missing`` so the loop asks first.
+
+        A ``person`` request is a handoff rule: it is never downgraded. Without
+        cut-offs, or without log-probabilities, the label is used as is (v2).
+        """
+        cutoffs = self._config.cutoffs
+        if cutoffs is None or confidence is None or confidence >= cutoffs.t_act:
+            return kind
+        if kind is UnderstandKind.PERSON:
+            return kind
+        return UnderstandKind.MISSING
+
     def understand(
         self, message: str, turns: list[str], context: dict | None = None
     ) -> UnderstandResult:
@@ -352,6 +380,8 @@ class PromptedLLMRouter:
         kind, language, not_mine = parse_content(response.content)
         if not_mine and not claim_cued(message):
             not_mine = False
+        confidence = label_confidence(kind, response.logprobs)
+        kind = self._apply_cutoffs(kind, confidence)
         self._last.route = route
         self._last.model = model
         return UnderstandResult(
@@ -361,7 +391,7 @@ class PromptedLLMRouter:
             tokens_out=response.tokens_out,
             cost_usd=response.cost_usd,
             not_mine=not_mine,
-            confidence=label_confidence(kind, response.logprobs),
+            confidence=confidence,
         )
 
     def classify(self, message: str) -> str:
