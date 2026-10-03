@@ -44,11 +44,19 @@ function formatDate(value) {
   }).format(parsed);
 }
 
-/* The active interface language; `es-419` maps to the plain `es` tag. */
+/* The active interface language; `es-419` maps to the plain `es` tag.
+   Named buttons in #locale-group pick it; the codes never show as labels. */
+let currentLocale = "es-419";
+
 function activeLocale() {
-  const selected = document.getElementById("locale");
-  const locale = selected && selected.value ? selected.value : "es-419";
-  return locale === "es-419" ? "es" : locale;
+  return currentLocale === "es-419" ? "es" : currentLocale;
+}
+
+function setLocale(locale) {
+  currentLocale = locale;
+  document.querySelectorAll("#locale-group [data-locale]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.getAttribute("data-locale") === locale));
+  });
 }
 
 /* Fill a template's {placeholders} without touching the rest of the text. */
@@ -78,6 +86,7 @@ function explanationText(body) {
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
+  setLocale(locale);
   document.documentElement.lang = locale;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
@@ -118,7 +127,6 @@ async function loadContext() {
   sessionCountry = me.country || null;
   const locale = COUNTRY_LOCALES[me.country];
   if (locale) {
-    document.getElementById("locale").value = locale;
     await loadLocale(locale);
   }
 }
@@ -401,8 +409,41 @@ document.getElementById("logout").addEventListener("click", async () => {
   show("view-login");
 });
 
-document.getElementById("locale").addEventListener("change", (event) => {
-  loadLocale(event.target.value);
+document.getElementById("locale-group").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-locale]");
+  if (button) loadLocale(button.getAttribute("data-locale"));
+});
+
+/* Demo entry: one-click personas behind SENTINEL_DEMO_AUTH. The page asks
+   GET /api/v1/auth/demo: 200 lists the personas (banner + buttons shown,
+   password form left as a secondary link), 404 hides them and opens the
+   password form. The persona id is the only thing sent; no identifier. */
+async function loadDemoEntry() {
+  const response = await fetch("/api/v1/auth/demo");
+  const available = response.ok;
+  document.getElementById("demo-personas").hidden = !available;
+  document.getElementById("demo-banner").hidden = !available;
+  document.getElementById("password-login").open = !available;
+}
+
+async function demoLogin(persona) {
+  const response = await fetch(`/api/v1/auth/demo/${persona}`, { method: "POST" });
+  if (!response.ok) {
+    document.getElementById("login-error").textContent = t("loginFailed");
+    return;
+  }
+  const { locale } = await response.json();
+  clearThread();
+  show("view-chat");
+  await loadContext();
+  if (locale) await loadLocale(locale);
+  await loadTransactions();
+}
+
+document.getElementById("demo-personas").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-persona]");
+  if (button) demoLogin(button.getAttribute("data-persona"));
 });
 
 loadLocale("es-419");
+loadDemoEntry();

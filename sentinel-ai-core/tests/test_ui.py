@@ -69,6 +69,27 @@ def test_explanation_renders_verified_values_not_prose() -> None:
     assert "innerHTML" not in APP_JS
 
 
+def test_demo_entry_has_banner_personas_and_named_languages() -> None:
+    assert 'data-testid="demo-banner"' in INDEX
+    assert 'data-testid="demo-personas"' in INDEX
+    assert INDEX.count('data-testid="demo-persona"') == 4
+    assert "CUST-" not in INDEX
+    assert 'id="password-login"' in INDEX
+    for name in (
+        "Español · Latinoamérica",
+        "Español · México",
+        "Español · Colombia",
+        "Español · Argentina",
+        "Português · Brasil",
+    ):
+        assert name in INDEX, f"named language missing: {name}"
+    for code in (">es-419<", ">es-MX<", ">es-CO<", ">es-AR<", ">pt-BR<"):
+        assert code not in INDEX, f"locale code shown as a label: {code}"
+    assert 'data-testid="locale-button"' in INDEX
+    assert "locale-group" in APP_JS
+    assert "/api/v1/auth/demo" in APP_JS
+
+
 def test_the_why_followup_returns_an_explanation_over_http() -> None:
     api = TestClient(create_app())
     assert api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": PASSWORD}).status_code == 200

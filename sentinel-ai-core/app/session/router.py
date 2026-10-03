@@ -122,6 +122,75 @@ require_customer = require_role("customer")
 require_advisor = require_role("advisor")
 
 
+# One-click demo personas: fixture login plus the interface locale the
+# evaluator sees. The ambiguous persona is CUST-0001 in pt-BR (decision 017:
+# a pt-BR writer holds an MX, CO or AR account). No customer id reaches the
+# browser: the persona id is the only thing the page sends.
+_PERSONAS = {
+    "normal": {"login": "CUST-0001", "locale": "es-MX"},
+    "ambiguous": {"login": "CUST-0001", "locale": "pt-BR"},
+    "high-amount": {"login": "CUST-0002", "locale": "es-CO"},
+    "not-me": {"login": "CUST-0003", "locale": "es-AR"},
+}
+
+
+def _demo_enabled() -> bool:
+    return os.environ.get("SENTINEL_DEMO_AUTH", "0") == "1"
+
+
+def _demo_cookie(response: JSONResponse, session: Session) -> None:
+    response.set_cookie(
+        SESSION_COOKIE,
+        session.token,
+        httponly=True,
+        samesite="lax",
+        secure=_secure(),
+        max_age=SESSION_MAX_AGE,
+        path="/",
+    )
+
+
+@router.get("/demo")
+def demo_personas() -> JSONResponse:
+    """List the demo personas. 404 unless ``SENTINEL_DEMO_AUTH=1``."""
+    if not _demo_enabled():
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not found"})
+    return JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={
+            "personas": [
+                {"id": persona, "locale": spec["locale"]} for persona, spec in _PERSONAS.items()
+            ]
+        },
+    )
+
+
+@router.post("/demo/{persona}")
+def demo_login(persona: str, request: Request) -> JSONResponse:
+    """Sign in as a demo persona with one click: no password, customers only."""
+    if not _demo_enabled():
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not found"})
+    spec = _PERSONAS.get(persona)
+    if spec is None:
+        return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not found"})
+    service = get_service(request)
+    trace_id = _trace(request)
+    try:
+        session = service.login_demo(spec["login"], _ip(request), trace_id)
+    except InvalidCredentials:
+        return JSONResponse(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            content=_GENERIC,
+            headers={"WWW-Authenticate": "Cookie"},
+        )
+    response = JSONResponse(
+        status_code=status.HTTP_200_OK,
+        content={"detail": "Logged in", "role": session.role, "locale": spec["locale"]},
+    )
+    _demo_cookie(response, session)
+    return response
+
+
 @router.post("/login")
 def login(body: LoginRequest, request: Request) -> JSONResponse:
     service = get_service(request)
