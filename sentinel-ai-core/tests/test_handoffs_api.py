@@ -55,7 +55,13 @@ def test_advisor_reads_the_full_ticket(demo_auth) -> None:  # type: ignore[no-un
     assert (ticket.customer_id, ticket.country, ticket.status, ticket.reason_key) == (
         "CUST-0001", "MX", "Escalated", "handoff.person",
     )
-    assert ticket.package.model_dump(mode="json") == handoff["package"]
+    assert ticket.package.model_dump(mode="json", exclude={"actions_taken", "evidence"}) == {
+        key: value for key, value in handoff["package"].items() if key not in ("actions_taken", "evidence")
+    }
+    assert ticket.package.evidence["policy_rule"] == "person.insist"
+    assert "policy_rule" not in handoff["package"]["evidence"]
+    assert any("policy_rule" in item for item in ticket.package.model_dump(mode="json")["actions_taken"])
+    assert all("policy_rule" not in item and "tool" not in item for item in handoff["package"]["actions_taken"])
     assert ticket.package.summary.startswith("3 turns.")
     assert ticket.package.verified_facts is not None and ticket.package.verified_facts.merchant == "ACME Store"
     assert api.get(f"/api/v1/handoffs/{ticket.case_id}").json()["case_id"] == ticket.case_id

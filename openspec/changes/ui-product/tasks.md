@@ -4,8 +4,8 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 
 ## 1. Entry (PR 1)
 
-- [ ] 1.1 Mark (inline SVG), purpose line, success color in `branding/brand.css`, woff2 fonts with `@font-face` in `branding/`. Evidence: `tests/test_branding.py` extended (no external font URL, success token exists).
-- [ ] 1.2 Demo sign-in route behind `SENTINEL_DEMO_AUTH`, four personas, demo banner, named language buttons, password form as a secondary link; README limitation. Evidence: tests for 404 without the flag and a session per persona; `tests/test_ui.py` for the banner.
+- [x] 1.1 Mark (inline SVG), purpose line, success color in `branding/brand.css`, woff2 fonts with `@font-face` in `branding/`. Evidence: `tests/test_branding.py` extended (no external font URL, success token exists).
+- [x] 1.2 Demo sign-in route behind `SENTINEL_DEMO_AUTH`, four personas, demo banner, named language buttons, password form as a secondary link; README limitation. Evidence: tests for 404 without the flag and a session per persona; `tests/test_ui.py` for the banner.
 
 ## 2. Chat and panel (PR 2, after chat-loop)
 
