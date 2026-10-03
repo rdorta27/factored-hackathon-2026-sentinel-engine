@@ -1,8 +1,30 @@
 /* Sentinel Engine brand variables — single source of truth.
    Light theme in :root, dark theme in [data-theme="dark"].
    Covers every var consumed by estilos/base.css plus chat extras.
-   Fonts: Newsreader (titles) + Source Sans 3 (body) + Source Code Pro (mono). */
-@import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:wght@400;600;700&family=Source+Code+Pro&display=swap');
+   Fonts: Newsreader (titles) + Source Sans 3 (body) + Source Code Pro (mono),
+   served locally from branding/fonts/ (OFL) so the page makes no external
+   font request. */
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 500 600;
+  font-display: swap;
+  src: url('./fonts/newsreader-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Sans 3';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('./fonts/sourcesans3-latin.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Source Code Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('./fonts/sourcecodepro-latin.woff2') format('woff2');
+}
 
 :root {
   --font-title: 'Newsreader', Georgia, serif;
@@ -28,7 +50,8 @@
   --callout-bg: #f1edff;
   --code-bg: #f1edff;
   --code-text: #5b3fe0;
-  --ok: #6d4aff;
+  --ok: #1e7e4d;
+  --success: #1e7e4d;
   --warn: #ff8a3d;
   --bad: #ff4f8b;
   --info: #3d8bff;
@@ -68,7 +91,8 @@
   --callout-bg: #262040;
   --code-bg: #262040;
   --code-text: #c3b3ff;
-  --ok: #9d86ff;
+  --ok: #4cc38a;
+  --success: #4cc38a;
   --warn: #ffa25e;
   --bad: #ff7aa8;
   --info: #6aa5ff;
