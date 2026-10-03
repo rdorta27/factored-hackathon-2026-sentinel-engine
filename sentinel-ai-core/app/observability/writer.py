@@ -1,4 +1,4 @@
-"""Dual sink for turn records: in-memory list for tests, JSONL file for the runner."""
+"""Turn-record sinks: memory, a JSONL file, and optional standard output."""
 
 from __future__ import annotations
 
@@ -6,15 +6,46 @@ import hashlib
 import logging
 import os
 import secrets
+import sys
 from pathlib import Path
 
 from app.observability.records import StepRecord
 
 logger = logging.getLogger("sentinel.observability")
+_stdout = logging.getLogger("sentinel.turns")
 
 SALT_ENV = "SENTINEL_SESSION_SALT"
 VAR_DIR_ENV = "SENTINEL_VAR_DIR"
+STDOUT_ENV = "SENTINEL_LOG_STDOUT"
 DEFAULT_PATH = Path("var") / "turns.jsonl"
+
+
+def require_writable(directory: Path) -> None:
+    """Create ``directory`` if needed and fail if this process cannot write a file there."""
+    if not directory.exists():
+        directory.mkdir(parents=True, mode=0o700)
+    if not os.access(directory, os.W_OK | os.X_OK):
+        raise OSError(f"state path is not writable: {directory}")
+    probe = directory / f".write-probe-{os.getpid()}"
+    try:
+        fd = os.open(probe, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+        os.close(fd)
+        os.unlink(probe)
+    except OSError as exc:
+        raise OSError(f"state path is not writable: {directory}") from exc
+
+
+def _emit_stdout(line: str) -> None:
+    """Print one record line, with no prefix, on the current standard output."""
+    if not _stdout.handlers:
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        _stdout.addHandler(handler)
+        _stdout.setLevel(logging.INFO)
+        _stdout.propagate = False
+    else:
+        _stdout.handlers[0].setStream(sys.stdout)
+    _stdout.info(line)
 
 
 def var_dir() -> Path:
@@ -45,7 +76,7 @@ class Recorder:
         self.salt, self.ephemeral_salt = self._resolve_salt(salt)
         self._records: list[StepRecord] = []
         if self._path is not None:
-            self._path.parent.mkdir(parents=True, exist_ok=True)
+            require_writable(self._path.parent)
             _touch_private(self._path)
 
     @staticmethod
@@ -87,9 +118,12 @@ class Recorder:
 
     def emit(self, record: StepRecord) -> None:
         self._records.append(record)
+        line = record.to_json()
         if self._path is not None:
             with self._path.open("a", encoding="utf-8") as handle:
-                handle.write(record.to_json() + "\n")
+                handle.write(line + "\n")
+        if os.environ.get(STDOUT_ENV) == "1":
+            _emit_stdout(line)
 
     def records_for(self, trace_id: str) -> list[StepRecord]:
         return [record for record in self._records if record.trace_id == trace_id]

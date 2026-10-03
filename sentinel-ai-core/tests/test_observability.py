@@ -152,6 +152,40 @@ def test_full_turn_is_replayable_by_trace_id(tmp_path) -> None:
         assert forbidden not in blob
 
 
+def test_stdout_line_matches_the_file_and_omits_customer_id(tmp_path, monkeypatch, capsys) -> None:
+    monkeypatch.setenv("SENTINEL_LOG_STDOUT", "1")
+    monkeypatch.setenv("SENTINEL_VAR_DIR", str(tmp_path / "var"))
+    monkeypatch.setenv("SENTINEL_DB_PATH", str(tmp_path / "state.db"))
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    api = TestClient(create_app())
+    assert (
+        api.post("/api/v1/auth/login", json={"login": "CUST-0001", "password": "Testpass-001"}).status_code
+        == 200
+    )
+    assert api.post("/api/v1/chat", json={"message": "no reconozco un cargo"}).status_code == 200
+
+    captured = capsys.readouterr().out
+    file_lines = (tmp_path / "var" / "turns.jsonl").read_text(encoding="utf-8").splitlines()
+    stdout_lines = [line for line in captured.splitlines() if line.startswith("{")]
+    assert stdout_lines == file_lines
+    assert stdout_lines
+    assert "CUST-0001" not in captured
+    assert "Testpass-001" not in captured
+
+
+def test_stdout_is_off_when_unset(tmp_path, monkeypatch, capsys) -> None:
+    from app.observability import Recorder
+
+    monkeypatch.delenv("SENTINEL_LOG_STDOUT", raising=False)
+    recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
+    recorder.emit(_valid())
+    assert capsys.readouterr().out == ""
+    assert (tmp_path / "turns.jsonl").read_text(encoding="utf-8").strip() == _valid().to_json()
+
+
 def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.observability import Recorder
 

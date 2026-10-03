@@ -4,7 +4,7 @@ Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Prototype under active development. Status per requirement is tracked in Requirements coverage below; open decisions are marked as such.
 
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and router_v2 (a prompted GLM 5.3 Flash) with the keyword baseline as a per-turn fallback; it runs one replica that stays up until the awards, and sessions do not survive a redeploy or restart ([decision 019](docs/build/decisions/019-azure-container-apps.md)).
+**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and router_v2 (a prompted GLM 5.3 Flash) with the keyword baseline as a per-turn fallback; it runs one replica that stays up until the awards ([decision 019](docs/build/decisions/019-azure-container-apps.md)). The deploy script mounts an Azure Files share so a restart keeps sessions; the public revision has not been redeployed with that share yet.
 
 ## What we are building
 
@@ -50,12 +50,22 @@ Watch the structured turn log while you chat (from the repository root):
 tail -f sentinel-ai-core/var/turns.jsonl
 ```
 
-Run the service tests:
+Run the checks the workflow runs (no model keys, no cloud credentials, no evidence writes):
 
 ```bash
 cd sentinel-ai-core
-python3 -m pytest tests/ -q
+pip install -e ".[dev]"
+SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
+# Replay a frozen run only when it reproduces offline. None are listed until
+# resolution-eval is merged; 2024Q4-eval-v7's system block does not reproduce.
+# SENTINEL_WRITE_EVIDENCE=0 python3 -m eval.run verify <run-id>
+
+cd ../sentinel-data-engine
+pip install -e ".[dev]"
+python3 -m pytest -q
 ```
+
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs both on every push and pull request.
 
 The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README.md): sync the raw tables from the organizer bucket into `data/raw/` with the credentials in its `.env`, then build `data/gold_bank.duckdb` in one command (both gitignored; see its quickstart). Data sources are listed in the [inventory](docs/data_inventory.md).
 
@@ -83,10 +93,10 @@ What the prototype does not do, stated up front (REQ-0013, REQ-0030; capacity in
 - **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not a bank's rule: one 90-day window serves Mexico, Colombia and Argentina. The sources read on 10/02 disagree — Argentina counts 30 days from receiving the statement, no fixed window was found for Colombia, and the Visa and Mastercard limits are bank-to-bank — and the engine cannot yet express a window start by country or a bank obligation such as provisional credit or a response time. Those are the production path, not built ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer says the rule is a demonstration policy and reads `window_days` from the country file, so the label disappears the day a bank sets `synthetic: false` with a verified value.
 - **Languages:** the Portuguese (`pt-BR`) cases are model-written, with no native-speaker review, and variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). The three demo lines were back-translated by a second model. A Colombian check accepted the es-CO lines after the peso was named mexicano. Mexican and Argentine lines were checked by that model, not by a speaker. A 2% replay of the 2024Q4 transcripts, on the development side of the 70/30 time split, handed off all 280 times; the sample had 2 prefixes and no customer data was stored ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)). Those transcripts are templates, not customer language. Pix hands off. `extrato` and `fatura` stay charge words because the sealed set uses them inside charge inquiries.
 - **Model:** the app serves router_v2 when `SENTINEL_LLM_*` are set, the configuration measured in [`2024Q4-eval-v7`](evidence/evaluation-runs/2024Q4-eval-v7/summary.json): 0.98 intent accuracy against 0.54 for the keyword baseline on the sealed set (n = 280), latency p50 1079 ms and p95 4475 ms for the router ([metrics report](docs/build/metrics-report.md)). When the model fails, that turn is answered by the baseline, which is the 0.54 level, and the turn log marks it. A greeting alone or small talk is classified as out of scope by the model (the sealed set has no such case); the chat answers it with an offer and hands off only on the third turn in a row. The router lowers risk, not effort: policy, confirmations and handoffs stay in code ([serving](sentinel-ai-core/app/ai/serving.py)).
-- **State:** SQLite, one instance. On the public link it sits on the container's ephemeral disk, so a restart or scale-to-zero loses sessions and cases. Login-attempt and write-rate counters are per process.
+- **State:** SQLite, one replica. The deploy mounts an Azure Files share and opens the file in `DELETE` journal mode, so a restart keeps an unexpired session, an open dispute and a handoff ticket; logout still deletes the conversation. Postgres remains the path for more than one instance. Login-attempt and write-rate counters stay per process. The public revision has not been redeployed with the share yet, so that link still loses state on restart.
 - **Privacy:** free customer text is masked before the model, by pattern; personal data outside those patterns is not detected.
 - **Safety evidence:** the adversarial set has 36 attacks with `0/36` unsafe outcomes, but three have no defense yet (A3, A4b, D4) and three pass only because the stand-in model is the keyword baseline ([run](evidence/adversarial/20261002T120107Z/summary.json)).
-- **Deployment:** the live link has not been redeployed with the 10/02 hardening (one replica, non-root, health check on the state store).
+- **Deployment:** one replica, non-root, health check on the state store. Turn records go to standard output when `SENTINEL_LOG_STDOUT=1`, which Container Apps forwards to Log Analytics. The live link has not been redeployed with the share or that logging yet.
 
 ## Reading guide
 
