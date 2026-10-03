@@ -9,7 +9,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 ## 2. Score and split
 
 - [x] 2.1 Request log-probabilities in the transport, derive the label confidence, record it on the `understand` record, and keep calls without it working. Evidence: `tests/test_ai_router.py` with recorded fixtures with and without log-probabilities.
-- [ ] 2.2 Carve the `validation` split from development by base and write the choice rule in an 018 amendment, both committed before any fitting. Evidence: `tests/test_eval_cases.py` (no shared bases) and the decision file's commit order.
+- [x] 2.2 Carve the `validation` split from development by base and write the choice rule in an 018 amendment, both committed before any fitting. Evidence: `tests/test_eval_cases.py` (no shared bases) and the decision file's commit order.
 
 ## 3. Cut-offs
 

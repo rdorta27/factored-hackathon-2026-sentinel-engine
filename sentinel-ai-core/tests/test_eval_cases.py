@@ -4,11 +4,12 @@ from pathlib import Path
 
 import pytest
 
-from eval.cases import check_splits, load_cases, load_dir, load_labels, validate_case
+from eval.cases import base_of, check_splits, load_cases, load_dir, load_labels, validate_case
 
 CASES_DIR = Path(__file__).parent.parent / "eval" / "cases"
 RESOLUTION = CASES_DIR / "resolution.jsonl"
 LABELS = Path(__file__).parent.parent / "eval" / "labels.json"
+EXAMPLES = Path(__file__).parent.parent / "eval" / "examples_v2.json"
 
 
 def _resolution():  # type: ignore[no-untyped-def]
@@ -25,6 +26,35 @@ def test_splits_share_no_case_id() -> None:
     assert cases, "the case set must not be empty"
     check_splits(cases)
     assert {c.id for c in cases if c.split == "development"}
+
+
+def test_validation_split_is_carved_from_development_by_base() -> None:
+    import json
+
+    cases = load_dir(CASES_DIR) + load_dir(CASES_DIR / "sealed")
+    check_splits(cases)
+    development = [c for c in cases if c.split == "development"]
+    validation = [c for c in cases if c.split == "validation"]
+    assert development and validation, "both splits must exist"
+    dev_bases = {base_of(c) for c in development}
+    val_bases = {base_of(c) for c in validation}
+    assert not (dev_bases & val_bases), "a base cannot sit on two sides"
+    assert abs(len(val_bases) / (len(dev_bases) + len(val_bases)) - 0.2) < 0.05
+    assert {c.expected_intent for c in validation} == {"charge", "missing", "out_of_scope", "person"}
+    # Every variant of a validation base is on the validation side.
+    variants = [c for c in cases if c.base_id in val_bases]
+    assert variants and all(c.split == "validation" for c in variants)
+    # The prompt-v2 examples keep their declared development provenance.
+    example_ids = set(json.loads(EXAMPLES.read_text(encoding="utf-8"))["ids"])
+    example_cases = [c for c in cases if c.id in example_ids]
+    assert example_cases and all(c.split == "development" for c in example_cases)
+
+
+def test_check_splits_rejects_a_base_in_two_splits() -> None:
+    development = validate_case(_body(id="v-1", split="development"), "test")
+    validation = validate_case(_body(id="v-2", split="validation"), "test")
+    with pytest.raises(ValueError, match="base b-01"):
+        check_splits([development, validation])
 
 
 def test_working_dir_holds_no_held_out_case() -> None:

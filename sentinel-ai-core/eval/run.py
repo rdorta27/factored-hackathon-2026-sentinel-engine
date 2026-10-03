@@ -160,11 +160,14 @@ def select(
     """``extra_strong`` adds the larger strong models 016 measures only when the strong candidate fails."""
     global STRONG_CANDIDATES
     STRONG_CANDIDATES = tuple(dict.fromkeys(STRONG_CANDIDATES + extra_strong))
-    cases = load_dir(CASES_DIR)
-    held = sorted(c.id for c in cases if c.split != "development")
+    loaded = load_dir(CASES_DIR)
+    held = sorted(c.id for c in loaded if c.split == "held_out")
     if held:
         raise SelectionReadsHeldOut(f"selection reads development only; held-out ids given: {held}")
-    check_splits(cases)
+    check_splits(loaded)
+    # The validation split is carved from development for the cut-off calibration
+    # (018 amendment); model selection keeps reading development only.
+    cases = [c for c in loaded if c.split == "development"]
     live, api_key = live_transport(record, cap_usd)
     rec = recorder("v1", live, api_key, record)
     single = {}
