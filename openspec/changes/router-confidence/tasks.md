@@ -13,7 +13,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 
 ## 3. Cut-offs
 
-- [ ] 3.1 Fit on development, choose on validation, freeze a calibration run with the report per split. Evidence: `evidence/evaluation-runs/<calibration-run>/summary.json`.
+- [x] 3.1 Fit on development, choose on validation, freeze a calibration run with the report per split. Evidence: `evidence/evaluation-runs/<calibration-run>/summary.json`.
 - [ ] 3.2 Load the cut-offs from a router configuration file behind a setting; a borderline or low label becomes `missing`; policy, handoff rules and the confirm box still decide. Evidence: tests that a borderline `charge` asks first, that a policy refusal still wins, and that the setting off behaves as v2.
 
 ## 4. Close
