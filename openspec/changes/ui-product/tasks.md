@@ -19,4 +19,4 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 
 ## 4. Close
 
-- [ ] 4.1 Screenshots of the four screens in es-MX and pt-BR, desktop and phone width, compared with the mockup; update README and REQ-0038 evidence. Evidence: notes in `team/chat-manual-tests.md` and those files.
+- [x] 4.1 Screenshots of the four screens in es-MX and pt-BR, desktop and phone width, compared with the mockup; update README and REQ-0038 evidence. Evidence: notes in `team/chat-manual-tests.md` and those files.
