@@ -98,6 +98,8 @@ def summarize(records: list[dict], *, source: str, simulated: bool) -> dict:
         "notes": [
             "Aggregates only: no trace id, session reference or text.",
             "A country outside MX, CO and AR is reported apart under other.",
+            "Understand records carry the session language before detection, "
+            "so model cost lands under the pre-detection language group.",
         ]
         + (
             ["Replayed workload, labelled simulated: not field behaviour."]
