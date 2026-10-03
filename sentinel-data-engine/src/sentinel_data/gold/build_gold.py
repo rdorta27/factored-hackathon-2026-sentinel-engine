@@ -187,7 +187,7 @@ class GoldBuilder:
         out_path = str(gold / "gold_dispute_customer_360")
         arrow_table: pa.Table = con.execute(
             gold_customer_360_sql(silver_prefix="silver_", engine="duckdb")
-        ).to_arrow_table()
+        ).fetch_arrow_table()
         write_deltalake(out_path, arrow_table, mode="overwrite")
         logger.info("Built gold_dispute_customer_360 → %s", out_path)
 
@@ -205,7 +205,7 @@ class GoldBuilder:
         out_path = str(gold / "gold_dispute_eligible_transactions")
         eligible_arrow: pa.Table = con.execute(
             gold_eligible_transactions_sql(silver_prefix="silver_", engine="duckdb")
-        ).to_arrow_table()
+        ).fetch_arrow_table()
         write_deltalake(out_path, eligible_arrow, mode="overwrite")
         logger.info("Built gold_dispute_eligible_transactions → %s", out_path)
 
@@ -233,7 +233,7 @@ class GoldBuilder:
             gold_service_eligible_transactions_sql(
                 source=f"delta_scan('{gold_src}')"
             )
-        ).to_arrow_table()
+        ).fetch_arrow_table()
         write_deltalake(out_path, service_arrow, mode="overwrite")
         logger.info("Built v_service_dispute_eligible_transactions → %s", out_path)
 
@@ -250,7 +250,7 @@ class GoldBuilder:
         out_path = str(gold / "gold_dispute_cases_summary")
         cases_arrow: pa.Table = con.execute(
             gold_cases_summary_sql(silver_prefix="silver_", engine="duckdb")
-        ).to_arrow_table()
+        ).fetch_arrow_table()
         write_deltalake(out_path, cases_arrow, mode="overwrite")
         logger.info("Built gold_dispute_cases_summary → %s", out_path)
 
