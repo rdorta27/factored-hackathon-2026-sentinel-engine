@@ -12,7 +12,7 @@ OUTCOMES = frozenset({"ok", "rejected", "failed", "timeout"})
 LANGUAGES = frozenset({"es-419", "pt-BR"})
 COUNTRIES = frozenset({"MX", "CO", "AR"})
 HEX16 = re.compile(r"^[0-9a-f]{16}$")
-_CUSTOMER_ID = re.compile(r"CUST-\d+")
+_CUSTOMER_ID = re.compile(r"CUST-\d+|CLI-[A-Z0-9]{8,}")
 _IPV4 = re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b")
 
 
@@ -44,6 +44,9 @@ class StepRecord:
     country: str
     event: str | None = None
     handoff: dict | None = None
+    # What the model detected from the text, kept beside the answered `language`
+    # so the record reports both and contradicts neither.
+    detected_language: str | None = None
     # Country policy file version and whether it is the team's synthetic policy.
     policy_version: str | None = None
     policy_synthetic: bool | None = None

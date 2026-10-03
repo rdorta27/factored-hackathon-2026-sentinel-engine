@@ -19,11 +19,50 @@ function maskValue(value) {
 }
 
 function formatAmount(amount, currency) {
-  return `${amount} ${currency}`;
+  const value = Number(String(amount).replace(/[^\d.-]/g, ""));
+  if (!Number.isFinite(value) || !currency) return `${amount} ${currency}`;
+  try {
+    return new Intl.NumberFormat(activeLocale(), {
+      style: "currency",
+      currency,
+      currencyDisplay: "code",
+    }).format(value);
+  } catch (error) {
+    return `${amount} ${currency}`;
+  }
 }
 
 function formatDate(value) {
-  return String(value);
+  if (!value) return "";
+  const parsed = new Date(String(value).length === 10 ? `${value}T00:00:00Z` : value);
+  if (Number.isNaN(parsed.getTime())) return String(value);
+  return new Intl.DateTimeFormat(activeLocale(), {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(parsed);
+}
+
+/* The active interface language; `es-419` maps to the plain `es` tag. */
+function activeLocale() {
+  const selected = document.getElementById("locale");
+  const locale = selected && selected.value ? selected.value : "es-419";
+  return locale === "es-419" ? "es" : locale;
+}
+
+/* The selector's own value, exactly as the API accepts it. */
+function selectorLocale() {
+  const selected = document.getElementById("locale");
+  return selected && selected.value ? selected.value : "es-419";
+}
+
+/* Fill a template's {placeholders} without touching the rest of the text. */
+function fill(template, values) {
+  return Object.entries(values).reduce(
+    (text, [key, value]) => text.split(`{${key}}`).join(value),
+    template
+  );
 }
 
 /* Explanation replies carry a key and verified values; fill placeholders here. */
@@ -74,11 +113,15 @@ function show(id) {
 
 /* The session country picks the starting language; the selector can change it. */
 const COUNTRY_LOCALES = { MX: "es-MX", CO: "es-CO", AR: "es-AR" };
+/* Country is page-level: the chips are chosen from the listing alone, with no
+   request to the chat. */
+let sessionCountry = null;
 
 async function loadContext() {
   const response = await api("/api/v1/auth/me");
   if (!response.ok) return;
   const me = await response.json();
+  sessionCountry = me.country || null;
   const locale = COUNTRY_LOCALES[me.country];
   if (locale) {
     document.getElementById("locale").value = locale;
@@ -88,6 +131,16 @@ async function loadContext() {
 
 function humanStatement(candidate) {
   return `${t("referToCharge")} ${candidate.merchant} - ${formatAmount(candidate.amount, candidate.currency)} (${formatDate(candidate.date)})`;
+}
+
+/* The receipt states the charge in the bank's voice, so the card never repeats
+   what the customer typed. Same amount and date formatting as everywhere else. */
+function receiptCharge(tx) {
+  return fill(t("receiptCharge"), {
+    merchant: tx.merchant,
+    amount: formatAmount(tx.amount, tx.currency),
+    date: formatDate(tx.date),
+  });
 }
 
 function addBubble(text) {
@@ -107,7 +160,9 @@ async function postChat(payload) {
     const response = await api("/api/v1/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      // The selector's language rides with every turn, so the answer comes back
+      // in the language the customer chose, whatever the message looks like.
+      body: JSON.stringify({ ...payload, language: selectorLocale() }),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -158,7 +213,9 @@ function renderReply(body) {
     card.append(el("h3", "chat-title", t("receiptOutcome")));
     card.append(el("strong", "", body.case_id));
     const tx = body.transaction;
-    card.append(el("p", "", humanStatement(tx)));
+    // The bank's own voice, not the customer's sentence echoed back. The
+    // customer's bubble above keeps its wording; only this line changes.
+    card.append(el("p", "", receiptCharge(tx)));
     card.append(el("p", "", t(body.messages.noFunds)));
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);
@@ -209,6 +266,75 @@ async function loadTransactions() {
     }
     box.append(item);
   });
+  renderDemoPrompts(payload.transactions);
+}
+/* Demo prompts: built from the customer's own charges, never hardcoded.
+   Normal picks the newest charge in the account's own currency that the backend
+   marks eligible, using only the listing. Eligibility already carries the
+   country policy (window, status, prior dispute), so the page never re-derives
+   it. If the reply on click escalates, that is a legitimate outcome and is
+   shown, not hidden.
+   Ambiguous picks a merchant with two or more charges, so the system asks. */
+function repeatedMerchant(transactions) {
+  const counts = new Map();
+  transactions.forEach((tx) => counts.set(tx.merchant, (counts.get(tx.merchant) || 0) + 1));
+  for (const [merchant, count] of counts) {
+    if (count >= 2) return merchant;
+  }
+  return null;
+}
+
+/* The account's own currency, from the session country. Charges in another
+   currency (the demo's USD rows) are not what the customer would dispute. */
+const COUNTRY_CURRENCIES = { MX: "MXN", CO: "COP", AR: "ARS" };
+
+function localCurrency() {
+  return COUNTRY_CURRENCIES[sessionCountry] || null;
+}
+
+/* Newest eligible charge in the local currency. Eligibility is the backend's
+   own country policy (window, status, prior dispute), so the page does not
+   duplicate the 90-day rule. Nothing here calls the chat: the chips are chosen
+   from data already on the page. */
+function demoCharge(transactions) {
+  const currency = localCurrency();
+  if (!currency) return null;
+  const candidates = (transactions || []).filter(
+    (tx) => tx.eligible !== false && tx.currency === currency
+  );
+  return candidates.sort((a, b) => String(b.date).localeCompare(String(a.date)))[0] || null;
+}
+
+function renderDemoPrompts(transactions) {
+  const box = document.getElementById("demo-prompts");
+  box.textContent = "";
+  const rows = transactions || [];
+  const charge = demoCharge(rows);
+  const merchant = repeatedMerchant(rows);
+  const prompts = [];
+
+  if (charge) {
+    prompts.push(
+      fill(t("demoNormal"), {
+        amount: formatAmount(charge.amount, charge.currency),
+        merchant: charge.merchant,
+        date: formatDate(charge.date),
+      })
+    );
+  }
+  if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
+  prompts.push(t("demoPerson"));
+
+  prompts.forEach((phrase) => {
+    const chip = el("button", "candidate", phrase);
+    chip.type = "button";
+    chip.addEventListener("click", () => {
+      addBubble(phrase);
+      postChat({ message: phrase });
+    });
+    box.append(chip);
+  });
+  box.hidden = prompts.length === 0;
 }
 
 /* Advisor view: the escalated tickets with why they came and what was tried. */
@@ -270,7 +396,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
   clearThread();
   show("view-chat");
   await loadContext();
-  loadTransactions();
+  await loadTransactions();
 });
 
 document.getElementById("chat-form").addEventListener("submit", (event) => {

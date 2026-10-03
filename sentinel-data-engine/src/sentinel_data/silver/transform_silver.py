@@ -232,7 +232,7 @@ class SilverTransformer:
             FROM validated
             WHERE rejection_reason != ''
             """
-        ).to_arrow_table()
+        ).fetch_arrow_table()
         if quarantine_arrow.num_rows > 0:
             write_deltalake(quarantine_path, quarantine_arrow, mode="append")
 
@@ -286,7 +286,7 @@ class SilverTransformer:
         else:
             source_view = "deduplicated"
 
-        silver_arrow: pa.Table = con.execute(f"SELECT * FROM {source_view}").to_arrow_table()
+        silver_arrow: pa.Table = con.execute(f"SELECT * FROM {source_view}").fetch_arrow_table()
         write_deltalake(silver_path, silver_arrow, mode="overwrite")
 
         con.close()
