@@ -2,7 +2,7 @@
 
 ## Why
 
-`runtime-and-ci` built the pieces for a durable public link (an Azure Files share for SQLite and the turn log, `DELETE` journal, one replica, turn records on standard output for Log Analytics) and a test workflow, but the live service still runs an image from before PRs #49 and #50: `GET /api/v1/i18n/es-419` lacks `charge.not_found` and `extraction.refused`. Three gaps remain before the video. The deploy script generates a random session salt when `.env` has none, which breaks `session_ref` continuity across redeploys; nobody has yet shown that a handoff and a dispute survive a restart, or queried the records by country; and the workflow's list of replayable runs is empty (`runs=()`), so no frozen run is checked on each change (REQ-0025, REQ-0027, REQ-0028, REQ-0035, REQ-0050, REQ-0052).
+`runtime-and-ci` built the pieces for a durable public link (an Azure Files share for SQLite and the turn log, `DELETE` journal, one replica, turn records on standard output for Log Analytics) and a test workflow, but the live service still runs an image from before PRs #49 and #50: `GET /i18n/es-419` lacks `charge.not_found` and `extraction.refused`. Three gaps remain before the video. The deploy script generates a random session salt when `.env` has none, which breaks `session_ref` continuity across redeploys; nobody has yet shown that a handoff and a dispute survive a restart, or queried the records by country; and the workflow's list of replayable runs is empty (`runs=()`), so no frozen run is checked on each change (REQ-0025, REQ-0027, REQ-0028, REQ-0035, REQ-0050, REQ-0052).
 
 ## What Changes
 
