@@ -157,3 +157,13 @@ def test_verify_ignores_spend_and_latency_only() -> None:
     assert run._comparable(a) == run._comparable(b)
     b["x"]["accuracy"] = 0.8
     assert run._comparable(a) != run._comparable(b)
+
+
+def test_verify_ignores_the_breakdown_view() -> None:
+    """Frozen runs that predate the per-variant/per-country view still verify:
+    the view is derived from the same turns and covered by unit tests."""
+    frozen = {"system": {"router_v2": {"safe_resolution": {"n": 2, "resolved": 1, "share": 0.5}}}}
+    replayed = {"system": {"router_v2": {"safe_resolution": {"n": 2, "resolved": 1, "share": 0.5},
+                                          "by_variant": {"es-MX": {"n": 2}},
+                                          "by_country": {"MX": {"n": 2}}}}}
+    assert run._comparable(replayed) == run._comparable(frozen)
