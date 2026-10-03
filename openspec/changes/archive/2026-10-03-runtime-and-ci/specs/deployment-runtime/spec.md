@@ -1,3 +1,9 @@
+# Spec Delta
+
+## Purpose
+
+Defines what the deployed container owes at runtime: turn records visible in the platform log and state that outlives the container, so a restart never loses a session, dispute or handoff.
+
 ## ADDED Requirements
 
 ### Requirement: Turn records reach the platform log
