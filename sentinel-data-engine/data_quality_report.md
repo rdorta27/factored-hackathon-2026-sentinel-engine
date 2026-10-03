@@ -1,43 +1,36 @@
-# Sentinel Engine — Data Quality & Medallion Audit Report
+# Sentinel Engine — Data Quality Report
 
-**Execution timestamp:** 2026-10-01 18:21:11 UTC
+**Execution timestamp:** 2026-10-03 11:13:43 UTC
 **Dataset cutoff date:** 2026-06-17
-**DuckDB file:** `data/gold_bank.duckdb`
+**DuckDB file:** `sentinel-data-engine/data/gold_bank.duckdb`
 **Requirement:** REQ-0015
 
 ---
 
-## 1. Pipeline Execution & Record Flow Summary
-
-This section traces the end-to-end record lifecycle from raw Bronze ingestion through Silver
-cleaning and Gold serving. All counts below are reproducible from the pipeline execution log
-and `gold_bank.duckdb`.
-
-### Medallion Layer Record Counts
-
-| Layer | Scope | Record Count | Notes |
-|---|---|---:|---|
-| **Bronze (Raw Ingestion)** | Transactions (all CSV files) | ~5,000,000 | 1,097 CSV source files; streamed via DuckDB `read_csv_auto` |
-| **Silver (Cleaned & Deduplicated)** | `silver_transactions` | 4,425,008 | After deduplication, quarantine filtering, and schema validation |
-| **Gold (Dispute Eligible)** | `v_service_dispute_eligible_transactions` | 373,443 | 8.4% of Silver volume; within 90-day window ending 2026-06-17 |
-| **Quarantine / Rejected** | `rejected_records` | Derived from Bronze–Silver delta | Records with null PKs, invalid amounts, or corrupted timestamps |
+## 1. Volume Summary
 
 ### Bronze → Silver (per table)
 
-| Table | Bronze rows | Silver rows | Duplicates removed |
-|---|---:|---:|---:|
-| customers | 150,000 | 150,000 | 0 |
-| transactions | ~5,000,000 | 4,425,008 | See §2 |
-| products | 400,000 | 400,000 | 0 |
-| complaints | — | 67,095 | — |
-| service_agents | 1,200 | 1,200 | 0 |
-| call_center_interactions | — | 686,296 | — |
-| satisfaction_surveys | — | 212,759 | — |
+| Table | Bronze rows | Silver rows | Drop (Bronze−Silver) | Quarantined |
+|---|---:|---:|---:|---:|
+| customers | 150,000 | 150,000 | 0 | 0 |
+| transactions | 4,425,008 | 4,425,008 | 0 | 0 |
+| products | 400,000 | 400,000 | 0 | 0 |
+| complaints | 67,095 | 67,095 | 0 | 0 |
+| service_agents | 1,200 | 1,200 | 0 | 0 |
+| call_center_interactions | 686,296 | 686,296 | 0 | 0 |
+| satisfaction_surveys | 212,759 | 212,759 | 0 | 0 |
 
-*For large partitioned tables, Bronze layer row counts are marked (—) during ingestion to
-avoid redundant full CSV scans. The transaction count is an aggregate across all partitions.*
+### Drop breakdown
 
-### Gold Tables
+Bronze−Silver per table decomposes into deduplication (`SELECT DISTINCT`), quarantine filtering (`rejected_records`) and orphan exclusion in Gold joins. Quarantine totals come from `rejected_records`; orphans from anti-joins below.
+
+| Quarantined rows (all tables) | 0 |
+|---|---|
+
+_No quarantined rows in this run._
+
+### Gold tables
 
 | Gold table | Row count |
 |---|---:|
@@ -47,135 +40,75 @@ avoid redundant full CSV scans. The transaction count is an aggregate across all
 
 ---
 
-## 2. Volume Drop Justification & Audit (Bronze vs. Silver)
+## 2. Orphans & Late Arrivals
 
-### 📉 Volume Discrepancy & Drop Justification
+### Orphans (referential integrity)
 
-The raw Bronze ingestion layer contains approximately **5,000,000 transaction records** spread
-across 1,097 CSV source files. The Silver validated table `silver_transactions` contains
-**4,425,008 rows** — a net reduction of roughly **575,000 records (~11.5%)**. The following
-four mechanisms account for this drop.
-
-#### 2.1 Silver Windowed Deduplication (~2% drop)
-
-The synthetic raw dataset contains duplicate transaction records arising from multi-partition
-CSV file generation. Duplicates are removed during Silver ingestion using a deterministic
-window function:
-
-```sql
-ROW_NUMBER() OVER (PARTITION BY transaction_id ORDER BY _ingested_at DESC) AS rn
-```
-
-Only rows where `rn = 1` are written to `silver_transactions`. This retains the most recently
-ingested version of each transaction and eliminates exact and near-exact duplicates introduced
-at the source.
-
-**Estimated impact:** ~2% of raw Bronze volume (~100,000 records).
-
-#### 2.2 Quarantine Filtering (`rejected_records`)
-
-Records failing mandatory schema constraints are routed to the quarantine table
-`rejected_records` rather than propagated to Silver. Rejection criteria:
-
-| Rejection rule | Condition |
-|---|---|
-| Missing primary key | `transaction_id IS NULL` |
-| Invalid amount | `amount <= 0` or `amount IS NULL` |
-| Corrupted timestamp | `transaction_date` fails ISO-8601 parsing |
-| Missing foreign key | `customer_id IS NULL` |
-
-Quarantined records are logged with a `rejection_reason` string and excluded from all
-downstream Silver and Gold tables. They remain available for manual review and root-cause
-analysis without affecting pipeline correctness.
-
-#### 2.3 Orphan Records & Late Arrivals
-
-Two additional categories are silently excluded from the Silver join-enriched view:
-
-- **Orphan foreign keys:** Transactions whose `customer_id` or `product_id` does not resolve
-  to a corresponding row in the `customers` or `products` dimension tables are excluded from
-  `gold_dispute_customer_360` and related Gold views. The Silver base table retains them, but
-  they do not propagate to the customer-360 enriched layer.
-
-- **Late-arriving events:** Transactions with `transaction_date` outside the expected
-  partition window (i.e., arriving in a later Bronze batch than their logical date) are
-  processed correctly due to `ORDER BY _ingested_at DESC` in the deduplication window, but
-  may be absent from intermediate partition-scoped aggregates. Final Silver counts are
-  always derived from the global deduplicated table, not per-partition aggregates.
-
-#### 2.4 Bronze I/O Streaming Optimization
-
-DuckDB's `read_csv_auto` streaming reads each CSV file independently. Aggregate row counts
-reported at the Bronze layer reflect the union of all file-level scans. Where the same
-`transaction_id` appears in multiple files (a known artifact of the synthetic data generator),
-the Bronze count is inflated relative to the distinct entity count. Silver deduplication
-resolves this and produces the canonical count of 4,425,008 distinct transactions.
-
----
-
-## 3. Data Standardization & Quality Metrics (REQ-0015)
-
-### 3.1 Country Normalization
-
-The raw dataset contains inconsistent country-name encoding for Mexico. The Silver
-transformation layer applies a `CASE` expression to normalize all occurrences:
-
-```sql
-CASE WHEN transaction_country = 'Mexico' THEN 'México' ELSE transaction_country END
-```
-
-| Entity | Records corrected (`'Mexico'` → `'México'`) |
+| Check | Orphan rows |
 |---|---:|
-| `silver_customers` | 0 |
-| `silver_transactions` | 40,515 |
-| **Total normalized** | **40,515** |
+| complaints_missing_customer | 0 |
+| transactions_missing_customer | 0 |
+| transactions_missing_product | 0 |
 
-All downstream Gold tables and the API serving view inherit the corrected value. No
-un-normalized `'Mexico'` strings are present in any Silver or Gold table post-pipeline.
+### Late arrivals per partitioned table
 
-### 3.2 Null & Completeness Checks
+`process_date` later than the event date counts as a late arrival.
 
-Mandatory fields are validated before Silver write. The table below summarizes null rates
-observed across the four primary mandatory columns in the final Silver transactions table:
-
-| Field | Null count | Null rate |
-|---|---:|---:|
-| `transaction_id` | 0 | 0.00% |
-| `customer_id` | 0 | 0.00% |
-| `amount` | 0 | 0.00% |
-| `transaction_date` | 0 | 0.00% |
-
-All rows with nulls in these columns were routed to `rejected_records` (§2.2) and are not
-present in `silver_transactions`. The 0.00% null rate confirms completeness of the validated
-Silver layer.
-
-### 3.3 Orphan & Referential Integrity Checks
-
-Foreign key match rates were verified against the `customers` (150,000 rows) and `products`
-(400,000 rows) dimension tables:
-
-| Join | Silver transaction rows | Matched rows | Match rate |
-|---|---:|---:|---:|
-| `silver_transactions.customer_id` → `customers.customer_id` | 4,425,008 | 4,425,008 | 100.0% |
-| `silver_transactions.product_id` → `products.product_id` | 4,425,008 | 4,425,008 | 100.0% |
-
-No orphan records remain in the Silver transactions table after quarantine filtering.
-Referential integrity is 100% for all rows that passed quarantine.
+| Table | Late rows |
+|---|---:|
+| call_center_interactions | 0 |
+| complaints | 0 |
+| satisfaction_surveys | 0 |
+| transactions | 0 |
 
 ---
 
-## 4. Gold Dispute Eligibility & PII Compliance Audit
+## 3. Nulls & Country Normalisation
 
-### 4.1 Dispute Eligibility Parameters
+### Null counts and rates (mandatory and optional fields)
 
-| Parameter | Value |
-|---|---|
-| Cutoff date | `2026-06-17` |
-| Eligibility window start | `2026-03-19` (90 days prior to cutoff) |
-| Eligibility window end | `2026-06-17` |
-| Excluded statuses | `Reversed`, `Refunded` |
+| Table | Column | Nulls | Rate |
+|---|---|---:|---:|
+| customers | credit_score | 22,492 | 14.99% |
+| customers | customer_id | 0 | 0.00% |
+| customers | estimated_monthly_income | 30,033 | 20.02% |
+| transactions | amount | 0 | 0.00% |
+| transactions | amount_usd | 2,537,456 | 57.34% |
+| transactions | branch_id | 3,037,076 | 68.63% |
+| transactions | customer_id | 0 | 0.00% |
+| transactions | fraud_score | 885,157 | 20.00% |
+| transactions | transaction_date | 0 | 0.00% |
+| transactions | transaction_id | 0 | 0.00% |
+| products | credit_limit | 274,683 | 68.67% |
+| products | customer_id | 0 | 0.00% |
+| products | days_past_due | 274,650 | 68.66% |
+| products | expiration_date | 266,839 | 66.71% |
+| products | interest_rate | 40,066 | 10.02% |
+| complaints | assigned_agent_id | 23,115 | 34.45% |
+| complaints | claimed_amount | 45,344 | 67.58% |
+| complaints | closing_date | 64,614 | 96.30% |
+| complaints | compensation_granted | 62,454 | 93.08% |
+| complaints | customer_id | 0 | 0.00% |
+| complaints | origin_interaction_id | 67,095 | 100.00% |
+| complaints | product_id | 22,525 | 33.57% |
+| complaints | resolution_date | 51,746 | 77.12% |
+| service_agents | avg_csat | 134 | 11.17% |
+| call_center_interactions | customer_id | 0 | 0.00% |
+| call_center_interactions | duration_seconds | 96,234 | 14.02% |
+| call_center_interactions | wait_time_seconds | 205,618 | 29.96% |
+| satisfaction_surveys | customer_id | 0 | 0.00% |
 
-### 4.2 Dispute Eligibility Breakdown (`gold_dispute_eligible_transactions`)
+### Country normalisation
+
+| Metric | Value |
+|---|---:|
+| Rows with `'Mexico'` normalised → `'México'` (customers) | 0 |
+| Rows with `'Mexico'` normalised → `'México'` (transactions) | 40,515 |
+| **Total country entries normalised (REQ-0015)** | **40,515** |
+
+### Dispute Eligibility Breakdown (`gold_dispute_eligible_transactions`)
+
+Cutoff date applied: `2026-06-17` · Window: ≤ 90 days · Excluded statuses: `Reversed`, `Refunded`
 
 | Outcome | Count | % of total |
 |---|---:|---:|
@@ -183,25 +116,14 @@ Referential integrity is 100% for all rows that passed quarantine.
 | Ineligible (expired or excluded status) | 4,051,565 | 91.6% |
 | **Total transactions** | **4,425,008** | **100.0%** |
 
-The 8.4% eligibility rate is consistent with the 90-day window applied to a dataset spanning
-multiple years of transaction history. Only transactions with a `transaction_date` within the
-window and a non-excluded `transaction_status` qualify.
+---
 
-### 4.3 PII Guardrails (ADR 008)
+## 4. PII Compliance Verification
 
-The view `v_service_dispute_eligible_transactions` is the surface exposed to the FastAPI
-backend (`/api/v1`) and all downstream services without explicit PII-READ permission. It
-deliberately excludes three PII-bearing columns present in the full Gold table:
-
-| Excluded column | Reason |
-|---|---|
-| `customer_first_name` | Direct personal identifier |
-| `customer_last_name` | Direct personal identifier |
-| `customer_credit_score` | Sensitive financial attribute |
-
-**Audit result:** 100% of rows served through `v_service_dispute_eligible_transactions` are
-PII-free. The following columns are confirmed present in the service view; none contain raw
-names, card numbers, or credit scores:
+The view `v_service_dispute_eligible_transactions` is the surface exposed to the
+FastAPI backend and any downstream service without explicit PII-READ permission.
+The following columns are confirmed present; none contain raw names, card numbers,
+or credit scores.
 
 | Column | PII status |
 |---|---|
@@ -227,6 +149,163 @@ names, card numbers, or credit scores:
 | is_eligible_for_dispute | No PII |
 | snapshot_date | No PII |
 
+**Excluded from service view (PII columns in full Gold table only):**
+`customer_first_name`, `customer_last_name`, `customer_credit_score`
+
 ---
 
 *Generated by `sentinel_data.local_runner.LocalPipelineRunner`. Satisfies REQ-0015.*
+
+<!-- verify-figures: machine-readable aggregates for `verify` mode. Do not edit by hand. -->
+```json figures
+{
+  "bronze.call_center_interactions": 686296,
+  "bronze.complaints": 67095,
+  "bronze.customers": 150000,
+  "bronze.products": 400000,
+  "bronze.satisfaction_surveys": 212759,
+  "bronze.service_agents": 1200,
+  "bronze.transactions": 4425008,
+  "gold.gold_dispute_cases_summary": 67095,
+  "gold.gold_dispute_customer_360": 150000,
+  "gold.gold_dispute_eligible_transactions": 4425008,
+  "late.call_center_interactions": 0,
+  "late.complaints": 0,
+  "late.satisfaction_surveys": 0,
+  "late.transactions": 0,
+  "null.call_center_interactions.agent_id": 0,
+  "null.call_center_interactions.channel": 0,
+  "null.call_center_interactions.contact_reason": 0,
+  "null.call_center_interactions.customer_id": 0,
+  "null.call_center_interactions.detected_sentiment": 0,
+  "null.call_center_interactions.duration_seconds": 96234,
+  "null.call_center_interactions.has_recording": 0,
+  "null.call_center_interactions.has_transcript": 0,
+  "null.call_center_interactions.interaction_date": 0,
+  "null.call_center_interactions.interaction_id": 0,
+  "null.call_center_interactions.interaction_type": 0,
+  "null.call_center_interactions.process_date": 0,
+  "null.call_center_interactions.reason_category": 0,
+  "null.call_center_interactions.requires_followup": 0,
+  "null.call_center_interactions.sentiment_score": 0,
+  "null.call_center_interactions.wait_time_seconds": 205618,
+  "null.call_center_interactions.was_escalated": 0,
+  "null.call_center_interactions.was_resolved": 0,
+  "null.complaints.assigned_agent_id": 23115,
+  "null.complaints.case_type": 0,
+  "null.complaints.category": 0,
+  "null.complaints.claimed_amount": 45344,
+  "null.complaints.closing_date": 64614,
+  "null.complaints.compensation_granted": 62454,
+  "null.complaints.complaint_id": 0,
+  "null.complaints.creation_date": 0,
+  "null.complaints.currency": 0,
+  "null.complaints.customer_id": 0,
+  "null.complaints.description": 0,
+  "null.complaints.is_repeat_complainer": 0,
+  "null.complaints.origin_interaction_id": 67095,
+  "null.complaints.priority": 0,
+  "null.complaints.process_date": 0,
+  "null.complaints.product_id": 22525,
+  "null.complaints.reception_channel": 0,
+  "null.complaints.resolution_date": 51746,
+  "null.complaints.resolution_notes": 0,
+  "null.complaints.sla_breached": 0,
+  "null.complaints.status": 0,
+  "null.complaints.subcategory": 0,
+  "null.customers.accepts_marketing": 0,
+  "null.customers.city": 0,
+  "null.customers.country": 0,
+  "null.customers.credit_score": 22492,
+  "null.customers.customer_id": 0,
+  "null.customers.customer_status": 0,
+  "null.customers.date_of_birth": 0,
+  "null.customers.detected_accent": 0,
+  "null.customers.document_number": 0,
+  "null.customers.document_type": 0,
+  "null.customers.estimated_monthly_income": 30033,
+  "null.customers.first_name": 0,
+  "null.customers.gender": 0,
+  "null.customers.last_name": 0,
+  "null.customers.last_updated": 0,
+  "null.customers.registration_branch_id": 0,
+  "null.customers.registration_date": 0,
+  "null.customers.segment": 0,
+  "null.customers.state": 0,
+  "null.products.credit_limit": 274683,
+  "null.products.currency": 0,
+  "null.products.current_balance": 0,
+  "null.products.customer_id": 0,
+  "null.products.days_past_due": 274650,
+  "null.products.expiration_date": 266839,
+  "null.products.has_linked_app": 0,
+  "null.products.interest_rate": 40066,
+  "null.products.last_updated": 0,
+  "null.products.opening_branch_id": 0,
+  "null.products.opening_channel": 0,
+  "null.products.opening_date": 0,
+  "null.products.product_id": 0,
+  "null.products.product_number": 0,
+  "null.products.product_status": 0,
+  "null.products.product_type": 0,
+  "null.satisfaction_surveys.agent_id": 0,
+  "null.satisfaction_surveys.comments": 0,
+  "null.satisfaction_surveys.customer_id": 0,
+  "null.satisfaction_surveys.interaction_id": 0,
+  "null.satisfaction_surveys.main_score": 0,
+  "null.satisfaction_surveys.nps_category": 0,
+  "null.satisfaction_surveys.process_date": 0,
+  "null.satisfaction_surveys.send_channel": 0,
+  "null.satisfaction_surveys.survey_date": 0,
+  "null.satisfaction_surveys.survey_id": 0,
+  "null.satisfaction_surveys.survey_type": 0,
+  "null.service_agents.agent_id": 0,
+  "null.service_agents.agent_status": 0,
+  "null.service_agents.agent_type": 0,
+  "null.service_agents.avg_csat": 134,
+  "null.service_agents.country_of_origin": 0,
+  "null.service_agents.experience_level": 0,
+  "null.service_agents.first_name": 0,
+  "null.service_agents.hire_date": 0,
+  "null.service_agents.languages": 0,
+  "null.service_agents.last_name": 0,
+  "null.service_agents.native_accent": 0,
+  "null.service_agents.work_shift": 0,
+  "null.transactions.amount": 0,
+  "null.transactions.amount_usd": 2537456,
+  "null.transactions.branch_id": 3037076,
+  "null.transactions.channel": 0,
+  "null.transactions.currency": 0,
+  "null.transactions.customer_id": 0,
+  "null.transactions.fraud_score": 885157,
+  "null.transactions.is_fraud": 0,
+  "null.transactions.merchant_category": 0,
+  "null.transactions.merchant_name": 0,
+  "null.transactions.process_date": 0,
+  "null.transactions.product_id": 0,
+  "null.transactions.transaction_category": 0,
+  "null.transactions.transaction_country": 0,
+  "null.transactions.transaction_date": 0,
+  "null.transactions.transaction_id": 0,
+  "null.transactions.transaction_status": 0,
+  "null.transactions.transaction_type": 0,
+  "orphan.complaints_missing_customer": 0,
+  "orphan.transactions_missing_customer": 0,
+  "orphan.transactions_missing_product": 0,
+  "quality.eligible_count": 373443,
+  "quality.ineligible_count": 4051565,
+  "quality.mexico_normalised_customers": 0,
+  "quality.mexico_normalised_transactions": 40515,
+  "quality.total_mexico_normalised": 40515,
+  "quality.total_txn_count": 4425008,
+  "quarantine.total": 0,
+  "silver.call_center_interactions": 686296,
+  "silver.complaints": 67095,
+  "silver.customers": 150000,
+  "silver.products": 400000,
+  "silver.satisfaction_surveys": 212759,
+  "silver.service_agents": 1200,
+  "silver.transactions": 4425008
+}
+```
+
