@@ -6,9 +6,10 @@ import json
 import os
 import threading
 from dataclasses import dataclass
+from math import exp
 
 from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
-from app.ai.transport import InvalidReply, ModelTransport
+from app.ai.transport import InvalidReply, ModelTransport, TokenLogprob
 from app.orchestrator.types import Language
 
 PROMPT_VERSION_DEFAULT = "v1"
@@ -216,6 +217,73 @@ def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
     return kinds[intent], lang, body.get("not_mine") is True
 
 
+# The first token each label is emitted as. ``out_of_scope`` tokenizes as
+# ``out`` + ``_of`` + ``_scope`` on the served model (decision 016, spike), so
+# the confidence reads the value's first token over these four starts.
+_LABEL_STARTS = {
+    "charge": "charge",
+    "missing": "missing",
+    "out_of_scope": "out",
+    "person": "person",
+}
+
+
+def _label_for_token(token: str) -> str | None:
+    """The label a content token starts, ignoring a leading quote or space."""
+    cleaned = token.lstrip(' "\\\t\n')
+    for label, start in _LABEL_STARTS.items():
+        if cleaned.startswith(start):
+            return label
+    return None
+
+
+def label_confidence(
+    kind: UnderstandKind, logprobs: tuple[TokenLogprob, ...] | None
+) -> float | None:
+    """The chosen label's first-token mass over the four label starts, normalised.
+
+    Returns None when log-probabilities are missing or the label token cannot
+    be located, so a call without them degrades to no confidence.
+    """
+    if not logprobs:
+        return None
+    text = "".join(entry.token for entry in logprobs)
+    key_at = text.find('"intent"')
+    if key_at < 0:
+        return None
+    colon = text.find(":", key_at + len('"intent"'))
+    if colon < 0:
+        return None
+    quote = text.find('"', colon + 1)
+    if quote < 0:
+        return None
+    value_start = quote + 1
+    offset = 0
+    target: TokenLogprob | None = None
+    for entry in logprobs:
+        if offset <= value_start < offset + len(entry.token):
+            target = entry
+            break
+        offset += len(entry.token)
+    if target is None:
+        return None
+    probabilities: dict[str, float] = {target.token: exp(target.logprob)}
+    for token, logprob in target.top:
+        probabilities.setdefault(token, exp(logprob))
+    mass = 0.0
+    chosen = 0.0
+    for token, probability in probabilities.items():
+        label = _label_for_token(token)
+        if label is None:
+            continue
+        mass += probability
+        if label == kind.value:
+            chosen += probability
+    if mass <= 0.0:
+        return None
+    return min(1.0, chosen / mass)
+
+
 @dataclass
 class RouterConfig:
     cheap_model: str = ""
@@ -293,6 +361,7 @@ class PromptedLLMRouter:
             tokens_out=response.tokens_out,
             cost_usd=response.cost_usd,
             not_mine=not_mine,
+            confidence=label_confidence(kind, response.logprobs),
         )
 
     def classify(self, message: str) -> str:
