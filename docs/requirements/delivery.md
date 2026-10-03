@@ -125,6 +125,6 @@ A credible account of how the prototype would be deployed, scaled, monitored and
 
 **Depends on:** [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050). Path to production includes monitoring.
 
-**Evidence:** Proven by: the [path to production](../architecture/specification.md#path-to-production).
+**Evidence:** Proven by: the [path to production](../architecture/specification.md#path-to-production). The demo's monitoring path is one JSON line per turn on standard output (`SENTINEL_LOG_STDOUT`), which Container Apps forwards to Log Analytics; the file and the query text land under [REQ-0035](#req-0035) after the redeploy. OpenTelemetry remains the production path.
 
-Missing: monitoring (REQ-0050). Handoff delivery is specified ([015](../build/decisions/015-handoff-delivery.md)).
+Missing: alerts by country (REQ-0050). Handoff delivery is specified ([015](../build/decisions/015-handoff-delivery.md)).

@@ -32,13 +32,30 @@ them on the command line to deploy somewhere else.
 1. Stages `sentinel-ai-core/` and `branding/` without tests, `eval/`, local state, data or `.env*`.
 2. Creates the resource group and the registry if they do not exist, builds the image and pushes it.
 3. Passes the model variables to the container; the API key and the session salt go in as **secrets**, never as plain values.
-4. **Deletes and recreates the container app**, with `--min-replicas 1` and `--max-replicas 1`, and prints the link.
+4. Creates a Standard_LRS storage account and a 1 GiB classic file share, and links the share to the Container Apps environment.
+5. **Deletes and recreates the container app**, with `--min-replicas 1` and `--max-replicas 1`, then mounts the share at `/mnt/sentinel` for uid 10001 (the image user).
+6. Sets `SENTINEL_VAR_DIR` and `SENTINEL_DB_PATH` on that mount, `SENTINEL_SQLITE_JOURNAL=DELETE` (WAL needs shared memory a share does not have) and `SENTINEL_LOG_STDOUT=1`, so each turn record is one JSON line on standard output and Container Apps sends it to Log Analytics. Prints the link. The share is not deleted, so the SQLite file and the turn log survive the recreate.
 
-The app is recreated on every run, so the link is down for a few seconds and sessions and open
-cases are lost (SQLite lives on the container's disk). Do not redeploy during the evaluation
+The link is down for a few seconds while the app is recreated. Do not redeploy during the evaluation
 unless a fix is critical. If the script prints `deployed: https://` with no host, the
 domain lookup came back empty: read it with
 `az containerapp show -n sentinel-engine -g rg-sentinel-demo --query properties.configuration.ingress.fqdn -o tsv`.
+
+Names for the share, overridable like the others: `STORAGE_ACCOUNT=stsentinelrdorta`, `SHARE_NAME=sentinelstate`, `MOUNT_NAME=sentinelstate`.
+
+A local `docker run` of the image keeps the Dockerfile defaults (`/tmp/sentinel`, WAL, stdout logging off). The share, `DELETE` and stdout logging are deploy-time settings.
+
+## Services, cost and retention
+
+| Piece | What it is | What it keeps |
+|---|---|---|
+| Container Apps | One replica, 0.5 vCPU, 1 GiB | The process. Idle time does not drop it until min replicas goes back to 0. |
+| Azure Files | Standard_LRS, 1 GiB cap, mounted read-write | The SQLite file and `turns.jsonl`, until the share or the storage account is deleted. |
+| Log Analytics | The environment workspace; stdout JSON lines | Turn records (country, outcome, no personal data) for the workspace retention, 30 days unless changed. |
+
+The share is billed on the bytes stored, not on the 1 GiB cap: a SQLite file and a turn log are cents inside the USD 200 trial credit. Log ingestion of the JSON lines is extra and small at demo traffic. Compute for one always-on replica is about USD 1 to 2 per day, as in [019](../../docs/build/decisions/019-azure-container-apps.md); the registry is about USD 0.08 per day. This is a demo, not production: one replica, SMB locking, no alerts. Postgres and OpenTelemetry stay the production path ([specification](../../docs/architecture/specification.md#path-to-production)).
+
+Logout still deletes the conversation. The share does not keep a conversation the app has deleted. After the awards, set min replicas to 0 and delete the storage account if the file should not remain.
 
 ## Check it
 
@@ -56,10 +73,9 @@ az containerapp secret list -n sentinel-engine -g rg-sentinel-demo --query "[].n
 
 ## After the awards
 
-One replica stays up so the link does not wait for a cold start and the state survives idle
-time. After the awards on 10/16, set it back to zero replicas (`--min-replicas 0` in
+One replica stays up so the link does not wait for a cold start. After the awards on 10/16, set it back to zero replicas (`--min-replicas 0` in
 `deploy.sh`, or `az containerapp update -n sentinel-engine -g rg-sentinel-demo --min-replicas 0`)
-so it stops costing. Anything that scales it down on a schedule needs a role on the app,
+so compute stops costing. The file share is separate: delete the storage account if the SQLite file should not remain. Anything that scales the app down on a schedule needs a role on the app,
 and that role is lost each time the app is recreated.
 
 ## Never commit

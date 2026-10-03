@@ -237,14 +237,14 @@ REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same c
 | Area | Work before production |
 |---|---|
 | Identity | Replace the test session with an identity provider; move secrets to Azure Key Vault |
-| Case store, sessions and conversation state | Move from the SQLite file to PostgreSQL (same models, URL change) for more than one instance; share login-attempt counters |
+| Case store, sessions and conversation state | The demo keeps SQLite on an Azure Files share, one replica, `DELETE` journal mode. Production moves to PostgreSQL (same models, URL change) for more than one instance, and shares login-attempt counters |
 | Gold serving | Decide how the service reads Gold at request time (not decided; see [stack](system-architecture.md#stack-and-deployment)) and deploy the Gold build to Databricks |
 | Policy | Replace the synthetic configuration with the bank's approved policy, same format: per-currency values, `source` pointing to the bank policy, `synthetic: false`; decide staleness (decision 27). Each decision already records the policy file version |
 | Handoff | Publish each ticket to a queue (for example Azure Service Bus) that creates it in the bank's CRM, routed by language and specialty (REQ-0046); same package format ([015](../build/decisions/015-handoff-delivery.md)) |
 | Personal data | Serving view without personal columns and free-text masking (built); a token vault if a tool ever needs the original value, and static masking in Silver if adopted ([decision 004](../build/decisions/004-pii-lifecycle.md)) |
-| Serving | The submission runs one container on Azure Container Apps, scale-to-zero ([019](../build/decisions/019-azure-container-apps.md)); production keeps the same service with autoscaling, Key Vault and PostgreSQL |
+| Serving | The submission runs one container on Azure Container Apps, one replica, state on an Azure Files share ([019](../build/decisions/019-azure-container-apps.md)); production keeps the same service with autoscaling, Key Vault and PostgreSQL |
 | LLM | The chosen open-weight models served on Azure AI Foundry or Databricks, per-route quotas and a spending cap ([016](../build/decisions/016-router-models.md)) |
-| Observability | Centralised logs and traces, alerts by country (REQ-0050) |
+| Observability | The demo prints each turn record as one JSON line on standard output when enabled, and Container Apps sends that to Log Analytics. Production adds centralised traces and alerts by country (REQ-0050); OpenTelemetry stays that path |
 | Evaluation | Run the same harness as a release gate |
 | Data retention | Confirm the proposed retention periods ([data retention](#data-retention)) |
 

@@ -4,7 +4,7 @@ Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (
 
 A customer-service assistant for transaction disputes at a bank in Mexico, Colombia and Argentina. Prototype under active development. Status per requirement is tracked in Requirements coverage below; open decisions are marked as such.
 
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and router_v2 (a prompted GLM 5.3 Flash) with the keyword baseline as a per-turn fallback; it runs one replica that stays up until the awards, and sessions do not survive a redeploy or restart ([decision 019](docs/build/decisions/019-azure-container-apps.md)). The deployed image predates PRs #49 and #50 (narrowing, prompt-extraction refusal, real Gold read); a redeploy is pending.
+**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io` — Azure Container Apps, labeled mock data and router_v2 (a prompted GLM 5.3 Flash) with the keyword baseline as a per-turn fallback; it runs one replica that stays up until the awards ([decision 019](docs/build/decisions/019-azure-container-apps.md)). The deploy script mounts an Azure Files share so a restart keeps sessions; the public revision has not been redeployed with that share yet and predates PRs #49 and #50 (narrowing, prompt-extraction refusal, real Gold read).
 
 ## What we are building
 
@@ -50,12 +50,22 @@ Watch the structured turn log while you chat (from the repository root):
 tail -f sentinel-ai-core/var/turns.jsonl
 ```
 
-Run the service tests:
+Run the checks the workflow runs (no model keys, no cloud credentials, no evidence writes):
 
 ```bash
 cd sentinel-ai-core
-python3 -m pytest tests/ -q
+pip install -e ".[dev]"
+SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
+# Replay a frozen run only when it reproduces offline. None are listed until
+# resolution-eval is merged; 2024Q4-eval-v7's system block does not reproduce.
+# SENTINEL_WRITE_EVIDENCE=0 python3 -m eval.run verify <run-id>
+
+cd ../sentinel-data-engine
+pip install -e ".[dev]"
+python3 -m pytest -q
 ```
+
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs both on every push and pull request.
 
 The data pipeline lives in [`sentinel-data-engine/`](sentinel-data-engine/README.md): sync the raw tables from the organizer bucket into `data/raw/` with the credentials in its `.env`, then build `data/gold_bank.duckdb` in one command (both gitignored; see its quickstart). Data sources are listed in the [inventory](docs/data_inventory.md).
 
@@ -84,12 +94,12 @@ What the prototype does not do, stated up front (REQ-0013, REQ-0030; capacity in
 - **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not a bank's rule: one 90-day window serves Mexico, Colombia and Argentina. The sources read on 10/02 disagree — Argentina counts 30 days from receiving the statement, no fixed window was found for Colombia, and the Visa and Mastercard limits are bank-to-bank — and the engine cannot yet express a window start by country or a bank obligation such as provisional credit or a response time. Those are the production path, not built ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer says the rule is a demonstration policy and reads `window_days` from the country file, so the label disappears the day a bank sets `synthetic: false` with a verified value.
 - **Languages:** the Portuguese (`pt-BR`) cases are model-written, with no native-speaker review, and variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). The three demo lines were back-translated by a second model. A Colombian check accepted the es-CO lines after the peso was named mexicano. Mexican and Argentine lines were checked by that model, not by a speaker. A 2% replay of the 2024Q4 transcripts, on the development side of the 70/30 time split, handed off all 280 times; the sample had 2 prefixes and no customer data was stored ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)). Those transcripts are templates, not customer language. Pix hands off. `extrato` and `fatura` stay charge words because the sealed set uses them inside charge inquiries.
 - **Model:** the app serves router_v2 when `SENTINEL_LLM_*` are set, the configuration measured in [`2024Q4-eval-v7`](evidence/evaluation-runs/2024Q4-eval-v7/summary.json): 0.98 intent accuracy against 0.54 for the keyword baseline on the sealed set (n = 280), latency p50 1079 ms and p95 4475 ms for the router ([metrics report](docs/build/metrics-report.md)). When the model fails, that turn is answered by the baseline, which is the 0.54 level, and the turn log marks it. A greeting alone or small talk is classified as out of scope by the model (the sealed set has no such case); the chat answers it with an offer and hands off only on the third turn in a row. The router lowers risk, not effort: policy, confirmations and handoffs stay in code ([serving](sentinel-ai-core/app/ai/serving.py)).
-- **State:** SQLite, one instance. On the public link it sits on the container's ephemeral disk, so a restart or scale-to-zero loses sessions and cases. Login-attempt and write-rate counters are per process.
+- **State:** SQLite, one replica. The deploy mounts an Azure Files share and opens the file in `DELETE` journal mode, so a restart keeps an unexpired session, an open dispute and a handoff ticket; logout still deletes the conversation. Postgres remains the path for more than one instance. Login-attempt and write-rate counters stay per process. The public revision has not been redeployed with the share yet, so that link still loses state on restart.
 - **Privacy:** free customer text is masked before the model, by pattern; personal data outside those patterns is not detected.
 - **Narrowing:** the shown list now filters by merchant words, relative dates and repeated charges, and says when nothing matched (`charge.not_found`). A soft match does not open the confirm box. Approximate amounts and date phrases outside the listed set are not used. Offline on the MT-06 cases: right-charge-shown 20/24 before, 24/24 after; not-found-said 4/24 before, 24/24 after ([review](sentinel-ai-core/eval/review/narrowing.md)).
 - **Safety evidence:** the adversarial set has 42 attacks with `0/42` unsafe outcomes. A3, A4b and D4 are `blocked_verified` (prompt extraction is refused in code, injection is recorded and not blocked, Gold reads time out under `SENTINEL_GOLD_TIMEOUT_S`, default 2 s). None remain in `no_defense_yet`. Three still pass only because the stand-in model is the keyword baseline ([run](evidence/adversarial/20261002T222323Z/summary.json)).
 - **Resolution:** safe automated resolution is measured only as a simulation over the mock store. The resolution run [`2024Q4-resolution-v1`](evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) resolves 16 of 56 cases in 14 situations for both the baseline and router_v2, with 0 unsafe outcomes and 0 missed transfers, and a cost per resolution of USD 0.000561 for router_v2. It is not a field resolution rate: the set uses only the charges in the mock store, the pending status is not covered, and the paired difference between the versions is zero ([022](docs/build/decisions/022-resolution-acceptance.md)).
-- **Deployment:** the live link serves router_v2 (checked 10/02) but runs an image built before PRs #49 and #50, so narrowing, the prompt-extraction refusal and the real Gold read are not live yet. State is on the container's ephemeral disk until the durable-storage change lands.
+- **Deployment:** one replica, non-root, health check on the state store. Turn records go to standard output when `SENTINEL_LOG_STDOUT=1`, which Container Apps forwards to Log Analytics. The live link serves router_v2 but runs an image built before PRs #49 and #50, so narrowing, the prompt-extraction refusal and the real Gold read are not live yet, and it has not been redeployed with the share or that logging yet, so state is still on the container's ephemeral disk until the redeploy.
 
 ## Reading guide
 
