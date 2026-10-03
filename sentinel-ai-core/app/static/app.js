@@ -186,6 +186,32 @@ function renderCandidates(box, candidates) {
   box.append(chips);
 }
 
+/* "Cómo lo resolví": the ordered steps of this turn, in plain language.
+   The keys come from the reply; the page only translates them, so no rule
+   id, model or threshold ever reaches the screen. */
+function renderSteps(thread, body) {
+  if (!body.steps || !body.steps.length) return;
+  const panel = el("div", "msg msg-audit steps-panel");
+  panel.setAttribute("data-testid", "steps-panel");
+  panel.append(el("p", "chat-sub", t("howIResolved")));
+  const list = el("ol", "steps-list");
+  body.steps.forEach((key) => list.append(el("li", "", t(key))));
+  panel.append(list);
+  thread.append(panel);
+}
+
+/* Neutral transaction status: the dataset status only, never a fraud signal. */
+const STATUS_KEYS = {
+  Approved: "txStatusApproved",
+  Pending: "txStatusPending",
+  Reversed: "txStatusReversed",
+  Declined: "txStatusDeclined",
+};
+
+function statusLabel(status) {
+  return t(STATUS_KEYS[status] || "txStatusApproved");
+}
+
 function renderReply(body) {
   const thread = document.getElementById("thread");
   if (body.kind === "confirm_box") {
@@ -228,6 +254,7 @@ function renderReply(body) {
   } else {
     thread.append(el("div", "msg msg-bot", t(body.message_key)));
   }
+  renderSteps(thread, body);
 }
 
 async function loadTransactions() {
@@ -246,6 +273,7 @@ async function loadTransactions() {
     item.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
     item.append(el("span", "chat-sub", ` ${tx.merchant}`));
     item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
+    item.append(el("span", "chat-sub tx-status", ` · ${t("field_state")}: ${statusLabel(tx.status)}`));
     if (!tx.eligible) {
       item.disabled = true;
       item.append(el("span", "chat-sub", ` ${t(tx.ineligibleKey || "candidateOutOfWindow")}`));

@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from fastapi.testclient import TestClient
 
@@ -88,6 +89,36 @@ def test_demo_entry_has_banner_personas_and_named_languages() -> None:
     assert 'data-testid="locale-button"' in INDEX
     assert "locale-group" in APP_JS
     assert "/api/v1/auth/demo" in APP_JS
+
+
+def test_resolution_panel_renders_the_closed_steps() -> None:
+    assert "renderSteps" in APP_JS
+    assert 'data-testid", "steps-panel"' in APP_JS
+    assert 't("howIResolved")' in APP_JS
+    assert "body.steps" in APP_JS
+    assert "innerHTML" not in APP_JS
+    strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
+    for key in (
+        "howIResolved",
+        "step.understood",
+        "step.lookedUp",
+        "step.checkedPolicy",
+        "step.caseOpened",
+        "step.noCase",
+        "step.handedOff",
+        "step.refused",
+    ):
+        assert f'"{key}"' in strings, f"{key} missing from the locale"
+
+
+def test_transaction_status_label_is_neutral() -> None:
+    assert "statusLabel" in APP_JS
+    assert "txStatusApproved" in APP_JS
+    assert "tx-status" in APP_JS
+    code = re.sub(r"/\*.*?\*/", "", APP_JS, flags=re.S)
+    code = re.sub(r"//[^\n]*", "", code).lower()
+    for signal in ("fraud", "fraude", "score", "threshold", "umbral"):
+        assert signal not in code, f"a fraud signal leaked into the page: {signal}"
 
 
 def test_the_why_followup_returns_an_explanation_over_http() -> None:
