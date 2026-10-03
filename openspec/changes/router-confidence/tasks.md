@@ -4,7 +4,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 
 ## 1. Feasibility (stop here if it fails)
 
-- [ ] 1.1 Record one call per label on the served model with log-probabilities requested, JSON output and low reasoning; check the label token's alternatives are returned. Evidence: a note in `docs/build/decisions/016-router-models.md` with the request settings and the result; if unsupported, mark the rest of this change as not built.
+- [x] 1.1 Record one call per label on the served model with log-probabilities requested, JSON output and low reasoning; check the label token's alternatives are returned. Evidence: a note in `docs/build/decisions/016-router-models.md` with the request settings and the result; if unsupported, mark the rest of this change as not built.
 
 ## 2. Score and split
 
