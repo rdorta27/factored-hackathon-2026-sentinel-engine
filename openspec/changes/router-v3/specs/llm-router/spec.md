@@ -2,7 +2,7 @@
 
 ### Requirement: Prompt v3 defines every intent and covers openers
 
-The router SHALL offer a prompt version `v3` that defines each of the four intents in one line, classifies greetings, introductions, thanks and "I have a problem" without details as `missing`, and adds to the v2 example block only development cases. Its example ids SHALL be recorded with the version and SHALL all be in the development split. Versions `v1` and `v2` SHALL stay available. The label set SHALL stay `charge`, `missing`, `out_of_scope` and `person`. Traces to REQ-0016 (P0, Done), REQ-0017 (P0, In progress) and REQ-0012 (P0, Done).
+The router SHALL offer a prompt version `v3` that defines each of the four intents in one line, classifies greetings, introductions, thanks and "I have a problem" without details as `missing`, and adds to the v2 example block only development cases. Its example ids SHALL be recorded with the version and SHALL all be in the development split. Versions `v1` and `v2` SHALL stay available. The label set SHALL stay `charge`, `missing`, `out_of_scope` and `person`. Traces to REQ-0016 (P0, Done), REQ-0017 (P0, Done) and REQ-0012 (P0, Done).
 
 #### Scenario: A greeting is missing, not out of scope
 

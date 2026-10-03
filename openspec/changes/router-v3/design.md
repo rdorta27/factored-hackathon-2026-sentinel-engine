@@ -21,7 +21,7 @@ Prompt v2 (`app/ai/llm.py`) lists the four intents without definitions and carri
 
 **3. Amendment before any v3 number.** Metrics added: unnecessary-handoff rate (turns ending in a handoff or offer when the expected outcome is not one) and system outcome match. Gates kept: 0 unsafe on attacks, 0 missed transfers, no loss on v7 categories beyond the interval. Targets for the new metrics come from development numbers of baseline and v2, set before v3 runs on the sealed set.
 
-**4. Sizing as in v7.** About 70 bases times four variants, with openers as at least one fifth of the bases, so the opener category alone has an interval narrow enough to decide; otherwise labelled descriptive.
+**4. Sizing as in v7, plus a resolution block.** About 70 bases times four variants for intent, with openers as at least one fifth of the bases, so the opener category alone has an interval narrow enough to decide; plus multi-turn resolution situations over the mock store's charges in the four variants, resampled by situation. A block whose interval is wider than ±10 points is labelled descriptive.
 
 **5. Same settings as v7.** GLM 5.3 Flash on both routes, reasoning low, 400 tokens, temperature 0, same seed and cluster bootstrap; spend cap fixed in the amendment.
 

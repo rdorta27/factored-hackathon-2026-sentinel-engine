@@ -14,13 +14,13 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 
 ## 3. Sealed set
 
-- [ ] 3.1 Have an isolated author write the set, review and back-translate it, and record the provenance. Evidence: `eval/review/` notes.
+- [ ] 3.1 Have an isolated author write the set (intent block with openers, multi-turn resolution block, attacks and noisy twins), review and back-translate it, and record the provenance. Evidence: `eval/review/` notes.
 - [ ] 3.2 Seal it with a new hash, leaving the v7 entry untouched. Evidence: `eval/cases/seal.json` and a test that the v7 hash is unchanged.
 
 ## 4. Measure and serve
 
-- [ ] 4.1 Measure baseline, v2 and v3 once as `2024Q4-eval-v8`, recording the measured commit. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`.
+- [ ] 4.1 Measure baseline, v2 and v3 (with confidence thresholds if `router-confidence` passed) once as `2024Q4-eval-v8`, intent and resolution blocks, with the breakdown by language and country, recording the measured commit. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`.
 - [ ] 4.2 Judge the result by the amendment and write the verdict. Evidence: the amendment's result section.
 - [ ] 4.3 If v3 passes, serve it with the loader guarantee and pin its example ids; otherwise keep v2. Evidence: `app/ai/serving.py` tests.
-- [ ] 4.4 Run the resolution set on v3 in the same measurement, regenerate the metrics report on v8 (breakdown included) and update README and REQ-0016 evidence. Evidence: those files.
+- [ ] 4.4 Regenerate the metrics report on v8 (intent, resolution, breakdown) and update README and REQ-0016 evidence; add v8 to the CI replay list. Evidence: those files.
 - [ ] 4.5 Run the existing test suite and report counts, including any failure. Evidence: pytest output in the commit body.

@@ -9,8 +9,8 @@ Serving router_v2 showed a gap the measurement never covered: a greeting ("hola"
 - **Cases first:** an inventory of first-message types no case covers (greeting alone, greeting with a name, courtesy and closing, small talk and identity questions, empty or meaningless text, generic help, greeting followed by a real request, out of scope without a keyword), written as development cases in es-MX, es-CO, es-AR and pt-BR with the expected intent and system outcome.
 - **Rules before numbers:** an amendment to [018](../../../docs/build/decisions/018-evaluation-acceptance.md), committed before any v3 number, adds the unnecessary-handoff rate and the system outcome match, keeps every v7 gate, and sets targets from development numbers.
 - **Prompt v3:** one line per intent (greetings, thanks and "I have a problem" are `missing`), the eight v2 examples plus the fewest new development examples needed; iterated on development only.
-- **New sealed set:** written by an author isolated from the prompt, examples and rules, reviewed and back-translated as in v7, sealed under a new hash.
-- **One measurement, `2024Q4-eval-v8`:** baseline, v2 and v3 on the same sealed set, same settings as v7, under a spend cap.
+- **New sealed set:** written by an author isolated from the prompt, examples and rules, reviewed and back-translated as in v7, sealed under a new hash. It covers single-turn intent (openers included) **and multi-turn resolution** (select, confirm, verified case number, or the refusal or handoff the policy requires), so one sealed measurement answers both questions instead of two sealed sets.
+- **One measurement, `2024Q4-eval-v8`:** baseline, v2 and v3 (with the confidence thresholds of `router-confidence` when they pass their own check) on the same sealed set, same settings as v7, under a spend cap, with every system outcome broken down by language and country.
 - **Serve v3** with the same guarantees as v2 if it passes the rules; otherwise v2 stays served and the result is reported.
 
 ## Capabilities
@@ -35,5 +35,6 @@ Serving router_v2 showed a gap the measurement never covered: a greeting ("hola"
 
 ## Assumptions
 
-- `chat-loop`, `real-gold` and `evaluation-final` land before the v8 seal, so v8 measures the loop that is served; the resolution set of `resolution-eval` is re-run on v3 in the same measurement.
+- `evaluation-final` and `router-confidence` land before the v8 seal, so v8 measures the loop that is served; `chat-loop` and `real-gold` are already in `main`.
+- The multi-turn part reuses the runner's confirmation turn and the 14 situations of `resolution-v1` as a guide for the isolated author, never as cases.
 - The spend cap and the author of the sealed set are fixed by the owner before sealing.
