@@ -61,7 +61,7 @@ flowchart TB
 
     subgraph understand["Understanding · LLM"]
         router["LLM router"]
-        learned["Learned component<br/>dispute-category classifier"]
+        learned["Learned component<br/>intent router"]
     end
     subgraph control["Control · code"]
         policy["Policy engine"]
@@ -174,24 +174,24 @@ A timeout is not success: if the read-back fails after bounded retries, the case
 
 ## Learned component
 
-The one learned component is a **dispute-category classifier**: a prompted LLM with few-shot examples that reads the customer's message and assigns the dispute category, using the category and subcategory values of the `complaints` table (for example, the subcategory *Cargo no reconocido*, "unrecognized charge").
+The one learned component is an **intent router**: a prompted LLM with development examples that reads the customer's masked message and returns a bounded JSON label: the intent (`charge`, `missing`, `out_of_scope`, `person`), the language and whether the customer states the charge was not theirs ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)). It refines [007](../build/decisions/007-learned-component.md), which first proposed classifying the dispute category; the category recorded on a dispute is set by a keyword rule in code.
 
 ```mermaid
 flowchart LR
-    msg(["Customer message<br/>es-419 · pt-BR"]) --> cls["Prompted LLM<br/>few-shot classifier"]
-    cls --> cat["Dispute category"]
-    cat --> open["open_dispute<br/>category field"]
-    base["Keyword baseline"] -. "same held-out cases" .- cls
+    msg(["Customer message<br/>es-419 · pt-BR, masked"]) --> cls["Prompted LLM<br/>intent router"]
+    cls --> lab["Intent · language · not-mine"]
+    lab --> pol["Policy engine<br/>in code"]
+    base["Keyword baseline"] -. "same sealed held-out cases" .- cls
 
     classDef comp fill:#f1edff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class cls,cat,open,base comp
+    class cls,lab,pol,base comp
     class msg ext
 ```
 
-- **Where it runs:** in Decide, only after policy has established that a dispute applies.
-- **What it decides:** the category recorded in the dispute. It never decides eligibility and never overrides a rule.
-- **How it is judged:** against a keyword baseline and the same LLM zero-shot, on the same held-out conversations. Because the dataset has no usable customer text, those conversations are team-written in `es-419` and `pt-BR` and declared as such.
+- **Where it runs:** in Understand, after masking and after the code checks that refuse prompt extraction and record injection attempts. Narrowing the shown charges uses deterministic parsers, not the model.
+- **What it decides:** only the label. Policy, eligibility, the confirm box, the read-back and the handoff stay in code; a model failure is answered by the baseline for that turn.
+- **How it is judged:** against the keyword baseline on the same sealed held-out set, measured once (`2024Q4-eval-v7`: 0.98 against 0.54 intent accuracy, n = 280), and end to end on the multi-turn resolution set (`2024Q4-resolution-v1`). Cases are model-written simulation in `es-419` and `pt-BR`, declared as such.
 
 ## Stack and deployment
 

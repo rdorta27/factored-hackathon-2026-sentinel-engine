@@ -55,7 +55,7 @@ Test the cases the brief names explicitly: bad or missing data, expired session,
 
 **Depends on:** [REQ-0007](#req-0007), [REQ-0012](frontend-backend.md#req-0012), [REQ-0026](#req-0026), [REQ-0027](#req-0027). The attacks test permissions, languages, fallback and the session.
 
-**Evidence:** Proven by: 36 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/36` (29 `blocked_verified`, 3 `no_defense_yet`: A3, A4b, D4) in [`evidence/adversarial/20261002T120107Z/summary.json`](../../evidence/adversarial/20261002T120107Z/summary.json); runner fault injection (Gold, session, tool) degrading safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
+**Evidence:** Proven by: 42 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/42` (38 `blocked_verified`, 3 `passes_on_mock`, 1 `documented`, 0 `no_defense_yet`) in [`evidence/adversarial/20261002T222323Z/summary.json`](../../evidence/adversarial/20261002T222323Z/summary.json). A3 refuses prompt extraction in code, A4b records injection without changing the reply, and D4 bounds Gold reads (`SENTINEL_GOLD_TIMEOUT_S`, default 2 s, above the measured 0.28 s cold read). Runner fault injection (Gold, session, tool) degrades safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
 
 <a id="req-0025"></a>
 ### REQ-0025 · Observability

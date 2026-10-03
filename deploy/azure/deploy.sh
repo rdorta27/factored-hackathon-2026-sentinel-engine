@@ -245,5 +245,5 @@ az containerapp update --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
 rm -f "$tmp/app.json" "$tmp/app.yaml"
 
 fqdn="$(az containerapp show --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
-	--query configuration.ingress.fqdn -o tsv)"
+	--query properties.configuration.ingress.fqdn -o tsv)"
 echo "deployed: https://$fqdn"
