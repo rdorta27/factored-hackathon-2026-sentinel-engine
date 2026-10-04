@@ -8,7 +8,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 | [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | Done |
 | [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | Done |
 | [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
-| [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | In progress |
+| [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | Done |
 | [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | Done |
 | [REQ-0023](#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](#req-0016) | Pending |
 | [REQ-0031](#req-0031) | Approved data, labeled by origin | P0 | data | — | Done |
@@ -80,13 +80,13 @@ Show the pipeline updates correctly when data arrives late, is duplicated or cha
 
 Record which model, prompt version, parameters and metrics produced each result, so any run can be traced and repeated.
 
-**Priority:** P1 · **Status:** In progress · **Criterion:** Machine Learning · **Area:** ml
+**Priority:** P1 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Kickoff p. 20
 
 **Depends on:** [REQ-0016](#req-0016). Tracks the learned component's versions.
 
-**Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); the served app records the model, route (`fallback` when the baseline answered) and prompt version of each turn (`tests/test_model_serving.py`). Status stays In progress until the public link is checked remotely.
+**Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); the served app records the model, route (`fallback` when the baseline answered) and prompt version of each turn (`tests/test_model_serving.py`). Each evaluation run is one write-once folder ([013](../build/decisions/013-experiment-tracking.md)) that names its models, route, prompt version, prices and spend: [`2024Q4-select-v2`](../../evidence/evaluation-runs/2024Q4-select-v2/summary.json) (`candidates.<model>`), [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.models`, `prices`, `spend`) and [`2024Q4-calibration-v1`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs`). The public link was checked remotely on 2026-10-02 and 2026-10-03 ([REQ-0035](delivery.md#req-0035)). The [evidence index](../../evidence/README.md#evaluation-runs) lists every run and its status.
 
 The frozen runs are the tracking record; no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
 
@@ -129,7 +129,7 @@ Use only organizer-approved data and label every input as real, de-identified, s
 
 **Source:** Problem statement: Data and execution boundaries
 
-**Evidence:** Proven by: the [source inventory](../data_inventory.md): every input labeled by origin (organizer synthetic dataset, team-written fixtures and evaluation cases), with no external or real customer data.
+**Evidence:** Proven by: the [source inventory](../data_inventory.md): every input labeled by origin (organizer synthetic dataset, team-written fixtures and evaluation cases), with no external or real customer data. The [what is real](../architecture/what-is-real.md) page labels every component, data source and number as real, mock, synthetic, team-generated, simulation or projection, and the [evidence index](../../evidence/README.md) labels every run the same way.
 
 <a id="req-0039"></a>
 ### REQ-0039 · Declare data freshness

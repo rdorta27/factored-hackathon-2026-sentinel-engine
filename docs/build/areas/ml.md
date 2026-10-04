@@ -31,9 +31,9 @@ The model labels the intent only. Code decides permissions, policy, confirmation
 
 Source: [`2024Q4-eval-v7`](../../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The [metrics report](../metrics-report.md) gives the full tables.
 
-- `router_v2` is more accurate than the baseline on the same 280 sealed cases. The 95% interval of the paired net difference is above zero (`paired.*`).
-- Most of the gain is in the `missing` intent: a vague message that needs a clarifying question (`versions.<version>.breakdown.by_intent`).
-- The four language variants (es-MX, es-CO, es-AR, pt-BR) give about the same accuracy (`versions.router_v2.breakdown.by_variant`).
+- `router_v2` is more accurate than the baseline on the same 280 sealed cases. The 95% interval of the paired net difference is above zero (`component.paired.*`).
+- Most of the gain is in the `missing` intent: a vague message that needs a clarifying question (`component.versions.<version>.breakdown.by_intent`).
+- The four language variants (es-MX, es-CO, es-AR, pt-BR) give about the same accuracy (`component.versions.router_v2.breakdown.by_variant`).
 - 0 unsafe outcomes on 75 attacks. With the rule of three, the true rate is at most 4% (95% confidence).
 
 ## Data that we did not use as a label

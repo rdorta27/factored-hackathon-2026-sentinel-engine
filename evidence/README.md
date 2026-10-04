@@ -24,7 +24,7 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Question | Current run | Field to cite |
 |---|---|---|
 | Which flow did we choose, and why? | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | `disputes.*`, `accounts.*` |
-| Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `paired.*`, `versions.<version>.breakdown.*` |
+| Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `component.paired.*`, `component.versions.<version>.breakdown.*` |
 | How many cases does the system resolve safely? | [`evaluation-runs/2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.<version>.*` |
 | What are the confidence cut-offs? | [`evaluation-runs/2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | `cutoffs.t_act`, `cutoffs.t_abstain` |
 | Does the system resist attacks? | [`adversarial/20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |

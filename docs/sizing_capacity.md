@@ -178,7 +178,7 @@ trigger:
 | p95 | < 5 s | End-to-end `/api/v1/chat`, with one model call |
 | p95 | **< 200 ms** | Gold view query + API serialization (non-LLM path) |
 | p99 | < 500 ms | Gold view query + API serialization (non-LLM path) |
-| Model call (GLM 5.3 Flash on Fireworks AI, [016](build/decisions/016-router-models.md)) | measured p50 1079 ms, p95 4475 ms | [`2024Q4-eval-v7`](../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): `versions.router_v2.latency_ms` |
+| Model call (GLM 5.3 Flash on Fireworks AI, [016](build/decisions/016-router-models.md)) | measured p50 1079 ms, p95 4475 ms | [`2024Q4-eval-v7`](../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): `component.versions.router_v2.latency_ms` |
 
 The model targets come from the measured router latency, not from an estimate. The router runs **first** on every text turn: it labels the intent before the loop reads Gold or checks eligibility. A turn that selects a charge from the list (a structured candidate id) does not call the model. The non-LLM path (eligibility check, customer lookup, idempotency gate) must complete in < 200 ms at p95 under peak load (1,000 inquiry calls/day ≈ 0.70 req/s sustained). These numbers are not a load test of `/api/v1/chat`: that test is still open.
 
