@@ -18,3 +18,10 @@ last_reviewed: 2026-10-04
 
 - The page changes while `flow-fixes` and `chat-start` change the replies. Mitigation: the page reads reply kinds and keys, not text.
 - Screenshots go stale. Mitigation: regenerate them in the last task.
+
+## Coordination with `flow-fixes` (2026-10-04)
+
+6. **Merge `flow-fixes` first.** It edits `app/schemas/chat.py` (optional fields), the locale files and, if needed, one line of `static/app.js`. This change owns the HTML, CSS and JavaScript and rebases on that commit.
+7. **Reuse the reply kinds that exist.** The page already renders the `explanation` kind with `fillTemplate` and verified values. New states and the handoff card use the same pattern. Do not add a second way to fill placeholders.
+8. **Use the same state names.** `case_state` values match the `case_status` values that `flow-fixes` returns for a dispute status reply, so the panel and the reply agree.
+9. **The design is a local copy.** Read `.local/final-push/design/` (README with tokens); the original canvas is not readable from every tool. Run `uvicorn` on port 8003.
