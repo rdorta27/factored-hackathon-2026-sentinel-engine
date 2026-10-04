@@ -51,7 +51,7 @@ last_reviewed: 2026-10-04
 A file without this frontmatter is not yet in ASD-STE100. When you rewrite
 it, add the frontmatter. Do not add the frontmatter to a file that you only
 edit in part. To list the files that are done:
-`grep -rl '^style: ASD-STE100' --include=*.md .`
+`grep -rl '^style: ASD-STE100' --include=*.md . | grep -v AGENTS.md`
 
 
 For agents:
