@@ -1,6 +1,7 @@
 """
-GET /api/v1/handoffs        escalated tickets, newest first (role advisor)
-GET /api/v1/handoffs/{id}   one ticket (role advisor)
+GET /api/v1/handoffs            escalated tickets, newest first (role advisor)
+GET /api/v1/handoffs/{id}       one ticket (role advisor)
+GET /api/v1/handoffs/{id}/trace trace of the turn that filed it (role advisor)
 
 The advisor side of the handoff (decision 009, REQ-0008): the full package the
 chat produced — summary, per-turn conversation, verified facts, actions
@@ -12,7 +13,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.schemas.chat import AdvisorTicket, HandoffPackage
+from app.schemas.chat import AdvisorTicket, AdvisorTrace, HandoffPackage, TraceStep
 from app.session.models import Session
 from app.session.router import require_advisor
 from app.state.cases import CaseRow
@@ -44,3 +45,37 @@ def get_handoff(case_id: str, request: Request, session: Session = Depends(requi
     if row is None or row.kind != "handoff":
         raise HTTPException(status_code=404, detail="Ticket not found")
     return _ticket(row)
+
+
+@router.get("/{case_id}/trace")
+def get_trace(case_id: str, request: Request, session: Session = Depends(require_advisor)) -> AdvisorTrace:
+    """The escalating turn's records: steps, outcome, latency, model, cost.
+
+    Falls back to the JSONL log when the turn is no longer in memory (a
+    restart); if neither holds it, the trace is reported unavailable instead
+    of failing. Never carries customer text or an identifier.
+    """
+    row = request.app.state.cases.get(case_id)
+    if row is None or row.kind != "handoff":
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    if not row.trace_id:
+        return AdvisorTrace(case_id=case_id, trace_id=None, available=False)
+    recorder = request.app.state.recorder
+    records = recorder.records_for(row.trace_id) or recorder.persisted_for(row.trace_id)
+    steps = [
+        TraceStep(
+            step=record.step,
+            tool=record.tool,
+            outcome=record.outcome,
+            attempt=record.attempt,
+            latency_ms=record.latency_ms,
+            model=record.model,
+            route=record.route,
+            prompt_version=record.prompt_version,
+            cost_usd=record.cost_usd,
+            policy_version=record.policy_version,
+            ts=record.ts,
+        )
+        for record in records
+    ]
+    return AdvisorTrace(case_id=case_id, trace_id=row.trace_id, available=bool(records), steps=steps)

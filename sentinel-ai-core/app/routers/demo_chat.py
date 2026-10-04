@@ -121,6 +121,69 @@ _REPLY_PHASES = {
 }
 
 
+# Closed customer-facing step keys rendered as the "how it was resolved"
+# panel (spec chat-ui). Mapped server-side from the turn records, so rule
+# ids, model names, tool names, scores and thresholds never reach the browser.
+STEP_UNDERSTOOD = "step.understood"
+STEP_LOOKED_UP = "step.lookedUp"
+STEP_CHECKED_POLICY = "step.checkedPolicy"
+STEP_CASE_OPENED = "step.caseOpened"
+STEP_NO_CASE = "step.noCase"
+STEP_HANDED_OFF = "step.handedOff"
+STEP_REFUSED = "step.refused"
+STEP_KEYS = frozenset(
+    {
+        STEP_UNDERSTOOD,
+        STEP_LOOKED_UP,
+        STEP_CHECKED_POLICY,
+        STEP_CASE_OPENED,
+        STEP_NO_CASE,
+        STEP_HANDED_OFF,
+        STEP_REFUSED,
+    }
+)
+
+
+def _turn_steps(reply: ChatReply, recorder: Recorder, trace_id: str) -> list[str]:
+    """Order this turn's records onto the closed step keys.
+
+    Grounded in what the turn recorded: an understanding, a charge lookup, a
+    policy decision, a verified case write, an escalation. The reply kind
+    fills what the records cannot say (a shown candidate list is a lookup;
+    a confirmation opened a case; an error refused).
+    """
+    if isinstance(reply, ErrorReply):
+        return [STEP_REFUSED]
+    records = recorder.records_for(trace_id)
+    present = {record.step for record in records}
+    looked_up = any(
+        record.step == "act" and (record.tool or "").startswith("lookup") for record in records
+    )
+    if isinstance(reply, Clarification):
+        looked_up = looked_up or bool(reply.candidates)
+    elif isinstance(reply, (ConfirmBox, CaseConfirmation)):
+        looked_up = True
+    elif isinstance(reply, Handoff):
+        looked_up = looked_up or reply.package.verified_facts is not None
+    steps = [STEP_UNDERSTOOD]
+    if looked_up:
+        steps.append(STEP_LOOKED_UP)
+    if "decide" in present:
+        steps.append(STEP_CHECKED_POLICY)
+    if isinstance(reply, CaseConfirmation):
+        steps.append(STEP_CASE_OPENED)
+    elif isinstance(reply, (Handoff, TextReply, Explanation)):
+        opened = any(
+            record.step == "act" and record.tool == "open_dispute" and record.outcome == "ok"
+            for record in records
+        )
+        if not opened:
+            steps.append(STEP_NO_CASE)
+    if isinstance(reply, Handoff):
+        steps.append(STEP_HANDED_OFF)
+    return steps
+
+
 # Response language of the interface. The five locales are the ones the selector
 # offers; the orchestrator knows two, so the regional nuance stays in the
 # frontend dictionary and only the base language crosses this boundary.
@@ -502,6 +565,7 @@ def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
             transaction_date=facts.transaction_date if facts else None,
             reason_key=reply.reason_key,
             package=reply.package.model_dump(mode="json"),
+            trace_id=turn.trace_id,
         )
     )
 
@@ -651,12 +715,22 @@ def finish_turn(
     request.app.state.conversation_store.save(turn.token, stored)
     if new_ticket:
         _save_ticket(request, turn, reply)  # type: ignore[arg-type]
+    reply = reply.model_copy(update={"steps": _turn_steps(reply, turn.recorder, turn.trace_id)})
     if isinstance(reply, ErrorReply):
         outcome = "failed"
     elif output is None:
         outcome = "ok"
     else:
         outcome = _turn_outcome(output)
+    payload = reply.model_dump(mode="json")
+    if isinstance(reply, Handoff):
+        # The stored ticket keeps the full package for the advisor; the
+        # customer payload drops tool names and policy rules entirely.
+        payload["package"]["actions_taken"] = [
+            {key: value for key, value in item.items() if key not in ("tool", "policy_rule")}
+            for item in payload["package"]["actions_taken"]
+        ]
+        payload["package"]["evidence"].pop("policy_rule", None)
     turn.observer.emit(
         step="turn",
         language=turn.state.language.value,
@@ -673,7 +747,7 @@ def finish_turn(
     )
     return JSONResponse(
         status_code=status_code,
-        content=reply.model_dump(mode="json"),
+        content=payload,
         headers={"X-Trace-Id": turn.trace_id},
     )
 

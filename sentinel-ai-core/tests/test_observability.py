@@ -218,6 +218,23 @@ def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-unt
     assert [json.loads(line)["trace_id"] for line in lines] == ["0" * 16, "f" * 16]
 
 
+def test_persisted_for_reads_a_trace_back_after_a_restart(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.observability import Recorder
+
+    path = tmp_path / "turns.jsonl"
+    written = Recorder(path=path, salt="test-salt")
+    written.emit(_valid(trace_id="a" * 16))
+    written.emit(_valid(trace_id="b" * 16, step="escalate"))
+
+    # A new process: nothing in memory, the log still holds the trace.
+    fresh = Recorder(path=path, salt="test-salt")
+    assert fresh.records_for("a" * 16) == []
+    loaded = fresh.persisted_for("a" * 16)
+    assert [record.step for record in loaded] == ["decide"]
+    assert loaded[0].trace_id == "a" * 16
+    assert fresh.persisted_for("c" * 16) == []
+
+
 def test_session_ref_is_stable_and_not_the_identifier() -> None:
     from app.observability import Recorder
 

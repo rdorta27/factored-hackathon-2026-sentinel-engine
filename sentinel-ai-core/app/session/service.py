@@ -59,6 +59,20 @@ class SessionService:
         self._audit.emit("login_success", trace_id, session.token, country=user.country)
         return session
 
+    def login_demo(self, login: str, ip: str, trace_id: str) -> Session:
+        """One-click demo sign-in: no password, customers only.
+
+        The router gates this behind ``SENTINEL_DEMO_AUTH=1`` and a visible
+        banner; an id alone proves nothing about identity (README limitation).
+        """
+        user = self._users.get_by_login(login)
+        if user is None or user.role != "customer":
+            self._audit.emit("login_failed", trace_id)
+            raise InvalidCredentials
+        session = self._sessions.create(user, SESSION_TTL)
+        self._audit.emit("login_success", trace_id, session.token, country=user.country)
+        return session
+
     def logout(self, token: str | None, trace_id: str, ip: str) -> None:
         session_id = None
         country = "MX"
