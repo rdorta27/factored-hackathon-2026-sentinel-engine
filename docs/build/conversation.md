@@ -42,6 +42,33 @@ REQ-0042 (minimum effort) and REQ-0043 (check the charge status).
 5. If it does not appear, ask for the minimum and open the dispute as **pending verification**.
 6. Ask for confirmation before opening it; report the case number only when the tool confirms it.
 
+## When the confirmation is open
+
+A message that names another amount, merchant or date closes the box and grounds the new charge. A confirm opens only the charge of the box that the customer saw. A message that is not a correction shows the same box again.
+
+## Status of an open dispute
+
+REQ-0003 (verified records) and REQ-0043 (check the charge status first). A question about the status of a dispute is a code check. It runs before the model and before the confirm box. The reply reads the cases of the customer, or says that no case exists:
+
+> "Tu caso D-… está en estado Open." ("Your case D-… has status Open.")
+> "No tienes disputas abiertas." ("You have no open disputes.")
+
+The check never opens a case. The phrases are in es-419 and pt-BR: a case word (disputa, reclamo, caso, contestação) and a status word (ya abrí, en qué va, estado, status).
+
+## After a handoff
+
+REQ-0001 (keep context) and REQ-0008 (structured handoff package). The reference belongs to the case, not to the session.
+
+- A message about the same case answers with the ticket reference.
+- A request about another charge continues the normal flow.
+- The reason of a filed ticket does not change.
+
+## When no charge matches a date
+
+REQ-0002 (clarify or abstain). When a date phrase matches no charge, the reply names the date that it searched, then lists the newest charges:
+
+> "No encontré cargos del 2026-06-16. Estos son los más recientes." ("I found no charges on 2026-06-16. These are the newest.")
+
 ## When the customer asks to speak to a person
 
 REQ-0040 (advisor request). The policy in code decides, not the predictor or the LLM.

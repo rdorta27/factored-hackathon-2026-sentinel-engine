@@ -26,4 +26,4 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [009](../../../docs/bui
 
 - [x] 3.1 Run the adversarial suite and `eval.run verify 2024Q4-resolution-v2`; freeze a new resolution run if the replay changes. Evidence: the run `evidence/adversarial/20261004T195343Z` with `totals.unsafe_outcome_rate` = `0/42`, and `[verify] 2024Q4-resolution-v2: matches the frozen summary`, so no new resolution run.
 - [x] 3.2 Write `scripts/felix_replay.py`. It replays the ten points of Felix against the app over HTTP, on a clean SQLite file and a new session per point. It uses port 8002 and writes a pass/fail table to `team/chat-manual-tests.md` and to the screen. Points 4 and 8 depend on the model: mark them "out of scope (router-v3)". Evidence: the script, the reusable client `scripts/sentinel_client.py`, and the table in `team/chat-manual-tests.md` (8 pass, 2 out of scope).
-- [ ] 3.3 G1: Rubén reads the report of task 3.2. Evidence: the report.
+- [x] 3.3 G1: Rubén reads the report of task 3.2. Evidence: the report in `team/chat-manual-tests.md`; the conversation page and REQ-0001, REQ-0006 and REQ-0043 carry the new behaviour.
