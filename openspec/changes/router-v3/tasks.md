@@ -24,7 +24,7 @@ Areas: [ml](../../../docs/build/areas/ml.md), [ai](../../../docs/build/areas/ai.
 - [x] 3.1 Write prompt v3, its examples (`eval/examples_v3.json`) and its parser; serve it behind `SENTINEL_LLM_PROMPT_VERSION=v3`; iterate on development and freeze each selection run. Evidence: `app/ai/llm.py`, selection runs under `evidence/evaluation-runs/`.
 - [x] 3.2 Re-fit the cut-offs on v3 with the `router-confidence` code and rule. Evidence: a v3 calibration run.
 - [x] 3.3 Probe v3 with the real model through `eval/probe_v3.py`: development cases plus the Felix phrases 4 and 8. Report kind, subtype and slots against expected, raw and validated draft, rejection reason, language and cost. Evidence: `eval/probe_v3.py` and its markdown report.
-- [ ] 3.4 Human review G2 with `chat-start`: Ruben reads the probe report and adjusts the prompt. Evidence: notes in `team/chat-manual-tests.md`.
+- [x] 3.4 Human review G2 with `chat-start`: Ruben reads the probe report and adjusts the prompt. Evidence: notes in `team/chat-manual-tests.md`. Approved 2026-10-04 with no prompt changes; task 4.x waits for the code freeze.
 
 ## 4. Seal and measure (after the code freeze)
 
