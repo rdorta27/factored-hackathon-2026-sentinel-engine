@@ -16,7 +16,7 @@ import threading
 from pathlib import Path
 
 from app.ai.demo import DemoModel
-from app.ai.llm import Cutoffs, Example, PromptedLLMRouter, RouterConfig
+from app.ai.llm import SYSTEM_PROMPT_V3, Cutoffs, Example, PromptedLLMRouter, RouterConfig
 from app.ai.port import ModelInfo, ModelPort, UnderstandResult
 from app.ai.prices import PRICES
 from app.ai.transport import HttpTransport, ModelTransport, ModelUnavailable
@@ -124,6 +124,7 @@ def router_config() -> RouterConfig:
         config.examples = load_examples()
     elif config.prompt_version == PROMPT_V3_WITH_EXAMPLES:
         config.examples = load_examples_v3()
+        config.system_prompt = SYSTEM_PROMPT_V3
     if cutoffs_enabled():
         config.cutoffs = load_cutoffs()
     return config
