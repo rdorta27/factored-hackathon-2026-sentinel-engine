@@ -18,3 +18,9 @@ last_reviewed: 2026-10-04
 
 - 138 cases are few. Mitigation: report the validation score as descriptive; the sealed v8 result is the only claim.
 - A version mismatch changes the model. Mitigation: pinned version and `verify`.
+
+## Coordination with `router-v3` (2026-10-04)
+
+6. **Labels come from `router-v3`.** The development cases for contract v3 are in `eval/cases/dev_v3.jsonl` (task 2.1 of `router-v3`). Train only after that task is done and its branch is merged here, and train again if the cases change before the seal.
+7. **Do not commit `uv.lock`.** The repository does not use `uv`. Pin `scikit-learn` in the `eval` extra of `pyproject.toml`.
+8. **Python.** If `python3 -m pytest` does not find pytest, use the full interpreter path in `.local/final-push/02-sesiones.md`.
