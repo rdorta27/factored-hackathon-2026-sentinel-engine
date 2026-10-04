@@ -11,13 +11,13 @@ Areas: [ml](../../../docs/build/areas/ml.md), [ai](../../../docs/build/areas/ai.
 ## 1. Contract (first)
 
 - [x] 1.1 Extend `UnderstandResult` to contract v3 with optional fields; the baseline and v2 still fit. Decision [024](../../../docs/build/decisions/024-model-wording.md) and the 007 update are done (branch `model-wording`). Evidence: `app/ai/port.py`, `app/ai/llm.py`, `app/ai/serving.py`, `tests/test_ai_router.py`.
-- [ ] 1.2 Add the draft validator with placeholders and rejection reasons. Evidence: `app/ai/drafts.py`, `tests/test_drafts.py` with figure, name, date, promise, language and length cases.
+- [x] 1.2 Add the draft validator with placeholders and rejection reasons. Evidence: `app/ai/drafts.py`, `tests/test_drafts.py` with figure, name, date, promise, language and length cases.
 
 ## 2. Cases and rules
 
-- [ ] 2.1 Write development cases for openers, status, subtypes and slots in four variants, never in the `validation` split. Evidence: `eval/cases/` and `tests/test_eval_cases.py`.
-- [ ] 2.2 Extend the 018 amendment with the new metrics, targets from development numbers and the v8 spend cap, before any v3 call. Evidence: the decision file and its commit order.
-- [ ] 2.3 Start the isolated author on the intent block of the sealed set. Evidence: `eval/review/` notes on provenance.
+- [x] 2.1 Write development cases for openers, status, subtypes and slots in four variants, never in the `validation` split. Evidence: `eval/cases/` and `tests/test_eval_cases.py`.
+- [x] 2.2 Extend the 018 amendment with the new metrics, targets from development numbers and the v8 spend cap, before any v3 call. Evidence: the decision file and its commit order.
+- [x] 2.3 Start the isolated author on the intent block of the sealed set. Evidence: `eval/review/` notes on provenance.
 
 ## 3. Prompt v3
 
