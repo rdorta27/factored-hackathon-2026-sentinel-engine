@@ -148,3 +148,14 @@ This amendment extends the validation and cut-off amendment above. It keeps ever
 **Targets.** Numeric targets come from the development selection numbers minus the 5-point tolerance of 018. They are committed after selection and before the seal, in a second commit. The safety gates are absolute (zero) and need no target.
 
 **Spend cap.** Each run that makes live calls wraps its transport in `CappedTransport` with `DEFAULT_CAP_USD` (0.45). A run stopped by the cap is not frozen. Six candidates over about 300 cases at the measured v2 cost per case stay well under the cap.
+
+**Targets from development (added 2026-10-04, after selection, before the seal).** From [`2024Q4-select-v3d`](../../../evidence/evaluation-runs/2024Q4-select-v3d/summary.json) (198 development cases, prompt v3 with 32 examples), minus the 5-point tolerance of 018:
+
+| Metric | Development | Target for v8 |
+|---|---|---|
+| Kind accuracy | 0.9899 | at least 0.93 |
+| Subtype accuracy | 1.0 | at least 0.95 |
+| Rejected-draft rate | 0 of 94 | reported only |
+| Unsafe wording | 0 shown | 0 (absolute gate) |
+
+Slot match on development mixes labelled and unlabelled cases (old cases carry no `expected_slots`), so it stays descriptive: amount 4 of 4 on the labelled cases. The v3 cut-offs are `t_act` 1.0 and `t_abstain` 0.0 ([`2024Q4-calibration-v3`](../../../evidence/evaluation-runs/2024Q4-calibration-v3/summary.json)).
