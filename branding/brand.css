@@ -33,28 +33,34 @@
   --font-mono: 'Source Code Pro', monospace;
 
   /* Light (default, also forced for print/PDF) */
-  --bg: #fbfaff;
-  --slide-bg: #fbfaff;
+  --bg: #f5f7fa;
+  --slide-bg: #f5f7fa;
   --bg-elev: #ffffff;
-  --text: #3d3a4f;
-  --text-inv: #f3eeff;
-  --title: #1a1530;
-  --strong: #1a1530;
-  --muted: #a09cb5;
-  --accent: #6d4aff;
-  --accent-2: #ff4f8b;
-  --line: #e8e5f5;
-  --th-bg: #f1edff;
-  --th-text: #5b3fe0;
-  --row-alt: #f7f5ff;
-  --callout-bg: #f1edff;
-  --code-bg: #f1edff;
-  --code-text: #5b3fe0;
-  --ok: #1e7e4d;
-  --success: #1e7e4d;
-  --warn: #ff8a3d;
-  --bad: #ff4f8b;
-  --info: #3d8bff;
+  --text: #0f1b2d;
+  --text-inv: #ffffff;
+  --title: #0f1b2d;
+  --strong: #0f1b2d;
+  --muted: #5b5570;
+  /* The bank accent. The configured SENTINEL_BRAND_ACCENT replaces it at run time. */
+  --accent: #1f4fa3;
+  --accent-text: #1f4fa3;
+  --accent-2: #173d80;
+  --line: #dfe5ee;
+  --th-bg: #eaf0fa;
+  --th-text: #173d80;
+  --row-alt: #f1f5fb;
+  --callout-bg: #eaf0fa;
+  --code-bg: #eaf0fa;
+  --code-text: #173d80;
+  --ok: #1f7a55;
+  --success: #1f7a55;
+  --warn: #8a4a0b;
+  --bad: #9c1f4d;
+  --info: #1f4fa3;
+
+  /* Sentinel's own identity: the trust-layer mark and "Protegido por Sentinel". */
+  --sentinel-violet: #6d4aff;
+  --sentinel-rose: #ff4f8b;
 
   /* Sizes consumed by base.css */
   --fs-h2: clamp(44px, 4.4vw, 56px);
@@ -74,28 +80,32 @@
 }
 
 [data-theme="dark"] {
-  --bg: #14121f;
-  --slide-bg: #1a1628;
-  --bg-elev: #221d36;
-  --text: #e6e2f5;
-  --text-inv: #1a1530;
+  --bg: #0b1220;
+  --slide-bg: #101828;
+  --bg-elev: #162033;
+  --text: #e6ecf7;
+  --text-inv: #0f1b2d;
   --title: #ffffff;
   --strong: #ffffff;
-  --muted: #8d88a8;
-  --accent: #9d86ff;
-  --accent-2: #ff7aa8;
-  --line: #322b52;
-  --th-bg: #262040;
-  --th-text: #c3b3ff;
-  --row-alt: #1e1930;
-  --callout-bg: #262040;
-  --code-bg: #262040;
-  --code-text: #c3b3ff;
+  --muted: #9aa8c0;
+  --accent: #3a72d6;
+  --accent-text: #8fb4f0;
+  --accent-2: #6f9be8;
+  --line: #2a3650;
+  --th-bg: #1b2740;
+  --th-text: #a9c4f2;
+  --row-alt: #121b2e;
+  --callout-bg: #1b2740;
+  --code-bg: #1b2740;
+  --code-text: #a9c4f2;
   --ok: #4cc38a;
   --success: #4cc38a;
   --warn: #ffa25e;
   --bad: #ff7aa8;
   --info: #6aa5ff;
+
+  --sentinel-violet: #9d86ff;
+  --sentinel-rose: #ff7aa8;
 
   --cover-bg: linear-gradient(120deg, #4a2ec2 0%, #7a3fd4 55%, #d13a72 100%);
   --cover-title: #ffffff;

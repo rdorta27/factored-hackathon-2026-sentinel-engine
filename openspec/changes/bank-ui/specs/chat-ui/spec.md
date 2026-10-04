@@ -35,3 +35,19 @@ At 390 px wide, the thread SHALL fill the screen, the side panels SHALL open fro
 
 - **WHEN** the page is 390 px wide
 - **THEN** no horizontal scroll appears and the side panels open from a button
+
+## MODIFIED Requirements
+
+### Requirement: The interface carries the product identity
+
+The interface SHALL show the Sentinel product mark and the line stating its purpose, load fonts and assets only from `branding/`, use the bank accent color for actions and the user's messages, use a success color distinct from the accent for verified states, and keep a text label on every status color. The Sentinel violet and rose SHALL appear only in the product mark. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: No external font request
+
+- **WHEN** the page loads
+- **THEN** no font or asset is requested from outside the app
+
+#### Scenario: Bank accent, Sentinel mark
+
+- **WHEN** the page shows a button and the product mark
+- **THEN** the button uses the bank accent and the mark keeps the Sentinel colors
