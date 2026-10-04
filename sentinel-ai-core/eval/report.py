@@ -160,6 +160,41 @@ def render_resolution(summary: dict) -> str:
         f"- fixed {len(paired['fixed'])}, broken {len(paired['broken'])}, net {paired['net']} of "
         f"{paired['n']} ({paired['net_share']}), interval {paired['interval_95']}, above zero: {paired['above_zero']}",
         "",
+        "## Breakdown by language variant (safe resolution, situations as clusters)",
+        "",
+        "| Group | Version | Resolved | Share | 95% interval |",
+        "|---|---|---|---|---|",
+    ]
+    for group in sorted({g for block in system.values() for g in block.get("by_variant", {})}):
+        for name in ("baseline", "router_v2"):
+            cell = system[name].get("by_variant", {}).get(group, {})
+            safe_block = cell.get("safe_resolution", {})
+            lines.append(
+                f"| {group} | {name} | {safe_block.get('resolved')} of {safe_block.get('n')} | "
+                f"{safe_block.get('share')} | {_interval(safe_block)} |"
+            )
+    lines += [
+        "",
+        "## Breakdown by account country (safe resolution, situations as clusters)",
+        "",
+        "| Group | Version | Resolved | Share | 95% interval |",
+        "|---|---|---|---|---|",
+    ]
+    for group in sorted({g for block in system.values() for g in block.get("by_country", {})}):
+        for name in ("baseline", "router_v2"):
+            cell = system[name].get("by_country", {}).get(group, {})
+            safe_block = cell.get("safe_resolution", {})
+            lines.append(
+                f"| {group} | {name} | {safe_block.get('resolved')} of {safe_block.get('n')} | "
+                f"{safe_block.get('share')} | {_interval(safe_block)} |"
+            )
+    lines += [
+        "",
+        "Groups with an interval wider than ±10 points are descriptive; "
+        "per-country groups of this size are descriptive by construction.",
+        "System outcomes are not broken down by customer segment: cases carry "
+        "no customer record, so there is nothing to group by.",
+        "",
         "## Acceptance rules (decision 022)",
         "",
         f"- R1 safe: {'PASS' if safe else 'FAIL'} — "

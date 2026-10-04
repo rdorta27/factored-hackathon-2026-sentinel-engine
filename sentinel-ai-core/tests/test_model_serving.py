@@ -76,6 +76,25 @@ def test_v2_without_loadable_examples_fails_at_startup(llm_env: None, monkeypatc
         create_app()
 
 
+def test_cutoffs_are_off_unless_the_setting_is_on(llm_env: None, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SENTINEL_LLM_CUTOFFS", raising=False)
+    assert serving.router_config().cutoffs is None
+    monkeypatch.setenv("SENTINEL_LLM_CUTOFFS", "1")
+    cutoffs = serving.router_config().cutoffs
+    assert cutoffs is not None
+    assert (cutoffs.t_act, cutoffs.t_abstain) == (0.86, 0.0)
+    assert cutoffs.calibration_run == "2024Q4-calibration-v1"
+
+
+def test_cutoffs_enabled_without_a_config_fail_at_startup(
+    llm_env: None, monkeypatch: pytest.MonkeyPatch, tmp_path
+) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setenv("SENTINEL_LLM_CUTOFFS", "1")
+    monkeypatch.setattr(serving, "CUTOFFS_PATH", tmp_path / "missing.json")
+    with pytest.raises(RuntimeError, match="router configuration"):
+        serving.router_config()
+
+
 @pytest.mark.parametrize("failure", [ModelUnavailable("down"), InvalidReply("bad json")])
 def test_a_model_failure_is_answered_by_the_baseline(failure: Exception) -> None:
     model = FallbackModel(PromptedLLMRouter(ScriptedTransport(failure), serving.RouterConfig()), DemoModel())

@@ -86,3 +86,26 @@ The app serves the pair chosen above, from `app/ai/serving.py`, when `SENTINEL_L
 - **Fallback:** a model call that fails after its retries (`ModelUnavailable`, including an invalid JSON reply) is answered by the keyword baseline for that turn, with no error to the customer. The turn log records the baseline as the model and `fallback` as the route. A fallback turn has the baseline's accuracy (0.54 on the sealed set).
 - **Timeouts:** 6 s and one retry per call, so a failing model costs about 12 s before the baseline answers. eval-v7 recorded with 10 s and two retries; those two settings change latency, not the replies.
 - **A case eval-v7 did not measure:** a greeting alone is classified out of scope. The loop answers it with an offer and hands off on the third out-of-scope turn in a row; the classification gap is the subject of [router v3](../../../team/router-v3-plan.md).
+
+### Log-probability spike (added 2026-10-03)
+
+Feasibility check for [`router-confidence`](../../../openspec/changes/router-confidence/proposal.md) (task 1.1): the served model must return the alternatives of the label token before any confidence is built on it. One call per label, on the served configuration above.
+
+**Request settings.** Endpoint `POST {SENTINEL_LLM_BASE_URL}/chat/completions`, model `accounts/fireworks/models/glm-5p3-flash` (both routes), prompt v2 with the eight development examples (`app/ai/examples_v2.json`), `response_format: {"type": "json_object"}`, `reasoning_effort: low`, `max_tokens: 400`, `temperature: 0`, plus `logprobs: true` and `top_logprobs: 5`. Fireworks rejects `top_logprobs` above 5 with HTTP 400 (`top_logprobs must be between 0 and 5`), so 5 is the ceiling. The four turns are development cases, one per label: `charge`, `missing`, `out_of_scope`, `person`.
+
+**Result: supported.** All four calls returned HTTP 200, a valid JSON reply with the expected label, and `choices[0].logprobs.content` covering every output token (29 to 31 tokens; 764 to 778 prompt tokens, 29 to 31 completion tokens, about USD 0.0005 for the four at the prices above). At the first token of the intent value, the top-5 list held every one of the four label starts:
+
+| Label | First token of the value | P(token) | Alternatives at that position |
+|---|---|---|---|
+| `charge` | `charge` | 0.9988 | `missing` 0.0009, `out` 0.0002, `person` 0.000008, `not` 0.000006 |
+| `missing` | `missing` | 0.9947 | `out` 0.0036, `person` 0.0013, `charge` 0.0003, `unknown` 0.000005 |
+| `out_of_scope` | `out` | 0.9990 | `missing` 0.0005, `person` 0.0003, `es` 0.00004, `charge` 0.00001 |
+| `person` | `person` | 0.9997 | `missing` 0.0001, `charge` 0.00006, `out` 0.00005, `es` 0.00001 |
+
+**What the build has to account for:**
+
+- `out_of_scope` is emitted as `out` + `_of` + `_scope`, so the confidence is the mass of the value's **first** token over the four label starts, normalised, as design decision 2 states. In these four calls the top-5 list always carried all four label starts, so the normalisation denominator was complete.
+- Log-probabilities cover the content tokens only; the reasoning is not exposed and is not needed for the label.
+- The alternatives are token-level, so a non-label token (`not`, `unknown`, `es`) can appear among them; the confidence is taken over the label starts and renormalised, never over the raw top-5.
+
+With log-probabilities confirmed on the served model, the rest of the `router-confidence` change is built; this note is its feasibility evidence.

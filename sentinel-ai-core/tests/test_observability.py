@@ -74,6 +74,17 @@ def test_record_rejects_bad_identifiers_and_enums() -> None:
         _valid(attempt=0)
     with pytest.raises(ValueError, match="never empty"):
         _valid(model="")
+    with pytest.raises(ValueError, match="label"):
+        _valid(label="refund")
+    with pytest.raises(ValueError, match="confidence"):
+        _valid(confidence=1.5)
+
+
+def test_record_serializes_label_and_confidence() -> None:
+    body = json.loads(_valid(step="understand", label="charge", confidence=0.87).to_json())
+    assert body["label"] == "charge"
+    assert body["confidence"] == 0.87
+    assert json.loads(_valid().to_json())["confidence"] is None
 
 
 def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]

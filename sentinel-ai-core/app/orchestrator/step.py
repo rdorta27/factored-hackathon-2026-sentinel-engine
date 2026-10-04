@@ -125,6 +125,8 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
         "tokens_in": understood.tokens_in if understood is not None else 0,
         "tokens_out": understood.tokens_out if understood is not None else 0,
         "cost_usd": understood.cost_usd if understood is not None else 0.0,
+        "label": understood.kind.value if understood is not None else None,
+        "confidence": understood.confidence if understood is not None else None,
     }
 
 

@@ -1,0 +1,171 @@
+{
+  "groups": {
+    "AR": {
+      "es-419": {
+        "cost_usd": {
+          "n": 124,
+          "total": 0.001916
+        },
+        "escalations": {
+          "n": 8
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 8
+        },
+        "n": 28,
+        "turn_latency_ms": {
+          "n": 28,
+          "p50": 0.79,
+          "p95": 1.29
+        }
+      },
+      "pt-BR": {
+        "cost_usd": {
+          "n": 76,
+          "total": 0.0
+        },
+        "escalations": {
+          "n": 8
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 8
+        },
+        "n": 28,
+        "turn_latency_ms": {
+          "n": 28,
+          "p50": 0.91,
+          "p95": 1.41
+        }
+      }
+    },
+    "CO": {
+      "es-419": {
+        "cost_usd": {
+          "n": 124,
+          "total": 0.001916
+        },
+        "escalations": {
+          "n": 8
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 8
+        },
+        "n": 28,
+        "turn_latency_ms": {
+          "n": 28,
+          "p50": 0.79,
+          "p95": 1.28
+        }
+      },
+      "pt-BR": {
+        "cost_usd": {
+          "n": 76,
+          "total": 0.0
+        },
+        "escalations": {
+          "n": 8
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 8
+        },
+        "n": 28,
+        "turn_latency_ms": {
+          "n": 28,
+          "p50": 0.84,
+          "p95": 1.41
+        }
+      }
+    },
+    "MX": {
+      "es-419": {
+        "cost_usd": {
+          "n": 308,
+          "total": 0.00514
+        },
+        "escalations": {
+          "n": 12
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 12
+        },
+        "n": 72,
+        "turn_latency_ms": {
+          "n": 72,
+          "p50": 0.78,
+          "p95": 1.31
+        }
+      },
+      "pt-BR": {
+        "cost_usd": {
+          "n": 180,
+          "total": 0.0
+        },
+        "escalations": {
+          "n": 12
+        },
+        "failed_or_timed_out_steps": {
+          "n": 0
+        },
+        "fallback_turns": {
+          "n": 0
+        },
+        "handoffs": {
+          "n": 12
+        },
+        "n": 72,
+        "turn_latency_ms": {
+          "n": 72,
+          "p50": 0.82,
+          "p95": 1.43
+        }
+      }
+    }
+  },
+  "notes": [
+    "Aggregates only: no trace id, session reference or text.",
+    "A country outside MX, CO and AR is reported apart under other.",
+    "Understand records carry the session language before detection, so model cost lands under the pre-detection language group.",
+    "Replayed workload, labelled simulated: not field behaviour."
+  ],
+  "workload": {
+    "n": 256,
+    "period": {
+      "first": "2026-10-03T14:17:11.673148+00:00",
+      "last": "2026-10-03T14:17:23.913261+00:00"
+    },
+    "records": 888,
+    "simulated": true,
+    "source": "/tmp/opencode/eval-final-var/turns.jsonl",
+    "turns": 256
+  }
+}

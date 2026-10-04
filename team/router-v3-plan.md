@@ -68,6 +68,30 @@ Until step 5 the served app runs v2 with A, D and E, and says so in the README
 limitations: a greeting alone is classified out of scope and now gets an offer,
 not a ticket.
 
+## Confidence cut-offs handed from `router-confidence`
+
+The `router-confidence` change gave the router a confidence per label and
+calibrated two cut-offs on the development + validation split, frozen in
+[`2024Q4-calibration-v1`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json):
+`t_act` = 0.86 and `t_abstain` = 0.0. They live in
+`sentinel-ai-core/app/ai/router_config.json` with the run id, and the served
+app loads them only when `SENTINEL_LLM_CUTOFFS` is on; with the setting off it
+serves v2 exactly. When on, a label below `t_act` that is not a `person`
+request becomes `missing`, so the loop asks its clarifying question first; the
+policy, the handoff rules and the confirm box still decide.
+
+What eval-v8 must do with them:
+
+- Measure router v3 with the setting on, next to the baseline and v2, so the
+  sealed set covers the confidence path. The `_router` helper in `eval/run.py`
+  builds its config without cut-offs; the v3 version adds them.
+- Keep `t_act` and `t_abstain` frozen with the run. Changing either means a new
+  calibration run before the seal, never after.
+- Record that a `person` request is never downgraded, and that a cut-off never
+  overrides a policy refusal, a handoff rule or the confirm box (018
+  amendment). The validation split is descriptive; eval-v8 stays the clean
+  measurement.
+
 ## Open decisions
 
 - **Schedule.** [`team/tasks.md`](tasks.md) freezes code and results on Fri 10/2 and submits Sat 10/3 to Mon 10/5. This plan does not fit before that. Either it lands after submission (and the submission cites eval-v7 for v2 plus the limit above), or the freeze date moves. Owner to decide.

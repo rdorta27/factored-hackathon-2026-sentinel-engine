@@ -48,9 +48,9 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
 | P0 | 41 | 33 | 5 | 3 | 80% |
-| P1 | 12 | 7 | 4 | 1 | 58% |
+| P1 | 12 | 10 | 1 | 1 | 83% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 41 | 9 | 7 | 72% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Status by type
 
@@ -59,9 +59,9 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 | [Frontend and backend](frontend-backend.md) | 19 | 16 | 0 | 3 | 84% |
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
 | [Data and ML](data-ml.md) | 10 | 7 | 2 | 1 | 70% |
-| [Analytics](analytics.md) | 7 | 4 | 3 | 0 | 57% |
+| [Analytics](analytics.md) | 7 | 7 | 0 | 0 | 100% |
 | [Delivery](delivery.md) | 8 | 2 | 3 | 3 | 25% |
-| **Total** | **57** | 41 | 9 | 7 | 72% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Frontend and backend
 
@@ -75,7 +75,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0004](frontend-backend.md#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
 | [REQ-0006](frontend-backend.md#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](frontend-backend.md#req-0033) | Done |
 | [REQ-0008](frontend-backend.md#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
-| [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | Done |
+| [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | In progress |
 | [REQ-0010](frontend-backend.md#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](frontend-backend.md#req-0002) | Done |
 | [REQ-0011](frontend-backend.md#req-0011) | Demo: case requiring a human | P0 | ai | [REQ-0008](frontend-backend.md#req-0008), [REQ-0040](frontend-backend.md#req-0040) | Done |
 | [REQ-0012](frontend-backend.md#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](frontend-backend.md#req-0001) | Done |
@@ -134,11 +134,11 @@ Analysis that justifies the flow and the metrics that prove the system works. Ca
 |---|---|---|---|---|---|
 | [REQ-0014](analytics.md#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0022](analytics.md#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](analytics.md#req-0055) | Done |
-| [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | In progress |
-| [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | In progress |
+| [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | Done |
+| [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | Done |
 | [REQ-0053](analytics.md#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](analytics.md#req-0014) | Done |
 | [REQ-0055](analytics.md#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | Done |
-| [REQ-0057](analytics.md#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](analytics.md#req-0055) | In progress |
+| [REQ-0057](analytics.md#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](analytics.md#req-0055) | Done |
 
 ## Delivery
 
@@ -161,11 +161,11 @@ A requirement depends on another when it cannot be met, or its evidence cannot b
 
 Chains that still block P0 work:
 
-- **Data:** REQ-0015 (In progress: quality metrics) → REQ-0017 → REQ-0055. REQ-0020, REQ-0016, REQ-0022, REQ-0031 and REQ-0018 are done.
+- **Data:** REQ-0015 (In progress: quality metrics) is the only open link; REQ-0017, REQ-0055, REQ-0020, REQ-0016, REQ-0022, REQ-0031 and REQ-0018 are done.
 - **Learned component:** decision 10 is closed by [016](../build/decisions/016-router-models.md) and the code serves router_v2 with a baseline fallback; the remote check of the public link (REQ-0035) → REQ-0019, REQ-0056. REQ-0016 is done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 → REQ-0051. REQ-0034 is done.
-- **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
-- **Limitations:** REQ-0024 → REQ-0013 (In progress) → REQ-0030. REQ-0012 and REQ-0053 are done.
+- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 → REQ-0051.
+- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030. REQ-0012 and REQ-0053 are done.
 
 Statuses in these chains are written by hand: update them when a requirement changes status.
 

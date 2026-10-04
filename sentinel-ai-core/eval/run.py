@@ -27,7 +27,7 @@ from app.ai.demo import DemoModel
 from app.ai.llm import ROUTE_RULES, PromptedLLMRouter, RouterConfig
 from app.ai.prices import PRICE_SOURCE, PRICES
 from app.ai.recording import RecordingTransport
-from app.ai.transport import HttpTransport
+from app.ai.transport import HttpTransport, InvalidReply, ModelUnavailable
 from eval import metrics
 from eval.budget import DEFAULT_CAP_USD, CappedTransport, assert_freezable
 from eval.cases import Case, check_splits, load_cases, load_dir
@@ -55,6 +55,22 @@ EXAMPLES_PATH = HERE / "examples_v2.json"
 # The resolution set and its own recordings, kept out of the app image (design §5).
 RESOLUTION_PATH = CASES_DIR / "resolution.jsonl"
 RESOLUTION_RECORDINGS_DIR = HERE / "recordings" / "resolution-v1"
+# Fresh recordings: the selection ones carry no log-probabilities, so the
+# calibration records the same inputs again, now with the label alternatives.
+CALIBRATION_RECORDINGS_DIR = HERE / "recordings" / "calibration-v1"
+
+# Choice rule of the 018 amendment, fixed before the calibration was run.
+T_ACT_MIN_ACCURACY = 0.9321  # eval-v7 v2 held-out accuracy (0.9821) minus 5 points
+T_ABSTAIN_MAX_ACCURACY = 0.5
+CONFIDENCE_BANDS = (
+    ("0.00-0.50", 0.0, 0.5),
+    ("0.50-0.60", 0.5, 0.6),
+    ("0.60-0.70", 0.6, 0.7),
+    ("0.70-0.80", 0.7, 0.8),
+    ("0.80-0.90", 0.8, 0.9),
+    ("0.90-0.95", 0.9, 0.95),
+    ("0.95-1.00", 0.95, 1.0000001),
+)
 
 CHEAP_CANDIDATES = ("accounts/fireworks/models/gpt-oss-120b", "accounts/fireworks/models/glm-5p3-flash")
 STRONG_CANDIDATES = ("accounts/fireworks/models/deepseek-v4p1-flash",)
@@ -160,11 +176,14 @@ def select(
     """``extra_strong`` adds the larger strong models 016 measures only when the strong candidate fails."""
     global STRONG_CANDIDATES
     STRONG_CANDIDATES = tuple(dict.fromkeys(STRONG_CANDIDATES + extra_strong))
-    cases = load_dir(CASES_DIR)
-    held = sorted(c.id for c in cases if c.split != "development")
+    loaded = load_dir(CASES_DIR)
+    held = sorted(c.id for c in loaded if c.split == "held_out")
     if held:
         raise SelectionReadsHeldOut(f"selection reads development only; held-out ids given: {held}")
-    check_splits(cases)
+    check_splits(loaded)
+    # The validation split is carved from development for the cut-off calibration
+    # (018 amendment); model selection keeps reading development only.
+    cases = [c for c in loaded if c.split == "development"]
     live, api_key = live_transport(record, cap_usd)
     rec = recorder("v1", live, api_key, record)
     single = {}
@@ -210,6 +229,190 @@ def _router(rec: RecordingTransport, prompt_version: str, examples=()) -> Prompt
         route_rule=os.environ.get("SENTINEL_LLM_ROUTE_RULE", "heuristic") or "heuristic",
     )
     return PromptedLLMRouter(rec, config)
+
+
+def _band_of(confidence: float) -> str:
+    for label, low, high in CONFIDENCE_BANDS:
+        if low <= confidence < high:
+            return label
+    return CONFIDENCE_BANDS[-1][0]
+
+
+def _confidence_rows(cases: list[Case], router: PromptedLLMRouter) -> list[dict]:
+    """One row per case: expected label, predicted label and confidence."""
+    rows = []
+    for case in cases:
+        try:
+            result = router.understand(case.message, list(case.turns))
+        except (InvalidReply, ModelUnavailable):
+            predicted, confidence = "unavailable", None
+        else:
+            predicted, confidence = result.kind.value, result.confidence
+        rows.append(
+            {
+                "id": case.id,
+                "base_id": case.base_id,
+                "split": case.split,
+                "expected": case.expected_intent,
+                "predicted": predicted,
+                "confidence": confidence,
+            }
+        )
+    return rows
+
+
+def _accuracy(rows: list[dict]) -> float | None:
+    if not rows:
+        return None
+    return round(sum(row["predicted"] == row["expected"] for row in rows) / len(rows), 4)
+
+
+def _split_report(rows: list[dict], t_act: float, t_abstain: float) -> dict:
+    bands: dict[str, dict] = {}
+    for row in rows:
+        confidence = row["confidence"]
+        if confidence is None:
+            continue
+        bucket = bands.setdefault(_band_of(confidence), {"n": 0, "correct": 0})
+        bucket["n"] += 1
+        bucket["correct"] += row["predicted"] == row["expected"]
+    acted = clarified = abstained = 0
+    for row in rows:
+        confidence = row["confidence"]
+        if confidence is None or confidence < t_abstain:
+            abstained += 1
+        elif confidence >= t_act:
+            acted += 1
+        else:
+            clarified += 1
+    n = len(rows)
+    return {
+        "n": n,
+        "with_confidence": sum(1 for row in rows if row["confidence"] is not None),
+        "accuracy": _accuracy(rows),
+        "bands": {
+            label: {"n": bucket["n"], "accuracy": round(bucket["correct"] / bucket["n"], 4)}
+            for label, bucket in sorted(bands.items())
+        },
+        "actions": {
+            "acted": {"n": acted, "share": round(acted / n, 4) if n else 0.0},
+            "clarified": {"n": clarified, "share": round(clarified / n, 4) if n else 0.0},
+            "abstained": {"n": abstained, "share": round(abstained / n, 4) if n else 0.0},
+        },
+    }
+
+
+def _choose_cutoffs(rows: list[dict]) -> dict:
+    """The 018 amendment rule, applied to the validation split only."""
+    scored = [row for row in rows if row["confidence"] is not None]
+    thresholds = sorted({row["confidence"] for row in scored})
+    t_act = 1.0
+    for threshold in thresholds:
+        acted = [row for row in scored if row["confidence"] >= threshold]
+        accuracy = _accuracy(acted)
+        if accuracy is not None and accuracy >= T_ACT_MIN_ACCURACY:
+            t_act = threshold
+            break
+    t_abstain = 0.0
+    for threshold in thresholds:
+        abstained = [row for row in scored if row["confidence"] < threshold]
+        accuracy = _accuracy(abstained)
+        if accuracy is not None and accuracy < T_ABSTAIN_MAX_ACCURACY:
+            t_abstain = threshold
+    t_abstain = min(t_abstain, t_act)
+    return {
+        "t_act": round(t_act, 2),
+        "t_abstain": round(t_abstain, 2),
+        "chosen_on": "validation",
+        "rule": {
+            "t_act_min_accuracy": T_ACT_MIN_ACCURACY,
+            "t_abstain_max_accuracy": T_ABSTAIN_MAX_ACCURACY,
+            "note": "lowest cut-off acting at the eval-v7 v2 accuracy minus the 018 tolerance; highest cut-off abstaining under one half",
+        },
+        "n": len(scored),
+    }
+
+
+def calibrate(
+    run_id: str,
+    record: bool = False,
+    cap_usd: float = DEFAULT_CAP_USD,
+    freeze: bool = True,
+) -> dict:
+    """Fit confidences on development, choose the cut-offs on validation."""
+    cases = load_dir(CASES_DIR)
+    check_splits(cases)
+    development = [c for c in cases if c.split == "development"]
+    validation = [c for c in cases if c.split == "validation"]
+    if not validation:
+        raise SystemExit("no validation cases; run the split carve first (018 amendment)")
+    if not EXAMPLES_PATH.is_file():
+        raise SystemExit(f"write the development example ids for v2 to {EXAMPLES_PATH} before calibrating")
+    examples = build_examples(development, json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"])
+    live, api_key = live_transport(record, cap_usd)
+    rec = RecordingTransport(CALIBRATION_RECORDINGS_DIR, PROMPT_VERSION_WITH_EXAMPLES, live, record=record, api_key=api_key)
+    router = _router(rec, PROMPT_VERSION_WITH_EXAMPLES, examples)
+    rows = _confidence_rows(development + validation, router)
+    dev_rows = [row for row in rows if row["split"] == "development"]
+    val_rows = [row for row in rows if row["split"] == "validation"]
+    cutoffs = _choose_cutoffs(val_rows)
+    spend = _spend(live)
+    summary = {
+        "run_id": run_id,
+        "kind": "calibration",
+        "eval_version": EVAL_VERSION,
+        "n": len(rows),
+        "case_mix": _mix(development + validation),
+        "splits": {
+            "development": _split_report(dev_rows, cutoffs["t_act"], cutoffs["t_abstain"]),
+            "validation": _split_report(val_rows, cutoffs["t_act"], cutoffs["t_abstain"]),
+        },
+        "cutoffs": cutoffs,
+        "spend": spend,
+        "prices": PRICE_SOURCE,
+        "notes": [
+            SIMULATION_NOTE,
+            "Confidences recorded once with log-probabilities; cut-offs chosen on the validation split (018 amendment).",
+            "Validation is descriptive: development was read by model selection and the prompt examples; eval-v8 remains the clean measurement.",
+        ],
+    }
+    validate_has_n(summary)
+    if freeze:
+        assert_freezable(spend)
+        freeze_run(REPO_ROOT, run_id, summary, _calibration_report(summary))
+    return summary
+
+
+def _calibration_report(summary: dict) -> str:
+    cut = summary["cutoffs"]
+    lines = [
+        f"# Calibration run {summary['run_id']}",
+        "",
+        f"Development + validation, n={summary['n']}. Cut-offs chosen on validation: "
+        f"`t_act` = {cut['t_act']}, `t_abstain` = {cut['t_abstain']} (n={cut['n']} labels with confidence).",
+        "",
+    ]
+    for split in ("development", "validation"):
+        block = summary["splits"][split]
+        lines += [
+            f"## {split.capitalize()} (n={block['n']}, accuracy {block['accuracy']})",
+            "",
+            "| Confidence band | n | Accuracy |",
+            "|---|---|---|",
+        ]
+        for label, band in block["bands"].items():
+            lines.append(f"| {label} | {band['n']} | {band['accuracy']} |")
+        actions = block["actions"]
+        lines += [
+            "",
+            f"Act {actions['acted']['share']} · Clarify {actions['clarified']['share']} · "
+            f"Abstain {actions['abstained']['share']}",
+            "",
+        ]
+    spend = summary["spend"]
+    lines += [f"Spend: USD {spend['spent_usd']} over {spend['n']} live calls (cap {spend['cap_usd']}).", "", "## Notes"]
+    lines += [f"- {note}" for note in summary["notes"]]
+    return "\n".join(lines) + "\n"
 
 
 def _held_out_summary(run_id: str, record: bool, cap_usd: float, seal_record: dict) -> dict:
@@ -413,10 +616,19 @@ def _strip(node):  # type: ignore[no-untyped-def]
 
 def _comparable(summary: dict) -> dict:
     """Everything a replay must reproduce: spend, wall-clock latency and the commit
-    are left out, since a replay makes no live call and records where it ran."""
+    are left out, since a replay makes no live call and records where it ran.
+    The per-variant/per-country breakdown is a view over the same turns (added
+    after 2024Q4-resolution-v1, covered by unit tests), so it is left out too
+    and frozen runs without it still verify."""
     body = json.loads(json.dumps(summary, sort_keys=True))
     body.pop("spend", None)
     body.pop("measured_commit", None)
+    system = body.get("system")
+    if isinstance(system, dict):
+        for block in system.values():
+            if isinstance(block, dict):
+                block.pop("by_variant", None)
+                block.pop("by_country", None)
     return _strip(body)
 
 
@@ -426,6 +638,9 @@ def verify(run_id: str) -> bool:
     frozen = json.loads(frozen_path.read_text(encoding="utf-8"))
     if frozen.get("kind") == "resolution":
         replayed = resolution(run_id, record=False, freeze=False)
+        return _comparable(replayed) == _comparable(frozen)
+    if frozen.get("kind") == "calibration":
+        replayed = calibrate(run_id, record=False, freeze=False)
         return _comparable(replayed) == _comparable(frozen)
     seal_record = verify_seal(SEALED_DIR, SEAL_PATH)
     if frozen.get("seal", {}).get("hash") != seal_record["hash"]:
@@ -465,7 +680,7 @@ def _measurement_report(summary: dict) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Router evaluation: select on development, measure once.")
-    parser.add_argument("command", choices=("select", "measure", "verify", "resolution"))
+    parser.add_argument("command", choices=("select", "measure", "verify", "resolution", "calibrate"))
     parser.add_argument("run_id")
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
@@ -480,6 +695,9 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "resolution":
         summary = resolution(args.run_id, args.record, args.cap)
         print(f"[resolution] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
+    elif args.command == "calibrate":
+        summary = calibrate(args.run_id, args.record, args.cap)
+        print(f"[calibrate] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     else:
         same = verify(args.run_id)
         print(f"[verify] {args.run_id}: {'matches' if same else 'DIFFERS from'} the frozen summary")
@@ -490,4 +708,4 @@ if __name__ == "__main__":
     main()
 
 
-__all__ = ["SelectionReadsHeldOut", "main", "measure", "resolution", "select", "verify"]
+__all__ = ["SelectionReadsHeldOut", "calibrate", "main", "measure", "resolution", "select", "verify"]
