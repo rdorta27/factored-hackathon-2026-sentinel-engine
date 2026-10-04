@@ -19,8 +19,8 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [009](../../../docs/bui
 - [ ] 2.3 Let a correction close the confirm box and ground the new candidate. Evidence: the "1.000 then 700" test opens the 700 charge.
 - [ ] 2.4 Warn about an open dispute before the box. Evidence: test.
 - [ ] 2.5 Name the searched date when no charge matches. Evidence: test and locale keys in es-419 and pt-BR.
-- [ ] 2.6 Verify the 2000-character limit in `static/index.html` and `schemas/chat.py`. Evidence: a test that 2001 characters return 422.
-- [ ] 2.7 Add the `trace_id` to the 429 body and show it in the error bubble. Evidence: a test of the body and `static/app.js`.
+- [ ] 2.6 Verify the 2000-character limit in `schemas/chat.py` and add a test that 2001 characters return 422. The page already sets `maxlength="2000"`, and `bank-ui` owns `static/`. Evidence: a test that 2001 characters return 422.
+- [ ] 2.7 Add the `trace_id` to the 429 body. The error bubble already shows `body.trace_id`, and `bank-ui` owns `static/`. Evidence: a test of the body.
 
 ## 3. Evidence
 

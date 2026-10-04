@@ -24,8 +24,8 @@ Two smaller defects: "algo raro ayer" ("something odd yesterday") gives no clear
 - **Correction with the box open:** a message that names another amount, merchant or date closes the box and grounds the new charge. A confirm always opens the charge shown in the current box.
 - **Already disputed:** the warning comes before the box, and the box does not open.
 - **No match for a date:** the reply names the date that it searched ("no charges on 16 Jun").
-- **Length limit:** verify the 2000-character limit in the page and the server, and add a test.
-- **Rate limit reply:** the 429 body carries the `trace_id`, so the error bubble shows the reference.
+- **Length limit:** verify the 2000-character limit in the server, and add a test. The page already sets `maxlength="2000"`, and `bank-ui` owns `static/`.
+- **Rate limit reply:** the 429 body carries the `trace_id`. The error bubble already shows it, and `bank-ui` owns `static/`.
 
 ## Capabilities
 
