@@ -11,7 +11,6 @@ Requirements: REQ-0012 and REQ-0044 (works in Spanish and Portuguese, in the
 customer's own variant).
 """
 
-import json
 from pathlib import Path
 
 import pytest
@@ -191,10 +190,9 @@ def test_selector_locale_returns_the_exact_offered_value() -> None:
 
 
 def test_the_selector_values_match_the_api_list() -> None:
-    """The dropdown and the accepted pattern cannot drift apart."""
+    """The language buttons and the accepted pattern cannot drift apart."""
     index = (Path(__file__).parents[1] / "app" / "static" / "index.html").read_text(
         encoding="utf-8"
     )
-    offered = json.loads(json.dumps([value for value in LOCALES]))
-    for locale in offered:
-        assert f'value="{locale}"' in index, f"{locale} missing from the selector"
+    for locale in LOCALES:
+        assert f'data-locale="{locale}"' in index, f"{locale} missing from the selector"

@@ -61,8 +61,7 @@ function setLocale(locale) {
 
 /* The selector's own value, exactly as the API accepts it. */
 function selectorLocale() {
-  const selected = document.getElementById("locale");
-  return selected && selected.value ? selected.value : "es-419";
+  return currentLocale;
 }
 
 /* Fill a template's {placeholders} without touching the rest of the text. */
