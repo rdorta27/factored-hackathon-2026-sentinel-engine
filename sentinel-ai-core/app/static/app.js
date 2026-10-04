@@ -161,6 +161,10 @@ function renderError(body, status) {
 }
 
 async function postChat(payload) {
+  // A new turn closes any open confirmation: an old "Confirmar" must not fire.
+  document.querySelectorAll(".chat-confirm button").forEach((button) => {
+    button.disabled = true;
+  });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
   try {
@@ -238,7 +242,11 @@ function renderReply(body) {
     box.append(el("p", "", humanStatement(item)));
     const button = el("button", "", t("confirmButton"));
     button.type = "button";
-    button.addEventListener("click", () => postChat({ selected_reference: item.reference }));
+    button.addEventListener("click", () => {
+      // One confirmation per box: the button turns off as soon as it is used.
+      button.disabled = true;
+      postChat({ selected_reference: item.reference });
+    });
     box.append(button);
     thread.append(box);
   } else if (body.kind === "case_confirmation") {
