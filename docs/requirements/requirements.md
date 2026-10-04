@@ -1,12 +1,24 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Requirements
 
-What the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`) that the rest of the documentation cites, and this table doubles as the traceability matrix: every requirement is tied to the official document it comes from, the evaluation criterion it serves, the area that owns it, the evidence that will prove it, and its status.
+This page lists what the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`). The rest of the documentation cites it. The table is also the traceability matrix. Each requirement links to:
 
-**Purpose:** prioritize the work, spot evaluation criteria that still lack evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
+- the official document that it comes from,
+- the evaluation criterion that it serves,
+- the area that owns it,
+- the evidence that proves it,
+- its status.
+
+**Purpose:** set the priority of the work, find the evaluation criteria that still have no evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/), [evidence index](../../evidence/README.md), [what is real](../architecture/what-is-real.md).
 
 ## Hackathon material
 
-Requirements come from four official documents, plus clarifications published in the help channel. Except for the data dictionary, kept as a column-level reference in [understand/reference/](../understand/reference/), they are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+The requirements come from four official documents and from the clarifications in the help channel. The documents are not in the repository, except the data dictionary, kept as a column reference in [understand/reference/](../understand/reference/). Each teammate keeps a copy. We cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|
@@ -16,22 +28,22 @@ Requirements come from four official documents, plus clarifications published in
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | 1 |
 | Answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
-A requirement with no official source is marked **Own**: a team design decision, linked to where it is explained (10 requirements rely only on it; others combine it with an official source). The dataset documents shape the data requirements through [dataset](../understand/dataset.md) and are cited where a row depends on a declared property of the data.
+A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 10 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../understand/dataset.md). We cite them when a row depends on a declared property of the data.
 
 ## Classification
 
 | Column | Values |
 |---|---|
-| **Type** | **Frontend and backend** = what the customer and advisor experience and the service behind it · **Non-functional** = how: security, reliability, operations · **Data and ML** = pipeline, sources, learned component · **Analytics** = analysis and metrics · **Delivery** = what the evaluators receive. Mixed requirements sit in their main type; the *Area* column shows the others |
+| **Type** | **Frontend and backend** = what the customer and the advisor see, and the service behind it · **Non-functional** = how: security, reliability, operations · **Data and ML** = pipeline, sources, learned component · **Analytics** = analysis and metrics · **Delivery** = what the evaluators receive. A mixed requirement is in its main type. The *Area* column shows the others |
 | **Priority** | **P0** = mandatory for the submission on Mon 10/5, 11:59 pm (UTC-5) · **P1** = scores points · **P2** = only if time remains |
 | **Flow** | "All", or the flow it depends on (transaction disputes, see [decision 003](../build/decisions/003-disputes-flow.md)) |
 | **Criterion** | Kickoff evaluation criterion: Rationale, AI Engineering, Data Engineering, Data Analytics, Machine Learning |
-| **Area** | Areas that work on it; the first one owns it and the rest collaborate: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
-| **Status** | Pending, In progress, Done. Updated when the task that covers it closes |
+| **Area** | The areas that work on it. The first one owns it, and the others help: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
+| **Status** | Pending, In progress, Done. Update it when the task that covers it closes |
 | **Source** | Official document and section or page (see [hackathon material](#hackathon-material)), or **Own** |
 | **Depends on** | Requirements that must be met first (see [dependencies](#dependencies)) |
 
-Each type has a summary table here and its own file with one card per requirement with its description, source, dependencies and evidence. **Evidence** says what proves the requirement today (*Proven by*) and what is still needed (*Missing*).
+Each type has a summary table here, and its own file with one card per requirement: description, source, dependencies and evidence. **Evidence** tells what proves the requirement today (*Proven by*) and what is still necessary (*Missing*).
 
 ## Summary by priority
 
@@ -43,7 +55,7 @@ Each type has a summary table here and its own file with one card per requiremen
 
 ## Status by priority
 
-Counted from the *Status* column of the tables below; update it whenever a status changes.
+Counted from the *Status* column of the tables below. Update it when a status changes.
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
@@ -65,7 +77,7 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 ## Frontend and backend
 
-What the customer and the advisor experience, and the service behind it: conversation, verified answers, tools, policy and handoff. Cards: [frontend-backend.md](frontend-backend.md).
+What the customer and the advisor see, and the service behind it: conversation, verified answers, tools, policy and handoff. Cards: [frontend-backend.md](frontend-backend.md).
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -128,7 +140,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 ## Analytics
 
-Analysis that justifies the flow and the metrics that prove the system works. Cards: [analytics.md](analytics.md).
+The analysis that justifies the flow, and the metrics that prove that the system works. Cards: [analytics.md](analytics.md).
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -157,7 +169,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 
 ## Dependencies
 
-A requirement depends on another when it cannot be met, or its evidence cannot be produced, until the other one is met. Each requirement lists its direct dependencies in its table row and, with the reason, in its card. Update them when a requirement is added or its evidence changes.
+A requirement depends on another when we cannot meet it, or cannot produce its evidence, until the other one is met. Each requirement lists its direct dependencies in its table row, and with the reason in its card. Update them when you add a requirement or when its evidence changes.
 
 Chains that still block P0 work (status on 2026-10-04):
 
@@ -167,15 +179,13 @@ Chains that still block P0 work (status on 2026-10-04):
 - **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (In progress). The limits must go on the slides, and the README needs a roadmap section.
 - **Path to production:** REQ-0052 (In progress) needs alerts by country (REQ-0050).
 
-Statuses in these chains are written by hand: update them when a requirement changes status.
+We write the statuses in these chains by hand. Update them when a requirement changes status.
 
 ## Future work (not requirements)
 
-- Expansion to other Latin American countries. The design makes it easier with REQ-0049 (country as configuration); it would require data, rules, currency, and tests for each new country.
-- Streaming: only if a flow needs seconds-level freshness.
+- More Latin American countries. REQ-0049 (country as configuration) makes this easier. Each new country needs data, rules, a currency and tests.
+- Streaming: only if a flow needs freshness in seconds.
 
 ## Open questions
 
-None open: reference labels are team-written simulation cases plus the frozen
-data label universe (`evidence/evaluation/2024Q4-v1/summary.json`); human-required
-cases are the `requires_handoff` ones in `sentinel-ai-core/eval/cases/`.
+None. The reference labels are model-written simulation cases and the frozen label universe of the data (`evidence/evaluation/2024Q4-v1/summary.json`). The human-required cases are the `requires_handoff` cases in `sentinel-ai-core/eval/cases/`.
