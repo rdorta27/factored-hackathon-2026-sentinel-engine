@@ -251,6 +251,42 @@ main {
   }
 }
 
+/* --- Cards in the thread: handoff and "why I decided this" -------------- */
+
+.handoff-card,
+.why-card {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.handoff-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+.card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* --- Receipt and queue ------------------------------------------------ */
 
 .receipt-head {
@@ -375,4 +411,8 @@ main {
   .msg {
     max-width: 100%;
   }
+}
+
+.handoff-card > .chat-sub {
+  margin: 12px 0 0;
 }

@@ -175,7 +175,7 @@ def test_charge_pill_reads_the_server_state_and_does_not_compute_it() -> None:
         strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
         assert f'"state.{state}"' in strings
     # The page never re-derives the window or the status rule.
-    assert "window_days" not in APP_JS and "Date.now" not in APP_JS and "new Date()" not in APP_JS
+    assert "Date.now" not in APP_JS and "new Date()" not in APP_JS
 
 
 def test_new_locale_keys_exist_in_both_languages() -> None:
@@ -186,3 +186,38 @@ def test_new_locale_keys_exist_in_both_languages() -> None:
     used = set(re.findall(r'data-i18n="([^"]+)"', INDEX))
     assert used <= set(es) and used <= set(pt), sorted(used - set(es) | used - set(pt))
     assert set(es) == set(pt), sorted(set(es) ^ set(pt))
+
+
+def test_handoff_card_has_the_six_fields_and_reads_codes_from_the_locale() -> None:
+    start = APP_JS.index("function handoffCard")
+    block = APP_JS[start : APP_JS.index("function whyCard")]
+    for key in (
+        "handoffRequest", "handoffFacts", "handoffActions", "handoffReason", "handoffSaid", "handoffPending",
+    ):
+        assert f'"{key}"' in block, key
+    assert 'data-testid", "handoff-card"' in block
+    assert "customer_id" not in block
+    import json
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in ("dispute", "person", "out_of_scope"):
+            assert f"handoffRequest.{code}" in strings
+        for code in ("amount_above_threshold", "customer_requested_person", "review_required"):
+            assert f"handoffOpen.{code}" in strings
+        for code in ("described_charge", "asked_for_person", "asked_why"):
+            assert f"handoffSaid.{code}" in strings
+
+
+def test_handoff_package_codes_all_have_a_label() -> None:
+    """Every code the server can put in the package has a label in both locales."""
+    import json
+
+    from app.routers import demo_chat
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in set(demo_chat._OPEN_QUESTIONS.values()) | {"review_required"}:
+            assert f"handoffOpen.{code}" in strings, (name, code)
+        for code in demo_chat._CUSTOMER_PHRASES:
+            assert f"handoffSaid.{code}" in strings, (name, code)

@@ -267,6 +267,65 @@ function statusLabel(status) {
   return t(STATUS_KEYS[status] || "txStatusApproved");
 }
 
+/* A translated label for a code from the handoff package. A code the page
+   does not know shows nothing, never the raw code. */
+function codeLabel(prefix, code) {
+  return strings[`${prefix}.${code}`] || "";
+}
+
+function cardField(labelKey, value) {
+  const box = el("div", "card-field");
+  box.append(el("span", "card-label", t(labelKey)), el("span", "chat-sub", value));
+  return box;
+}
+
+/* The handoff card in the thread: what the advisor receives and why.
+   Every value is a verified fact, a step key or a code the page translates. */
+function handoffCard(body) {
+  const pkg = body.package || {};
+  const card = el("div", "msg msg-audit handoff-card");
+  card.setAttribute("data-testid", "handoff-card");
+  const head = el("div", "handoff-head");
+  head.append(el("span", "pill pill-warn", t("handoffCardTitle")));
+  head.append(el("span", "handoff-ref", `${t("field_reference")}: ${body.reference}`));
+  card.append(head);
+  const grid = el("div", "card-grid");
+  const request = codeLabel("handoffRequest", pkg.request);
+  if (request) grid.append(cardField("handoffRequest", request));
+  const facts = pkg.verified_facts;
+  if (facts) {
+    const parts = [facts.merchant, formatAmount(Number(facts.amount).toFixed(2), facts.currency), formatDate(facts.transaction_date)];
+    grid.append(cardField("handoffFacts", parts.filter(Boolean).join(" · ")));
+  }
+  const actions = (body.steps || []).filter((key) => key !== "step.understood").map((key) => t(key));
+  if (actions.length) grid.append(cardField("handoffActions", actions.join(" · ")));
+  grid.append(cardField("handoffReason", t(body.reason_key)));
+  const said = [...new Set((pkg.conversation || []).map((turn) => codeLabel("handoffSaid", turn.customer)))].filter(Boolean);
+  if (said.length) grid.append(cardField("handoffSaid", said.join(" · ")));
+  const pending = (pkg.open_questions || []).map((code) => codeLabel("handoffOpen", code)).filter(Boolean);
+  if (pending.length) grid.append(cardField("handoffPending", pending.join(" · ")));
+  card.append(grid);
+  if (body.estimated_date) {
+    card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
+  }
+  return card;
+}
+
+/* "Por qué decidí esto": the rule behind a refusal, with the verified dates. */
+function whyCard(body) {
+  const values = body.values;
+  if (!values || !values.window_days) return null;
+  const card = el("div", "msg msg-audit why-card");
+  card.setAttribute("data-testid", "why-card");
+  card.append(el("strong", "", t("whyCardTitle")));
+  card.append(el("p", "", fillTemplate(t("whyWindow"), values)));
+  const grid = el("div", "card-grid");
+  if (values.charge_date) grid.append(cardField("whyChargeDate", formatDate(values.charge_date)));
+  if (values.last_eligible_date) grid.append(cardField("whyLastDay", formatDate(values.last_eligible_date)));
+  card.append(grid);
+  return card;
+}
+
 function renderReply(body) {
   const thread = document.getElementById("thread");
   if (body.kind === "confirm_box") {
@@ -296,20 +355,15 @@ function renderReply(body) {
     thread.append(card);
   } else if (body.kind === "explanation") {
     thread.append(el("div", "msg msg-bot", explanationText(body)));
+    const why = whyCard(body);
+    if (why) thread.append(why);
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
     box.append(el("strong", "", t(body.message_key)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
-    const card = el("div", "msg msg-audit");
-    card.append(el("h3", "chat-title", t("handoffTitle")));
-    card.append(el("p", "", `${t("field_reference")}: ${body.reference}`));
-    card.append(el("p", "", `${t("field_reason")}: ${t(body.reason_key)}`));
-    if (body.estimated_date) {
-      card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
-    }
-    thread.append(card);
+    thread.append(handoffCard(body));
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
   } else {
