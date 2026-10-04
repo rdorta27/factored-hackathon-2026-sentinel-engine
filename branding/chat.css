@@ -381,11 +381,30 @@
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
-  font-weight: 700;
+  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
 }
 
 .locale-button[aria-pressed="true"] .flag {
   outline: 2px solid #fff;
+}
+
+/* The name of a language shows on hover and on keyboard focus. */
+.locale-button:hover::after,
+.locale-button:focus-visible::after {
+  content: attr(aria-label);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: var(--strong);
+  color: var(--bg-elev);
+  font-size: 13px;
+  white-space: nowrap;
+  z-index: 30;
+  pointer-events: none;
 }
 
 .locale-button:not([aria-pressed="true"]) {

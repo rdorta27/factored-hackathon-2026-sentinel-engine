@@ -527,9 +527,6 @@ main {
 }
 
 @media (max-width: 700px) {
-  .loc-name {
-    display: none;
-  }
   .topbar-controls .locale-current {
     display: block;
     flex: 1 0 100%;
@@ -545,7 +542,10 @@ main {
 .locale-button {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  position: relative;
+  min-width: 48px;
+  padding: 6px 10px;
 }
 
 .flag {

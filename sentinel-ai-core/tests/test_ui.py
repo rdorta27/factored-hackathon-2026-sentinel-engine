@@ -274,7 +274,9 @@ def test_claims_panel_welcome_help_and_phone_language_select() -> None:
         assert marker in INDEX, marker
     assert "renderCases" in APP_JS and 'type: "welcome"' in APP_JS
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
-    assert ".loc-name {\n    display: none;" in styles, "the flags stand alone on a phone"
+    assert "loc-name" not in INDEX, "the flags stand alone; the name shows on hover"
+    chat_css = (STATIC.parents[2] / "branding" / "chat.css").read_text(encoding="utf-8")
+    assert '.locale-button[aria-pressed="true"]' in chat_css and "attr(aria-label)" in chat_css
     assert INDEX.count('class="flag"') == 5
 
 

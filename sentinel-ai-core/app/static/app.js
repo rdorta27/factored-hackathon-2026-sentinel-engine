@@ -298,7 +298,7 @@ function renderCandidates(box, candidates) {
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
 const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
-const STEP_PAUSE_MS = 650;
+const STEP_PAUSE_MS = 1000;
 let stepTimers = [];
 let stepResolve = null;
 
