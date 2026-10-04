@@ -232,3 +232,10 @@ def test_phone_layout_uses_drawers_and_44_px_targets() -> None:
     for marker in ('data-drawer="steps-col"', 'data-drawer="charges-col"', "data-close-drawer"):
         assert marker in INDEX, marker
     assert "Escape" in APP_JS and "closeDrawers" in APP_JS
+
+
+def test_page_reads_the_brand_and_keeps_the_sentinel_mark() -> None:
+    assert "/ui/brand.css" in INDEX
+    assert "/ui/brand.json" in APP_JS and "applyBrand" in APP_JS
+    assert 'id="brand-name"' in INDEX
+    assert 'aria-label="Sentinel mark"' in INDEX, "the mark stays Sentinel under any bank name"

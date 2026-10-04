@@ -88,6 +88,23 @@ function explanationText(body) {
   return text;
 }
 
+/* White label: the bank name comes from the service configuration. Under
+   another name the tagline says who protects the conversation. */
+let brand = { name: "Sentinel", customized: false };
+
+function applyBrand() {
+  document.getElementById("brand-name").textContent = brand.name;
+  document.title = brand.name;
+  document.getElementById("brand-tagline").setAttribute("data-i18n", brand.customized ? "protectedBy" : "purposeLine");
+  document.getElementById("brand-tagline").textContent = t(brand.customized ? "protectedBy" : "purposeLine");
+}
+
+async function loadBrand() {
+  const response = await fetch("/ui/brand.json");
+  if (response.ok) brand = await response.json();
+  applyBrand();
+}
+
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
@@ -96,6 +113,7 @@ async function loadLocale(locale) {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
+  applyBrand();
   // A customer session repaints its header and charges in the new language.
   if (lastTransactions && !document.getElementById("view-chat").hidden) {
     renderSessionContext(lastTransactions);
@@ -743,4 +761,5 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
 });
 
 loadLocale("es-419");
+loadBrand();
 loadDemoEntry();

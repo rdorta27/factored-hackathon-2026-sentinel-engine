@@ -2,9 +2,11 @@ import json
 import re
 from pathlib import Path
 
-from fastapi import APIRouter, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Request, status
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+
+from app.branding import brand_css, load_brand
 
 router = APIRouter(tags=["ui"])
 
@@ -41,7 +43,19 @@ def get_locale(locale: str) -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_200_OK, content=strings)
 
 
+@router.get("/ui/brand.json")
+def get_brand(request: Request) -> JSONResponse:
+    brand = request.app.state.brand
+    return JSONResponse({"name": brand.name, "accent": brand.accent, "customized": brand.customized})
+
+
+@router.get("/ui/brand.css")
+def get_brand_css(request: Request) -> Response:
+    return Response(brand_css(request.app.state.brand), media_type="text/css")
+
+
 def mount_ui(app) -> None:
+    app.state.brand = load_brand()
     app.include_router(router)
     if BRANDING_DIR.is_dir():
         app.mount("/branding", StaticFiles(directory=str(BRANDING_DIR)), name="branding")
