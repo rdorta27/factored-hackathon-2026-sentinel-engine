@@ -19,6 +19,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 - [x] 2.3 Show the handoff card in the thread. Evidence: tests.
 - [x] 2.4 Make the layout work on a phone (390 px) with the drawer. Evidence: phone screenshots.
 - [x] 2.5 Add `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` with the contrast fallback. Evidence: tests and one screenshot with another brand.
+- [x] 2.6 Show the entry with the promises and the four test-case cards (tag, language, story). Evidence: `tests/test_ui.py` and entry screenshots.
 
 ## 3. Review
 

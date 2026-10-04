@@ -38,33 +38,63 @@
     <p class="chat-sub" data-i18n="demoBannerText">Test access needs no password</p>
   </div>
   <main>
-    <section id="view-login" class="msg msg-bot login-card">
-      <h2 class="chat-title" data-i18n="loginTitle">Test login</h2>
-      <p class="chat-sub" data-i18n="mockBadge">Demo data</p>
-      <div id="demo-personas" data-testid="demo-personas" hidden>
-        <h3 class="chat-title" data-i18n="demoPersonasTitle">Pick a test case</h3>
-        <div class="chips">
-          <button type="button" class="candidate" data-persona="normal" data-testid="demo-persona" data-i18n="personaNormal">Normal case · Mexico</button>
-          <button type="button" class="candidate" data-persona="ambiguous" data-testid="demo-persona" data-i18n="personaAmbiguous">Ambiguous case · Portuguese</button>
-          <button type="button" class="candidate" data-persona="high-amount" data-testid="demo-persona" data-i18n="personaHighAmount">High amount · Colombia</button>
-          <button type="button" class="candidate" data-persona="not-me" data-testid="demo-persona" data-i18n="personaNotMe">“Not me” · Argentina</button>
-        </div>
+    <section id="view-login" class="entry">
+      <div class="entry-hero">
+        <h1 class="chat-title" data-i18n="entryTitle">Do not recognize a charge?</h1>
+        <p class="entry-lead" data-i18n="entryLead"></p>
+        <ul class="promise-list">
+          <li data-i18n="entryPromise1"></li>
+          <li data-i18n="entryPromise2"></li>
+          <li data-i18n="entryPromise3"></li>
+        </ul>
       </div>
-      <details id="password-login">
-        <summary data-i18n="passwordLoginLink">Use user and password</summary>
-        <form id="login-form" class="login-form">
-        <label>
-          <span data-i18n="userLabel">User</span>
-          <input id="login-user" autocomplete="username" required>
-        </label>
-        <label>
-          <span data-i18n="passwordLabel">Password</span>
-          <input id="login-pass" type="password" autocomplete="current-password" required>
-        </label>
-        <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
-        <p id="login-error" class="chat-sub" role="alert"></p>
-      </form>
-      </details>
+      <div class="entry-cases">
+        <div id="demo-personas" data-testid="demo-personas" hidden>
+          <h2 class="chat-title" data-i18n="demoPersonasTitle">Pick a test case</h2>
+          <div class="persona-grid">
+          <button type="button" class="persona-card" data-persona="normal" data-testid="demo-persona">
+            <span class="persona-top"><span class="pill pill-ok" data-i18n="personaNormal">personaNormal</span><span class="chat-sub" data-i18n="lang.es-MX">Español (México)</span></span>
+            <span class="persona-title" data-i18n="personaNormalTitle">personaNormalTitle</span>
+            <span class="chat-sub" data-i18n="personaNormalStory">personaNormalStory</span>
+            <span class="persona-cta" data-i18n="personaEnter">Enter</span>
+          </button>
+          <button type="button" class="persona-card" data-persona="ambiguous" data-testid="demo-persona">
+            <span class="persona-top"><span class="pill pill-info" data-i18n="personaAmbiguous">personaAmbiguous</span><span class="chat-sub" data-i18n="lang.pt-BR">Português (Brasil)</span></span>
+            <span class="persona-title" data-i18n="personaAmbiguousTitle">personaAmbiguousTitle</span>
+            <span class="chat-sub" data-i18n="personaAmbiguousStory">personaAmbiguousStory</span>
+            <span class="persona-cta" data-i18n="personaEnter">Enter</span>
+          </button>
+          <button type="button" class="persona-card" data-persona="high-amount" data-testid="demo-persona">
+            <span class="persona-top"><span class="pill pill-warn" data-i18n="personaHighAmount">personaHighAmount</span><span class="chat-sub" data-i18n="lang.es-CO">Español (Colombia)</span></span>
+            <span class="persona-title" data-i18n="personaHighAmountTitle">personaHighAmountTitle</span>
+            <span class="chat-sub" data-i18n="personaHighAmountStory">personaHighAmountStory</span>
+            <span class="persona-cta" data-i18n="personaEnter">Enter</span>
+          </button>
+          <button type="button" class="persona-card" data-persona="not-me" data-testid="demo-persona">
+            <span class="persona-top"><span class="pill pill-bad" data-i18n="personaNotMe">personaNotMe</span><span class="chat-sub" data-i18n="lang.es-AR">Español (Argentina)</span></span>
+            <span class="persona-title" data-i18n="personaNotMeTitle">personaNotMeTitle</span>
+            <span class="chat-sub" data-i18n="personaNotMeStory">personaNotMeStory</span>
+            <span class="persona-cta" data-i18n="personaEnter">Enter</span>
+          </button>
+          </div>
+        </div>
+        <details id="password-login">
+          <summary data-i18n="passwordLoginLink">Use user and password</summary>
+          <form id="login-form" class="login-form">
+            <h2 class="chat-title" data-i18n="loginTitle">Test login</h2>
+            <label>
+              <span data-i18n="userLabel">User</span>
+              <input id="login-user" autocomplete="username" required>
+            </label>
+            <label>
+              <span data-i18n="passwordLabel">Password</span>
+              <input id="login-pass" type="password" autocomplete="current-password" required>
+            </label>
+            <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
+            <p id="login-error" class="chat-sub" role="alert"></p>
+          </form>
+        </details>
+      </div>
     </section>
     <section id="view-chat" hidden>
       <div class="drawer-buttons">

@@ -239,3 +239,13 @@ def test_page_reads_the_brand_and_keeps_the_sentinel_mark() -> None:
     assert "/ui/brand.json" in APP_JS and "applyBrand" in APP_JS
     assert 'id="brand-name"' in INDEX
     assert 'aria-label="Sentinel mark"' in INDEX, "the mark stays Sentinel under any bank name"
+
+
+def test_entry_has_promises_and_four_persona_cards_with_tag_language_and_story() -> None:
+    assert INDEX.count('class="persona-card"') == 4
+    for key in ("entryTitle", "entryLead", "entryPromise1", "entryPromise2", "entryPromise3"):
+        assert f'data-i18n="{key}"' in INDEX, key
+    for persona in ("Normal", "Ambiguous", "HighAmount", "NotMe"):
+        for suffix in ("", "Title", "Story"):
+            assert f'data-i18n="persona{persona}{suffix}"' in INDEX, (persona, suffix)
+    assert 'data-testid="demo-banner"' in INDEX

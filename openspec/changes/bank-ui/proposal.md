@@ -25,6 +25,7 @@ Cuentas y saldos (accounts and balances) stay out. The data cannot support a bal
 - **Three columns on desktop:** "What we checked" (the turn steps), the thread, and the recent charges with their state. One column on a phone, with the steps behind a button.
 - **Handoff card in the thread:** request, verified facts, actions, reason, pending.
 - **White label:** `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` set the name and the accent. Defaults: "Sentinel" and the current brand. Contrast is checked.
+- **Entry:** the promises and the four test-case cards with tag, language and story, as in the canvas. The demo banner stays.
 - **Screens:** regenerate `docs/build/screenshots/ui-product/` with `scripts/capture_ui_product.py`.
 - **Advisor view stays read-only** (decision 009). The canvas buttons "Take case" and "Mark resolved" are not built; the roadmap lists them.
 - **Human review G1:** the owner reviews the look on desktop and phone. Several rounds are expected, so styles stay in tokens.
