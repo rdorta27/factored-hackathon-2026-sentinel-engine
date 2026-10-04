@@ -20,6 +20,10 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 - [ ] 2.4 Make the layout work on a phone (390 px) with the drawer. Evidence: phone screenshots.
 - [ ] 2.5 Add `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` with the contrast fallback. Evidence: tests and one screenshot with another brand.
 
-## 3. Evidence
+## 3. Review
 
-- [ ] 3.1 Regenerate the screenshots and update REQ-0038 evidence and the demo architecture. Evidence: `docs/build/screenshots/ui-product/`, `docs/requirements/frontend-backend.md`.
+- [ ] 3.0 Human review G1 of the look and the four persona journeys; apply the changes. Evidence: notes in `team/chat-manual-tests.md`.
+
+## 4. Evidence
+
+- [ ] 4.1 Regenerate the screenshots and update REQ-0038 evidence and the demo architecture. Evidence: `docs/build/screenshots/ui-product/`, `docs/requirements/frontend-backend.md`.

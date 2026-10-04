@@ -26,6 +26,8 @@ Cuentas y saldos (accounts and balances) stay out. The data cannot support a bal
 - **Handoff card in the thread:** request, verified facts, actions, reason, pending.
 - **White label:** `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` set the name and the accent. Defaults: "Sentinel" and the current brand. Contrast is checked.
 - **Screens:** regenerate `docs/build/screenshots/ui-product/` with `scripts/capture_ui_product.py`.
+- **Advisor view stays read-only** (decision 009). The canvas buttons "Take case" and "Mark resolved" are not built; the roadmap lists them.
+- **Human review G1:** the owner reviews the look on desktop and phone. Several rounds are expected, so styles stay in tokens.
 
 ## Capabilities
 
