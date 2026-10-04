@@ -23,6 +23,7 @@ The brief asks for capacity limits, bounded retries, safe fallback and tool-fail
 - **Parallel confirmations:** N parallel confirmations of one candidate open exactly one case.
 - **Event-loop check:** find synchronous work in async routes (DuckDB, SQLite, model calls). Move it to a thread pool, or prove it does not block, with a measurement.
 - **Spend guard:** a daily model budget (`SENTINEL_LLM_DAILY_BUDGET_USD`). Above it, the keyword baseline answers, and the turn log marks `budget` as the route.
+- **Cleanup:** remove `anthropic` and `aiosqlite` from `sentinel-ai-core/pyproject.toml` if no module imports them.
 - **Documents:** four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`), the sizing page and the metrics catalog.
 
 ## Capabilities
@@ -36,7 +37,7 @@ The brief asks for capacity limits, bounded retries, safe fallback and tool-fail
 ## Impact
 
 - `sentinel-ai-core/app/ai/serving.py` (budget), routers with blocking calls, `eval/` or `scripts/` (load and fault runs), tests, `evidence/robustness/`, `docs/rationale/`, `docs/sizing_capacity.md`, `docs/build/metrics.md`.
-- The measured runs use the final code. The code changes merge early; the runs freeze after the code freeze.
+- The measured runs use the final code. The code changes merge after `router-v3` (both change `app/ai/serving.py`); the runs freeze after the code freeze.
 
 ## Non-goals
 

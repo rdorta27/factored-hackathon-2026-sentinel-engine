@@ -15,6 +15,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [016](../../../docs/bui
 - [ ] 1.3 Add the parallel-confirmation test. Evidence: `tests/test_confirmation.py` opens one case for N calls.
 - [ ] 1.4 Add the fault adapters and the fault-injection runner. Evidence: tests for each fault.
 - [ ] 1.5 Add the load-test script with recorded answers and a container limit option. Evidence: `scripts/load_chat.py` and a dry run.
+- [ ] 1.6 Remove unused dependencies from `pyproject.toml`. Evidence: a clean install and the full test suite.
 
 ## 2. Runs (after the code freeze)
 
