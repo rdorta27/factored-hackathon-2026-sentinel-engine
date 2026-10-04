@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 
 from fastapi.testclient import TestClient
 
@@ -67,6 +68,82 @@ def test_explanation_renders_verified_values_not_prose() -> None:
     assert "body.values" in APP_JS
     assert "explanation.demo" in APP_JS
     assert "innerHTML" not in APP_JS
+
+
+def test_demo_entry_has_banner_personas_and_named_languages() -> None:
+    assert 'data-testid="demo-banner"' in INDEX
+    assert 'data-testid="demo-personas"' in INDEX
+    assert INDEX.count('data-testid="demo-persona"') == 4
+    assert "CUST-" not in INDEX
+    assert 'id="password-login"' in INDEX
+    for name in (
+        "Español · Latinoamérica",
+        "Español · México",
+        "Español · Colombia",
+        "Español · Argentina",
+        "Português · Brasil",
+    ):
+        assert name in INDEX, f"named language missing: {name}"
+    for code in (">es-419<", ">es-MX<", ">es-CO<", ">es-AR<", ">pt-BR<"):
+        assert code not in INDEX, f"locale code shown as a label: {code}"
+    assert 'data-testid="locale-button"' in INDEX
+    assert "locale-group" in APP_JS
+    assert "/api/v1/auth/demo" in APP_JS
+
+
+def test_resolution_panel_renders_the_closed_steps() -> None:
+    assert "renderSteps" in APP_JS
+    assert 'data-testid", "steps-panel"' in APP_JS
+    assert 't("howIResolved")' in APP_JS
+    assert "body.steps" in APP_JS
+    assert "innerHTML" not in APP_JS
+    strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
+    for key in (
+        "howIResolved",
+        "step.understood",
+        "step.lookedUp",
+        "step.checkedPolicy",
+        "step.caseOpened",
+        "step.noCase",
+        "step.handedOff",
+        "step.refused",
+    ):
+        assert f'"{key}"' in strings, f"{key} missing from the locale"
+
+
+def test_transaction_status_label_is_neutral() -> None:
+    assert "statusLabel" in APP_JS
+    assert "txStatusApproved" in APP_JS
+    assert "tx-status" in APP_JS
+    code = re.sub(r"/\*.*?\*/", "", APP_JS, flags=re.S)
+    code = re.sub(r"//[^\n]*", "", code).lower()
+    for signal in ("fraud", "fraude", "score", "threshold", "umbral"):
+        assert signal not in code, f"a fraud signal leaked into the page: {signal}"
+
+
+def test_advisor_view_lists_tickets_and_opens_a_read_only_detail() -> None:
+    assert 'data-testid="queue-detail"' in INDEX
+    assert "queue-row" in APP_JS
+    assert "openTicket" in APP_JS
+    assert "/trace" in APP_JS and "traceBlock" in APP_JS
+    assert "packageBlock" in APP_JS
+    for key in ("q_language", "q_country", "q_reason", "q_created"):
+        assert f't("{key}")' in APP_JS, f"the list must show {key}"
+    # Read-only: the advisor block only issues GETs, never a write.
+    start = APP_JS.index("function ticketRow")
+    end = APP_JS.index('document.getElementById("login-form")')
+    block = APP_JS[start:end]
+    for method in ('method: "POST"', 'method: "PUT"', 'method: "PATCH"', 'method: "DELETE"'):
+        assert method not in block, f"the advisor view issues a write: {method}"
+
+
+def test_product_screens_are_captured() -> None:
+    screens = Path(__file__).resolve().parents[2] / "docs" / "build" / "screenshots" / "ui-product"
+    for locale in ("es-MX", "pt-BR"):
+        for size in ("desktop", "phone"):
+            for name in ("entry", "chat", "advisor-list", "advisor-detail"):
+                path = screens / f"{name}-{locale}-{size}.png"
+                assert path.is_file() and path.stat().st_size > 1000, path
 
 
 def test_the_why_followup_returns_an_explanation_over_http() -> None:

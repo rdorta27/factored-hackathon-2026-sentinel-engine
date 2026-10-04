@@ -31,6 +31,9 @@ class DisputeCase(Base):
     reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     escalation_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     package: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # Trace of the turn that filed the ticket (advisor-only view); null for
+    # rows written before the column existed.
+    trace_id: Mapped[Optional[str]] = mapped_column(String(64), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
