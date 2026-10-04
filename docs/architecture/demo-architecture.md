@@ -123,7 +123,7 @@ Each port keeps the target contract; the demo picks the adapter by configuration
 | Component | Target | Demo mock | Limitation stated in the demo |
 |---|---|---|---|
 | Session | Identity provider | Test session: password login against a fixture of false credentials, role stored, cookie | No real identity; the advisor user exists only with `SENTINEL_DEMO_AUTH=1` |
-| Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; fraud and high-amount thresholds are synthetic p95 values per account country and currency from evidence 2024Q4-v2 ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)); Mexican MXN has none; staleness (decision 27) stays off |
+| Policy configuration | The bank's approved policy | Synthetic file per country, written by the team | Not bank policy; fraud and high-amount thresholds are synthetic p95 values per account country and currency from evidence 2024Q4-v2 ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)); Mexican MXN has none; staleness ([014](../build/decisions/014-data-staleness.md)) stays off |
 | Case store | PostgreSQL | SQLite file, same models (disputes, tickets, sessions, conversation) | One instance only; login-attempt counters per process |
 | Advisor | Human advisor; tickets reach the bank's CRM through a queue ([015](../build/decisions/015-handoff-delivery.md)) | Demo advisor user reads the filed tickets in a read-only view | No claim, routing or state change |
 | Secrets | Azure Key Vault | `.env`, gitignored | — |
@@ -143,7 +143,7 @@ Identical to the target: a prompted LLM intent router, compared with the keyword
 
 | Piece | Demo |
 |---|---|
-| Platform | Local Linux; optional public link on Azure Container Apps with a spend cap (decisions 13, 16) |
+| Platform | Local Linux; public link on Azure Container Apps ([012](../build/decisions/012-public-deployment.md), [019](../build/decisions/019-azure-container-apps.md)); the model spend is capped at the provider |
 | Backend | Python and FastAPI, one process |
 | Frontend | One page served by the same process (customer chat and read-only advisor view), styled with the `branding/` files |
 | Data pipeline | The same `sentinel_data` package on DuckDB |

@@ -4,6 +4,7 @@
 |---|---|
 | [System Architecture](system-architecture.md) | The target: layers, components, a case end to end, the learned component, stack, repository layout |
 | [Demo Architecture](demo-architecture.md) | The same page for the hackathon submission, with the mocked components marked |
+| [What is real](what-is-real.md) | Which parts are real, mocks, synthetic or team-generated, and which numbers are simulations or projections |
 | [Architecture Specification](specification.md) | Contracts and rules: tools, confirmation, policy, personal data, failure handling, observability, evaluation, operations |
 
 > **AI understands; code executes and verifies.**
