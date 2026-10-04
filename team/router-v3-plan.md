@@ -72,7 +72,7 @@ not a ticket.
 
 The `router-confidence` change gave the router a confidence per label and
 calibrated two cut-offs on the development + validation split, frozen in
-[`2024Q4-calibration-v1`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json):
+[`2024Q4-calibration-v1`](../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json):
 `t_act` = 0.86 and `t_abstain` = 0.0. They live in
 `sentinel-ai-core/app/ai/router_config.json` with the run id, and the served
 app loads them only when `SENTINEL_LLM_CUTOFFS` is on; with the setting off it

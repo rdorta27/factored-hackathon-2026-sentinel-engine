@@ -79,7 +79,7 @@ How many disputes per day appear in the data, what capacity the prototype is des
 
 **Depends on:** [REQ-0014](#req-0014). Sizing uses the dispute volumes from the analysis.
 
-**Evidence:** Proven by: the [sizing and capacity specification](../sizing_capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume.
+**Evidence:** Proven by: the [sizing and capacity specification](../sizing_capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume. The latency targets use the router latency measured in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). Limit: no load test of `/api/v1/chat` exists yet, so the requests per second of one replica are not measured.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics

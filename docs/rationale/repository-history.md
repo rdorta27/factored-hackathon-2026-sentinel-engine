@@ -1,23 +1,38 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Repository history
 
 ## Choice
 
-An early commit named the hackathon's data bucket. The current tree reads it from `.env`; we did **not** rewrite git history to remove the old mention.
+An early commit names the data bucket of the hackathon. The current tree reads the name from `.env`. We did **not** rewrite the git history to remove the old mention.
 
 ## Why
 
-- **A bucket name is not a credential.** Access depends on the cloud permissions, not on knowing the name.
-- **Rewriting history means a force push,** which already disconnected the team's branches once.
-- **Two checks close it instead:** a scan of the whole history (not only the current tree) for keys and data, and confirmation that the bucket refuses anonymous listing and reading.
+- **A bucket name is not a credential.** Access depends on cloud permissions, not on the name.
+- **A history rewrite needs a force push.** A force push already disconnected the team branches once.
+- **Two checks close the risk:**
+  1. A scan of the full history, not only the current tree, for keys and data.
+  2. A confirmation that the bucket refuses anonymous list and read.
+
+## Evidence
+
+| Check | Where | Result |
+|---|---|---|
+| History scan for keys and dataset rows | [security: history review](../build/security.md#history-review-req-0034-101) | no keys and no dataset rows |
+| Bucket access | confirmed by the data owner | the bucket is private |
 
 ## Alternatives rejected
 
-- **Purge with `git filter-repo` and force push:** every collaborator re-clones, open branches break, and the host may keep old commits anyway.
+- **Purge with `git filter-repo` and force push.** Every collaborator must clone again. Open branches break. The host can keep old commits.
 
 ## In production
 
-A pre-commit check that rejects bucket URLs, account ids and key patterns, so the case does not repeat.
+A pre-commit check refuses bucket URLs, account ids and key patterns.
 
 ## On the slide
 
-Not a slide of its own; one line in limitations: "Old history mentions the data bucket by name; keys and data were checked across the whole history, and the bucket is not public." Both checks pass: the history scan found no keys or dataset rows ([security](../build/security.md#history-review-req-0034-101)) and the data owner confirmed the bucket is private.
+No slide of its own. One line in the limits: "Old history names the data bucket. We checked the full history for keys and data, and the bucket is not public."

@@ -1,36 +1,50 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Data assumptions
 
 ## Choice
 
-The system assumes accounts belong only to México, Colombia and Argentina, and that currency belongs to the product, so one customer can hold accounts in their local currency and in USD. The canonical country name is `México`.
+The system assumes that each account belongs to México, Colombia or Argentina. Currency belongs to the product, not to the country. One customer can have products in the local currency and in USD. The canonical country name is `México`.
 
 ## Why
 
-The data dictionary states both facts ([reference](../understand/reference/)):
+The data dictionary states these facts ([reference](../understand/reference/)):
 
-- `customers.country`: "Country (Mexico, Colombia, Argentina)", NOT NULL. There is no other account country.
-- `products.currency`: "Currency (MXN, COP, ARS, USD)", NOT NULL. Currency is per product; nothing ties a country to one currency.
-- `transactions.transaction_country`: "Country where transaction occurred". It names where a purchase happened, so it includes foreign countries such as Brazil, Spain or the USA. Those are customers of the three countries buying abroad, not foreign accounts.
+- `customers.country` is "Country (Mexico, Colombia, Argentina)" and NOT NULL. No other account country exists.
+- `products.currency` is "Currency (MXN, COP, ARS, USD)" and NOT NULL. Currency is per product.
+- `transactions.transaction_country` is the country of the purchase. It includes Brazil, Spain and the USA. These are purchases abroad by customers of the three countries. They are not foreign accounts.
 
-The dataset is fully synthetic ("no real customer information is included") and its text is Spanish only. The source spells the country both `México` and `Mexico`; the pipeline's Silver layer normalizes to `México`. The `Mexico` variant appears in `transaction_country` for purchases made in Mexico, not in the account country.
+The measured data confirms them and shows one more fact:
 
-Checked on the 2024Q4 transactions: Colombian and Argentine charges come in local currency and in USD, while every Mexican charge is in USD and none in MXN, so the MXN group has no data to set a threshold from ([dataset assumptions](../understand/dataset.md#assumptions)).
+| Fact | Evidence |
+|---|---|
+| México has no MXN product. Every Mexican product is in USD. | [`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/summary.json): `products.by_country.México.currency` |
+| `customers.country` has three levels and needs no normalization. | [`customer-360/dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/summary.json): `labels.country_normalization.customer_country_levels`, `customer_rows_normalized` |
+| `transaction_country` spells the country `Mexico` and `México`. The pipeline normalizes it. | `labels.country_normalization.transaction_rows_normalized` |
+| A product never has transactions in another currency. | `customer-360/dev-v1`: `balance.currency_mismatch_product_vs_txn_pct` |
 
-## Consequences
-
-- Any rule with a money value is set per account country **and** currency ([policy thresholds](policy-thresholds.md)).
-- Statistics about accounts group by `customers.country`, never by `transaction_country`.
-- Portuguese is a language requirement, not a market: there is no Brazilian account and no Portuguese text in the data, yet the system must serve Portuguese ([REQ-0012](../requirements/frontend-backend.md#req-0012)). A Portuguese-speaking customer holds an MX, CO or AR account, and the Portuguese cases are checked through Spanish back-translation ([017](../build/decisions/017-portuguese.md)).
+The dataset is synthetic ("no real customer information is included"). Its text is Spanish only ([what is real](../architecture/what-is-real.md)).
 
 ## Alternatives rejected
 
-- **One currency per country:** silently skips every USD charge of a Mexican customer.
-- **Grouping by `transaction_country`:** mixes foreign purchases into account statistics.
+- **One currency per country.** This skips every USD charge of a Mexican customer. In this data, that is every Mexican charge.
+- **Group by `transaction_country`.** This mixes purchases abroad into account statistics.
+
+## Consequences
+
+- A rule with a money value has one value per account country **and** currency ([policy thresholds](policy-thresholds.md)).
+- Account statistics group by `customers.country`, not by `transaction_country`.
+- The MXN group has no data, so it has no threshold. The demo Mexican MXN account is team-generated.
+- Portuguese is a language requirement, not a market. No Brazilian account and no Portuguese text exist in the data. The system must still serve Portuguese ([REQ-0012](../requirements/frontend-backend.md#req-0012), [017](../build/decisions/017-portuguese.md)).
 
 ## In production
 
-A real bank has its own country and currency catalog; the assumptions become configuration, and new countries add a policy file (REQ-0049).
+A bank has its own catalog of countries and currencies. The assumptions become configuration. A new country adds a policy file (REQ-0049).
 
 ## On the slide
 
-"The data covers accounts in three countries, each able to hold local and USD products. Portuguese is served without Portuguese data, and we say so."
+"The data has accounts in three countries. Each account can have local and USD products. México has USD products only. We serve Portuguese without Portuguese data, and we say so."

@@ -540,7 +540,7 @@ What each stage does:
 | **Bronze ingest** | Reads ~19 M records across 1,097 CSV files from `data/raw/`; attaches `_source_file` / `_ingested_at` / `_batch_id` audit metadata; file-level idempotency skips already-ingested files |
 | **Silver deduplication** | `DISTINCT` on primary keys; `COALESCE` for nulls; country normalization: `'Mexico'` → `'México'` across `transaction_country` and `country` columns (REQ-0015) |
 | **Gold eligibility** | Builds `gold_dispute_eligible_transactions` using fixed cutoff `2026-06-17` and 90-day dispute window; pre-computes `is_eligible_for_dispute`, `dispute_risk_level`, `days_since_transaction` |
-| **PII-free view** | Creates `v_service_dispute_eligible_transactions` — drops `customer_first_name`, `customer_last_name`, and `customer_credit_score` before the service layer can read them (ADR 008) |
+| **PII-free view** | Creates `v_service_dispute_eligible_transactions` — drops `customer_first_name`, `customer_last_name`, and `customer_credit_score` before the service layer can read them (ADR 023) |
 | **Artifacts** | Writes `data/gold_bank.duckdb` (652 MB, gitignored) and `data_quality_report.md` |
 
 Typical runtime on a developer laptop: **~10 minutes** end-to-end.
@@ -659,7 +659,7 @@ Validates incremental batch processing, schema evolution, deduplication, and Gol
 | `test_batch2_schema_evolution_tolerance` | Adding `device_fingerprint` to Bronze does not break Silver or Gold; column is not propagated downstream |
 | `test_batch2_late_arrival_eligibility` | `transaction_date = '2026-06-07'` → `days_since_transaction = 10`, `is_eligible_for_dispute = TRUE` |
 | `test_batch2_country_normalisation` | `'Mexico'` in `transaction_country` is stored as `'México'` in Silver (REQ-0015) |
-| `test_pii_free_view_columns` | `v_service_dispute_eligible_transactions` is queryable and exposes none of `customer_first_name`, `customer_last_name`, `customer_credit_score` (ADR 008) |
+| `test_pii_free_view_columns` | `v_service_dispute_eligible_transactions` is queryable and exposes none of `customer_first_name`, `customer_last_name`, `customer_credit_score` (ADR 023) |
 | `test_gold_idempotency` | Two consecutive Gold runs on the same Silver state produce identical row counts and eligible transaction IDs |
 
 ---
@@ -681,7 +681,7 @@ Validates incremental batch processing, schema evolution, deduplication, and Gol
 | Local DuckDB database size | 652 MB |
 | End-to-end pipeline runtime (developer laptop) | ~10 minutes |
 
-### PII compliance guardrails (ADR 008)
+### PII compliance guardrails (ADR 023)
 
 The pipeline enforces a strict PII boundary at the Gold layer. The view `v_service_dispute_eligible_transactions` is the **only surface** exposed to `sentinel-ai-core` and the LLM. It explicitly drops:
 
@@ -856,7 +856,7 @@ open complaints, featuring derived eligibility indicators.
 | `is_eligible_for_dispute` | BOOLEAN | `NOT is_disputed AND days_since_transaction ≤ 90 AND status NOT IN ('Reversed','Refunded')` |
 | `snapshot_date` | DATE | Fixed as `DATE '2026-06-17'` (not `CURRENT_DATE`) |
 
-**PII-free service view (ADR 008)**
+**PII-free service view (ADR 023)**
 
 `v_service_dispute_eligible_transactions` is the **only surface** exposed to the `sentinel-ai-core` service layer and the LLM. It is built from `gold_dispute_eligible_transactions` with three columns removed:
 

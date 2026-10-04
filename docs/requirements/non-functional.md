@@ -127,7 +127,7 @@ Mock banking tools are allowed if their contracts and limitations are documented
 
 **Source:** Problem statement: Data and execution boundaries
 
-**Evidence:** Proven by: tool and Gold contracts in the [specification](../architecture/specification.md#tool-contracts); mock and DuckDB Gold behind one seam with fallback (`tests/test_gold_duckdb.py`); memory and SQLite state behind the same ports; mocks listed in the [demo architecture](../architecture/demo-architecture.md#mocked-components).
+**Evidence:** Proven by: tool and Gold contracts in the [specification](../architecture/specification.md#tool-contracts); mock and DuckDB Gold behind one seam with fallback (`tests/test_gold_duckdb.py`); memory and SQLite state behind the same ports; mocks listed in the [demo architecture](../architecture/demo-architecture.md#mocked-components) and in [what is real](../architecture/what-is-real.md#components).
 
 <a id="req-0047"></a>
 ### REQ-0047 · No personal data to the LLM

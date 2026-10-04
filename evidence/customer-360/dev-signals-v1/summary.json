@@ -1,0 +1,2153 @@
+{
+  "held_out_cut": "2025-07-01",
+  "incremental": {
+    "base_model_report_auc": 0.833,
+    "base_model_report_auc_ci": [
+      0.8143,
+      0.8491
+    ],
+    "fraud_score_alone_report_auc_missing_as_lowest": 0.7139,
+    "method": "Logistic regression (numpy Newton-Raphson, ridge 1e-4) fitted on FIT, scored on REPORT. Base model: one-hot fraud_score strata (missing, the 10 FIT deciles, and above the FIT non-fraud maximum). Each candidate adds the signal and an undefined indicator. delta_auc = AUC(base + signal) - AUC(base) on REPORT, 95% interval from 200 paired bootstrap resamples (seed 20261004). Stratified lift: Mantel-Haenszel risk ratio of signal on vs off across the same strata (Greenland-Robins CI).",
+    "per_signal": {
+      "all_signals": {
+        "auc": 0.8297,
+        "delta_auc": -0.0033,
+        "delta_auc_ci": [
+          -0.0113,
+          0.0027
+        ]
+      },
+      "amount_ratio_high": {
+        "auc": 0.8335,
+        "delta_auc": 0.0005,
+        "delta_auc_ci": [
+          -0.0036,
+          0.0034
+        ],
+        "mh_risk_ratio": 0.859,
+        "mh_risk_ratio_ci": [
+          0.648,
+          1.138
+        ]
+      },
+      "amount_z_high": {
+        "auc": 0.8331,
+        "delta_auc": 0.0001,
+        "delta_auc_ci": [
+          -0.0039,
+          0.0032
+        ],
+        "mh_risk_ratio": 0.929,
+        "mh_risk_ratio_ci": [
+          0.688,
+          1.255
+        ]
+      },
+      "burst_10m": {
+        "auc": 0.8318,
+        "delta_auc": -0.0012,
+        "delta_auc_ci": [
+          -0.0037,
+          0.0
+        ],
+        "mh_risk_ratio": 11.831,
+        "mh_risk_ratio_ci": [
+          1.682,
+          83.215
+        ]
+      },
+      "burst_60m": {
+        "auc": 0.833,
+        "delta_auc": 0.0,
+        "delta_auc_ci": [
+          0.0,
+          0.0
+        ],
+        "mh_risk_ratio": null,
+        "mh_risk_ratio_ci": null
+      },
+      "country_not_account_country": {
+        "auc": 0.8323,
+        "delta_auc": -0.0008,
+        "delta_auc_ci": [
+          -0.0038,
+          0.0033
+        ],
+        "mh_risk_ratio": 1.047,
+        "mh_risk_ratio_ci": [
+          0.818,
+          1.339
+        ]
+      },
+      "far_from_usual_location": {
+        "auc": 0.8351,
+        "delta_auc": 0.002,
+        "delta_auc_ci": [
+          -0.0011,
+          0.0042
+        ],
+        "mh_risk_ratio": null,
+        "mh_risk_ratio_ci": null
+      },
+      "first_channel": {
+        "auc": 0.8325,
+        "delta_auc": -0.0005,
+        "delta_auc_ci": [
+          -0.0016,
+          0.0007
+        ],
+        "mh_risk_ratio": 0.831,
+        "mh_risk_ratio_ci": [
+          0.617,
+          1.119
+        ]
+      },
+      "first_country": {
+        "auc": 0.8328,
+        "delta_auc": -0.0003,
+        "delta_auc_ci": [
+          -0.0028,
+          0.0025
+        ],
+        "mh_risk_ratio": 0.985,
+        "mh_risk_ratio_ci": [
+          0.731,
+          1.327
+        ]
+      },
+      "first_hour_bucket": {
+        "auc": 0.8338,
+        "delta_auc": 0.0008,
+        "delta_auc_ci": [
+          -0.0005,
+          0.0019
+        ],
+        "mh_risk_ratio": 0.793,
+        "mh_risk_ratio_ci": [
+          0.572,
+          1.101
+        ]
+      },
+      "first_merchant": {
+        "auc": 0.8311,
+        "delta_auc": -0.0019,
+        "delta_auc_ci": [
+          -0.006,
+          0.0012
+        ],
+        "mh_risk_ratio": 0.826,
+        "mh_risk_ratio_ci": [
+          0.654,
+          1.042
+        ]
+      },
+      "first_merchant_category": {
+        "auc": 0.8314,
+        "delta_auc": -0.0016,
+        "delta_auc_ci": [
+          -0.0061,
+          0.0019
+        ],
+        "mh_risk_ratio": 0.93,
+        "mh_risk_ratio_ci": [
+          0.659,
+          1.312
+        ]
+      }
+    },
+    "score_strata_edges_fit": [
+      2.99,
+      5.99,
+      8.99,
+      11.99,
+      15.0,
+      18.0,
+      21.01,
+      24.02,
+      27.02,
+      30.0
+    ]
+  },
+  "investigation": {
+    "flags": {
+      "amount_ratio_high": "none",
+      "amount_z_high": "none",
+      "burst_10m": "undefined_too_sparse",
+      "burst_60m": "undefined_too_sparse",
+      "country_not_account_country": "none",
+      "far_from_usual_location": "undefined_too_sparse",
+      "first_channel": "none",
+      "first_country": "none",
+      "first_hour_bucket": "none",
+      "first_merchant": "undefined_too_sparse",
+      "first_merchant_category": "undefined_too_sparse"
+    },
+    "has_signal": false,
+    "label_is_synthetic_artefact": true,
+    "rule": "undefined_too_sparse if report defined_pct < 20.0 or the signal-on report rows hold < 5 expected frauds at the base rate; useful if report lift_ci_low >= 1.5 and incremental delta_auc_ci_low > 0; weak if report lift_ci_low > 1.0 or incremental delta_auc_ci_low > 0 (but not useful); none otherwise. investigation.has_signal = any signal flagged useful."
+  },
+  "labels": {
+    "amount_usd_fill_by_currency": {
+      "ARS": {
+        "amount_usd_filled_pct": 94.964,
+        "rows": 536904
+      },
+      "COP": {
+        "amount_usd_filled_pct": 95.004,
+        "rows": 808287
+      },
+      "USD": {
+        "amount_usd_filled_pct": 0.0,
+        "rows": 1649406
+      }
+    },
+    "bound_rule": {
+      "derivation": "fires when fraud_score > the FIT-part maximum score of non-fraud rows; evaluated on REPORT",
+      "false_positive": 0,
+      "precision_pct": 100.0,
+      "recall_pct": 53.76,
+      "report_fired_pct": 0.053,
+      "threshold_fit": 30.0,
+      "true_positive": 386
+    },
+    "by": {
+      "account_country": {
+        "Argentina": {
+          "fraud": 605,
+          "lift": 1.008,
+          "lift_ci": [
+            0.931,
+            1.092
+          ],
+          "n": 596074,
+          "rate_ci_pct": [
+            0.094,
+            0.11
+          ],
+          "rate_pct": 0.101
+        },
+        "Colombia": {
+          "fraud": 859,
+          "lift": 0.949,
+          "lift_ci": [
+            0.888,
+            1.015
+          ],
+          "n": 899140,
+          "rate_ci_pct": [
+            0.089,
+            0.102
+          ],
+          "rate_pct": 0.096
+        },
+        "México": {
+          "fraud": 1550,
+          "lift": 1.027,
+          "lift_ci": [
+            0.977,
+            1.079
+          ],
+          "n": 1499383,
+          "rate_ci_pct": [
+            0.098,
+            0.109
+          ],
+          "rate_pct": 0.103
+        }
+      },
+      "channel": {
+        "ATM": {
+          "fraud": 917,
+          "lift": 1.014,
+          "lift_ci": [
+            0.95,
+            1.081
+          ],
+          "n": 898825,
+          "rate_ci_pct": [
+            0.096,
+            0.109
+          ],
+          "rate_pct": 0.102
+        },
+        "App": {
+          "fraud": 455,
+          "lift": 1.007,
+          "lift_ci": [
+            0.919,
+            1.104
+          ],
+          "n": 448722,
+          "rate_ci_pct": [
+            0.093,
+            0.111
+          ],
+          "rate_pct": 0.101
+        },
+        "Branch": {
+          "fraud": 105,
+          "lift": 1.164,
+          "lift_ci": [
+            0.961,
+            1.408
+          ],
+          "n": 89653,
+          "rate_ci_pct": [
+            0.097,
+            0.142
+          ],
+          "rate_pct": 0.117
+        },
+        "POS": {
+          "fraud": 1011,
+          "lift": 0.959,
+          "lift_ci": [
+            0.901,
+            1.019
+          ],
+          "n": 1047894,
+          "rate_ci_pct": [
+            0.091,
+            0.103
+          ],
+          "rate_pct": 0.096
+        },
+        "Transfer": {
+          "fraud": 57,
+          "lift": 0.939,
+          "lift_ci": [
+            0.725,
+            1.216
+          ],
+          "n": 60312,
+          "rate_ci_pct": [
+            0.073,
+            0.122
+          ],
+          "rate_pct": 0.095
+        },
+        "Web": {
+          "fraud": 469,
+          "lift": 1.037,
+          "lift_ci": [
+            0.948,
+            1.136
+          ],
+          "n": 449191,
+          "rate_ci_pct": [
+            0.095,
+            0.114
+          ],
+          "rate_pct": 0.104
+        }
+      },
+      "currency": {
+        "ARS": {
+          "fraud": 542,
+          "lift": 1.003,
+          "lift_ci": [
+            0.922,
+            1.091
+          ],
+          "n": 536904,
+          "rate_ci_pct": [
+            0.093,
+            0.11
+          ],
+          "rate_pct": 0.101
+        },
+        "COP": {
+          "fraud": 774,
+          "lift": 0.951,
+          "lift_ci": [
+            0.887,
+            1.021
+          ],
+          "n": 808287,
+          "rate_ci_pct": [
+            0.089,
+            0.103
+          ],
+          "rate_pct": 0.096
+        },
+        "USD": {
+          "fraud": 1698,
+          "lift": 1.023,
+          "lift_ci": [
+            0.975,
+            1.073
+          ],
+          "n": 1649406,
+          "rate_ci_pct": [
+            0.098,
+            0.108
+          ],
+          "rate_pct": 0.103
+        }
+      },
+      "fraud_score_missing": {
+        "false": {
+          "fraud": 2384,
+          "lift": 0.989,
+          "lift_ci": [
+            0.95,
+            1.029
+          ],
+          "n": 2395873,
+          "rate_ci_pct": [
+            0.096,
+            0.104
+          ],
+          "rate_pct": 0.1
+        },
+        "true": {
+          "fraud": 630,
+          "lift": 1.045,
+          "lift_ci": [
+            0.967,
+            1.13
+          ],
+          "n": 598724,
+          "rate_ci_pct": [
+            0.097,
+            0.114
+          ],
+          "rate_pct": 0.105
+        }
+      },
+      "hour_of_day": {
+        "00": {
+          "fraud": 134,
+          "lift": 1.071,
+          "lift_ci": [
+            0.905,
+            1.268
+          ],
+          "n": 124282,
+          "rate_ci_pct": [
+            0.091,
+            0.128
+          ],
+          "rate_pct": 0.108
+        },
+        "01": {
+          "fraud": 114,
+          "lift": 0.906,
+          "lift_ci": [
+            0.754,
+            1.088
+          ],
+          "n": 125063,
+          "rate_ci_pct": [
+            0.076,
+            0.109
+          ],
+          "rate_pct": 0.091
+        },
+        "02": {
+          "fraud": 121,
+          "lift": 0.963,
+          "lift_ci": [
+            0.806,
+            1.15
+          ],
+          "n": 124847,
+          "rate_ci_pct": [
+            0.081,
+            0.116
+          ],
+          "rate_pct": 0.097
+        },
+        "03": {
+          "fraud": 128,
+          "lift": 1.02,
+          "lift_ci": [
+            0.858,
+            1.213
+          ],
+          "n": 124641,
+          "rate_ci_pct": [
+            0.086,
+            0.122
+          ],
+          "rate_pct": 0.103
+        },
+        "04": {
+          "fraud": 136,
+          "lift": 1.085,
+          "lift_ci": [
+            0.917,
+            1.283
+          ],
+          "n": 124538,
+          "rate_ci_pct": [
+            0.092,
+            0.129
+          ],
+          "rate_pct": 0.109
+        },
+        "05": {
+          "fraud": 124,
+          "lift": 0.989,
+          "lift_ci": [
+            0.83,
+            1.179
+          ],
+          "n": 124516,
+          "rate_ci_pct": [
+            0.084,
+            0.119
+          ],
+          "rate_pct": 0.1
+        },
+        "06": {
+          "fraud": 126,
+          "lift": 1.001,
+          "lift_ci": [
+            0.841,
+            1.191
+          ],
+          "n": 125073,
+          "rate_ci_pct": [
+            0.085,
+            0.12
+          ],
+          "rate_pct": 0.101
+        },
+        "07": {
+          "fraud": 141,
+          "lift": 1.121,
+          "lift_ci": [
+            0.95,
+            1.321
+          ],
+          "n": 125005,
+          "rate_ci_pct": [
+            0.096,
+            0.133
+          ],
+          "rate_pct": 0.113
+        },
+        "08": {
+          "fraud": 133,
+          "lift": 1.061,
+          "lift_ci": [
+            0.895,
+            1.257
+          ],
+          "n": 124544,
+          "rate_ci_pct": [
+            0.09,
+            0.127
+          ],
+          "rate_pct": 0.107
+        },
+        "09": {
+          "fraud": 150,
+          "lift": 1.19,
+          "lift_ci": [
+            1.015,
+            1.397
+          ],
+          "n": 125189,
+          "rate_ci_pct": [
+            0.102,
+            0.141
+          ],
+          "rate_pct": 0.12
+        },
+        "10": {
+          "fraud": 113,
+          "lift": 0.902,
+          "lift_ci": [
+            0.75,
+            1.084
+          ],
+          "n": 124512,
+          "rate_ci_pct": [
+            0.075,
+            0.109
+          ],
+          "rate_pct": 0.091
+        },
+        "11": {
+          "fraud": 133,
+          "lift": 1.057,
+          "lift_ci": [
+            0.892,
+            1.253
+          ],
+          "n": 124967,
+          "rate_ci_pct": [
+            0.09,
+            0.126
+          ],
+          "rate_pct": 0.106
+        },
+        "12": {
+          "fraud": 142,
+          "lift": 1.132,
+          "lift_ci": [
+            0.961,
+            1.334
+          ],
+          "n": 124602,
+          "rate_ci_pct": [
+            0.097,
+            0.134
+          ],
+          "rate_pct": 0.114
+        },
+        "13": {
+          "fraud": 128,
+          "lift": 1.016,
+          "lift_ci": [
+            0.854,
+            1.208
+          ],
+          "n": 125197,
+          "rate_ci_pct": [
+            0.086,
+            0.122
+          ],
+          "rate_pct": 0.102
+        },
+        "14": {
+          "fraud": 126,
+          "lift": 1.003,
+          "lift_ci": [
+            0.843,
+            1.194
+          ],
+          "n": 124800,
+          "rate_ci_pct": [
+            0.085,
+            0.12
+          ],
+          "rate_pct": 0.101
+        },
+        "15": {
+          "fraud": 109,
+          "lift": 0.869,
+          "lift_ci": [
+            0.72,
+            1.048
+          ],
+          "n": 124652,
+          "rate_ci_pct": [
+            0.073,
+            0.105
+          ],
+          "rate_pct": 0.087
+        },
+        "16": {
+          "fraud": 112,
+          "lift": 0.892,
+          "lift_ci": [
+            0.742,
+            1.073
+          ],
+          "n": 124707,
+          "rate_ci_pct": [
+            0.075,
+            0.108
+          ],
+          "rate_pct": 0.09
+        },
+        "17": {
+          "fraud": 116,
+          "lift": 0.921,
+          "lift_ci": [
+            0.768,
+            1.104
+          ],
+          "n": 125203,
+          "rate_ci_pct": [
+            0.077,
+            0.111
+          ],
+          "rate_pct": 0.093
+        },
+        "18": {
+          "fraud": 112,
+          "lift": 0.886,
+          "lift_ci": [
+            0.736,
+            1.065
+          ],
+          "n": 125647,
+          "rate_ci_pct": [
+            0.074,
+            0.107
+          ],
+          "rate_pct": 0.089
+        },
+        "19": {
+          "fraud": 111,
+          "lift": 0.888,
+          "lift_ci": [
+            0.738,
+            1.07
+          ],
+          "n": 124130,
+          "rate_ci_pct": [
+            0.074,
+            0.108
+          ],
+          "rate_pct": 0.089
+        },
+        "20": {
+          "fraud": 117,
+          "lift": 0.931,
+          "lift_ci": [
+            0.777,
+            1.116
+          ],
+          "n": 124850,
+          "rate_ci_pct": [
+            0.078,
+            0.112
+          ],
+          "rate_pct": 0.094
+        },
+        "21": {
+          "fraud": 134,
+          "lift": 1.073,
+          "lift_ci": [
+            0.906,
+            1.27
+          ],
+          "n": 124124,
+          "rate_ci_pct": [
+            0.091,
+            0.128
+          ],
+          "rate_pct": 0.108
+        },
+        "22": {
+          "fraud": 117,
+          "lift": 0.929,
+          "lift_ci": [
+            0.775,
+            1.113
+          ],
+          "n": 125165,
+          "rate_ci_pct": [
+            0.078,
+            0.112
+          ],
+          "rate_pct": 0.093
+        },
+        "23": {
+          "fraud": 137,
+          "lift": 1.095,
+          "lift_ci": [
+            0.926,
+            1.294
+          ],
+          "n": 124343,
+          "rate_ci_pct": [
+            0.093,
+            0.13
+          ],
+          "rate_pct": 0.11
+        }
+      },
+      "lat_long_present": {
+        "false": {
+          "fraud": 2433,
+          "lift": 1.001,
+          "lift_ci": [
+            0.962,
+            1.042
+          ],
+          "n": 2414113,
+          "rate_ci_pct": [
+            0.097,
+            0.105
+          ],
+          "rate_pct": 0.101
+        },
+        "true": {
+          "fraud": 581,
+          "lift": 0.994,
+          "lift_ci": [
+            0.917,
+            1.079
+          ],
+          "n": 580484,
+          "rate_ci_pct": [
+            0.092,
+            0.109
+          ],
+          "rate_pct": 0.1
+        }
+      },
+      "merchant_name_present": {
+        "false": {
+          "fraud": 2280,
+          "lift": 0.986,
+          "lift_ci": [
+            0.946,
+            1.027
+          ],
+          "n": 2297268,
+          "rate_ci_pct": [
+            0.095,
+            0.103
+          ],
+          "rate_pct": 0.099
+        },
+        "true": {
+          "fraud": 734,
+          "lift": 1.046,
+          "lift_ci": [
+            0.973,
+            1.124
+          ],
+          "n": 697329,
+          "rate_ci_pct": [
+            0.098,
+            0.113
+          ],
+          "rate_pct": 0.105
+        }
+      },
+      "transaction_country_normalized": {
+        "Argentina": {
+          "fraud": 597,
+          "lift": 1.009,
+          "lift_ci": [
+            0.932,
+            1.094
+          ],
+          "n": 587643,
+          "rate_ci_pct": [
+            0.094,
+            0.11
+          ],
+          "rate_pct": 0.102
+        },
+        "Brazil": {
+          "fraud": 32,
+          "lift": 1.161,
+          "lift_ci": [
+            0.823,
+            1.638
+          ],
+          "n": 27385,
+          "rate_ci_pct": [
+            0.083,
+            0.165
+          ],
+          "rate_pct": 0.117
+        },
+        "Colombia": {
+          "fraud": 828,
+          "lift": 0.943,
+          "lift_ci": [
+            0.881,
+            1.009
+          ],
+          "n": 872621,
+          "rate_ci_pct": [
+            0.089,
+            0.102
+          ],
+          "rate_pct": 0.095
+        },
+        "México": {
+          "fraud": 1500,
+          "lift": 1.026,
+          "lift_ci": [
+            0.976,
+            1.08
+          ],
+          "n": 1452186,
+          "rate_ci_pct": [
+            0.098,
+            0.109
+          ],
+          "rate_pct": 0.103
+        },
+        "Spain": {
+          "fraud": 31,
+          "lift": 1.124,
+          "lift_ci": [
+            0.792,
+            1.594
+          ],
+          "n": 27411,
+          "rate_ci_pct": [
+            0.08,
+            0.16
+          ],
+          "rate_pct": 0.113
+        },
+        "USA": {
+          "fraud": 26,
+          "lift": 0.944,
+          "lift_ci": [
+            0.645,
+            1.384
+          ],
+          "n": 27351,
+          "rate_ci_pct": [
+            0.065,
+            0.139
+          ],
+          "rate_pct": 0.095
+        }
+      },
+      "transaction_status": {
+        "Approved": {
+          "fraud": 2776,
+          "lift": 1.001,
+          "lift_ci": [
+            0.965,
+            1.039
+          ],
+          "n": 2754563,
+          "rate_ci_pct": [
+            0.097,
+            0.105
+          ],
+          "rate_pct": 0.101
+        },
+        "Declined": {
+          "fraud": 144,
+          "lift": 0.956,
+          "lift_ci": [
+            0.812,
+            1.125
+          ],
+          "n": 149727,
+          "rate_ci_pct": [
+            0.082,
+            0.113
+          ],
+          "rate_pct": 0.096
+        },
+        "Pending": {
+          "fraud": 65,
+          "lift": 1.079,
+          "lift_ci": [
+            0.847,
+            1.375
+          ],
+          "n": 59831,
+          "rate_ci_pct": [
+            0.085,
+            0.138
+          ],
+          "rate_pct": 0.109
+        },
+        "Reversed": {
+          "fraud": 29,
+          "lift": 0.945,
+          "lift_ci": [
+            0.658,
+            1.357
+          ],
+          "n": 30476,
+          "rate_ci_pct": [
+            0.066,
+            0.137
+          ],
+          "rate_pct": 0.095
+        }
+      },
+      "transaction_type": {
+        "Adjustment": {
+          "fraud": 100,
+          "lift": 1.11,
+          "lift_ci": [
+            0.913,
+            1.35
+          ],
+          "n": 89515,
+          "rate_ci_pct": [
+            0.092,
+            0.136
+          ],
+          "rate_pct": 0.112
+        },
+        "Deposit": {
+          "fraud": 416,
+          "lift": 1.003,
+          "lift_ci": [
+            0.912,
+            1.105
+          ],
+          "n": 411913,
+          "rate_ci_pct": [
+            0.092,
+            0.111
+          ],
+          "rate_pct": 0.101
+        },
+        "Payment": {
+          "fraud": 507,
+          "lift": 1.007,
+          "lift_ci": [
+            0.923,
+            1.098
+          ],
+          "n": 500311,
+          "rate_ci_pct": [
+            0.093,
+            0.111
+          ],
+          "rate_pct": 0.101
+        },
+        "Purchase": {
+          "fraud": 779,
+          "lift": 1.055,
+          "lift_ci": [
+            0.983,
+            1.131
+          ],
+          "n": 733778,
+          "rate_ci_pct": [
+            0.099,
+            0.114
+          ],
+          "rate_pct": 0.106
+        },
+        "Transfer": {
+          "fraud": 558,
+          "lift": 0.914,
+          "lift_ci": [
+            0.841,
+            0.993
+          ],
+          "n": 606804,
+          "rate_ci_pct": [
+            0.085,
+            0.1
+          ],
+          "rate_pct": 0.092
+        },
+        "Withdrawal": {
+          "fraud": 654,
+          "lift": 0.996,
+          "lift_ci": [
+            0.923,
+            1.075
+          ],
+          "n": 652276,
+          "rate_ci_pct": [
+            0.093,
+            0.108
+          ],
+          "rate_pct": 0.1
+        }
+      }
+    },
+    "country_normalization": {
+      "customer_country_levels": [
+        "Argentina",
+        "Colombia",
+        "México"
+      ],
+      "customer_rows_normalized": 0,
+      "rule": {
+        "Mexico": "México"
+      },
+      "transaction_country_raw_levels": [
+        "Argentina",
+        "Brazil",
+        "Colombia",
+        "Mexico",
+        "México",
+        "Spain",
+        "USA"
+      ],
+      "transaction_rows_normalized": 27561
+    },
+    "fraud_dev": 3014,
+    "fraud_per_customer": {
+      "customers": 134513,
+      "observed": {
+        "0": 131542,
+        "1": 2930,
+        "2": 39,
+        "3": 2
+      },
+      "poisson_expected": {
+        "0": 131532.5,
+        "1": 2947.2,
+        "2": 33.0,
+        "3": 0.2
+      }
+    },
+    "fraud_score_auc": {
+      "fit": {
+        "all_rows_missing_as_lowest": 0.7185,
+        "scored_fraud": 1816,
+        "scored_rows": 0.8525,
+        "scored_rows_n": 1818034
+      },
+      "report": {
+        "all_rows_missing_as_lowest": 0.7139,
+        "scored_fraud": 568,
+        "scored_rows": 0.8449,
+        "scored_rows_n": 577839
+      }
+    },
+    "fraud_score_distribution": {
+      "fraud": {
+        "max": 99.99,
+        "min": 0.04,
+        "n": 3014,
+        "p05_p25_p50_p75_p95_p99": [
+          5.3,
+          24.24,
+          48.81,
+          75.38,
+          95.35,
+          99.25
+        ],
+        "score_missing_pct": 20.902
+      },
+      "non_fraud": {
+        "max": 30.0,
+        "min": 0.0,
+        "n": 2991583,
+        "p05_p25_p50_p75_p95_p99": [
+          1.5,
+          7.49,
+          15.0,
+          22.5,
+          28.5,
+          29.7
+        ],
+        "score_missing_pct": 19.993
+      }
+    },
+    "lat_long_by_transaction_country": {
+      "Argentina": {
+        "lat_long_filled_pct": 19.411,
+        "lat_p05_p50_p95": [
+          -35.5,
+          -34.56,
+          -33.63
+        ],
+        "lon_p05_p50_p95": [
+          -59.31,
+          -58.37,
+          -57.44
+        ],
+        "rows": 587643
+      },
+      "Brazil": {
+        "lat_long_filled_pct": 19.295,
+        "lat_p05_p50_p95": [
+          -35.09,
+          0.28,
+          5.43
+        ],
+        "lon_p05_p50_p95": [
+          -74.75,
+          -57.79,
+          0.78
+        ],
+        "rows": 27385
+      },
+      "Colombia": {
+        "lat_long_filled_pct": 19.358,
+        "lat_p05_p50_p95": [
+          3.77,
+          4.69,
+          5.61
+        ],
+        "lon_p05_p50_p95": [
+          -74.97,
+          -74.06,
+          -73.13
+        ],
+        "rows": 872621
+      },
+      "México": {
+        "lat_long_filled_pct": 19.386,
+        "lat_p05_p50_p95": [
+          -0.91,
+          0.0,
+          0.91
+        ],
+        "lon_p05_p50_p95": [
+          -0.92,
+          -0.01,
+          0.9
+        ],
+        "rows": 1452186
+      },
+      "Spain": {
+        "lat_long_filled_pct": 19.733,
+        "lat_p05_p50_p95": [
+          -35.16,
+          0.21,
+          5.43
+        ],
+        "lon_p05_p50_p95": [
+          -74.77,
+          -57.81,
+          0.79
+        ],
+        "rows": 27411
+      },
+      "USA": {
+        "lat_long_filled_pct": 19.297,
+        "lat_p05_p50_p95": [
+          -35.14,
+          0.19,
+          5.38
+        ],
+        "lon_p05_p50_p95": [
+          -74.77,
+          -57.85,
+          0.77
+        ],
+        "rows": 27351
+      }
+    },
+    "levels_with_lift_ci_excluding_1": {
+      "account_country": {
+        "levels": 3,
+        "levels_ci_excluding_base": 0
+      },
+      "channel": {
+        "levels": 6,
+        "levels_ci_excluding_base": 0
+      },
+      "currency": {
+        "levels": 3,
+        "levels_ci_excluding_base": 0
+      },
+      "fraud_score_missing": {
+        "levels": 2,
+        "levels_ci_excluding_base": 0
+      },
+      "hour_of_day": {
+        "levels": 24,
+        "levels_ci_excluding_base": 1
+      },
+      "lat_long_present": {
+        "levels": 2,
+        "levels_ci_excluding_base": 0
+      },
+      "merchant_name_present": {
+        "levels": 2,
+        "levels_ci_excluding_base": 0
+      },
+      "transaction_country_normalized": {
+        "levels": 6,
+        "levels_ci_excluding_base": 0
+      },
+      "transaction_status": {
+        "levels": 4,
+        "levels_ci_excluding_base": 0
+      },
+      "transaction_type": {
+        "levels": 6,
+        "levels_ci_excluding_base": 1
+      }
+    },
+    "n_dev": 2994597,
+    "p95_rule": {
+      "derivation": "decision 010: p95 (linear interpolation) of fraud_score per account country (customers.country, 'Mexico' -> 'México') and charge currency, groups >= 100 scored charges, all statuses and types; fitted on FIT, fires when fraud_score > threshold (strict, as in app/policy/engine.py); evaluated on REPORT",
+      "false_positive": 28223,
+      "fraud_missed_no_score_or_no_threshold": 150,
+      "fraud_missed_scored": 175,
+      "precision_ci_pct": [
+        1.245,
+        1.515
+      ],
+      "precision_pct": 1.373,
+      "recall_among_scored_fraud_pct": 69.19,
+      "recall_ci_pct": [
+        51.079,
+        58.341
+      ],
+      "recall_pct": 54.735,
+      "report_fired_pct": 3.959,
+      "thresholds_fit": {
+        "Argentina|ARS": {
+          "n": 326148,
+          "p95": 28.52
+        },
+        "Argentina|USD": {
+          "n": 35801,
+          "p95": 28.57
+        },
+        "Colombia|COP": {
+          "n": 490683,
+          "p95": 28.52
+        },
+        "Colombia|USD": {
+          "n": 55206,
+          "p95": 28.49
+        },
+        "México|USD": {
+          "n": 910196,
+          "p95": 28.53
+        }
+      },
+      "true_positive": 393
+    },
+    "prevalence_fit": {
+      "fraud": 2296,
+      "n": 2271707,
+      "rate_ci_pct": [
+        0.097,
+        0.105
+      ],
+      "rate_pct": 0.101
+    },
+    "prevalence_pct": 0.101,
+    "prevalence_report": {
+      "fraud": 718,
+      "n": 722890,
+      "rate_ci_pct": [
+        0.092,
+        0.107
+      ],
+      "rate_pct": 0.099
+    },
+    "synthetic_artefact": {
+      "fraud_with_score_above_non_fraud_max": 1651,
+      "fraud_with_score_above_non_fraud_max_pct_of_scored_fraud": 69.253,
+      "non_fraud_score_max": 30.0,
+      "non_fraud_with_score_above_non_fraud_max": 0,
+      "reading": "fraud_score of non-fraud rows never exceeds the bound; any score above it is fraud with certainty. Below it fraud and non-fraud overlap. is_fraud itself is not a deterministic function of one field.",
+      "score_above_bound_precision_pct": 100.0
+    }
+  },
+  "script_version": "2026-10-04+c360-dev-signals-v1",
+  "signals": {
+    "definitions": {
+      "amount_ratio_high": "amount / median of the customer's prior amounts in the same currency >= FIT p95 (needs >= 5 prior in that currency)",
+      "amount_z_high": "z-score of ln(amount) vs the customer's prior transactions in the same currency >= FIT p95 (needs >= 5 prior in that currency)",
+      "burst_10m": ">= 1 other transaction of the customer in the previous 10 minutes",
+      "burst_60m": ">= 2 other transactions of the customer in the previous 60 minutes",
+      "country_not_account_country": "transaction_country (normalized) differs from customers.country (normalized); defined for every row",
+      "far_from_usual_location": "haversine distance from the mean prior lat/long >= FIT p95 (needs lat/long and >= 5 prior geo-tagged transactions)",
+      "first_channel": "channel never used before by the customer (needs >= 5 prior)",
+      "first_country": "transaction_country never seen before for the customer (needs >= 5 prior)",
+      "first_hour_bucket": "4-hour bucket of the day never used before by the customer (needs >= 5 prior)",
+      "first_merchant": "merchant_name never seen before for the customer (needs a merchant name and >= 5 prior named transactions)",
+      "first_merchant_category": "merchant_category never seen before for the customer (needs a category and >= 5 prior categorized transactions)"
+    },
+    "fitted_thresholds": {
+      "amount_ratio_p95_fit": 13.3092,
+      "amount_z_p95_fit": 1.8055,
+      "distance_km_p95_fit": 151.17
+    },
+    "history": {
+      "customers_with_dev_txns": 134513,
+      "customers_with_lt5_dev_txns_pct": 1.645,
+      "fit": {
+        "fraud_with_lt5_prior_pct": 29.443,
+        "rows_with_lt5_prior_pct": 29.048
+      },
+      "median_dev_txns_per_customer": 20.0,
+      "report": {
+        "fraud_with_lt5_prior_pct": 1.253,
+        "rows_with_lt5_prior_pct": 1.28
+      }
+    },
+    "params": {
+      "history_order": "transaction_date, then transaction_id (tie-break)",
+      "history_scope": "all dev transactions of the customer strictly before the scored one, any product, any status",
+      "hour_bucket_hours": 4,
+      "min_history": 5,
+      "signal_percentile": 0.95
+    },
+    "per_signal": {
+      "amount_ratio_high": {
+        "fit": {
+          "base_rate_defined_pct": 0.1,
+          "defined_pct": 68.276,
+          "off": {
+            "fraud": 1496,
+            "lift": 1.012,
+            "lift_ci": [
+              0.962,
+              1.065
+            ],
+            "n": 1473488,
+            "rate_ci_pct": [
+              0.097,
+              0.107
+            ],
+            "rate_pct": 0.102
+          },
+          "on": {
+            "fraud": 60,
+            "lift": 0.771,
+            "lift_ci": [
+              0.599,
+              0.992
+            ],
+            "n": 77552,
+            "rate_ci_pct": [
+              0.06,
+              0.1
+            ],
+            "rate_pct": 0.077
+          },
+          "on_pct_of_defined": 5.0,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 98.169,
+          "off": {
+            "fraud": 673,
+            "lift": 1.004,
+            "lift_ci": [
+              0.931,
+              1.082
+            ],
+            "n": 678834,
+            "rate_ci_pct": [
+              0.092,
+              0.107
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 28,
+            "lift": 0.92,
+            "lift_ci": [
+              0.636,
+              1.329
+            ],
+            "n": 30819,
+            "rate_ci_pct": [
+              0.063,
+              0.131
+            ],
+            "rate_pct": 0.091
+          },
+          "on_pct_of_defined": 4.343,
+          "rows": 722890
+        }
+      },
+      "amount_z_high": {
+        "fit": {
+          "base_rate_defined_pct": 0.1,
+          "defined_pct": 68.276,
+          "off": {
+            "fraud": 1499,
+            "lift": 1.014,
+            "lift_ci": [
+              0.964,
+              1.067
+            ],
+            "n": 1473488,
+            "rate_ci_pct": [
+              0.097,
+              0.107
+            ],
+            "rate_pct": 0.102
+          },
+          "on": {
+            "fraud": 57,
+            "lift": 0.733,
+            "lift_ci": [
+              0.566,
+              0.949
+            ],
+            "n": 77552,
+            "rate_ci_pct": [
+              0.057,
+              0.095
+            ],
+            "rate_pct": 0.073
+          },
+          "on_pct_of_defined": 5.0,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 98.169,
+          "off": {
+            "fraud": 674,
+            "lift": 0.999,
+            "lift_ci": [
+              0.927,
+              1.077
+            ],
+            "n": 682903,
+            "rate_ci_pct": [
+              0.092,
+              0.106
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 27,
+            "lift": 1.022,
+            "lift_ci": [
+              0.702,
+              1.486
+            ],
+            "n": 26750,
+            "rate_ci_pct": [
+              0.069,
+              0.147
+            ],
+            "rate_pct": 0.101
+          },
+          "on_pct_of_defined": 3.769,
+          "rows": 722890
+        }
+      },
+      "burst_10m": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 2296,
+            "lift": 1.0,
+            "lift_ci": [
+              0.96,
+              1.042
+            ],
+            "n": 2271059,
+            "rate_ci_pct": [
+              0.097,
+              0.105
+            ],
+            "rate_pct": 0.101
+          },
+          "on": {
+            "fraud": 0,
+            "lift": 0.0,
+            "lift_ci": [
+              0.0,
+              5.831
+            ],
+            "n": 648,
+            "rate_ci_pct": [
+              0.0,
+              0.589
+            ],
+            "rate_pct": 0.0
+          },
+          "on_pct_of_defined": 0.029,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 717,
+            "lift": 0.999,
+            "lift_ci": [
+              0.928,
+              1.075
+            ],
+            "n": 722696,
+            "rate_ci_pct": [
+              0.092,
+              0.107
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 1,
+            "lift": 5.19,
+            "lift_ci": [
+              0.917,
+              28.81
+            ],
+            "n": 194,
+            "rate_ci_pct": [
+              0.091,
+              2.862
+            ],
+            "rate_pct": 0.515
+          },
+          "on_pct_of_defined": 0.027,
+          "rows": 722890
+        }
+      },
+      "burst_60m": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 2296,
+            "lift": 1.0,
+            "lift_ci": [
+              0.96,
+              1.042
+            ],
+            "n": 2271702,
+            "rate_ci_pct": [
+              0.097,
+              0.105
+            ],
+            "rate_pct": 0.101
+          },
+          "on": {
+            "fraud": 0,
+            "lift": 0.0,
+            "lift_ci": [
+              0.0,
+              429.885
+            ],
+            "n": 5,
+            "rate_ci_pct": [
+              0.0,
+              43.448
+            ],
+            "rate_pct": 0.0
+          },
+          "on_pct_of_defined": 0.0,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 718,
+            "lift": 1.0,
+            "lift_ci": [
+              0.93,
+              1.076
+            ],
+            "n": 722889,
+            "rate_ci_pct": [
+              0.092,
+              0.107
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 0,
+            "lift": 0.0,
+            "lift_ci": [
+              0.0,
+              798.855
+            ],
+            "n": 1,
+            "rate_ci_pct": [
+              0.0,
+              79.345
+            ],
+            "rate_pct": 0.0
+          },
+          "on_pct_of_defined": 0.0,
+          "rows": 722890
+        }
+      },
+      "country_not_account_country": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 2168,
+            "lift": 0.989,
+            "lift_ci": [
+              0.949,
+              1.032
+            ],
+            "n": 2167865,
+            "rate_ci_pct": [
+              0.096,
+              0.104
+            ],
+            "rate_pct": 0.1
+          },
+          "on": {
+            "fraud": 128,
+            "lift": 1.22,
+            "lift_ci": [
+              1.026,
+              1.45
+            ],
+            "n": 103842,
+            "rate_ci_pct": [
+              0.104,
+              0.147
+            ],
+            "rate_pct": 0.123
+          },
+          "on_pct_of_defined": 4.571,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 100.0,
+          "off": {
+            "fraud": 683,
+            "lift": 0.997,
+            "lift_ci": [
+              0.925,
+              1.075
+            ],
+            "n": 689739,
+            "rate_ci_pct": [
+              0.092,
+              0.107
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 35,
+            "lift": 1.063,
+            "lift_ci": [
+              0.764,
+              1.478
+            ],
+            "n": 33151,
+            "rate_ci_pct": [
+              0.076,
+              0.147
+            ],
+            "rate_pct": 0.106
+          },
+          "on_pct_of_defined": 4.586,
+          "rows": 722890
+        }
+      },
+      "far_from_usual_location": {
+        "fit": {
+          "base_rate_defined_pct": 0.103,
+          "defined_pct": 2.516,
+          "off": {
+            "fraud": 58,
+            "lift": 1.035,
+            "lift_ci": [
+              0.801,
+              1.337
+            ],
+            "n": 54294,
+            "rate_ci_pct": [
+              0.083,
+              0.138
+            ],
+            "rate_pct": 0.107
+          },
+          "on": {
+            "fraud": 1,
+            "lift": 0.339,
+            "lift_ci": [
+              0.06,
+              1.917
+            ],
+            "n": 2858,
+            "rate_ci_pct": [
+              0.006,
+              0.198
+            ],
+            "rate_pct": 0.035
+          },
+          "on_pct_of_defined": 5.001,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.083,
+          "defined_pct": 9.013,
+          "off": {
+            "fraud": 54,
+            "lift": 1.047,
+            "lift_ci": [
+              0.803,
+              1.366
+            ],
+            "n": 62215,
+            "rate_ci_pct": [
+              0.067,
+              0.113
+            ],
+            "rate_pct": 0.087
+          },
+          "on": {
+            "fraud": 0,
+            "lift": 0.0,
+            "lift_ci": [
+              0.0,
+              1.576
+            ],
+            "n": 2937,
+            "rate_ci_pct": [
+              0.0,
+              0.131
+            ],
+            "rate_pct": 0.0
+          },
+          "on_pct_of_defined": 4.508,
+          "rows": 722890
+        }
+      },
+      "first_channel": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 70.952,
+          "off": {
+            "fraud": 1435,
+            "lift": 0.989,
+            "lift_ci": [
+              0.94,
+              1.042
+            ],
+            "n": 1442909,
+            "rate_ci_pct": [
+              0.094,
+              0.105
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 185,
+            "lift": 1.09,
+            "lift_ci": [
+              0.944,
+              1.258
+            ],
+            "n": 168906,
+            "rate_ci_pct": [
+              0.095,
+              0.126
+            ],
+            "rate_pct": 0.11
+          },
+          "on_pct_of_defined": 10.479,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 98.72,
+          "off": {
+            "fraud": 682,
+            "lift": 1.012,
+            "lift_ci": [
+              0.939,
+              1.091
+            ],
+            "n": 678041,
+            "rate_ci_pct": [
+              0.093,
+              0.108
+            ],
+            "rate_pct": 0.101
+          },
+          "on": {
+            "fraud": 27,
+            "lift": 0.763,
+            "lift_ci": [
+              0.525,
+              1.111
+            ],
+            "n": 35599,
+            "rate_ci_pct": [
+              0.052,
+              0.11
+            ],
+            "rate_pct": 0.076
+          },
+          "on_pct_of_defined": 4.988,
+          "rows": 722890
+        }
+      },
+      "first_country": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 70.952,
+          "off": {
+            "fraud": 1540,
+            "lift": 0.99,
+            "lift_ci": [
+              0.942,
+              1.041
+            ],
+            "n": 1547289,
+            "rate_ci_pct": [
+              0.095,
+              0.105
+            ],
+            "rate_pct": 0.1
+          },
+          "on": {
+            "fraud": 80,
+            "lift": 1.234,
+            "lift_ci": [
+              0.991,
+              1.535
+            ],
+            "n": 64526,
+            "rate_ci_pct": [
+              0.1,
+              0.154
+            ],
+            "rate_pct": 0.124
+          },
+          "on_pct_of_defined": 4.003,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 98.72,
+          "off": {
+            "fraud": 684,
+            "lift": 1.001,
+            "lift_ci": [
+              0.929,
+              1.079
+            ],
+            "n": 687715,
+            "rate_ci_pct": [
+              0.092,
+              0.107
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 25,
+            "lift": 0.971,
+            "lift_ci": [
+              0.658,
+              1.433
+            ],
+            "n": 25925,
+            "rate_ci_pct": [
+              0.065,
+              0.142
+            ],
+            "rate_pct": 0.096
+          },
+          "on_pct_of_defined": 3.633,
+          "rows": 722890
+        }
+      },
+      "first_hour_bucket": {
+        "fit": {
+          "base_rate_defined_pct": 0.101,
+          "defined_pct": 70.952,
+          "off": {
+            "fraud": 1380,
+            "lift": 0.992,
+            "lift_ci": [
+              0.941,
+              1.046
+            ],
+            "n": 1383845,
+            "rate_ci_pct": [
+              0.095,
+              0.105
+            ],
+            "rate_pct": 0.1
+          },
+          "on": {
+            "fraud": 240,
+            "lift": 1.047,
+            "lift_ci": [
+              0.923,
+              1.189
+            ],
+            "n": 227970,
+            "rate_ci_pct": [
+              0.093,
+              0.119
+            ],
+            "rate_pct": 0.105
+          },
+          "on_pct_of_defined": 14.144,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 98.72,
+          "off": {
+            "fraud": 685,
+            "lift": 1.015,
+            "lift_ci": [
+              0.942,
+              1.094
+            ],
+            "n": 679442,
+            "rate_ci_pct": [
+              0.094,
+              0.109
+            ],
+            "rate_pct": 0.101
+          },
+          "on": {
+            "fraud": 24,
+            "lift": 0.706,
+            "lift_ci": [
+              0.475,
+              1.051
+            ],
+            "n": 34198,
+            "rate_ci_pct": [
+              0.047,
+              0.104
+            ],
+            "rate_pct": 0.07
+          },
+          "on_pct_of_defined": 4.792,
+          "rows": 722890
+        }
+      },
+      "first_merchant": {
+        "fit": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 7.99,
+          "off": {
+            "fraud": 50,
+            "lift": 0.914,
+            "lift_ci": [
+              0.694,
+              1.205
+            ],
+            "n": 55136,
+            "rate_ci_pct": [
+              0.069,
+              0.12
+            ],
+            "rate_pct": 0.091
+          },
+          "on": {
+            "fraud": 130,
+            "lift": 1.037,
+            "lift_ci": [
+              0.874,
+              1.232
+            ],
+            "n": 126364,
+            "rate_ci_pct": [
+              0.087,
+              0.122
+            ],
+            "rate_pct": 0.103
+          },
+          "on_pct_of_defined": 69.622,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.11,
+          "defined_pct": 18.749,
+          "off": {
+            "fraud": 65,
+            "lift": 1.18,
+            "lift_ci": [
+              0.926,
+              1.503
+            ],
+            "n": 50117,
+            "rate_ci_pct": [
+              0.102,
+              0.165
+            ],
+            "rate_pct": 0.13
+          },
+          "on": {
+            "fraud": 84,
+            "lift": 0.895,
+            "lift_ci": [
+              0.723,
+              1.107
+            ],
+            "n": 85416,
+            "rate_ci_pct": [
+              0.079,
+              0.122
+            ],
+            "rate_pct": 0.098
+          },
+          "on_pct_of_defined": 63.022,
+          "rows": 722890
+        }
+      },
+      "first_merchant_category": {
+        "fit": {
+          "base_rate_defined_pct": 0.099,
+          "defined_pct": 7.983,
+          "off": {
+            "fraud": 135,
+            "lift": 1.0,
+            "lift_ci": [
+              0.845,
+              1.184
+            ],
+            "n": 135950,
+            "rate_ci_pct": [
+              0.084,
+              0.118
+            ],
+            "rate_pct": 0.099
+          },
+          "on": {
+            "fraud": 45,
+            "lift": 0.999,
+            "lift_ci": [
+              0.746,
+              1.336
+            ],
+            "n": 45404,
+            "rate_ci_pct": [
+              0.074,
+              0.133
+            ],
+            "rate_pct": 0.099
+          },
+          "on_pct_of_defined": 25.036,
+          "rows": 2271707
+        },
+        "report": {
+          "base_rate_defined_pct": 0.109,
+          "defined_pct": 18.712,
+          "off": {
+            "fraud": 126,
+            "lift": 1.049,
+            "lift_ci": [
+              0.881,
+              1.248
+            ],
+            "n": 109799,
+            "rate_ci_pct": [
+              0.096,
+              0.137
+            ],
+            "rate_pct": 0.115
+          },
+          "on": {
+            "fraud": 22,
+            "lift": 0.79,
+            "lift_ci": [
+              0.521,
+              1.195
+            ],
+            "n": 25468,
+            "rate_ci_pct": [
+              0.057,
+              0.131
+            ],
+            "rate_pct": 0.086
+          },
+          "on_pct_of_defined": 18.828,
+          "rows": 722890
+        }
+      }
+    }
+  },
+  "split": {
+    "fit": [
+      "2023-06-01",
+      "2025-01-01"
+    ],
+    "note": "half-open intervals on transaction_date",
+    "report": [
+      "2025-01-01",
+      "2025-07-01"
+    ]
+  },
+  "window": "dev",
+  "window_end": "2025-07-01",
+  "window_start": "2023-06-01"
+}

@@ -1,12 +1,24 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Requirements
 
-What the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`) that the rest of the documentation cites, and this table doubles as the traceability matrix: every requirement is tied to the official document it comes from, the evaluation criterion it serves, the area that owns it, the evidence that will prove it, and its status.
+This page lists what the system must do to meet the hackathon brief. Each requirement has an ID (`REQ-####`). The rest of the documentation cites it. The table is also the traceability matrix. Each requirement links to:
 
-**Purpose:** prioritize the work, spot evaluation criteria that still lack evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/).
+- the official document that it comes from,
+- the evaluation criterion that it serves,
+- the area that owns it,
+- the evidence that proves it,
+- its status.
+
+**Purpose:** set the priority of the work, find the evaluation criteria that still have no evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/), [evidence index](../../evidence/README.md), [what is real](../architecture/what-is-real.md).
 
 ## Hackathon material
 
-Requirements come from four official documents, plus clarifications published in the help channel. Except for the data dictionary, kept as a column-level reference in [understand/reference/](../understand/reference/), they are not in the repository; each teammate keeps a copy, and we cite them by section or page.
+The requirements come from four official documents and from the clarifications in the help channel. The documents are not in the repository, except the data dictionary, kept as a column reference in [understand/reference/](../understand/reference/). Each teammate keeps a copy. We cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|
@@ -16,22 +28,22 @@ Requirements come from four official documents, plus clarifications published in
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | 1 |
 | Answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
-A requirement with no official source is marked **Own**: a team design decision, linked to where it is explained (10 requirements rely only on it; others combine it with an official source). The dataset documents shape the data requirements through [dataset](../understand/dataset.md) and are cited where a row depends on a declared property of the data.
+A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 10 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../understand/dataset.md). We cite them when a row depends on a declared property of the data.
 
 ## Classification
 
 | Column | Values |
 |---|---|
-| **Type** | **Frontend and backend** = what the customer and advisor experience and the service behind it · **Non-functional** = how: security, reliability, operations · **Data and ML** = pipeline, sources, learned component · **Analytics** = analysis and metrics · **Delivery** = what the evaluators receive. Mixed requirements sit in their main type; the *Area* column shows the others |
-| **Priority** | **P0** = mandatory: code, results and README ready by Fri 10/2; the presentation and the video are finished by Mon 10/5 · **P1** = scores points, from Thu 10/1 if P0 is on track · **P2** = only if time remains. Code freezes on Fri 10/2 at night |
+| **Type** | **Frontend and backend** = what the customer and the advisor see, and the service behind it · **Non-functional** = how: security, reliability, operations · **Data and ML** = pipeline, sources, learned component · **Analytics** = analysis and metrics · **Delivery** = what the evaluators receive. A mixed requirement is in its main type. The *Area* column shows the others |
+| **Priority** | **P0** = mandatory for the submission on Mon 10/5, 11:59 pm (UTC-5) · **P1** = scores points · **P2** = only if time remains |
 | **Flow** | "All", or the flow it depends on (transaction disputes, see [decision 003](../build/decisions/003-disputes-flow.md)) |
 | **Criterion** | Kickoff evaluation criterion: Rationale, AI Engineering, Data Engineering, Data Analytics, Machine Learning |
-| **Area** | Areas that work on it; the first one owns it and the rest collaborate: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
-| **Status** | Pending, In progress, Done. Updated when the task that covers it closes |
+| **Area** | The areas that work on it. The first one owns it, and the others help: [ai](../build/areas/ai.md) · [ml](../build/areas/ml.md) · [data](../build/areas/data.md) · [analysis](../build/areas/analysis.md) |
+| **Status** | Pending, In progress, Done. Update it when the task that covers it closes |
 | **Source** | Official document and section or page (see [hackathon material](#hackathon-material)), or **Own** |
 | **Depends on** | Requirements that must be met first (see [dependencies](#dependencies)) |
 
-Each type has a summary table here and its own file with one card per requirement with its description, source, dependencies and evidence. **Evidence** says what proves the requirement today (*Proven by*) and what is still needed (*Missing*).
+Each type has a summary table here, and its own file with one card per requirement: description, source, dependencies and evidence. **Evidence** tells what proves the requirement today (*Proven by*) and what is still necessary (*Missing*).
 
 ## Summary by priority
 
@@ -43,14 +55,14 @@ Each type has a summary table here and its own file with one card per requiremen
 
 ## Status by priority
 
-Counted from the *Status* column of the tables below; update it whenever a status changes.
+Counted from the *Status* column of the tables below. Update it when a status changes.
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 33 | 5 | 3 | 80% |
-| P1 | 12 | 10 | 1 | 1 | 83% |
+| P0 | 41 | 34 | 5 | 2 | 83% |
+| P1 | 12 | 11 | 0 | 1 | 92% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 44 | 6 | 7 | 77% |
+| **Total** | **57** | 46 | 5 | 6 | 81% |
 
 ## Status by type
 
@@ -58,14 +70,14 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 |---|---|---|---|---|---|
 | [Frontend and backend](frontend-backend.md) | 19 | 16 | 0 | 3 | 84% |
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
-| [Data and ML](data-ml.md) | 10 | 7 | 2 | 1 | 70% |
+| [Data and ML](data-ml.md) | 10 | 9 | 0 | 1 | 90% |
 | [Analytics](analytics.md) | 7 | 7 | 0 | 0 | 100% |
-| [Delivery](delivery.md) | 8 | 2 | 3 | 3 | 25% |
-| **Total** | **57** | 44 | 6 | 7 | 77% |
+| [Delivery](delivery.md) | 8 | 2 | 4 | 2 | 25% |
+| **Total** | **57** | 46 | 5 | 6 | 81% |
 
 ## Frontend and backend
 
-What the customer and the advisor experience, and the service behind it: conversation, verified answers, tools, policy and handoff. Cards: [frontend-backend.md](frontend-backend.md).
+What the customer and the advisor see, and the service behind it: conversation, verified answers, tools, policy and handoff. Cards: [frontend-backend.md](frontend-backend.md).
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -75,7 +87,7 @@ What the customer and the advisor experience, and the service behind it: convers
 | [REQ-0004](frontend-backend.md#req-0004) | Use tools safely, simulated actions only | P0 | ai | [REQ-0005](non-functional.md#req-0005), [REQ-0007](non-functional.md#req-0007), [REQ-0032](non-functional.md#req-0032) | Done |
 | [REQ-0006](frontend-backend.md#req-0006) | Decide answer, confirm or escalate | P0 | ai | [REQ-0007](non-functional.md#req-0007), [REQ-0033](frontend-backend.md#req-0033) | Done |
 | [REQ-0008](frontend-backend.md#req-0008) | Structured handoff package | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0029](non-functional.md#req-0029), [REQ-0047](non-functional.md#req-0047) | Done |
-| [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | In progress |
+| [REQ-0009](frontend-backend.md#req-0009) | Demo: normal case | P0 | ai | [REQ-0003](frontend-backend.md#req-0003), [REQ-0004](frontend-backend.md#req-0004), [REQ-0006](frontend-backend.md#req-0006), [REQ-0012](frontend-backend.md#req-0012) | Done |
 | [REQ-0010](frontend-backend.md#req-0010) | Demo: ambiguous or unsupported case | P0 | ai | [REQ-0002](frontend-backend.md#req-0002) | Done |
 | [REQ-0011](frontend-backend.md#req-0011) | Demo: case requiring a human | P0 | ai | [REQ-0008](frontend-backend.md#req-0008), [REQ-0040](frontend-backend.md#req-0040) | Done |
 | [REQ-0012](frontend-backend.md#req-0012) | Works in Spanish and Portuguese | P0 | ai, ml | [REQ-0001](frontend-backend.md#req-0001) | Done |
@@ -115,11 +127,11 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
-| [REQ-0015](data-ml.md#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](data-ml.md#req-0031) | In progress |
+| [REQ-0015](data-ml.md#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0016](data-ml.md#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](data-ml.md#req-0017), [REQ-0020](data-ml.md#req-0020) | Done |
 | [REQ-0017](data-ml.md#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](data-ml.md#req-0015) | Done |
 | [REQ-0018](data-ml.md#req-0018) | Real incremental processing | P0 | data | [REQ-0015](data-ml.md#req-0015) | Done |
-| [REQ-0019](data-ml.md#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](data-ml.md#req-0016) | In progress |
+| [REQ-0019](data-ml.md#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](data-ml.md#req-0016) | Done |
 | [REQ-0020](data-ml.md#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](data-ml.md#req-0017) | Done |
 | [REQ-0023](data-ml.md#req-0023) | Validated LLM judge, if used | P2 | ml | [REQ-0016](data-ml.md#req-0016) | Pending |
 | [REQ-0031](data-ml.md#req-0031) | Approved data, labeled by origin | P0 | data | — | Done |
@@ -128,7 +140,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 
 ## Analytics
 
-Analysis that justifies the flow and the metrics that prove the system works. Cards: [analytics.md](analytics.md).
+The analysis that justifies the flow, and the metrics that prove that the system works. Cards: [analytics.md](analytics.md).
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -152,30 +164,28 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 | [REQ-0035](delivery.md#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](delivery.md#req-0034) | Done |
 | [REQ-0036](delivery.md#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
 | [REQ-0037](delivery.md#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](delivery.md#req-0035) | Pending |
-| [REQ-0051](delivery.md#req-0051) | Everything in English | P0 | all | [REQ-0036](delivery.md#req-0036), [REQ-0037](delivery.md#req-0037) | Pending |
+| [REQ-0051](delivery.md#req-0051) | Everything in English | P0 | all | [REQ-0036](delivery.md#req-0036), [REQ-0037](delivery.md#req-0037) | In progress |
 | [REQ-0052](delivery.md#req-0052) | Path to production | P0 | ai, all | [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050) | In progress |
 
 ## Dependencies
 
-A requirement depends on another when it cannot be met, or its evidence cannot be produced, until the other one is met. Each requirement lists its direct dependencies in its table row and, with the reason, in its card. Update them when a requirement is added or its evidence changes.
+A requirement depends on another when we cannot meet it, or cannot produce its evidence, until the other one is met. Each requirement lists its direct dependencies in its table row, and with the reason in its card. Update them when you add a requirement or when its evidence changes.
 
-Chains that still block P0 work:
+Chains that still block P0 work (status on 2026-10-04):
 
-- **Data:** REQ-0015 (In progress: quality metrics) is the only open link; REQ-0017, REQ-0055, REQ-0020, REQ-0016, REQ-0022, REQ-0031 and REQ-0018 are done.
-- **Learned component:** decision 10 is closed by [016](../build/decisions/016-router-models.md) and the code serves router_v2 with a baseline fallback; the remote check of the public link (REQ-0035) → REQ-0019, REQ-0056. REQ-0016 is done.
-- **Deployment and video:** REQ-0035 (Done) → REQ-0037 → REQ-0051. REQ-0034 is done.
-- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 → REQ-0051.
-- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030. REQ-0012 and REQ-0053 are done.
+- **Data and learned component:** closed. REQ-0015, REQ-0016, REQ-0017, REQ-0019 and REQ-0020 are done.
+- **Deployment and video:** REQ-0035 (Done) → REQ-0037 (Pending) → REQ-0051 (In progress). The final redeploy comes before the video.
+- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 (Pending) → REQ-0051.
+- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (In progress). The limits must go on the slides, and the README needs a roadmap section.
+- **Path to production:** REQ-0052 (In progress) needs alerts by country (REQ-0050).
 
-Statuses in these chains are written by hand: update them when a requirement changes status.
+We write the statuses in these chains by hand. Update them when a requirement changes status.
 
 ## Future work (not requirements)
 
-- Expansion to other Latin American countries. The design makes it easier with REQ-0049 (country as configuration); it would require data, rules, currency, and tests for each new country.
-- Streaming: only if a flow needs seconds-level freshness.
+- More Latin American countries. REQ-0049 (country as configuration) makes this easier. Each new country needs data, rules, a currency and tests.
+- Streaming: only if a flow needs freshness in seconds.
 
 ## Open questions
 
-None open: reference labels are team-written simulation cases plus the frozen
-data label universe (`evidence/evaluation/2024Q4-v1/summary.json`); human-required
-cases are the `requires_handoff` ones in `sentinel-ai-core/eval/cases/`.
+None. The reference labels are model-written simulation cases and the frozen label universe of the data (`evidence/evaluation/2024Q4-v1/summary.json`). The human-required cases are the `requires_handoff` cases in `sentinel-ai-core/eval/cases/`.
