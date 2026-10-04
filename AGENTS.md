@@ -35,14 +35,14 @@ bodies and PR descriptions. The rules that matter most:
 - Keep the headings of a page you rewrite. Other pages link to their anchors.
 
 **Mark each file written or rewritten in ASD-STE100** with this frontmatter
-at the top of the file, before the title. Set `ste_reviewed` to the date of
-the last full ASD-STE100 pass:
+at the top of the file, before the title. Set `last_reviewed` to the date of
+the last full review of the file in ASD-STE100:
 
 ```yaml
 ---
 language: en
 style: ASD-STE100
-ste_reviewed: 2026-10-04
+last_reviewed: 2026-10-04
 ---
 ```
 

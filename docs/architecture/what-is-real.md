@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-ste_reviewed: 2026-10-04
+last_reviewed: 2026-10-04
 ---
 
 # What is real and what is not

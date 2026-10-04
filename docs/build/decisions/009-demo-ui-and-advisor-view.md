@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-ste_reviewed: 2026-10-04
+last_reviewed: 2026-10-04
 ---
 
 # 009 · Demo UI with role landing and advisor view, served by ai-core
