@@ -25,6 +25,7 @@ Two smaller defects: "algo raro ayer" ("something odd yesterday") gives no clear
 - **Already disputed:** the warning comes before the box, and the box does not open.
 - **No match for a date:** the reply names the date that it searched ("no charges on 16 Jun").
 - **Length limit:** verify the 2000-character limit in the page and the server, and add a test.
+- **Rate limit reply:** the 429 body carries the `trace_id`, so the error bubble shows the reference.
 
 ## Capabilities
 
