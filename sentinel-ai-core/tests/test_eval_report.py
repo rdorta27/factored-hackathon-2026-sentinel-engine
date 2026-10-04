@@ -2,7 +2,8 @@
 
 import pytest
 
-from eval.report import build_summary, freeze_run, validate_has_n
+from eval.metrics import system_metrics
+from eval.report import build_summary, freeze_run, render_resolution, validate_has_n
 
 
 def _summary(**overrides):  # type: ignore[no-untyped-def]
@@ -39,3 +40,43 @@ def test_second_freeze_refuses_overwrite(tmp_path) -> None:  # type: ignore[no-u
         freeze_run(tmp_path, "run-v1", summary, "# report\n")
     second = freeze_run(tmp_path, "run-v2", summary, "# report\n")
     assert second.is_dir()
+
+
+def test_resolution_report_carries_the_breakdown() -> None:
+    def _turn(turn_id: str, variant: str, country: str, outcome: str):  # type: ignore[no-untyped-def]
+        return {
+            "id": turn_id, "locale": "es-419", "country": country, "variant": variant,
+            "situation": "s1", "outcome": outcome, "requires_handoff": False,
+            "must_not_pass": False, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.001,
+        }
+
+    baseline_turns = [_turn("mx-1", "es-MX", "MX", "case_confirmation"),
+                      _turn("mx-2", "es-MX", "MX", "clarification")]
+    router_turns = [_turn("mx-1", "es-MX", "MX", "case_confirmation"),
+                    _turn("mx-2", "es-MX", "MX", "case_confirmation")]
+    summary = {
+        "run_id": "test-resolution",
+        "kind": "resolution",
+        "eval_version": "test",
+        "n": 2,
+        "situations": {"n": 1, "ids": ["s1"]},
+        "case_mix": {"n": 2},
+        "system": {"baseline": system_metrics(baseline_turns),
+                   "router_v2": system_metrics(router_turns)},
+        "paired_resolution": {"n": 2, "fixed": ["mx-2"], "broken": [],
+                              "net": 1, "net_share": 0.5,
+                              "interval_95": [0.0, 1.0], "above_zero": False},
+        "spend": {"n": 0, "cap_usd": 0.45, "spent_usd": 0.0, "capped": False},
+        "prices": "test",
+        "measured_commit": "abc123",
+        "notes": [],
+    }
+    validate_has_n(summary)
+    report = render_resolution(summary)
+    assert "## Breakdown by language variant" in report
+    assert "## Breakdown by account country" in report
+    assert "es-MX" in report and "MX" in report
+    # Every number in the breakdown is read from the summary.
+    assert "| es-MX | router_v2 | 2 of 2 |" in report
+    assert "| es-MX | baseline | 1 of 2 |" in report
+    assert "not broken down by customer segment" in report

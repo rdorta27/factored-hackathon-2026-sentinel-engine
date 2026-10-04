@@ -36,6 +36,8 @@ Numeric targets are set together with the held-out set. Until then, only the zer
 
 ### Cost and ROI example (projected savings, not measured)
 
+The real projection — a break-even over measured inputs and an assumed advisor hour, never a measured saving — is in [ROI](roi.md). The example below stays illustrative.
+
 > **ILLUSTRATIVE EXAMPLE. Do not use for decisions or quote in the presentation.** The values (USD 0.05 and USD 2) are invented to explain the calculation; the real ones come from our measurements and documented assumptions.
 
 Illustrative assumptions: AI USD 0.05 per attempted case, 40% safe resolution, human USD 2 per case.

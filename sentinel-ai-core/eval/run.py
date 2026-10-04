@@ -413,10 +413,19 @@ def _strip(node):  # type: ignore[no-untyped-def]
 
 def _comparable(summary: dict) -> dict:
     """Everything a replay must reproduce: spend, wall-clock latency and the commit
-    are left out, since a replay makes no live call and records where it ran."""
+    are left out, since a replay makes no live call and records where it ran.
+    The per-variant/per-country breakdown is a view over the same turns (added
+    after 2024Q4-resolution-v1, covered by unit tests), so it is left out too
+    and frozen runs without it still verify."""
     body = json.loads(json.dumps(summary, sort_keys=True))
     body.pop("spend", None)
     body.pop("measured_commit", None)
+    system = body.get("system")
+    if isinstance(system, dict):
+        for block in system.values():
+            if isinstance(block, dict):
+                block.pop("by_variant", None)
+                block.pop("by_country", None)
     return _strip(body)
 
 
