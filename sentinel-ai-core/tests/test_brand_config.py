@@ -60,3 +60,14 @@ def test_dark_text_variant_reads_on_the_dark_card(monkeypatch: pytest.MonkeyPatc
 def test_name_is_trimmed_and_capped(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("SENTINEL_BRAND_NAME", "  " + "B" * 80 + "  ")
     assert len(load_brand().name) == 40
+
+
+def test_tints_follow_the_accent_and_read_at_aa(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.branding import tints
+
+    for accent in ("#0b6e4f", "#7a1fa2", "#b3261e", DEFAULT_ACCENT):
+        for theme, tone in tints(accent).items():
+            assert contrast(tone["text"], tone["fill"]) >= 4.5, (accent, theme)
+    api = _client(monkeypatch, None, "#0b6e4f")
+    css = api.get("/ui/brand.css").text
+    assert "--pill-info-bg" in css and "--callout-bg" in css

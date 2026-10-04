@@ -748,16 +748,31 @@ function traceBlock(trace) {
   return card;
 }
 
+/* The conversation of the ticket as translated lines: what the customer did and
+   what the system answered. The server sends codes, never the customer's words. */
+function turnsBlock(turns) {
+  const box = el("div", "");
+  box.append(el("p", "", t("q_summary")));
+  const list = el("ol", "chat-sub");
+  turns.forEach((turn) => {
+    const said = codeLabel("handoffSaid", turn.customer);
+    const answered = codeLabel("turnSystem", turn.system);
+    list.append(el("li", "", [said, answered].filter(Boolean).join(" → ")));
+  });
+  box.append(list);
+  return box;
+}
+
 function packageBlock(pkg) {
   const card = el("div", "msg msg-audit");
   card.append(el("h4", "chat-title", t("q_package")));
-  card.append(field("q_summary", pkg.summary));
+  card.append(turnsBlock(pkg.conversation || []));
   const facts = pkg.verified_facts;
   if (facts) {
     card.append(
       field(
         "q_transaction",
-        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`
+        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)})`
       )
     );
   }
@@ -768,7 +783,8 @@ function packageBlock(pkg) {
   });
   card.append(el("p", "", t("q_actions")));
   card.append(actions);
-  card.append(field("q_openQuestions", pkg.open_questions.join(", ")));
+  const pending = pkg.open_questions.map((code) => codeLabel("handoffOpen", code)).filter(Boolean);
+  card.append(field("q_openQuestions", pending.join(", ")));
   return card;
 }
 
@@ -785,8 +801,9 @@ async function openTicket(caseId) {
   back.setAttribute("data-testid", "queue-back");
   back.addEventListener("click", loadQueue);
   detail.append(back);
-  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
-  detail.append(field("q_customer", `${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
+  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${codeLabel("ticketStatus", ticket.status) || ticket.status}`));
+  // No customer identifier on the screen: the advisor gets facts, not an id.
+  detail.append(field("q_country", `${ticket.country} · ${t("q_language")}: ${ticket.package.language}`));
   detail.append(field("q_reason", t(ticket.reason_key)));
   detail.append(packageBlock(ticket.package));
   detail.append(traceBlock(trace));

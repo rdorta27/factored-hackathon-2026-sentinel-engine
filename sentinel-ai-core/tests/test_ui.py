@@ -290,3 +290,18 @@ def test_flags_close_the_header_so_a_longer_label_does_not_move_them() -> None:
     assert INDEX.index('id="agent"') < INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
     assert 'rel="icon"' in INDEX
     assert (STATIC / "favicon.svg").is_file()
+
+
+def test_advisor_detail_shows_no_customer_id_and_translates_status_and_turns() -> None:
+    block = APP_JS[APP_JS.index("async function openTicket") : APP_JS.index('document.getElementById("login-form")')]
+    assert "ticket.customer_id" not in block
+    assert 'codeLabel("ticketStatus"' in block
+    assert "turnsBlock" in APP_JS and 'codeLabel("turnSystem"' in APP_JS
+    import json
+
+    from app.routers import demo_chat  # noqa: F401 - the reply kinds below mirror ChatReply
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for kind in ("text", "clarification", "confirm_box", "case_confirmation", "explanation", "handoff", "error"):
+            assert f"turnSystem.{kind}" in strings, (name, kind)
