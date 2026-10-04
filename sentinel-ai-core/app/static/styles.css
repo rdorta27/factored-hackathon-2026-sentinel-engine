@@ -475,11 +475,11 @@ main {
 @media (max-width: 700px) {
   #locale-group {
     flex-wrap: nowrap;
-    overflow-x: auto;
     width: 100%;
+    justify-content: space-between;
   }
   #locale-group .theme-toggle {
-    flex: none;
+    flex: 1;
   }
   .topbar-controls {
     width: 100%;
@@ -510,12 +510,6 @@ main {
 
 /* --- Language selector: buttons on a wide screen, one select on a phone --- */
 
-.locale-select {
-  display: none;
-  min-height: 44px;
-  max-width: 100%;
-}
-
 .case-card {
   display: flex;
   flex-direction: column;
@@ -533,14 +527,38 @@ main {
 }
 
 @media (max-width: 700px) {
-  .locale-select {
-    display: block;
-    flex: 1;
-  }
-  #locale-group {
+  .loc-name {
     display: none;
   }
-  .topbar-controls {
-    flex-wrap: wrap;
+  .topbar-controls .locale-current {
+    display: block;
+    flex: 1 0 100%;
+    margin: 0;
   }
+  .locale-button {
+    min-width: 44px;
+    padding: 6px 8px;
+  }
+}
+
+/* Language buttons: a flag and a name; the chosen one is plain to see. */
+.locale-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.flag {
+  width: 24px;
+  height: 16px;
+  flex: none;
+  border-radius: 2px;
+}
+
+.locale-current {
+  display: none;
+}
+
+.step-dot {
+  position: relative;
 }

@@ -57,8 +57,9 @@ function setLocale(locale) {
   document.querySelectorAll("#locale-group [data-locale]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.getAttribute("data-locale") === locale));
   });
-  const select = document.getElementById("locale-select");
-  if (select) select.value = locale;
+  const active = document.querySelector(`#locale-group [data-locale="${locale}"]`);
+  const current = document.getElementById("locale-current");
+  if (active && current) current.textContent = active.getAttribute("aria-label");
 }
 
 /* The selector's own value, exactly as the API accepts it. */
@@ -265,7 +266,7 @@ async function postChat(payload) {
       renderError(body, response.status);
       return;
     }
-    renderReply(body);
+    await renderReply(body);
     if (CASE_CHANGING.has(body.kind)) await refreshCharges();
   } finally {
     typing.remove();
@@ -297,35 +298,65 @@ function renderCandidates(box, candidates) {
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
 const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
-const STEP_PAUSE_MS = 400;
+const STEP_PAUSE_MS = 650;
 let stepTimers = [];
+let stepResolve = null;
 
-/* The reply carries the finished record of the turn. The page shows it one step
-   at a time so a person can follow it. The pauses are a way to show the record,
-   not a measure of the time each step took. */
+function stepItem(key, index, state) {
+  const hand = HAND_STEPS.has(key) ? " step-hand" : "";
+  const item = el("li", `step-item step-${state}${hand}`);
+  item.append(el("span", "step-dot", state === "done" ? String(index + 1) : ""));
+  const text = el("div", "step-text");
+  text.append(el("span", "step-title", t(key)));
+  const hint = `stepHint.${key.replace(/^step\./, "")}`;
+  if (strings[hint]) text.append(el("span", "chat-sub step-hint", t(hint)));
+  item.append(text);
+  return item;
+}
+
+/* The reply carries the finished record of the turn. The page replays it one step
+   at a time: every step starts waiting, the current one shows a spinner, and each
+   turns to done after a pause. The pause is staging to follow the record, not a
+   measure of the time each step took. The promise settles when the last step is done. */
 function renderSteps(body, animate = true) {
   const list = document.getElementById("steps-side");
-  if (!body.steps || !body.steps.length) return;
+  if (!body.steps || !body.steps.length) return Promise.resolve();
   list.setAttribute("data-testid", "steps-panel");
   stepTimers.forEach(clearTimeout);
   stepTimers = [];
+  // A turn that was still running gives way to this one.
+  if (stepResolve) stepResolve();
+  stepResolve = null;
   list.textContent = "";
   const staged = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  list.setAttribute("aria-busy", String(staged));
-  body.steps.forEach((key, index) => {
-    const draw = () => {
-      const item = el("li", HAND_STEPS.has(key) ? "step-item step-hand step-in" : "step-item step-in");
-      item.append(el("span", "step-dot", String(index + 1)));
-      const text = el("div", "step-text");
-      text.append(el("span", "step-title", t(key)));
-      const hint = `stepHint.${key.replace(/^step\./, "")}`;
-      if (strings[hint]) text.append(el("span", "chat-sub", t(hint)));
-      item.append(text);
-      list.append(item);
-      if (index === body.steps.length - 1) list.setAttribute("aria-busy", "false");
-    };
-    if (staged && index > 0) stepTimers.push(setTimeout(draw, index * STEP_PAUSE_MS));
-    else draw();
+  if (!staged) {
+    body.steps.forEach((key, index) => list.append(stepItem(key, index, "done")));
+    list.setAttribute("aria-busy", "false");
+    return Promise.resolve();
+  }
+  list.setAttribute("aria-busy", "true");
+  const items = body.steps.map((key, index) => {
+    const item = stepItem(key, index, index === 0 ? "active" : "waiting");
+    list.append(item);
+    return item;
+  });
+  return new Promise((resolve) => {
+    stepResolve = resolve;
+    body.steps.forEach((key, index) => {
+      stepTimers.push(
+        setTimeout(() => {
+          items[index].replaceWith((items[index] = stepItem(key, index, "done")));
+          if (index + 1 < items.length) {
+            const next = stepItem(body.steps[index + 1], index + 1, "active");
+            items[index + 1].replaceWith(next);
+            items[index + 1] = next;
+          } else {
+            list.setAttribute("aria-busy", "false");
+            resolve();
+          }
+        }, (index + 1) * STEP_PAUSE_MS)
+      );
+    });
   });
 }
 
@@ -400,9 +431,11 @@ function whyCard(body) {
   return card;
 }
 
-function renderReply(body) {
-  const entry = logEntry({ type: "reply", body, closed: false });
-  renderSteps(entry.body, true);
+/* The steps run first and the answer follows, so the customer sees the work
+   before the result. */
+async function renderReply(body) {
+  await renderSteps(body, true);
+  logEntry({ type: "reply", body, closed: false });
 }
 
 function drawReply(body, entry) {
@@ -807,10 +840,6 @@ document.getElementById("logout").addEventListener("click", async () => {
   await fetch("/api/v1/auth/logout", { method: "POST" });
   clearThread();
   show("view-login");
-});
-
-document.getElementById("locale-select").addEventListener("change", (event) => {
-  loadLocale(event.target.value);
 });
 
 document.getElementById("locale-group").addEventListener("click", (event) => {

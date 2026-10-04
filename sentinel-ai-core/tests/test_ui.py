@@ -266,12 +266,19 @@ def test_thread_is_a_log_that_is_drawn_again_when_the_language_changes() -> None
 
 def test_steps_are_shown_one_at_a_time_and_say_they_are_a_record() -> None:
     assert "STEP_PAUSE_MS" in APP_JS and "prefers-reduced-motion" in APP_JS
-    assert "not a measure" in APP_JS, "the code must say the pauses are staging"
+    assert "not a\n   measure" in APP_JS or "not a measure" in APP_JS, "the code must say the pauses are staging"
 
 
 def test_claims_panel_welcome_help_and_phone_language_select() -> None:
-    for marker in ('id="cases"', 'data-i18n="casesTitle"', 'data-i18n="chatHelp"', 'id="locale-select"', 'id="demo-hint"'):
+    for marker in ('id="cases"', 'data-i18n="casesTitle"', 'data-i18n="chatHelp"', 'id="demo-hint"', 'id="locale-current"'):
         assert marker in INDEX, marker
     assert "renderCases" in APP_JS and 'type: "welcome"' in APP_JS
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
-    assert "#locale-group {\n    display: none;" in styles
+    assert ".loc-name {\n    display: none;" in styles, "the flags stand alone on a phone"
+    assert INDEX.count('class="flag"') == 5
+
+
+def test_static_files_are_revalidated_so_versions_never_mix() -> None:
+    api = TestClient(create_app())
+    for path in ("/ui/app.js", "/ui/styles.css", "/branding/chat.css"):
+        assert api.get(path).headers["cache-control"] == "no-cache", path

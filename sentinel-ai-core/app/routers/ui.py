@@ -54,9 +54,22 @@ def get_brand_css(request: Request) -> Response:
     return Response(brand_css(request.app.state.brand), media_type="text/css")
 
 
+class RevalidatedFiles(StaticFiles):
+    """Static files that the browser must revalidate on every load.
+
+    Without this a browser keeps an old app.js or styles.css next to a new
+    index.html, and the page mixes two versions. The ETag keeps it cheap.
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 def mount_ui(app) -> None:
     app.state.brand = load_brand()
     app.include_router(router)
     if BRANDING_DIR.is_dir():
-        app.mount("/branding", StaticFiles(directory=str(BRANDING_DIR)), name="branding")
-    app.mount("/ui", StaticFiles(directory=str(STATIC_DIR), html=True), name="ui")
+        app.mount("/branding", RevalidatedFiles(directory=str(BRANDING_DIR)), name="branding")
+    app.mount("/ui", RevalidatedFiles(directory=str(STATIC_DIR), html=True), name="ui")
