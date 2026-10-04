@@ -26,8 +26,6 @@ Areas: [ml](../../../docs/build/areas/ml.md), [ai](../../../docs/build/areas/ai.
 - [x] 3.3 Probe v3 with the real model through `eval/probe_v3.py`: development cases plus the Felix phrases 4 and 8. Report kind, subtype and slots against expected, raw and validated draft, rejection reason, language and cost. Evidence: `eval/probe_v3.py` and its markdown report.
 - [x] 3.4 Human review G2 with `chat-start`: Ruben reads the probe report and adjusts the prompt. Evidence: notes in `team/chat-manual-tests.md`. Approved 2026-10-04 with no prompt changes; task 4.x waits for the code freeze.
 
-## 4. Seal and measure (after the code freeze)
+## 4. Seal and measure (moved to `eval-v8`)
 
-- [ ] 4.1 The isolated author writes the multi-turn block; review, back-translate and seal with a new hash; the v7 entry stays unchanged. Evidence: `eval/cases/seal.json` and a test.
-- [ ] 4.2 Measure once as `2024Q4-eval-v8`: baseline, trained baseline, v2, v2 with cut-offs, v3, v3 with cut-offs. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`.
-- [ ] 4.3 Judge by the amendment, serve the best candidate that passes, update the metrics report, README, REQ-0016 and the evidence index. Evidence: those files and `app/ai/serving.py` tests.
+Tasks 4.1 (multi-turn block), 4.2 (`2024Q4-eval-v8` measurement) and 4.3 (judge and serve) moved to the `eval-v8` plan on 2026-10-04. This change builds the candidate; `eval-v8` judges it.
