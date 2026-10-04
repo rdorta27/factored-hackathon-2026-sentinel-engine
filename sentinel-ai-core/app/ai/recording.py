@@ -16,7 +16,13 @@ from pathlib import Path
 from time import perf_counter
 
 from app.ai.fixtures import _underlying, input_hash
-from app.ai.transport import LLMResponse, ModelTransport, ModelUnavailable
+from app.ai.transport import (
+    LLMResponse,
+    ModelTransport,
+    ModelUnavailable,
+    logprobs_from_json,
+    logprobs_to_json,
+)
 
 PREFIX = "rec-"
 
@@ -67,6 +73,11 @@ def write_recording(
         "cost_usd": response.cost_usd,
         "latency_ms": round(float(latency_ms), 1),
     }
+    # Keep the label token's alternatives so a calibration run can derive the
+    # confidence offline, from the recording, without a second live call.
+    logprobs = logprobs_to_json(response.logprobs)
+    if logprobs is not None:
+        body["logprobs"] = logprobs
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(body, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
@@ -101,6 +112,7 @@ class RecordedTransport:
             tokens_in=int(body.get("tokens_in", 0) or 0),
             tokens_out=int(body.get("tokens_out", 0) or 0),
             cost_usd=float(body.get("cost_usd", 0.0) or 0.0),
+            logprobs=logprobs_from_json(body.get("logprobs")),
         )
 
     def complete(
@@ -178,7 +190,10 @@ class RecordingTransport(RecordedTransport):
         self.last_latency_ms = (perf_counter() - started) * 1000
         self.live_calls += 1
         self.spent_usd += response.cost_usd
-        assert_no_secret(response.content + json.dumps(messages, ensure_ascii=False), self._api_key)
+        recorded_blob = response.content + json.dumps(messages, ensure_ascii=False)
+        if response.logprobs is not None:
+            recorded_blob += json.dumps(logprobs_to_json(response.logprobs), ensure_ascii=False)
+        assert_no_secret(recorded_blob, self._api_key)
         write_recording(
             path,
             model=model,

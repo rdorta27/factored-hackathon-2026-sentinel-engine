@@ -98,7 +98,7 @@ def _write_bronze_delta(
     con = duckdb.connect()
     arrow_table: pa.Table = con.execute(
         f"SELECT * FROM read_csv_auto('{csv_path}', header = true)"
-    ).to_arrow_table()
+    ).fetch_arrow_table()
     con.close()
     write_deltalake(str(bronze_dir.resolve()), arrow_table, mode="append")
     return bronze_dir

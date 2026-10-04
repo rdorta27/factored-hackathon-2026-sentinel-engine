@@ -59,6 +59,12 @@ function setLocale(locale) {
   });
 }
 
+/* The selector's own value, exactly as the API accepts it. */
+function selectorLocale() {
+  const selected = document.getElementById("locale");
+  return selected && selected.value ? selected.value : "es-419";
+}
+
 /* Fill a template's {placeholders} without touching the rest of the text. */
 function fill(template, values) {
   return Object.entries(values).reduce(
@@ -135,6 +141,16 @@ function humanStatement(candidate) {
   return `${t("referToCharge")} ${candidate.merchant} - ${formatAmount(candidate.amount, candidate.currency)} (${formatDate(candidate.date)})`;
 }
 
+/* The receipt states the charge in the bank's voice, so the card never repeats
+   what the customer typed. Same amount and date formatting as everywhere else. */
+function receiptCharge(tx) {
+  return fill(t("receiptCharge"), {
+    merchant: tx.merchant,
+    amount: formatAmount(tx.amount, tx.currency),
+    date: formatDate(tx.date),
+  });
+}
+
 function addBubble(text) {
   document.getElementById("thread").append(el("div", "msg msg-user", text));
 }
@@ -152,7 +168,9 @@ async function postChat(payload) {
     const response = await api("/api/v1/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      // The selector's language rides with every turn, so the answer comes back
+      // in the language the customer chose, whatever the message looks like.
+      body: JSON.stringify({ ...payload, language: selectorLocale() }),
     });
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
@@ -229,7 +247,9 @@ function renderReply(body) {
     card.append(el("h3", "chat-title", t("receiptOutcome")));
     card.append(el("strong", "", body.case_id));
     const tx = body.transaction;
-    card.append(el("p", "", humanStatement(tx)));
+    // The bank's own voice, not the customer's sentence echoed back. The
+    // customer's bubble above keeps its wording; only this line changes.
+    card.append(el("p", "", receiptCharge(tx)));
     card.append(el("p", "", t(body.messages.noFunds)));
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);

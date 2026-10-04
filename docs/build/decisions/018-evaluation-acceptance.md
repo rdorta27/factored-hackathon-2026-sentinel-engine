@@ -79,5 +79,31 @@ Limits to state with these numbers (REQ-0013):
 - The run's own note says "team-written simulation"; the cases are model-written simulation, as stated above. The frozen run is not edited.
 - System outcome metrics replay the loop offline with mock Gold, so cost per resolution is "not defined" (no case reaches a confirmed dispute in a single turn). In the frozen run, system latency for the router versions includes the live model calls (`system.<version>.latency_ms`, p50 about 0.95 s), despite the run note saying replay time. An offline replay reproduces every field except spend and latency (`python3 -m eval.run verify 2024Q4-eval-v7`).
 
-*Correction 2026-10-02:* the last sentence does not hold. `verify` reports the run as different: the component block replays identically, but the system block does not (for example containment 1.0 instead of 0.60 for v2, and no cost). The cause is not yet found; it is task 1.1 of the `resolution-eval` change. The rules and the verdicts above rest on the component block and are unaffected. Detail in the [metrics report](../metrics-report.md#9-reproduction).
+*Correction 2026-10-02:* the last sentence does not hold. `verify` reports the run as different: the component block replays identically, but the system block does not (for example containment 1.0 instead of 0.60 for v2, and no cost). The cause is found (task 1.1 of the `resolution-eval` change): the comparison did not exclude wall-clock `latency_ms`, and the system block replays the live loop, which changed after the freeze (`a7e9b76`, `cff4d99`, `71f6446`) while the recordings did not. The rules and the verdicts above rest on the component block and are unaffected. Detail in the [metrics report](../metrics-report.md#9-reproduction).
+
+## Amendment · validation split and cut-off choice rule (added 2026-10-03)
+
+**Status:** Proposed (accepted only by a `2024Q4-calibration-*` run committed after this text)
+**Change:** [`router-confidence`](../../../openspec/changes/router-confidence/design.md)
+
+The router now reports a confidence per label ([016](016-router-models.md#log-probability-spike-added-2026-10-03)). Two cut-offs map that confidence to act, clarify or abstain. They are chosen from data, not from the prompt, and the choice must not read the sealed set. This amendment fixes the split and the choice rule before any fitting; the commit order is the proof.
+
+**Validation split (fixed before it was applied).** Carved from development by base, so no base straddles two splits:
+
+- The unit is the base: its `base_id` where present, otherwise its case id; every variant of a base moves together.
+- The bases that carry a prompt-v2 example stay in development, so the examples keep the provenance declared in [016](016-router-models.md) and `build_examples` keeps rejecting a validation or held-out example.
+- Among the remaining development bases, and per label, the bases with the lowest SHA-256 (UTF-8) of their id take a fifth (rounded, at least one per label). Stratifying by label keeps all four intents in validation; a single hash over all bases would leave `person` out.
+- With 74 development bases and 8 example bases, 66 remain: charge 34, missing 9, out_of_scope 13, person 10; the fifth is 7 + 2 + 3 + 2 = 14 bases (26 cases). They are marked `"split": "validation"` in `sentinel-ai-core/eval/cases/dev.jsonl` and `dev_variants.jsonl`.
+- `check_splits` rejects a base in more than one of development, validation and held-out.
+- **Limit:** development was already read by model selection and the prompt examples, so validation is descriptive, not a clean holdout. The sealed held-out set of the `eval-v8` measurement stays the only clean measurement.
+
+**Choice rule (fixed before any fitting).** The calibration reads development and validation only, never a held-out case. Both cut-offs are on the confidence of the label:
+
+- `t_act`: the lowest cut-off whose validation accuracy over the labels it would act on (confidence at or above the cut-off) is at least the v2 held-out accuracy of `eval-v7` (0.9821) minus the 018 tolerance of 5 points, that is at least 0.9321. If no cut-off reaches it, `t_act` is 1.0 and only a fully certain label is acted on.
+- `t_abstain`: the highest cut-off below which the accuracy of the labels it would abstain on is under one half (0.5). If none is under one half, `t_abstain` is 0.0.
+- Both are rounded to two decimals and stored in the router configuration with the calibration run id. They belong to the model, not to a country, so they never go into `config/policy/*.yaml`.
+- A label at or above `t_act` is used; between `t_abstain` and `t_act` the turn asks a clarifying question; below `t_abstain` it asks for clarification and, once the existing clarification limit is reached, offers an advisor. A cut-off never overrides a policy refusal, a handoff rule or the confirm box.
+- The calibration run reports, per split, the label accuracy by confidence band, the share of turns that would act, clarify or abstain, and the number of cases; it is frozen like every other run.
+
+The acceptance test remains the sealed `eval-v8` measurement, not the validation split.
 

@@ -87,8 +87,12 @@ REQ-0017 (P0, In progress).
 
 The harness SHALL replay each case against `POST /api/v1/chat` with a test session,
 inject the declared faults (Gold unavailable, expired session, tool failure), and
-recover the turn's records by `trace_id`. Traces to REQ-0025 (P1, In progress)
-and REQ-0021 (P0, Done).
+recover the turn's records by `trace_id`. When a case declares the charge to select
+and asks for confirmation, the harness SHALL send the selection and then the
+confirmation as separate turns, and SHALL stop at the first reply that is not a
+`confirm_box`. A case SHALL count as resolved only when the last reply is a
+`case_confirmation`. The harness SHALL NOT confirm a case that does not ask for it.
+Traces to REQ-0025 (P1, Done), REQ-0021 (P0, Done) and REQ-0055 (P0, In progress).
 
 #### Scenario: A case is replayed end to end
 
@@ -104,6 +108,21 @@ and REQ-0021 (P0, Done).
 
 - **WHEN** a turn finishes
 - **THEN** the harness reads every record of that turn by its `trace_id`
+
+#### Scenario: A confirmed case ends with a case number
+
+- **WHEN** a case selects an eligible charge and asks for confirmation
+- **THEN** the harness sends the confirmation turn and the case ends as `case_confirmation` with a verified case number
+
+#### Scenario: A refused charge is not confirmed
+
+- **WHEN** the selection of a charge ends in a refusal or a handoff
+- **THEN** the harness sends no confirmation turn and the case ends with that outcome
+
+#### Scenario: Single-turn cases are unchanged
+
+- **WHEN** a case declares no charge to select
+- **THEN** the harness sends one turn as before
 
 ### Requirement: Mandatory outcome metrics
 

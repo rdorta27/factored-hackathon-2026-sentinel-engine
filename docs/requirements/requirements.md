@@ -47,21 +47,21 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 27 | 11 | 3 | 66% |
-| P1 | 12 | 7 | 3 | 2 | 58% |
+| P0 | 41 | 33 | 5 | 3 | 80% |
+| P1 | 12 | 10 | 1 | 1 | 83% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 35 | 14 | 8 | 61% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Status by type
 
 | Type | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| [Frontend and backend](frontend-backend.md) | 19 | 15 | 1 | 3 | 79% |
+| [Frontend and backend](frontend-backend.md) | 19 | 16 | 0 | 3 | 84% |
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
-| [Data and ML](data-ml.md) | 10 | 4 | 5 | 1 | 40% |
-| [Analytics](analytics.md) | 7 | 2 | 4 | 1 | 29% |
+| [Data and ML](data-ml.md) | 10 | 7 | 2 | 1 | 70% |
+| [Analytics](analytics.md) | 7 | 7 | 0 | 0 | 100% |
 | [Delivery](delivery.md) | 8 | 2 | 3 | 3 | 25% |
-| **Total** | **57** | 35 | 14 | 8 | 61% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Frontend and backend
 
@@ -117,7 +117,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 |---|---|---|---|---|---|
 | [REQ-0015](data-ml.md#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](data-ml.md#req-0031) | In progress |
 | [REQ-0016](data-ml.md#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](data-ml.md#req-0017), [REQ-0020](data-ml.md#req-0020) | Done |
-| [REQ-0017](data-ml.md#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](data-ml.md#req-0015) | In progress |
+| [REQ-0017](data-ml.md#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](data-ml.md#req-0015) | Done |
 | [REQ-0018](data-ml.md#req-0018) | Real incremental processing | P0 | data | [REQ-0015](data-ml.md#req-0015) | Done |
 | [REQ-0019](data-ml.md#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](data-ml.md#req-0016) | In progress |
 | [REQ-0020](data-ml.md#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](data-ml.md#req-0017) | Done |
@@ -134,11 +134,11 @@ Analysis that justifies the flow and the metrics that prove the system works. Ca
 |---|---|---|---|---|---|
 | [REQ-0014](analytics.md#req-0014) | Data-backed problem | P0 | analysis | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0022](analytics.md#req-0022) | Metrics with n, mix and variability | P0 | analysis | [REQ-0020](data-ml.md#req-0020), [REQ-0055](analytics.md#req-0055) | Done |
-| [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | In progress |
-| [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | Pending |
+| [REQ-0024](analytics.md#req-0024) | Breakdown by language, country and segment | P1 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](analytics.md#req-0022) | Done |
+| [REQ-0050](analytics.md#req-0050) | Monitoring by country | P1 | analysis | [REQ-0024](analytics.md#req-0024), [REQ-0025](non-functional.md#req-0025) | Done |
 | [REQ-0053](analytics.md#req-0053) | Sizing and its limits | P0 | analysis | [REQ-0014](analytics.md#req-0014) | Done |
-| [REQ-0055](analytics.md#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | In progress |
-| [REQ-0057](analytics.md#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](analytics.md#req-0055) | In progress |
+| [REQ-0055](analytics.md#req-0055) | Mandatory outcome metrics | P0 | analysis, ml | [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025) | Done |
+| [REQ-0057](analytics.md#req-0057) | Business outcomes and ROI | P1 | analysis | [REQ-0055](analytics.md#req-0055) | Done |
 
 ## Delivery
 
@@ -161,11 +161,11 @@ A requirement depends on another when it cannot be met, or its evidence cannot b
 
 Chains that still block P0 work:
 
-- **Data:** REQ-0015 (In progress: quality metrics) → REQ-0017 → REQ-0055. REQ-0020, REQ-0016, REQ-0022, REQ-0031 and REQ-0018 are done.
+- **Data:** REQ-0015 (In progress: quality metrics) is the only open link; REQ-0017, REQ-0055, REQ-0020, REQ-0016, REQ-0022, REQ-0031 and REQ-0018 are done.
 - **Learned component:** decision 10 is closed by [016](../build/decisions/016-router-models.md) and the code serves router_v2 with a baseline fallback; the remote check of the public link (REQ-0035) → REQ-0019, REQ-0056. REQ-0016 is done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 → REQ-0051. REQ-0034 is done.
-- **Slides:** REQ-0055 → REQ-0056 → REQ-0036 → REQ-0051.
-- **Limitations:** REQ-0024 → REQ-0013 (In progress) → REQ-0030. REQ-0012 and REQ-0053 are done.
+- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 → REQ-0051.
+- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030. REQ-0012 and REQ-0053 are done.
 
 Statuses in these chains are written by hand: update them when a requirement changes status.
 

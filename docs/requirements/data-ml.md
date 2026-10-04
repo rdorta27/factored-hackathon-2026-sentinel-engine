@@ -6,7 +6,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 |---|---|---|---|---|---|
 | [REQ-0015](#req-0015) | Repeatable pipeline with contracts | P0 | data | [REQ-0031](#req-0031) | Done |
 | [REQ-0016](#req-0016) | Learned component vs baseline | P0 | ml | [REQ-0017](#req-0017), [REQ-0020](#req-0020) | Done |
-| [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | In progress |
+| [REQ-0017](#req-0017) | Valid labels, no leakage | P0 | ml | [REQ-0015](#req-0015) | Done |
 | [REQ-0018](#req-0018) | Real incremental processing | P0 | data | [REQ-0015](#req-0015) | Done |
 | [REQ-0019](#req-0019) | Experiment tracking | P1 | ml | [REQ-0016](#req-0016) | In progress |
 | [REQ-0020](#req-0020) | Same held-out for baseline and system | P0 | ml | [REQ-0017](#req-0017) | Done |
@@ -39,7 +39,7 @@ At least one learned component evaluated against a simpler baseline on held-out 
 
 **Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). Comparison needs valid labels and a shared held-out.
 
-**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md).
+**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md). The router also reports a confidence per label; the two cut-offs were calibrated on the development + validation split and frozen in [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive), behind `SENTINEL_LLM_CUTOFFS` and handed to router-v3 for the `eval-v8` measurement.
 
 Missing: nothing for the brief; the cases are model-written simulation, a limit stated in [018](../build/decisions/018-evaluation-acceptance.md).
 
@@ -48,7 +48,7 @@ Missing: nothing for the brief; the cases are model-written simulation, a limit 
 
 Labels must be trustworthy and the evaluation must not see information from the future or from training. Metrics, thresholds and splits must be justified.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Machine Learning · **Area:** ml
+**Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12
 
@@ -58,7 +58,9 @@ Labels must be trustworthy and the evaluation must not see information from the 
 
 The written justification of metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
 
-Missing: confirmation on real Gold after the pipeline re-run. The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)).
+The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)). The resolution set resamples its 14 base situations for every interval ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)), so the four variants of one situation never count as four independent cases.
+
+Stated limit, not missing work: the router cases are model-written simulation with no native-speaker review ([018](../build/decisions/018-evaluation-acceptance.md)); the label universe itself is frozen data evidence, and a field label check stays future work.
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing

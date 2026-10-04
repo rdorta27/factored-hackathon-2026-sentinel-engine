@@ -28,6 +28,9 @@ class UnderstandResult:
     cost_usd: float = 0.0
     # The customer explicitly says the charge was not theirs. Reported, never decided here.
     not_mine: bool = False
+    # The router's confidence in its label, 0 to 1, when the provider returned
+    # log-probabilities; None otherwise. Reported, never decided here.
+    confidence: float | None = None
 
 
 class ModelPort(Protocol):

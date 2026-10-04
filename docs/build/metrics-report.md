@@ -98,6 +98,65 @@ How to read it:
 - **Safe automated resolution is 0 of 75 for every version.** This is a property of the replay, not a result: no single-turn case reaches a confirmed dispute, so no case can count as resolved. The run therefore **does not show** a safe-resolution rate and cost per resolution is "not defined". The end-to-end claim rests on the live checks in [delivery](../requirements/delivery.md#req-0035) and the transcript replay, not on these numbers. No ROI figure is derived from this table (REQ-0057 stays a labelled projection).
 - **Latency caveat:** component latency comes from the recorded live calls (p50 about 1.1 s, p95 about 4.4 s). System latency for the router versions also includes live model calls, although the run's note says replay time ([018](decisions/018-evaluation-acceptance.md#result)). The baseline's sub-millisecond figures are code only.
 
+### Resolution run over the mock store (REQ-0055)
+
+The final measurement is [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json): the same committed 56-case set in 14 situations, paired baseline and `router_v2`, replayed on the final loop (`measured_commit` is recorded in the summary) after the chat-loop change. [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json), measured before that change, stays beside it as the reference. Both runs verify offline (`python3 -m eval.run verify 2024Q4-resolution-v2`, same for v1, with the 016 model pair in the environment); both replays are simulations over a mock store, not field rates (decision 022).
+
+| Metric | v1 baseline | v1 router_v2 | v2 baseline | v2 router_v2 | Denominator |
+|---|---|---|---|---|---|
+| Safe automated resolution | 16 (0.2857) | 16 (0.2857) | 16 (0.2857) | 16 (0.2857) | 56 attempted |
+| Unsafe outcomes | 0 | 0 | 0 | 0 | 56 |
+| Missed transfers | 0 | 0 | 0 | 0 | 28 must-hand-off |
+| Unnecessary transfers | 0 | 0 | 0 | 0 | — |
+| Containment | 0.5 | 0.5 | 0.5 | 0.5 | 56 attempted |
+| Cost per attempted case (USD) | 0 | 0.00016 | 0 | 0.00016 | 56 |
+| Cost per successful resolution (USD) | 0 | 0.000561 | 0 | 0.000561 | 16 resolutions |
+| Latency p50 / p95 (ms) | 0.46 / 0.58 | 0.46 / 0.63 | 0.65 / 1.18 | 0.64 / 1.09 | replay |
+
+- The chat-loop change (response language from the interface) moved **no outcome on this set**: v2 reproduces v1's counts case for case, which is why `verify` on v1 also matches on the final loop. The re-measurement exists because the loop moved, and because v2 carries the breakdown below.
+- The paired resolution difference is **0 of 56** in both runs (interval [0, 0], not above zero): by rule R3 of [022](decisions/022-resolution-acceptance.md) `router_v2` does **not** resolve more than the baseline. R1 (safe), R2 (no missed transfers) and R4 (router unsafe) pass in both runs.
+- Both versions resolve the same 16 cases (the four eligible situations in four variants each) and refuse or hand off the rest. Cost per resolution is USD 0.000561 for `router_v2` from the 8 recorded live calls (recorded under the USD 0.45 cap in v1; the v2 replay made no live call).
+- No ROI figure is derived from this replay beyond the rate and the costs cited above; the projection is a separate labelled page ([ROI](roi.md)).
+- `Pending` is not covered (no `Pending` row in the mock store); the set covers `Refunded` as `status.reversed`.
+
+### Breakdown by variant and country (REQ-0024, simulated)
+
+`system.<version>.by_variant` / `by_country` of the v2 run. Group counts add up to the 56 totals; the interval resamples the 14 situations.
+
+| Group | n | Safe resolution (baseline / router_v2) | 95% interval |
+|---|---|---|---|
+| es-MX | 16 | 0.25 / 0.25 | [0.0, 0.625] |
+| es-CO | 6 | 0.3333 / 0.3333 | [0.0, 1.0] |
+| es-AR | 6 | 0.3333 / 0.3333 | [0.0, 1.0] |
+| pt-BR | 28 | 0.2857 / 0.2857 | [0.0714, 0.5714] |
+
+| Group | n | Safe resolution (baseline / router_v2) | 95% interval |
+|---|---|---|---|
+| MX | 32 | 0.25 / 0.25 | [0.0, 0.625] |
+| CO | 12 | 0.3333 / 0.3333 | [0.0, 1.0] |
+| AR | 12 | 0.3333 / 0.3333 | [0.0, 1.0] |
+
+Every group interval is wider than ±10 points, so **every group is descriptive**: no disparity between variants or countries is claimed from this set, and none is excluded. Baseline and `router_v2` share the same per-group figures because they resolve the same cases.
+
+**Segment is declared, not invented:** these system outcomes are **not** broken down by customer segment. The resolution cases carry no customer record, so there is no segment to group by; the [segment breakdown report](../reports/req_0024_segment_breakdown_report.md) covers the dataset side only and is cited as dataset context, not as a measurement of how the system answers each segment.
+
+### Country monitoring (REQ-0050)
+
+The v2 replay's turn log, aggregated per country and language by `sentinel-ai-core/eval/monitor.py` and frozen in [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json). The workload is stated there: 256 chat turns in 888 records, the full replay (baseline and `router_v2`), **labelled simulated** — it is not field behaviour.
+
+| Country | Language | Turns | Latency p50 / p95 (ms) | Escalations | Handoffs | Fallback turns | Cost (USD) |
+|---|---|---|---|---|---|---|---|
+| AR | es-419 | 28 | 0.79 / 1.29 | 8 | 8 | 0 | 0.001916 |
+| AR | pt-BR | 28 | 0.91 / 1.41 | 8 | 8 | 0 | 0 |
+| CO | es-419 | 28 | 0.79 / 1.28 | 8 | 8 | 0 | 0.001916 |
+| CO | pt-BR | 28 | 0.84 / 1.41 | 8 | 8 | 0 | 0 |
+| MX | es-419 | 72 | 0.78 / 1.31 | 12 | 12 | 0 | 0.00514 |
+| MX | pt-BR | 72 | 0.82 / 1.43 | 12 | 12 | 0 | 0 |
+
+- No failed or timed-out step, and no fallback turn, in any group of this workload.
+- Cost sits under es-419 only because understand records carry the session language **before** detection; the model was called for pt-BR turns too, on the strong route (the same 8 recordings).
+- Aggregates only: the monitoring output holds no trace id, session reference or text; an unknown country would be reported apart under `other`.
+
 ## 7. Justification of metrics, thresholds and splits (REQ-0017)
 
 ### Metrics
@@ -137,7 +196,7 @@ Result against each rule: D4 router v2, D5 passes (+124, above zero), D6 passes 
 - **Model-written cases.** Author and reviewer are Claude models given the same label definitions; no human reviewed the cases and no Portuguese speaker is on the team. A 0.98 accuracy shows agreement with those definitions, **not** field accuracy. A bias shared by author and reviewer would not be caught.
 - **Balanced, not real, mix.** Class shares are designed; overall accuracy does not transfer to the real distribution of contacts.
 - **Small samples.** 70 cases per variant (about ±7 points at 90% accuracy), 50 noisy twins, 100 cases for stability, 75 attacks. Strict equivalence between variants (about 500 per variant at ±5 points) is not claimed.
-- **No safe-resolution measurement** (section 6) and **no segment breakdown of system outcomes** (section 5); the segment report covers the dataset only.
+- **Safe resolution is measured as a simulation only** (section 6, mock store, 56 cases) and **no segment breakdown of system outcomes** exists (section 5; the cases carry no customer record); the segment report covers the dataset only.
 - **Mock Gold.** The replay does not read real Gold ([tasks](../../team/tasks.md) 3 and 4).
 - **One model family measured,** one temperature, one seed; no production traffic, no drift.
 - **Greeting gap** not covered by the sealed set; planned in router v3.
@@ -150,3 +209,10 @@ python3 -m eval.run verify 2024Q4-eval-v7
 ```
 
 Checked on 2026-10-02 (with `SENTINEL_LLM_CHEAP_MODEL` and `SENTINEL_LLM_STRONG_MODEL` set to the 016 pair): the **component block** (sections 2 to 5) replays identically from the recordings. The **system block** (section 6) does **not** reproduce on that machine: `verify` reports "DIFFERS" and the replayed system metrics differ from the frozen ones (for example containment 1.0 instead of 0.60 for v2, and no cost). [018](decisions/018-evaluation-acceptance.md#result) says only spend and latency differ, so that statement is wrong until the cause is found. Section 6 therefore cites the frozen `summary.json` as is and is not independently reproduced here. The frozen run is never edited; a new measurement is a new folder.
+
+**Cause found (2026-10-02, task 1.1).** Two effects, both in the harness, none in the recorded model answers:
+
+1. **Latency was compared.** At the freeze commit, `_comparable` removed only `spend`, not the wall-clock `latency_ms`. The frozen system latency for the router versions came from the live calls (p50 about 0.97 s); a replay makes no live call (p50 under 1 ms), so `verify` reported DIFFERS even at the freeze commit. Re-running `verify` at `3af2553` (the commit that froze `eval-v7`) shows the system block differs **only** in `latency_ms`. A later commit added `_strip`, which excludes `latency_ms` from the comparison.
+2. **The loop moved.** The system block replays the live application loop, not a frozen artifact. Commits after the freeze changed the loop: `a7e9b76` offers on the first out-of-scope turn instead of handing off, `cff4d99` hands off on the third, and `71f6446` answers why follow-ups. The recordings did not change (`git diff 3af2553..HEAD -- app/ai/fixtures` is empty), so the frozen outcomes stay fixed while containment, missed transfers and cost move. The component block is a pure function of the cases and the recordings, which is why it still reproduces.
+
+Consequence: a frozen run's **system** block is only reproducible while the loop stays put. The `resolution-eval` run is frozen with the loop at a recorded commit (task 4.3) so its replay is reproducible, and a later loop change means a new run, not an edit.

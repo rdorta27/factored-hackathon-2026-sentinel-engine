@@ -6,8 +6,9 @@ sync and run in FastAPI's threadpool, so no call blocks the event loop.
 The same declarative models run on Postgres by changing the URL.
 
 Path: ``SENTINEL_DB_PATH``, default ``var/sentinel.db`` next to the package
-(gitignored). One file serves one instance; a deployment needs persistent
-storage for it.
+(gitignored). One file serves one instance. ``SENTINEL_SQLITE_JOURNAL``
+selects the journal mode (``WAL`` by default, ``DELETE`` on a file share).
+Startup fails if the directory is not writable.
 """
 
 from __future__ import annotations
@@ -18,9 +19,11 @@ from pathlib import Path
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.orm import DeclarativeBase
 
-from app.observability.writer import var_dir
+from app.observability.writer import require_writable, var_dir
 
 DB_PATH_ENV = "SENTINEL_DB_PATH"
+JOURNAL_ENV = "SENTINEL_SQLITE_JOURNAL"
+_JOURNAL_MODES = frozenset({"DELETE", "WAL"})
 
 
 class Base(DeclarativeBase):
@@ -32,6 +35,14 @@ def db_path() -> Path:
     return Path(override) if override else var_dir() / "sentinel.db"
 
 
+def journal_mode() -> str:
+    """``WAL`` unless ``SENTINEL_SQLITE_JOURNAL`` names ``DELETE`` or ``WAL``."""
+    raw = os.environ.get(JOURNAL_ENV, "WAL").strip().upper()
+    if raw not in _JOURNAL_MODES:
+        raise ValueError(f"{JOURNAL_ENV} must be DELETE or WAL, got {raw!r}")
+    return raw
+
+
 def make_engine(path: Path | str | None = None) -> Engine:
     """Create the engine and every table (idempotent).
 
@@ -40,8 +51,8 @@ def make_engine(path: Path | str | None = None) -> Engine:
     created here is ``0700``; an existing folder is left as is (REQ-0027).
     """
     target = Path(path) if path is not None else db_path()
-    if not target.parent.exists():
-        target.parent.mkdir(parents=True, mode=0o700)
+    require_writable(target.parent)
+    mode = journal_mode()
     # Created owner-only before SQLite opens it; SQLite gives the WAL and SHM
     # sidecars the same mode as the database file.
     os.close(os.open(target, os.O_CREAT | os.O_RDWR, 0o600))
@@ -55,7 +66,7 @@ def make_engine(path: Path | str | None = None) -> Engine:
     @event.listens_for(engine, "connect")
     def _pragmas(connection, _record):  # type: ignore[no-untyped-def]
         cursor = connection.cursor()
-        cursor.execute("PRAGMA journal_mode=WAL")
+        cursor.execute(f"PRAGMA journal_mode={mode}")
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.close()
 

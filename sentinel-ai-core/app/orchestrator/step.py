@@ -3,7 +3,8 @@ from datetime import date
 from time import perf_counter
 from uuid import uuid4
 
-from app.ai.grounding import extract_facts, ground, rank_candidates
+from app.ai.grounding import extract_facts, extract_soft, ground, narrow_candidates, rank_candidates
+from app.ai.guard import is_injection, refuse_extraction
 from app.ai.port import ModelInfo, ModelPort, UnderstandKind
 from app.ai.transport import ModelUnavailable
 from app.observability.observer import TurnObserver
@@ -12,6 +13,7 @@ from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
     ConversationState,
+    Language,
     LastDecision,
     OutcomeKind,
     PendingConfirmation,
@@ -29,6 +31,7 @@ from app.policy.engine import (
     evaluate,
 )
 from app.policy.load import load_country
+from app.tools.bound import GoldTimeout
 from app.tools.ports import ToolStatus, TransactionLookup
 
 MAX_ATTEMPTS = 3
@@ -55,6 +58,41 @@ def _emit(ports: Ports, language: str, **fields) -> None:  # type: ignore[no-unt
     if ports.observer is None:
         return
     ports.observer.emit(language=language, **fields)
+
+
+def _lookup_transactions(state: ConversationState, ports: Ports) -> list[Candidate] | TurnOutput:
+    """Gold reads under the time budget. Three timeouts hand off with no case number."""
+    for attempt in range(1, MAX_ATTEMPTS + 1):
+        started = perf_counter()
+        try:
+            rows = ports.tools.lookup_transactions()
+        except GoldTimeout:
+            _emit(
+                ports,
+                state.language.value,
+                step="act",
+                tool="lookup_transactions",
+                outcome="timeout",
+                attempt=attempt,
+                latency_ms=(perf_counter() - started) * 1000,
+            )
+            continue
+        _emit(
+            ports,
+            state.language.value,
+            step="act",
+            tool="lookup_transactions",
+            attempt=attempt,
+            latency_ms=(perf_counter() - started) * 1000,
+        )
+        return rows
+    _emit(ports, state.language.value, step="escalate", policy_rule=None, attempt=MAX_ATTEMPTS)
+    return TurnOutput(
+        kind=OutcomeKind.HANDOFF,
+        language=state.language,
+        reason="unverified",
+        attempt=MAX_ATTEMPTS,
+    )
 
 
 def _tool_outcome(status: ToolStatus) -> str:
@@ -87,7 +125,33 @@ def _identity_fields(info: ModelInfo, understood=None) -> dict:  # type: ignore[
         "tokens_in": understood.tokens_in if understood is not None else 0,
         "tokens_out": understood.tokens_out if understood is not None else 0,
         "cost_usd": understood.cost_usd if understood is not None else 0.0,
+        "label": understood.kind.value if understood is not None else None,
+        "confidence": understood.confidence if understood is not None else None,
     }
+
+
+_PT_MARKS = ("não", "nao", "palavra", "instruções", "instrucoes", "você", "voce", "seu prompt", "cobrança")
+
+
+def _message_language(text: str, default: Language) -> Language:
+    lowered = text.lower()
+    if any(mark in lowered for mark in _PT_MARKS):
+        return Language.PT_BR
+    return default
+
+
+def _extraction_refusal(state: ConversationState, ports: Ports) -> TurnOutput:
+    """Out-of-scope offer with its own key. The third in a row hands off."""
+    state.scope_asks += 1
+    if state.scope_asks <= MAX_SCOPE_OFFERS:
+        _emit(ports, state.language.value, step="decide", policy_rule="extraction_refused")
+        return TurnOutput(
+            kind=OutcomeKind.OFFER,
+            language=state.language,
+            reason="extraction.refused",
+        )
+    _emit(ports, state.language.value, step="escalate", policy_rule="extraction_refused")
+    return TurnOutput(kind=OutcomeKind.HANDOFF, language=state.language, reason="out_of_scope")
 
 
 UNDERSTAND_RETRIES = 2
@@ -215,6 +279,12 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     if is_why_followup(turn.text, merchants, today.year):
         # Answer from the stored decision only: no model, no lookup, no engine.
         return _explanation(state, ports)
+    if refuse_extraction(turn.text, merchants):
+        state.language = _message_language(turn.text, state.language)
+        return _extraction_refusal(state, ports)
+    if is_injection(turn.text):
+        state.language = _message_language(turn.text, state.language)
+        _emit(ports, state.language.value, step="decide", policy_rule="injection_suspected")
     if state.pending_confirmation is not None:
         # The box swallows everything except a person request. The model is not
         # consulted here for anything else, so a failure cannot change this.
@@ -285,15 +355,10 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
             # Answering the out-of-scope offer with "an advisor" is the second ask.
             state.person_asks = max(state.person_asks, 1)
         return _person_request(state, ports)
-    started = perf_counter()
-    candidates = ports.tools.lookup_transactions()
-    _emit(
-        ports,
-        state.language.value,
-        step="act",
-        tool="lookup_transactions",
-        latency_ms=(perf_counter() - started) * 1000,
-    )
+    looked = _lookup_transactions(state, ports)
+    if isinstance(looked, TurnOutput):
+        return looked
+    candidates = looked
     today = _today(ports)
     facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
     result = ground(facts, candidates)
@@ -306,11 +371,19 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         if understood.not_mine:
             # The customer denied what was shown: never show it again.
             _remember_rejected(state, [item.candidate_id for item in state.candidates])
-        ranked = rank_candidates(facts, result.candidates or candidates, today)
+        soft = extract_soft(turn.text, today, [item.merchant for item in candidates])
+        narrowed = narrow_candidates(facts, soft, candidates, today)
+        ranked = narrowed.candidates if narrowed.stated else rank_candidates(
+            facts, result.candidates or candidates, today
+        )
         state.candidates = [
             item for item in ranked if item.candidate_id not in state.rejected_ids
         ][:4]
-        return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
+        return TurnOutput(
+            kind=OutcomeKind.QUESTION,
+            language=state.language,
+            reason="charge.not_found" if narrowed.not_found else None,
+        )
     # Repair: new facts re-anchor to this charge; any previously shown charge
     # that is not the match is superseded and joins the rejected list.
     _remember_rejected(

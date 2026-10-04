@@ -96,7 +96,64 @@ chat plan.
 - **Capability:** Explain.
 - **Status:** fixed. Evidence: this run and `tests/test_explanation.py`; the
   fixed safety rules are probed in `tests/adversarial/test_f_decision_disclosure.py`
-  (`0/42` unsafe, [run](../../evidence/adversarial/20261002T195516Z/summary.json)).
+  (`0/42` unsafe, [run](../evidence/adversarial/20261002T195516Z/summary.json)).
+
+### MT-08 · MT-05 and MT-06 retest, fresh sessions (2026-10-02, agent)
+
+- **Setup:** one fresh login per message, keyword stand-in (no `SENTINEL_LLM_*`
+  in this session), mock Gold, reference date 2026-06-17, `CUST-0001`. The why
+  follow-up does not call the model; the first MT-05 turn matched in code.
+- **MT-05:** "Hay un cobro de 2500 MXN en ACME Store" → `text` / `window.expired`.
+  Then "en que te basas para decirme eso, de donde salen los 90 dias" →
+  `explanation` / `explanation.window.expired`, `rule_id` `window.expired`.
+  The charge list is not shown again.
+- **MT-06:** each first message in its own session.
+
+  | Message | Reply |
+  |---|---|
+  | "no reconozco un cargo de Tienda Lumbre" | `clarification` / `charge.not_found`, newest four |
+  | "me cobraron dos veces en la cafetería ayer" | `clarification` / `charge.not_found`, newest four (yesterday contradicts Cafe Central) |
+  | "hay un cobro de 849 que no hice" | `clarification` / `charge.not_found`, newest four |
+  | "el de ayer" | `clarification` / `charge.not_found`, newest four |
+  | "oi, não reconheço uma cobrança de R$ 215" | `clarification` / `charge.not_found`, newest four |
+  | "me cobraron en la cafetería" | `clarification` / `clarifyWhichCharge`, only TXN-1006, no confirm box |
+  | "no reconozco un cargo" | `clarification` / `clarifyWhichCharge`, newest four, no not-found text |
+
+- **Expected:** that. A soft match stays a clarification. A stated detail that
+  matches nothing says so and still lists the newest charges.
+- **Capability:** Locate, Explain.
+- **Status:** fixed for narrowing and the why follow-up. Small talk and status
+  questions from MT-06 are unchanged. Evidence: this run,
+  `tests/test_grounding.py`, `eval/review/narrowing.md` (before 20/24
+  right-charge-shown and 4/24 not-found-said; after 24/24 and 24/24).
+
+### MT-09 · Real Gold, three cases, two languages (2026-10-02)
+
+Setup: local process, keyword baseline, reference date 2026-06-17.
+`GET /api/v1/health` reported `gold_source` `duckdb`. No customer id, transaction
+id, merchant, amount or data path is recorded here. A vague ask still shows at
+most four charges; naming the charge matched it from the full read, so the
+shown list was not the limit. The case store was in memory, so a confirmation
+keeps `source=mock` even while health reports `duckdb`. The public link stays
+on the mock.
+
+| Language | Case | Outcome |
+|---|---|---|
+| es-419 | normal | `confirm_box` (`confirmCharge`), then `case_confirmation` |
+| es-419 | ambiguous | `clarification` (`clarifyWhichCharge`); no case opened |
+| es-419 | handoff | `handoff`, `reason_key` `handoff.amountHigh`, rule `amount.high` |
+| pt-BR | normal | `confirm_box` (`confirmCharge`), then `case_confirmation` |
+| pt-BR | ambiguous | `clarification` (`clarifyWhichCharge`); no case opened |
+| pt-BR | handoff | `handoff`, `reason_key` `handoff.amountHigh`, rule `amount.high` |
+
+- **Observed:** each language followed the table. The handoff package language
+  matched the line (`es-419` or `pt-BR`).
+- **Expected:** a named in-window charge below both thresholds confirms; a line
+  with no merchant and no amount clarifies and opens nothing; a charge above the
+  high-amount threshold hands off on `amount.high`.
+- **Capability:** Locate is still the shown list when the customer does not name
+  the charge. Contrast is not in this run.
+- **Status:** recorded. The public link was not part of this run.
 
 ### MT-08 · Advisor ticket list and trace (2026-10-03, ui-product)
 

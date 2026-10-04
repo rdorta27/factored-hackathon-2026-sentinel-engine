@@ -267,6 +267,8 @@ TABLE_REGISTRY: Final[dict[str, TableDefinition]] = {
             ("has_transcript_not_null",     "has_transcript",     "has_transcript IS NOT NULL"),
             ("has_recording_not_null",      "has_recording",      "has_recording IS NOT NULL"),
             ("sentiment_score_range",       "sentiment_score",    "sentiment_score IS NULL OR (sentiment_score >= -1.0 AND sentiment_score <= 1.0)"),
+            ("duration_seconds_non_negative", "duration_seconds", "duration_seconds IS NULL OR TRY_CAST(duration_seconds AS DOUBLE) IS NULL OR TRY_CAST(duration_seconds AS DOUBLE) >= 0"),
+            ("wait_time_seconds_non_negative", "wait_time_seconds", "wait_time_seconds IS NULL OR TRY_CAST(wait_time_seconds AS DOUBLE) IS NULL OR TRY_CAST(wait_time_seconds AS DOUBLE) >= 0"),
         ),
     ),
 

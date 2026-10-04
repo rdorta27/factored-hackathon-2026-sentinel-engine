@@ -39,9 +39,9 @@ flowchart LR
     class client ext
 ```
 
-- **Data layer.** The same pipeline, run locally on DuckDB: it has run end to end on the full dataset into `data/gold_bank.duckdb` with a [quality report](../../sentinel-data-engine/data_quality_report.md). The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active. The adapter reads the view as a Delta table under `data/gold/`, while the local run writes a DuckDB file, so the demo still serves the mock until one of them changes.
+- **Data layer.** The same pipeline, run locally on DuckDB: it has run end to end on the full dataset into `data/gold_bank.duckdb` with a [quality report](../../sentinel-data-engine/data_quality_report.md). The service reads the PII-free view `v_service_dispute_eligible_transactions` through a DuckDB adapter when the view is readable, and the labelled mock otherwise (`SENTINEL_GOLD_SOURCE`); `GET /api/v1/health` reports which one is active. The adapter opens the pipeline's DuckDB file read-only (`SENTINEL_GOLD_DUCKDB`, or the repository's data path), excludes rows dated after the reference date, and real customers log in through a local users file written outside git (`scripts/write_real_gold_users.py`). The public link has no data file and serves the mock.
 - **Service layer.** The same single process, run locally or in one container behind the public link.
-- **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only. A conversation files at most one handoff ticket, and the file is owner-only. In the container the file lives on the ephemeral disk, so a restart there loses it.
+- **Case store.** SQLite file with disputes (one open dispute per charge, idempotency scoped to an opaque customer hash) and handoff tickets. Sessions and conversation state live in the same file, so a restart keeps them; one instance only. A conversation files at most one handoff ticket, and the file is owner-only. In the container the file lives on the ephemeral disk, so a restart there loses it until the durable-storage change lands.
 
 ## Components
 
@@ -116,7 +116,7 @@ flowchart TB
     class client,advisor ext
 ```
 
-Each port keeps the target contract; the demo picks the adapter by configuration: the keyword baseline is served and the prompted router is measured offline (`create_app(model=...)`), Gold comes from the DuckDB view or the labelled mock (`SENTINEL_GOLD_SOURCE`, reported by `/api/v1/health`), and state lives in the SQLite file or in memory for tests and the offline eval (`SENTINEL_STATE_BACKEND`).
+Each port keeps the target contract; the demo picks the adapter by configuration: router_v2 is served when the `SENTINEL_LLM_*` variables are set, with the keyword baseline as the per-turn fallback and the default without a model, Gold comes from the DuckDB view or the labelled mock (`SENTINEL_GOLD_SOURCE`, reported by `/api/v1/health`), and state lives in the SQLite file or in memory for tests and the offline eval (`SENTINEL_STATE_BACKEND`).
 
 ## Mocked components
 
@@ -127,7 +127,7 @@ Each port keeps the target contract; the demo picks the adapter by configuration
 | Case store | PostgreSQL | SQLite file, same models (disputes, tickets, sessions, conversation) | One instance only; login-attempt counters per process |
 | Advisor | Human advisor; tickets reach the bank's CRM through a queue ([015](../build/decisions/015-handoff-delivery.md)) | Demo advisor user reads the filed tickets in a read-only view | No claim, routing or state change |
 | Secrets | Azure Key Vault | `.env`, gitignored | — |
-| Gold (fallback) | Gold on Databricks | Labelled in-memory mock behind the same seam | Used when the DuckDB view is not readable; reported by `/api/v1/health` |
+| Gold (fallback) | Gold on Databricks | Labelled in-memory mock behind the same seam | Used when no DuckDB file is configured or readable, and always on the public link; reported by `/api/v1/health` |
 
 Everything else in the diagrams runs the target code.
 
@@ -137,7 +137,7 @@ Identical to the [System Architecture](system-architecture.md#walkthrough-of-a-c
 
 ## Learned component
 
-Identical to the target: a prompted LLM that classifies the dispute category, compared with a keyword baseline and the same LLM zero-shot on the same held-out conversations. The served demo runs the keyword baseline behind the model port; the prompted router is measured offline by the evaluation runner, replaying recorded fixtures that mirror the baseline until the models chosen in [016](../build/decisions/016-router-models.md) are recorded, so the measured delta is zero by construction. Serving the router needs only `create_app(model=...)`, no code change in the loop. Evaluation conversations are team-written in `es-419` and `pt-BR` and labelled as simulation.
+Identical to the target: a prompted LLM intent router, compared with the keyword baseline on the same sealed held-out conversations. The demo serves router_v2 (GLM 5.3 Flash, prompt v2) from the environment, with the keyword baseline as fallback, the configuration measured in `2024Q4-eval-v7` ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)). Evaluation conversations are model-written in `es-419` and `pt-BR` and labelled as simulation.
 
 ## Stack and deployment
 

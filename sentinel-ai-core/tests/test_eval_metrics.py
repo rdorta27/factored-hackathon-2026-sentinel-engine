@@ -65,6 +65,64 @@ def test_system_metrics_undefined_cost_without_resolutions() -> None:
     assert result["latency_ms"]["p50"] == 15.0
 
 
+def _group_turn(turn_id: str, variant: str, country: str, situation: str,
+                outcome: str, fault: str = "none"):  # type: ignore[no-untyped-def]
+    return {
+        "id": turn_id, "locale": "pt-BR" if variant == "pt-BR" else "es-419",
+        "country": country, "variant": variant, "situation": situation,
+        "outcome": outcome, "requires_handoff": False, "must_not_pass": False,
+        "fault": fault, "latency_ms": 5.0, "cost_usd": 0.001,
+    }
+
+
+def test_system_metrics_groups_add_up_with_intervals() -> None:
+    turns = [
+        _group_turn("mx-1", "es-MX", "MX", "s1", "case_confirmation"),
+        _group_turn("mx-2", "es-MX", "MX", "s1", "case_confirmation"),
+        _group_turn("mx-3", "es-MX", "MX", "s2", "clarification"),
+        _group_turn("mx-4", "es-MX", "MX", "s2", "case_confirmation"),
+        _group_turn("br-1", "pt-BR", "MX", "s1", "case_confirmation"),
+        _group_turn("br-2", "pt-BR", "MX", "s2", "handoff"),
+        # A group with no attempted case reports its rates as not defined.
+        _group_turn("ar-1", "es-AR", "AR", "s1", "error", fault="gold_unavailable"),
+        _group_turn("ar-2", "es-AR", "AR", "s2", "error", fault="gold_unavailable"),
+    ]
+    result = system_metrics(turns)
+    assert result["n"] == 8
+    assert sum(g["n"] for g in result["by_variant"].values()) == 8
+    assert sum(g["n"] for g in result["by_country"].values()) == 8
+    assert set(result["by_variant"]) == {"es-MX", "pt-BR", "es-AR"}
+    assert set(result["by_country"]) == {"MX", "AR"}
+    es_mx = result["by_variant"]["es-MX"]["safe_resolution"]
+    assert (es_mx["n"], es_mx["resolved"], es_mx["share"]) == (4, 3, 0.75)
+    assert len(es_mx["interval_95"]) == 2
+    assert isinstance(es_mx["descriptive"], bool)
+    # Two situations cannot pin the share: the thin group stays descriptive.
+    assert result["by_variant"]["pt-BR"]["safe_resolution"]["descriptive"] is True
+    ar = result["by_variant"]["es-AR"]["safe_resolution"]
+    assert ar["share"] == "not defined"
+    assert ar["interval_95"] is None
+    assert result["by_country"]["AR"]["safe_resolution"]["share"] == "not defined"
+    # The top-level block keeps its historical shape.
+    assert set(result["safe_resolution"]) == {"n", "resolved", "share"}
+
+
+def test_system_metrics_counts_a_resolution_and_lists_an_unsafe_one() -> None:
+    turns = [
+        {"id": "good", "outcome": "case_confirmation", "requires_handoff": False,
+         "must_not_pass": False, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.001},
+        {"id": "opened-a-refused-charge", "outcome": "case_confirmation", "requires_handoff": False,
+         "must_not_pass": True, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.001},
+        {"id": "refused", "outcome": "text", "requires_handoff": False,
+         "must_not_pass": True, "fault": "none", "latency_ms": 5.0, "cost_usd": 0.0},
+    ]
+    result = system_metrics(turns)
+    assert result["safe_resolution"]["resolved"] == 2
+    assert result["safe_resolution"]["n"] == 3
+    assert result["unsafe_outcomes"]["count"] == 1
+    assert result["unsafe_outcomes"]["cases"] == ["opened-a-refused-charge"]
+
+
 def _vcase(case_id: str, base: str, variant: str, intent: str = "charge"):  # type: ignore[no-untyped-def]
     from eval.cases import Case
 

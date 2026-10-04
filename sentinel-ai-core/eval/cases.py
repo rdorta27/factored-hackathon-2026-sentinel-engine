@@ -15,7 +15,7 @@ from pathlib import Path
 LOCALES = ("es-419", "pt-BR")
 COUNTRIES = ("MX", "CO", "AR")
 INTENTS = ("charge", "missing", "out_of_scope", "person")
-SPLITS = ("development", "held_out")
+SPLITS = ("development", "validation", "held_out")
 FAULTS = ("none", "gold_unavailable", "expired_session", "tool_failure")
 KNOWN_TAGS = ("edge", "adversarial", "noisy")
 # A variant is the language a base situation is rendered in, tied to the
@@ -52,6 +52,10 @@ class Case:
     # charge (amount, fraud score, claim) can fire. Then expected_rule names the rule.
     selected_reference: str | None = None
     expected_rule: str | None = None
+    # Optional third turn: when the selection answers with a confirm box, send the
+    # same charge again so the case reaches a verified case number. The harness
+    # never confirms a case that does not ask for it.
+    confirm: bool = False
     # Sealed-set fields: the base situation, its rendering, and for noisy twins
     # the single declared perturbation.
     base_id: str | None = None
@@ -121,6 +125,7 @@ def validate_case(body: dict, source: str) -> Case:
         must_not_pass=bool(body.get("must_not_pass", False)),
         selected_reference=body.get("selected_reference") or None,
         expected_rule=body.get("expected_rule") or None,
+        confirm=bool(body.get("confirm", False)),
         base_id=base_id,
         variant=variant,
         perturbation=perturbation,
@@ -138,19 +143,43 @@ def load_cases(path: Path | str) -> list[Case]:
     return cases
 
 
-def load_dir(directory: Path | str) -> list[Case]:
+# The resolution set lives beside the development set but is not part of it: it
+# is loaded explicitly by the resolution run, never by ``load_dir``.
+RESOLUTION_FILE = "resolution.jsonl"
+
+
+def load_dir(directory: Path | str, exclude: tuple[str, ...] = (RESOLUTION_FILE,)) -> list[Case]:
     cases = []
     for path in sorted(Path(directory).glob("*.jsonl")):
+        if path.name in exclude:
+            continue
         cases.extend(load_cases(path))
     return cases
 
 
+def base_of(case: Case) -> str:
+    """The base situation: its ``base_id``, or the case id when it has none."""
+    return case.base_id or case.id
+
+
 def check_splits(cases: list[Case]) -> None:
-    dev = {c.id for c in cases if c.split == "development"}
-    held = {c.id for c in cases if c.split == "held_out"}
-    overlap = dev & held
-    if overlap:
-        raise ValueError(f"case ids appear in both splits: {sorted(overlap)}")
+    """No case id and no base may appear in more than one split.
+
+    The validation split is carved from development by base (018 amendment), so
+    a base that straddles two splits would leak between them.
+    """
+    seen_ids: dict[str, str] = {}
+    seen_bases: dict[str, str] = {}
+    for case in cases:
+        prior = seen_ids.get(case.id)
+        if prior is not None and prior != case.split:
+            raise ValueError(f"case id {case.id} appears in both {prior} and {case.split} splits")
+        seen_ids[case.id] = case.split
+        base = base_of(case)
+        prior = seen_bases.get(base)
+        if prior is not None and prior != case.split:
+            raise ValueError(f"base {base} appears in both {prior} and {case.split} splits")
+        seen_bases[base] = case.split
 
 
 @dataclass(frozen=True)
@@ -180,10 +209,12 @@ __all__ = [
     "INTENTS",
     "LOCALES",
     "PERTURBATIONS",
+    "RESOLUTION_FILE",
     "SPLITS",
     "VARIANTS",
     "Case",
     "LabelProvenance",
+    "base_of",
     "check_splits",
     "load_cases",
     "load_dir",

@@ -4,11 +4,30 @@ from pathlib import Path
 
 import pytest
 
-from eval.cases import load_dir
+from app.ai.demo import DemoModel
+from eval.cases import Case, load_dir
 from eval.runner import build_client, match_outcome, run_case, run_system
 
 CASES_DIR = Path(__file__).parent.parent / "eval" / "cases"
 FIXTURES = Path(__file__).parent.parent / "app" / "ai" / "fixtures"
+
+
+def _resolution_case(**overrides) -> Case:  # type: ignore[no-untyped-def]
+    body = {
+        "id": "res-test",
+        "locale": "es-419",
+        "country": "MX",
+        "turns": ("no reconozco un cargo",),
+        "expected_intent": "charge",
+        "expected_category": None,
+        "expected_outcome": "case_confirmation",
+        "requires_handoff": False,
+        "split": "development",
+        "selected_reference": "TXN-1006",
+        "confirm": True,
+    }
+    body.update(overrides)
+    return Case(**body)  # type: ignore[arg-type]
 
 
 def _case(case_id: str):  # type: ignore[no-untyped-def]
@@ -71,3 +90,35 @@ def test_two_turn_case_checks_the_rule() -> None:
 def test_untriggered_rule_case_fails_if_a_rule_fires() -> None:
     assert match_outcome(_case("dev-rule-09"), "confirm_box", 200, ["status.approved"]) is True
     assert match_outcome(_case("dev-rule-09"), "confirm_box", 200, ["amount.high"]) is False
+
+
+def test_confirm_turn_reaches_a_verified_case_number() -> None:
+    turn = run_case(build_client(FIXTURES, DemoModel()), _resolution_case())
+    assert turn["outcome"] == "case_confirmation"
+    assert turn["matched"] is True
+
+
+def test_refused_charge_sends_no_third_turn() -> None:
+    case = _resolution_case(
+        id="res-refused",
+        expected_outcome="text",
+        expected_rule="window.expired",
+        must_not_pass=True,
+        selected_reference="TXN-1002",
+    )
+    turn = run_case(build_client(FIXTURES, DemoModel()), case)
+    assert turn["outcome"] == "text"
+    assert turn["matched"] is True
+    assert turn["must_not_pass"] is True
+
+
+def test_single_turn_case_stays_single_turn() -> None:
+    case = _resolution_case(
+        id="res-single",
+        selected_reference=None,
+        confirm=False,
+        expected_outcome="clarification",
+    )
+    turn = run_case(build_client(FIXTURES, DemoModel()), case)
+    assert turn["outcome"] == "clarification"
+    assert turn["matched"] is True

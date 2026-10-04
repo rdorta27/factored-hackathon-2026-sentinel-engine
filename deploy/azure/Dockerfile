@@ -8,12 +8,13 @@ COPY branding ./branding
 WORKDIR /srv/sentinel-ai-core
 RUN pip install --no-cache-dir .
 
-# State is ephemeral on purpose: the SQLite file and the turn log live under
-# /tmp/sentinel inside the container and are lost on restart. Sessions and
-# open disputes do not survive a redeploy or a scale-to-zero. A durable
-# deployment needs Postgres (docs/architecture/specification.md#path-to-production).
-RUN useradd --system --no-create-home sentinel \
-    && install -d -m 700 -o sentinel /tmp/sentinel
+# Local defaults: state under /tmp/sentinel, lost when this container stops.
+# deploy.sh overrides the paths, journal mode and stdout logging and mounts an
+# Azure Files share at /mnt/sentinel. The uid is pinned so that mount can be
+# owned by this user. Postgres remains the production path.
+RUN groupadd --system --gid 10001 sentinel \
+    && useradd --system --uid 10001 --gid 10001 --no-create-home sentinel \
+    && install -d -m 700 -o sentinel -g sentinel /tmp/sentinel
 USER sentinel
 
 ENV SENTINEL_GOLD_SOURCE=mock \

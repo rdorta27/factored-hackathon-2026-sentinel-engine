@@ -4,10 +4,16 @@ from pathlib import Path
 
 import pytest
 
-from eval.cases import check_splits, load_dir, load_labels, validate_case
+from eval.cases import base_of, check_splits, load_cases, load_dir, load_labels, validate_case
 
 CASES_DIR = Path(__file__).parent.parent / "eval" / "cases"
+RESOLUTION = CASES_DIR / "resolution.jsonl"
 LABELS = Path(__file__).parent.parent / "eval" / "labels.json"
+EXAMPLES = Path(__file__).parent.parent / "eval" / "examples_v2.json"
+
+
+def _resolution():  # type: ignore[no-untyped-def]
+    return load_cases(RESOLUTION)
 
 
 def test_missing_label_fails_naming_the_id() -> None:
@@ -20,6 +26,35 @@ def test_splits_share_no_case_id() -> None:
     assert cases, "the case set must not be empty"
     check_splits(cases)
     assert {c.id for c in cases if c.split == "development"}
+
+
+def test_validation_split_is_carved_from_development_by_base() -> None:
+    import json
+
+    cases = load_dir(CASES_DIR) + load_dir(CASES_DIR / "sealed")
+    check_splits(cases)
+    development = [c for c in cases if c.split == "development"]
+    validation = [c for c in cases if c.split == "validation"]
+    assert development and validation, "both splits must exist"
+    dev_bases = {base_of(c) for c in development}
+    val_bases = {base_of(c) for c in validation}
+    assert not (dev_bases & val_bases), "a base cannot sit on two sides"
+    assert abs(len(val_bases) / (len(dev_bases) + len(val_bases)) - 0.2) < 0.05
+    assert {c.expected_intent for c in validation} == {"charge", "missing", "out_of_scope", "person"}
+    # Every variant of a validation base is on the validation side.
+    variants = [c for c in cases if c.base_id in val_bases]
+    assert variants and all(c.split == "validation" for c in variants)
+    # The prompt-v2 examples keep their declared development provenance.
+    example_ids = set(json.loads(EXAMPLES.read_text(encoding="utf-8"))["ids"])
+    example_cases = [c for c in cases if c.id in example_ids]
+    assert example_cases and all(c.split == "development" for c in example_cases)
+
+
+def test_check_splits_rejects_a_base_in_two_splits() -> None:
+    development = validate_case(_body(id="v-1", split="development"), "test")
+    validation = validate_case(_body(id="v-2", split="validation"), "test")
+    with pytest.raises(ValueError, match="base b-01"):
+        check_splits([development, validation])
 
 
 def test_working_dir_holds_no_held_out_case() -> None:
@@ -77,6 +112,51 @@ def test_variant_fields_are_loaded() -> None:
 def test_variant_contradicting_locale_or_country_fails(extra) -> None:  # type: ignore[no-untyped-def]
     with pytest.raises(ValueError, match="v-1"):
         validate_case(_body(**extra), "test")
+
+
+def test_resolution_set_has_situations_with_four_cases_each() -> None:
+    cases = _resolution()
+    check_splits(cases)
+    assert 48 <= len(cases) <= 64, len(cases)
+    situations = {c.base_id for c in cases}
+    assert 12 <= len(situations) <= 16, len(situations)
+    for base in situations:
+        assert len([c for c in cases if c.base_id == base]) == 4, base
+
+
+def test_resolution_set_covers_resolve_and_refuse() -> None:
+    cases = _resolution()
+    outcomes = {c.expected_outcome for c in cases}
+    assert {"case_confirmation", "text", "handoff"} <= outcomes
+    eligible = [c for c in cases if c.expected_outcome == "case_confirmation"]
+    assert eligible and all(c.confirm and not c.must_not_pass for c in eligible)
+    refused = [c for c in cases if c.must_not_pass]
+    assert refused and all(not c.confirm for c in refused)
+    assert {c.expected_rule for c in refused} >= {
+        "window.expired", "status.reversed", "already.disputed",
+        "amount.high", "fraud.score", "fraud.claim",
+    }
+
+
+def test_resolution_ids_do_not_overlap_the_other_sets() -> None:
+    resolution = _resolution()
+    others = load_dir(CASES_DIR) + load_dir(CASES_DIR / "sealed")
+    assert not ({c.id for c in resolution} & {c.id for c in others})
+
+
+def test_confirm_field_is_loaded_and_defaults_false() -> None:
+    assert validate_case(_body(), "test").confirm is False
+    assert validate_case(_body(confirm=True), "test").confirm is True
+    assert validate_case(_body(confirm=False), "test").confirm is False
+
+
+def test_resolution_file_is_not_part_of_the_directory_load() -> None:
+    # The resolution set is loaded explicitly; the development load never sees it.
+    from eval.cases import RESOLUTION_FILE
+
+    assert RESOLUTION_FILE == "resolution.jsonl"
+    ids = {c.id for c in load_dir(CASES_DIR)}
+    assert not any(case_id.startswith("res-") for case_id in ids)
 
 
 def test_noisy_case_names_one_perturbation_and_its_base() -> None:

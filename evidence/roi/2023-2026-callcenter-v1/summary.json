@@ -1,0 +1,79 @@
+{
+  "complaint_calls": {
+    "escalation": {
+      "escalated": 11733,
+      "field": "was_escalated",
+      "n": 117021,
+      "origin": "derived",
+      "share": 0.1003
+    },
+    "first_contact_resolution": {
+      "field": "was_resolved",
+      "n": 117021,
+      "origin": "derived",
+      "resolved": 51021,
+      "share": 0.436
+    },
+    "handle_time": {
+      "mean_minutes": 7.243,
+      "missing_duration": 16294,
+      "n_with_duration": 100727,
+      "origin": "derived"
+    },
+    "n": 117021
+  },
+  "created_at": "2026-10-03T14:26:40.123678+00:00",
+  "kind": "callcenter_aggregates",
+  "notes": [
+    "The data does not separate dispute calls from other transactional calls: Transaccional is a superset of disputes, so the projection bounds them.",
+    "Mean handle time is over calls with a duration; the calls without one are counted beside it, not imputed.",
+    "The advisor-hour cost is assumed, not from any dataset; the projection labels it assumed and cites no dataset.",
+    "Aggregates only: no row, identifier or text is written."
+  ],
+  "run_id": "2023-2026-callcenter-v1",
+  "source": {
+    "field": "contact_reason",
+    "layer": "bronze",
+    "origin": "measured",
+    "reason": "silver drops duration_seconds, bronze has it",
+    "table": "bronze_call_center_interactions"
+  },
+  "total_calls": {
+    "missing_duration": 96234,
+    "n": 686296,
+    "origin": "measured"
+  },
+  "transactional": {
+    "escalation": {
+      "escalated": 23841,
+      "field": "was_escalated",
+      "n": 240056,
+      "origin": "derived",
+      "share": 0.0993
+    },
+    "first_contact_resolution": {
+      "field": "was_resolved",
+      "n": 240056,
+      "origin": "derived",
+      "resolved": 219671,
+      "share": 0.9151
+    },
+    "handle_time": {
+      "mean_minutes": 3.68,
+      "missing_duration": 33591,
+      "n_with_duration": 206465,
+      "origin": "derived"
+    },
+    "n": 240056
+  },
+  "transactional_calls": {
+    "field": "contact_reason",
+    "n": 240056,
+    "origin": "measured",
+    "share_of_calls": 0.3498
+  },
+  "window": {
+    "first": "2023-06-17 08:03:26",
+    "last": "2026-06-18 07:58:13"
+  }
+}

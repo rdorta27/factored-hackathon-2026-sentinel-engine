@@ -59,38 +59,42 @@ def test_failed_read_back_never_becomes_a_case_number(logged_in) -> None:
     assert memory.open_calls >= 1, "the write happened before the read-back failed"
 
 
-# --- no defense yet ---
+# --- blocked in code: a slow read cannot hold the request -----------------
 
 
-@pytest.mark.attack("D4", "no_defense_yet")
-@pytest.mark.xfail(
-    strict=True,
-    reason="no HTTP client or tool timeout configured; the in-memory fake cannot time out",
-)
-def test_slow_gold_does_not_hang_the_request(logged_in) -> None:
-    """D4. A latency budget needs a real client with a timeout.
+@pytest.mark.attack("D4", "blocked_verified")
+def test_slow_gold_does_not_hang_the_request(logged_in, monkeypatch) -> None:
+    """D4. A slow Gold read is a failed attempt and ends in a handoff.
 
-    Simulating a slow tool with `sleep` exercises the fake, not the failure
-    handling of a real call, so this stays unblocked until Gold is a real read.
-    The delay is kept small so the xfail does not slow the suite.
+    blocked (verified): `SessionBoundLookup` runs the read under
+    `SENTINEL_GOLD_TIMEOUT_S`. Three timeouts hand off with no case number,
+    inside the attempts' total budget.
     """
     import time
 
+    budget = 0.05
+    monkeypatch.setenv("SENTINEL_GOLD_TIMEOUT_S", str(budget))
+
     class SlowGold:
         def get(self, reference: str, customer_id: str):  # type: ignore[no-untyped-def]
-            time.sleep(0.2)
+            time.sleep(0.4)
             return None
 
         def list_for_customer(self, customer_id: str):  # type: ignore[no-untyped-def]
-            time.sleep(0.2)
+            time.sleep(0.4)
             return []
 
     logged_in.app.state.gold = SlowGold()
     start = time.monotonic()
     response = logged_in.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
     elapsed = time.monotonic() - start
+    body = response.json()
     assert response.status_code == 200
-    assert elapsed < 0.05, "a slow tool must not hold the request open"
+    assert body["kind"] == "handoff"
+    assert "case_id" not in body
+    assert elapsed < budget * 3 + 0.2
+    records = logged_in.app.state.recorder.records_for(response.headers["X-Trace-Id"])
+    assert sum(1 for record in records if record.outcome == "timeout") == 3
 
 
 @pytest.mark.attack("D6", "blocked_verified")

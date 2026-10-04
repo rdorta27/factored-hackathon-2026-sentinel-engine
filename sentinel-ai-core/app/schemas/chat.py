@@ -42,6 +42,13 @@ class ChatInput(BaseModel):
         max_length=64,
         pattern=r"^[A-Za-z0-9\-]+$",
     )
+    # Response language, chosen by the customer in the interface. Optional: when
+    # absent the language detected from the message decides, as before. Only the
+    # five locales the interface offers are accepted.
+    language: Optional[str] = Field(
+        default=None,
+        pattern=r"^(es-419|es-MX|es-CO|es-AR|pt-BR)$",
+    )
 
     @model_validator(mode="after")
     def _exactly_one_meaningful_input(self) -> "ChatInput":
