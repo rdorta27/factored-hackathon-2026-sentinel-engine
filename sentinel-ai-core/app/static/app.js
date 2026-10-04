@@ -57,6 +57,8 @@ function setLocale(locale) {
   document.querySelectorAll("#locale-group [data-locale]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.getAttribute("data-locale") === locale));
   });
+  const select = document.getElementById("locale-select");
+  if (select) select.value = locale;
 }
 
 /* The selector's own value, exactly as the API accepts it. */
@@ -117,10 +119,9 @@ async function loadLocale(locale) {
   // A customer session repaints its header and charges in the new language.
   if (lastTransactions && !document.getElementById("view-chat").hidden) {
     renderSessionContext(lastTransactions);
-    const box = document.getElementById("transactions");
-    box.textContent = "";
-    lastTransactions.transactions.forEach((tx) => box.append(renderCharge(tx)));
+    paintCharges(lastTransactions);
     renderDemoPrompts(lastTransactions.transactions);
+    renderThread();
   }
 }
 
@@ -135,10 +136,44 @@ async function api(path, options) {
 }
 
 function clearThread() {
+  threadLog = [];
   document.getElementById("thread").textContent = "";
   document.getElementById("steps-side").textContent = "";
   document.getElementById("transactions").textContent = "";
+  document.getElementById("cases").textContent = "";
   lastTransactions = null;
+}
+
+/* The thread is a log of what happened. Changing the language draws it again, so
+   cards, steps and labels follow the new language. The customer's own words stay
+   as they typed them. */
+let threadLog = [];
+
+function logEntry(entry) {
+  threadLog.push(entry);
+  drawEntry(entry);
+  return entry;
+}
+
+function drawEntry(entry) {
+  const thread = document.getElementById("thread");
+  if (entry.type === "user") thread.append(el("div", "msg msg-user", entry.text));
+  else if (entry.type === "charge") thread.append(el("div", "msg msg-user", humanStatement(entry.candidate)));
+  else if (entry.type === "welcome") thread.append(el("div", "msg msg-bot", t("welcome")));
+  else if (entry.type === "error") drawError(entry.body, entry.status);
+  else if (entry.type === "reply") drawReply(entry.body, entry);
+}
+
+function renderThread() {
+  document.getElementById("thread").textContent = "";
+  threadLog.forEach(drawEntry);
+  const last = [...threadLog].reverse().find((entry) => entry.type === "reply" && entry.body.steps);
+  if (last) renderSteps(last.body, false);
+}
+
+function startThread() {
+  clearThread();
+  logEntry({ type: "welcome" });
 }
 
 let demoAvailable = false;
@@ -191,10 +226,14 @@ function receiptCharge(tx) {
 }
 
 function addBubble(text) {
-  document.getElementById("thread").append(el("div", "msg msg-user", text));
+  logEntry({ type: "user", text });
 }
 
 function renderError(body, status) {
+  logEntry({ type: "error", body, status });
+}
+
+function drawError(body, status) {
   const key = status === 429 ? "tooManyRequests" : "errorGeneric";
   const trace = body && body.trace_id ? ` (${body.trace_id})` : "";
   document.getElementById("thread").append(el("div", "msg msg-audit", `${t(key)}${trace}`));
@@ -207,6 +246,9 @@ async function postChat(payload) {
   // A new turn closes any open confirmation: an old "Confirmar" must not fire.
   document.querySelectorAll(".chat-confirm button").forEach((button) => {
     button.disabled = true;
+  });
+  threadLog.forEach((entry) => {
+    entry.closed = true;
   });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
@@ -231,7 +273,7 @@ async function postChat(payload) {
 }
 
 function selectCandidate(candidate) {
-  addBubble(humanStatement(candidate));
+  logEntry({ type: "charge", candidate });
   postChat({ selected_reference: candidate.reference });
 }
 
@@ -255,21 +297,35 @@ function renderCandidates(box, candidates) {
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
 const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
+const STEP_PAUSE_MS = 400;
+let stepTimers = [];
 
-function renderSteps(body) {
+/* The reply carries the finished record of the turn. The page shows it one step
+   at a time so a person can follow it. The pauses are a way to show the record,
+   not a measure of the time each step took. */
+function renderSteps(body, animate = true) {
   const list = document.getElementById("steps-side");
   if (!body.steps || !body.steps.length) return;
   list.setAttribute("data-testid", "steps-panel");
+  stepTimers.forEach(clearTimeout);
+  stepTimers = [];
   list.textContent = "";
+  const staged = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  list.setAttribute("aria-busy", String(staged));
   body.steps.forEach((key, index) => {
-    const item = el("li", HAND_STEPS.has(key) ? "step-item step-hand" : "step-item");
-    item.append(el("span", "step-dot", String(index + 1)));
-    const text = el("div", "step-text");
-    text.append(el("span", "step-title", t(key)));
-    const hint = `stepHint.${key.replace(/^step\./, "")}`;
-    if (strings[hint]) text.append(el("span", "chat-sub", t(hint)));
-    item.append(text);
-    list.append(item);
+    const draw = () => {
+      const item = el("li", HAND_STEPS.has(key) ? "step-item step-hand step-in" : "step-item step-in");
+      item.append(el("span", "step-dot", String(index + 1)));
+      const text = el("div", "step-text");
+      text.append(el("span", "step-title", t(key)));
+      const hint = `stepHint.${key.replace(/^step\./, "")}`;
+      if (strings[hint]) text.append(el("span", "chat-sub", t(hint)));
+      item.append(text);
+      list.append(item);
+      if (index === body.steps.length - 1) list.setAttribute("aria-busy", "false");
+    };
+    if (staged && index > 0) stepTimers.push(setTimeout(draw, index * STEP_PAUSE_MS));
+    else draw();
   });
 }
 
@@ -345,6 +401,11 @@ function whyCard(body) {
 }
 
 function renderReply(body) {
+  const entry = logEntry({ type: "reply", body, closed: false });
+  renderSteps(entry.body, true);
+}
+
+function drawReply(body, entry) {
   const thread = document.getElementById("thread");
   if (body.kind === "confirm_box") {
     const box = el("div", "chat-confirm");
@@ -353,9 +414,11 @@ function renderReply(body) {
     box.append(el("p", "", humanStatement(item)));
     const button = el("button", "", t("confirmButton"));
     button.type = "button";
+    button.disabled = Boolean(entry && entry.closed);
     button.addEventListener("click", () => {
       // One confirmation per box: the button turns off as soon as it is used.
       button.disabled = true;
+      if (entry) entry.closed = true;
       postChat({ selected_reference: item.reference });
     });
     box.append(button);
@@ -387,7 +450,6 @@ function renderReply(body) {
   } else {
     thread.append(el("div", "msg msg-bot", t(body.message_key)));
   }
-  renderSteps(body);
 }
 
 /* The pill of a charge. The state comes from the server; the page only
@@ -449,6 +511,35 @@ function renderSessionContext(payload) {
 
 let lastTransactions = null;
 
+/* "Mis reclamos": the cases of this customer, from the case store. */
+function renderCases(cases) {
+  const box = document.getElementById("cases");
+  box.textContent = "";
+  if (!cases.length) {
+    box.append(el("p", "chat-sub", t("casesEmpty")));
+    return;
+  }
+  cases.forEach((item) => {
+    const card = el("div", "case-card");
+    card.setAttribute("data-testid", "case-card");
+    const top = el("span", "tx-line");
+    top.append(el("strong", "case-id", item.case_id));
+    top.append(el("span", `pill pill-${STATE_TONES[item.case_state] || "neutral"}`, t(`state.${item.case_state}`)));
+    card.append(top);
+    const what = [item.merchant, item.amount ? formatAmount(item.amount, item.currency) : "", item.date ? formatDate(item.date) : ""];
+    card.append(el("span", "chat-sub", what.filter(Boolean).join(" · ")));
+    box.append(card);
+  });
+}
+
+function paintCharges(payload) {
+  lastTransactions = payload;
+  renderCases(payload.cases || []);
+  const box = document.getElementById("transactions");
+  box.textContent = "";
+  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+}
+
 async function loadTransactions() {
   const response = await api("/api/v1/transactions");
   const payload = await response.json().catch(() => ({}));
@@ -456,11 +547,8 @@ async function loadTransactions() {
     renderError(payload, response.status);
     return;
   }
-  lastTransactions = payload;
   renderSessionContext(payload);
-  const box = document.getElementById("transactions");
-  box.textContent = "";
-  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+  paintCharges(payload);
   renderDemoPrompts(payload.transactions);
 }
 
@@ -470,10 +558,7 @@ async function refreshCharges() {
   if (!response.ok) return;
   const payload = await response.json().catch(() => null);
   if (!payload) return;
-  lastTransactions = payload;
-  const box = document.getElementById("transactions");
-  box.textContent = "";
-  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+  paintCharges(payload);
 }
 
 /* Side panels: columns on a wide screen, a drawer behind a button on a phone. */
@@ -569,6 +654,7 @@ function renderDemoPrompts(transactions) {
     box.append(chip);
   });
   box.hidden = prompts.length === 0;
+  document.getElementById("demo-hint").hidden = prompts.length === 0;
 }
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
@@ -695,7 +781,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     loadQueue();
     return;
   }
-  clearThread();
+  startThread();
   show("view-chat");
   await loadContext();
   await loadTransactions();
@@ -723,6 +809,10 @@ document.getElementById("logout").addEventListener("click", async () => {
   show("view-login");
 });
 
+document.getElementById("locale-select").addEventListener("change", (event) => {
+  loadLocale(event.target.value);
+});
+
 document.getElementById("locale-group").addEventListener("click", (event) => {
   const button = event.target.closest("[data-locale]");
   if (button) loadLocale(button.getAttribute("data-locale"));
@@ -748,7 +838,7 @@ async function demoLogin(persona) {
     return;
   }
   const { locale } = await response.json();
-  clearThread();
+  startThread();
   show("view-chat");
   await loadContext();
   if (locale) await loadLocale(locale);

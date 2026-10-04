@@ -87,6 +87,19 @@ class ProductView(BaseModel):
     synthetic: bool = True
 
 
+class OwnCase(BaseModel):
+    """One case of the session customer for the "Mis reclamos" panel."""
+
+    model_config = StrictModel
+
+    case_id: str = Field(min_length=1, max_length=64)
+    case_state: str = Field(pattern=r"^(in_review|with_advisor)$")
+    merchant: Optional[str] = Field(default=None, max_length=200)
+    amount: Optional[str] = Field(default=None, max_length=64)
+    currency: Optional[str] = Field(default=None, max_length=8)
+    date: Optional[str] = Field(default=None, max_length=32)
+
+
 class TransactionList(BaseModel):
     """Response of ``GET /api/v1/transactions``."""
 
@@ -95,6 +108,7 @@ class TransactionList(BaseModel):
     as_of: str = Field(min_length=1, max_length=32)
     transactions: list[CandidateTransaction]
     product: Optional[ProductView] = None
+    cases: list[OwnCase] = Field(default_factory=list)
 
 
 class TextReply(BaseModel):

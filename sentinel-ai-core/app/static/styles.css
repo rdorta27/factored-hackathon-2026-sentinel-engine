@@ -507,3 +507,40 @@ main {
     align-items: center;
   }
 }
+
+/* --- Language selector: buttons on a wide screen, one select on a phone --- */
+
+.locale-select {
+  display: none;
+  min-height: 44px;
+  max-width: 100%;
+}
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.chat-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+@media (max-width: 700px) {
+  .locale-select {
+    display: block;
+    flex: 1;
+  }
+  #locale-group {
+    display: none;
+  }
+  .topbar-controls {
+    flex-wrap: wrap;
+  }
+}

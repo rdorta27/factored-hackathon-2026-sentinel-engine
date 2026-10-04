@@ -14,7 +14,7 @@
 <body>
 <div class="chat app">
   <header class="chat-header">
-    <span class="chat-badge" data-testid="brand-mark" role="img" aria-label="Sentinel mark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 5-3.5 8.2-8 9.5C7.5 20.2 4 17 4 12V6l8-3.5Z"/><ellipse cx="12" cy="11.5" rx="3.6" ry="2.4"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg></span>
+    <span class="chat-badge" data-testid="brand-mark" role="img" aria-label="Sentinel mark"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 5-3.5 8.2-8 9.5C7.5 20.2 4 17 4 12V6l8-3.5Z"/><ellipse cx="12" cy="11.5" rx="3.6" ry="2.4"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg></span>
     <div class="app-headings">
       <p class="chat-title" id="brand-name" data-testid="brand-name">Sentinel</p>
       <p class="chat-sub" id="brand-tagline" data-i18n="purposeLine">Disputas de cargos no reconocidos</p>
@@ -22,6 +22,13 @@
     <p class="chat-sub session-context" id="session-context" data-testid="session-context" hidden></p>
     <p class="demo-chip" id="reference-date" data-testid="reference-date" hidden></p>
     <div class="topbar-controls">
+      <select id="locale-select" class="locale-select" data-testid="locale-select" aria-label="Language">
+        <option value="es-419">Español · Latinoamérica</option>
+        <option value="es-MX">Español · México</option>
+        <option value="es-CO">Español · Colombia</option>
+        <option value="es-AR">Español · Argentina</option>
+        <option value="pt-BR">Português · Brasil</option>
+      </select>
       <div id="locale-group" role="group" aria-label="Language">
         <button type="button" class="theme-toggle" data-locale="es-419" data-testid="locale-button" aria-pressed="true">Español · Latinoamérica</button>
         <button type="button" class="theme-toggle" data-locale="es-MX" data-testid="locale-button" aria-pressed="false">Español · México</button>
@@ -111,7 +118,9 @@
         </aside>
         <div class="chat-thread-col">
           <div id="thread" class="chat-thread" aria-live="polite"></div>
+          <p id="demo-hint" class="chat-sub" data-i18n="demoHint" hidden>Quick test</p>
           <div id="demo-prompts" class="chat-candidates" role="group" aria-label="Demo" hidden></div>
+          <p class="chat-sub" id="chat-help" data-i18n="chatHelp"></p>
           <form id="chat-form" class="chat-input">
             <input id="chat-input" maxlength="2000" required>
             <button type="submit" data-i18n="sendButton">Send</button>
@@ -119,6 +128,8 @@
         </div>
         <aside id="charges-col" class="chat-panel side-panel" aria-labelledby="tx-title">
           <button type="button" class="theme-toggle drawer-close" data-close-drawer data-i18n="closeDrawer">Close</button>
+          <h3 id="cases-title" class="chat-title" data-i18n="casesTitle">My claims</h3>
+          <div id="cases" class="tx-list" data-testid="cases"></div>
           <h3 id="tx-title" class="chat-title" data-i18n="txTitle">Your recent charges</h3>
           <p class="chat-sub" data-i18n="txHint">Tap a charge to dispute it</p>
           <div id="transactions" class="tx-list"></div>

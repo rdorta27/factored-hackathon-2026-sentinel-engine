@@ -255,3 +255,23 @@ def test_hidden_attribute_always_wins_over_a_display_rule() -> None:
     """Regression: `.entry { display: flex }` kept the entry visible under the advisor queue."""
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
     assert "[hidden] {\n  display: none !important;" in styles
+
+
+def test_thread_is_a_log_that_is_drawn_again_when_the_language_changes() -> None:
+    for name in ("threadLog", "renderThread", "drawReply", "startThread"):
+        assert name in APP_JS, name
+    block = APP_JS[APP_JS.index("async function loadLocale") : APP_JS.index("async function api")]
+    assert "renderThread()" in block
+
+
+def test_steps_are_shown_one_at_a_time_and_say_they_are_a_record() -> None:
+    assert "STEP_PAUSE_MS" in APP_JS and "prefers-reduced-motion" in APP_JS
+    assert "not a measure" in APP_JS, "the code must say the pauses are staging"
+
+
+def test_claims_panel_welcome_help_and_phone_language_select() -> None:
+    for marker in ('id="cases"', 'data-i18n="casesTitle"', 'data-i18n="chatHelp"', 'id="locale-select"', 'id="demo-hint"'):
+        assert marker in INDEX, marker
+    assert "renderCases" in APP_JS and 'type: "welcome"' in APP_JS
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "#locale-group {\n    display: none;" in styles

@@ -44,7 +44,7 @@ def test_customer_bubble_keeps_its_own_wording() -> None:
     assert 't("referToCharge")' in APP_JS
     assert "function humanStatement" in APP_JS
     # The bubble path still uses it.
-    assert "addBubble(humanStatement(" in APP_JS
+    assert "humanStatement(entry.candidate)" in APP_JS
 
 
 # --- the new line is translated in every locale --------------------------

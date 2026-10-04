@@ -19,7 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.orchestrator.types import Candidate
 from app.policy.engine import _expired
 from app.policy.load import load_country
-from app.schemas.chat import CandidateTransaction, ProductView, TransactionList
+from app.schemas.chat import CandidateTransaction, OwnCase, ProductView, TransactionList
 from app.session.models import Session
 from app.session.router import require_customer
 from app.state.cases import OPEN
@@ -105,7 +105,20 @@ def list_transactions(
     # Only a Gold source that holds product data gives a product. Never invent digits.
     lookup = getattr(gold, "product_for", None)
     info = lookup(session.customer_id) if lookup else None
+    summaries = [
+        OwnCase(
+            case_id=c.case_id,
+            case_state="in_review" if c.kind == "dispute" else "with_advisor",
+            merchant=c.merchant,
+            amount=c.amount,
+            currency=c.currency,
+            date=c.transaction_date,
+        )
+        for c in cases
+        if (c.kind == "dispute" and c.status == OPEN) or c.kind == "handoff"
+    ]
     return TransactionList(
+        cases=summaries,
         product=ProductView(kind=info.kind, last4=info.last4) if info else None,
         as_of=ref_date.isoformat(),
         # Raw Gold vocabulary never reaches the API: rows go through the candidate adapter.

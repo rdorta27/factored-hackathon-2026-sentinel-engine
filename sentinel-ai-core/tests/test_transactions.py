@@ -186,6 +186,8 @@ def test_case_state_follows_the_case_store() -> None:
     rows = {r["reference"]: r for r in api.get("/api/v1/transactions").json()["transactions"]}
     assert rows["TXN-1001"]["eligible"] is False, "a charge in review cannot be disputed again"
     assert states["TXN-1101"] == "eligible", "another customer's case must not change this listing"
+    cases = api.get("/api/v1/transactions").json()["cases"]
+    assert {(c["case_id"], c["case_state"]) for c in cases} == {("D-T1", "in_review"), ("H-T1", "with_advisor")}
 
 
 def test_case_state_adds_no_personal_field() -> None:
@@ -196,6 +198,7 @@ def test_case_state_adds_no_personal_field() -> None:
         "reference", "amount", "currency", "merchant", "date", "status",
         "eligible", "ineligibleKey", "case_state",
     }
+    assert api.get("/api/v1/transactions").json()["cases"] == []
 
 
 def test_demo_session_has_a_masked_product_and_no_other_digits() -> None:
