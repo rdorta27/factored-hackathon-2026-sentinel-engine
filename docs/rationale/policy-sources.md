@@ -1,17 +1,18 @@
 # Policy sources
 
-The dispute policy the chat applies is synthetic. This page lists what is
-synthetic, what a customer can see of it, the known defects, and where real values
-could come from. The policy is decided in code ([REQ-0033](../requirements/frontend-backend.md#req-0033)),
-never by the model. Thresholds are covered in [policy thresholds](policy-thresholds.md);
-this page is the whole inventory.
+The chat applies a synthetic dispute policy. This page lists what is synthetic, what a customer sees of it, the known defects and where real values can come from. Code decides the policy ([REQ-0033](../requirements/frontend-backend.md#req-0033)). The model never decides it. The [policy thresholds](policy-thresholds.md) page covers the thresholds. This page is the full inventory.
 
 ## Choice
 
-The policy lives in `sentinel-ai-core/config/policy/{mx,co,ar}.yaml`, marked
-`synthetic: true` ("Synthetic policy written by the team. Not a bank policy"). A bank
-replaces the values, points `source` at its own policy and sets `synthetic: false`,
-with no code change. Until then the chat must not present the values as a bank's rules.
+The policy is in `sentinel-ai-core/config/policy/{mx,co,ar}.yaml`, with `synthetic: true` ("Synthetic policy written by the team. Not a bank policy"). A bank replaces the values, sets `source` to its own policy and sets `synthetic: false`. No code changes. Until then, the chat does not show the values as the rules of a bank.
+
+## Evidence
+
+| Check | Where |
+|---|---|
+| No customer text carries a number for the window | `sentinel-ai-core/tests/test_policy_texts.py` |
+| The "why?" answer reads `window_days` and the charge dates, and states the demonstration label | `sentinel-ai-core/tests/test_explanation.py`, spec [`decision-explanation`](../../openspec/specs/decision-explanation/spec.md) |
+| The policy decides and the model does not | spec [`decision-priority`](../../openspec/specs/decision-priority/spec.md); category F of [`adversarial/20261002T222323Z`](../../evidence/adversarial/20261002T222323Z/summary.json) |
 
 ## What is synthetic and what the customer sees
 
