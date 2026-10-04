@@ -14,6 +14,8 @@ English, including working documents.
 | Root [`README.md`](README.md), slides, video script | English | The deliverable the evaluators read. |
 
 **Rule of thumb: everything is drafted in English from the first draft.**
+There is no translation pass at the end. Tracked as REQ-0051; the status table lives in
+[`docs/build/delivery.md`](docs/build/delivery.md#language).
 
 **All documentation is written in simplified technical English
 (ASD-STE100).** This applies to every new or edited Markdown file: README,
@@ -50,8 +52,7 @@ A file without this frontmatter is not yet in ASD-STE100. When you rewrite
 it, add the frontmatter. Do not add the frontmatter to a file that you only
 edit in part. To list the files that are done:
 `grep -rl '^style: ASD-STE100' --include=*.md .`
-There is no translation pass at the end. Tracked as REQ-0051; the status table lives in
-[`docs/build/delivery.md`](docs/build/delivery.md#language).
+
 
 For agents:
 
@@ -102,10 +103,12 @@ Accepted decisions that code must follow:
 - **Platform:** Azure; locally it runs on Linux. See
   [001](docs/build/decisions/001-azure-platform.md).
 - **Flow** (confirmed at the 9/29 review): a dispute starts as an account
-  inquiry; the learned component is a prompted LLM against a keyword baseline.
+  inquiry; the learned component is a prompted LLM intent router against a keyword baseline.
   See [flow selection](docs/build/flows/03-flow-selection.md) and
   [007](docs/build/decisions/007-learned-component.md).
-- Which model serves each route is still open (pending decision 10).
+- **Router model:** GLM 5.3 Flash on Fireworks AI on both routes, with the
+  keyword baseline as the per-turn fallback. See
+  [016](docs/build/decisions/016-router-models.md).
 
 ## Rules
 
