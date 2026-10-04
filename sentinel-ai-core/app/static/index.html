@@ -15,10 +15,11 @@
   <header class="chat-header">
     <span class="chat-badge" data-testid="brand-mark" role="img" aria-label="Sentinel mark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 5-3.5 8.2-8 9.5C7.5 20.2 4 17 4 12V6l8-3.5Z"/><ellipse cx="12" cy="11.5" rx="3.6" ry="2.4"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg></span>
     <div class="app-headings">
-      <p class="chat-title" data-i18n="appTitle">Sentinel Engine</p>
-      <p class="chat-sub" data-i18n="purposeLine">Disputas de cargos no reconocidos</p>
-      <p class="chat-sub" id="reference-date"></p>
+      <p class="chat-title" id="brand-name" data-testid="brand-name">Sentinel</p>
+      <p class="chat-sub" id="brand-tagline" data-i18n="purposeLine">Disputas de cargos no reconocidos</p>
     </div>
+    <p class="chat-sub session-context" id="session-context" data-testid="session-context" hidden></p>
+    <p class="demo-chip" id="reference-date" data-testid="reference-date" hidden></p>
     <div class="topbar-controls">
       <div id="locale-group" role="group" aria-label="Language">
         <button type="button" class="theme-toggle" data-locale="es-419" data-testid="locale-button" aria-pressed="true">Español · Latinoamérica</button>
@@ -27,6 +28,7 @@
         <button type="button" class="theme-toggle" data-locale="es-AR" data-testid="locale-button" aria-pressed="false">Español · Argentina</button>
         <button type="button" class="theme-toggle" data-locale="pt-BR" data-testid="locale-button" aria-pressed="false">Português · Brasil</button>
       </div>
+      <button id="agent" class="theme-toggle" type="button" data-i18n="agentButton" hidden>Talk to an agent</button>
       <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
     </div>
   </header>
@@ -64,7 +66,17 @@
       </details>
     </section>
     <section id="view-chat" hidden>
+      <div class="drawer-buttons">
+        <button type="button" class="theme-toggle" id="open-steps" data-drawer="steps-col" aria-expanded="false" aria-controls="steps-col" data-i18n="openSteps">What we checked</button>
+        <button type="button" class="theme-toggle" id="open-charges" data-drawer="charges-col" aria-expanded="false" aria-controls="charges-col" data-i18n="openCharges">Your recent charges</button>
+      </div>
       <div class="chat-grid">
+        <aside id="steps-col" class="chat-panel side-panel" aria-labelledby="steps-title">
+          <h3 id="steps-title" class="chat-title" data-i18n="stepsTitle">What we checked</h3>
+          <p class="chat-sub" data-i18n="stepsHint">Your last message, step by step</p>
+          <ol id="steps-side" class="steps-side" data-testid="steps-panel"></ol>
+          <p class="chat-sub steps-note" data-i18n="stepsNote">Rules and records decide. The AI does not.</p>
+        </aside>
         <div class="chat-thread-col">
           <div id="thread" class="chat-thread" aria-live="polite"></div>
           <div id="demo-prompts" class="chat-candidates" role="group" aria-label="Demo" hidden></div>
@@ -72,9 +84,8 @@
             <input id="chat-input" maxlength="2000" required>
             <button type="submit" data-i18n="sendButton">Send</button>
           </form>
-          <button id="agent" class="theme-toggle full-width" type="button" data-i18n="agentButton">Talk to an agent</button>
         </div>
-        <aside class="chat-panel" aria-labelledby="tx-title">
+        <aside id="charges-col" class="chat-panel side-panel" aria-labelledby="tx-title">
           <h3 id="tx-title" class="chat-title" data-i18n="txTitle">Your recent charges</h3>
           <p class="chat-sub" data-i18n="txHint">Tap a charge to dispute it</p>
           <div id="transactions" class="tx-list"></div>

@@ -77,6 +77,16 @@ class CandidateTransaction(BaseModel):
     case_state: Optional[str] = Field(default=None, max_length=24)
 
 
+class ProductView(BaseModel):
+    """Masked product for the header: a type key and the last four digits."""
+
+    model_config = StrictModel
+
+    kind: str = Field(pattern=r"^(debit|credit)_card$")
+    last4: str = Field(pattern=r"^\d{4}$")
+    synthetic: bool = True
+
+
 class TransactionList(BaseModel):
     """Response of ``GET /api/v1/transactions``."""
 
@@ -84,6 +94,7 @@ class TransactionList(BaseModel):
 
     as_of: str = Field(min_length=1, max_length=32)
     transactions: list[CandidateTransaction]
+    product: Optional[ProductView] = None
 
 
 class TextReply(BaseModel):

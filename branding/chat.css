@@ -168,3 +168,93 @@
   font-size: 13px;
   cursor: pointer;
 }
+
+/* --- Bank shell, side panels, status pills (change bank-ui) --------------- */
+
+.demo-chip {
+  background: var(--demo-bg);
+  color: var(--demo-text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.session-context {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.side-panel {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.side-panel.drawer-open {
+  border-radius: 12px 0 0 12px;
+  box-shadow: 0 0 0 100vmax rgba(15, 27, 45, 0.45);
+}
+
+.step-dot {
+  background: var(--pill-ok-bg);
+  color: var(--pill-ok-text);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.step-hand .step-dot {
+  background: var(--pill-warn-bg);
+  color: var(--pill-warn-text);
+}
+
+.step-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--strong);
+}
+
+.step-hand .step-title {
+  color: var(--pill-warn-text);
+}
+
+.steps-note {
+  background: var(--callout-bg);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+}
+
+.pill {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.pill-ok { background: var(--pill-ok-bg); color: var(--pill-ok-text); }
+.pill-warn { background: var(--pill-warn-bg); color: var(--pill-warn-text); }
+.pill-info { background: var(--pill-info-bg); color: var(--pill-info-text); }
+.pill-neutral { background: var(--pill-neutral-bg); color: var(--pill-neutral-text); }
+.pill-bad { background: var(--pill-bad-bg); color: var(--pill-bad-text); }
+
+.tx-card {
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-weight: 400;
+}
+
+.tx-card strong {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.tx-card[disabled] {
+  cursor: default;
+}
+
+.tx-card:not([disabled]):hover {
+  border-color: var(--accent);
+}
+
+.tx-active {
+  background: var(--row-alt);
+  border-color: var(--accent);
+}

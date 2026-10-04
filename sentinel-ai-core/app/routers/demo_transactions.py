@@ -19,7 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from app.orchestrator.types import Candidate
 from app.policy.engine import _expired
 from app.policy.load import load_country
-from app.schemas.chat import CandidateTransaction, TransactionList
+from app.schemas.chat import CandidateTransaction, ProductView, TransactionList
 from app.session.models import Session
 from app.session.router import require_customer
 from app.state.cases import OPEN
@@ -78,6 +78,15 @@ def case_state(view: CandidateTransaction, in_review: set[str], with_advisor: se
     return _STATE_BY_KEY.get(view.ineligibleKey, "not_disputable")
 
 
+def _with_state(view: CandidateTransaction, in_review: set[str], with_advisor: set[str]) -> CandidateTransaction:
+    state = case_state(view, in_review, with_advisor)
+    update: dict[str, object] = {"case_state": state}
+    if state == "in_review":
+        # A dispute opened here closes the charge to a second dispute.
+        update.update(eligible=False, ineligibleKey="candidateDisputed")
+    return view.model_copy(update=update)
+
+
 @router.get("/transactions")
 def list_transactions(
     request: Request,
@@ -93,10 +102,12 @@ def list_transactions(
     in_review = {c.transaction_id for c in cases if c.kind == "dispute" and c.status == OPEN and c.transaction_id}
     with_advisor = {c.transaction_id for c in cases if c.kind == "handoff" and c.transaction_id}
     views = [candidate_view(to_candidate(row), session.country, ref_date) for row in rows]
+    # Only a Gold source that holds product data gives a product. Never invent digits.
+    lookup = getattr(gold, "product_for", None)
+    info = lookup(session.customer_id) if lookup else None
     return TransactionList(
+        product=ProductView(kind=info.kind, last4=info.last4) if info else None,
         as_of=ref_date.isoformat(),
         # Raw Gold vocabulary never reaches the API: rows go through the candidate adapter.
-        transactions=[
-            view.model_copy(update={"case_state": case_state(view, in_review, with_advisor)}) for view in views
-        ],
+        transactions=[_with_state(view, in_review, with_advisor) for view in views],
     )

@@ -94,12 +94,12 @@ def test_demo_entry_has_banner_personas_and_named_languages() -> None:
 def test_resolution_panel_renders_the_closed_steps() -> None:
     assert "renderSteps" in APP_JS
     assert 'data-testid", "steps-panel"' in APP_JS
-    assert 't("howIResolved")' in APP_JS
+    assert 'data-i18n="stepsTitle"' in INDEX
     assert "body.steps" in APP_JS
     assert "innerHTML" not in APP_JS
     strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
     for key in (
-        "howIResolved",
+        "stepsTitle",
         "step.understood",
         "step.lookedUp",
         "step.checkedPolicy",
@@ -156,3 +156,33 @@ def test_the_why_followup_returns_an_explanation_over_http() -> None:
     assert body["values"]["window_days"] == 90
     assert body["values"]["synthetic"] is True
 
+
+
+def test_bank_shell_has_session_line_data_date_and_three_columns() -> None:
+    for marker in ('id="session-context"', 'id="reference-date"', 'id="steps-col"', 'id="charges-col"', 'id="agent"'):
+        assert marker in INDEX, marker
+    # No balance anywhere in the shell or the script.
+    for word in ("saldo", "balance", "saldo disponible"):
+        assert word not in INDEX.lower() and word not in APP_JS.lower()
+    # The product is shown only when the API sends one.
+    assert "payload.product" in APP_JS
+    assert "innerHTML" not in APP_JS
+
+
+def test_charge_pill_reads_the_server_state_and_does_not_compute_it() -> None:
+    assert "tx.case_state" in APP_JS
+    for state in ("eligible", "in_review", "with_advisor", "already_disputed", "outside_window"):
+        strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
+        assert f'"state.{state}"' in strings
+    # The page never re-derives the window or the status rule.
+    assert "window_days" not in APP_JS and "Date.now" not in APP_JS and "new Date()" not in APP_JS
+
+
+def test_new_locale_keys_exist_in_both_languages() -> None:
+    import json
+
+    es = json.loads((STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8"))
+    pt = json.loads((STATIC / "i18n" / "pt-BR.json").read_text(encoding="utf-8"))
+    used = set(re.findall(r'data-i18n="([^"]+)"', INDEX))
+    assert used <= set(es) and used <= set(pt), sorted(used - set(es) | used - set(pt))
+    assert set(es) == set(pt), sorted(set(es) ^ set(pt))

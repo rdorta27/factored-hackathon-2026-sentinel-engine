@@ -106,3 +106,12 @@ def test_sentinel_violet_and_rose_stay_in_the_mark_only() -> None:
         }
     uses = [line for line in CHAT_CSS.splitlines() if "--sentinel-" in line]
     assert len(uses) == 1 and "linear-gradient" in uses[0], "only the product mark uses the Sentinel colors"
+
+
+def test_status_pills_pass_aa_in_both_themes() -> None:
+    for name, theme in _themes().items():
+        for pill in ("ok", "warn", "info", "neutral", "bad"):
+            fill = _var(theme, f"--pill-{pill}-bg")
+            text = _var(theme, f"--pill-{pill}-text")
+            assert _contrast(text, fill) >= 4.5, f"{name} pill {pill}"
+        assert _contrast(_var(theme, "--demo-text"), _var(theme, "--demo-bg")) >= 4.5, f"{name} demo chip"

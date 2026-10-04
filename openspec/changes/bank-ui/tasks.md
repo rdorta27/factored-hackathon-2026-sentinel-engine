@@ -14,8 +14,8 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 
 ## 2. Page
 
-- [ ] 2.1 Add the bank shell with the masked product and the as-of date. Evidence: `tests/test_ui.py`.
-- [ ] 2.2 Show the charge states in the recent-charges panel. Evidence: tests and screenshots.
+- [x] 2.1 Add the bank shell with the masked product and the as-of date. Evidence: `tests/test_ui.py`.
+- [x] 2.2 Show the charge states in the recent-charges panel. Evidence: tests and screenshots.
 - [ ] 2.3 Show the handoff card in the thread. Evidence: tests.
 - [ ] 2.4 Make the layout work on a phone (390 px) with the drawer. Evidence: phone screenshots.
 - [ ] 2.5 Add `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` with the contrast fallback. Evidence: tests and one screenshot with another brand.

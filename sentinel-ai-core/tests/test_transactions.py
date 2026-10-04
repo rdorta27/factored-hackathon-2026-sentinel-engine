@@ -183,6 +183,8 @@ def test_case_state_follows_the_case_store() -> None:
     states = _states(api)
     assert states["TXN-1001"] == "in_review"
     assert states["TXN-1006"] == "with_advisor"
+    rows = {r["reference"]: r for r in api.get("/api/v1/transactions").json()["transactions"]}
+    assert rows["TXN-1001"]["eligible"] is False, "a charge in review cannot be disputed again"
     assert states["TXN-1101"] == "eligible", "another customer's case must not change this listing"
 
 
@@ -194,3 +196,28 @@ def test_case_state_adds_no_personal_field() -> None:
         "reference", "amount", "currency", "merchant", "date", "status",
         "eligible", "ineligibleKey", "case_state",
     }
+
+
+def test_demo_session_has_a_masked_product_and_no_other_digits() -> None:
+    api = TestClient(create_app())
+    login(api)
+    product = api.get("/api/v1/transactions").json()["product"]
+    assert product == {"kind": "debit_card", "last4": "4821", "synthetic": True}
+
+
+def test_gold_without_product_data_gives_no_product() -> None:
+    app = create_app()
+    api = TestClient(app)
+    login(api)
+    app.state.gold = _WithoutProducts(app.state.gold)
+    body = api.get("/api/v1/transactions").json()
+    assert body["product"] is None
+    assert body["transactions"], "the listing still works"
+
+
+class _WithoutProducts:
+    """A Gold source like the real one: charges only, no product data."""
+
+    def __init__(self, inner) -> None:
+        self.get = inner.get
+        self.list_for_customer = inner.list_for_customer

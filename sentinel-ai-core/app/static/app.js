@@ -96,6 +96,14 @@ async function loadLocale(locale) {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
+  // A customer session repaints its header and charges in the new language.
+  if (lastTransactions && !document.getElementById("view-chat").hidden) {
+    renderSessionContext(lastTransactions);
+    const box = document.getElementById("transactions");
+    box.textContent = "";
+    lastTransactions.transactions.forEach((tx) => box.append(renderCharge(tx)));
+    renderDemoPrompts(lastTransactions.transactions);
+  }
 }
 
 async function api(path, options) {
@@ -110,13 +118,27 @@ async function api(path, options) {
 
 function clearThread() {
   document.getElementById("thread").textContent = "";
+  document.getElementById("steps-side").textContent = "";
+  document.getElementById("transactions").textContent = "";
+  lastTransactions = null;
 }
+
+let demoAvailable = false;
 
 function show(id) {
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
   document.getElementById("logout").hidden = id === "view-login";
+  document.getElementById("agent").hidden = id !== "view-chat";
+  // The demo banner is for the entry; a customer session has the data-date chip.
+  document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
+  // The session line and the data date belong to a customer session only.
+  if (id !== "view-chat") {
+    document.getElementById("session-context").hidden = true;
+    document.getElementById("reference-date").hidden = true;
+    closeDrawers();
+  }
 }
 
 /* The session country picks the starting language; the selector can change it. */
@@ -160,6 +182,9 @@ function renderError(body, status) {
   document.getElementById("thread").append(el("div", "msg msg-audit", `${t(key)}${trace}`));
 }
 
+/* Reply kinds that write to the case store, so the charge states change. */
+const CASE_CHANGING = new Set(["case_confirmation", "handoff"]);
+
 async function postChat(payload) {
   // A new turn closes any open confirmation: an old "Confirmar" must not fire.
   document.querySelectorAll(".chat-confirm button").forEach((button) => {
@@ -181,6 +206,7 @@ async function postChat(payload) {
       return;
     }
     renderReply(body);
+    if (CASE_CHANGING.has(body.kind)) await refreshCharges();
   } finally {
     typing.remove();
   }
@@ -207,18 +233,26 @@ function renderCandidates(box, candidates) {
   box.append(chips);
 }
 
-/* "Cómo lo resolví": the ordered steps of this turn, in plain language.
+/* "Qué revisamos": the ordered steps of the last turn, in the left column.
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
-function renderSteps(thread, body) {
+const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
+
+function renderSteps(body) {
+  const list = document.getElementById("steps-side");
   if (!body.steps || !body.steps.length) return;
-  const panel = el("div", "msg msg-audit steps-panel");
-  panel.setAttribute("data-testid", "steps-panel");
-  panel.append(el("p", "chat-sub", t("howIResolved")));
-  const list = el("ol", "steps-list");
-  body.steps.forEach((key) => list.append(el("li", "", t(key))));
-  panel.append(list);
-  thread.append(panel);
+  list.setAttribute("data-testid", "steps-panel");
+  list.textContent = "";
+  body.steps.forEach((key, index) => {
+    const item = el("li", HAND_STEPS.has(key) ? "step-item step-hand" : "step-item");
+    item.append(el("span", "step-dot", String(index + 1)));
+    const text = el("div", "step-text");
+    text.append(el("span", "step-title", t(key)));
+    const hint = `stepHint.${key.replace(/^step\./, "")}`;
+    if (strings[hint]) text.append(el("span", "chat-sub", t(hint)));
+    item.append(text);
+    list.append(item);
+  });
 }
 
 /* Neutral transaction status: the dataset status only, never a fraud signal. */
@@ -281,8 +315,67 @@ function renderReply(body) {
   } else {
     thread.append(el("div", "msg msg-bot", t(body.message_key)));
   }
-  renderSteps(thread, body);
+  renderSteps(body);
 }
+
+/* The pill of a charge. The state comes from the server; the page only
+   chooses a word and a tone. A charge the policy rejects by status shows
+   the dataset status, as before. */
+const STATE_TONES = {
+  eligible: "info",
+  in_review: "info",
+  with_advisor: "warn",
+  already_disputed: "neutral",
+  outside_window: "neutral",
+  not_disputable: "neutral",
+};
+
+function stateLabel(tx) {
+  if (tx.case_state && tx.case_state !== "not_disputable") return t(`state.${tx.case_state}`);
+  return statusLabel(tx.status);
+}
+
+function renderCharge(tx) {
+  const item = el("button", `candidate tx-card${tx.case_state === "in_review" ? " tx-active" : ""}`);
+  item.type = "button";
+  item.setAttribute("data-testid", "tx-card");
+  item.setAttribute("data-case-state", tx.case_state || "");
+  const top = el("span", "tx-line");
+  top.append(el("strong", "", tx.merchant));
+  top.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
+  const bottom = el("span", "tx-line");
+  bottom.append(el("span", "chat-sub", formatDate(tx.date)));
+  bottom.append(el("span", `pill pill-${STATE_TONES[tx.case_state] || "neutral"} tx-status`, stateLabel(tx)));
+  item.append(top, bottom);
+  if (!tx.eligible) {
+    item.disabled = true;
+    item.setAttribute("aria-disabled", "true");
+    item.title = t(tx.ineligibleKey || "candidateOutOfWindow");
+  } else {
+    item.addEventListener("click", () => {
+      closeDrawers();
+      selectCandidate(tx);
+    });
+  }
+  return item;
+}
+
+/* The header line of a session: the masked product when the data has one,
+   then country and language. Without a product the line has no type and no digits. */
+function renderSessionContext(payload) {
+  const parts = [];
+  if (payload.product) parts.push(`${t(`product.${payload.product.kind}`)} •••• ${payload.product.last4}`);
+  if (sessionCountry) parts.push(t(`country.${sessionCountry}`));
+  parts.push(t(`lang.${currentLocale}`));
+  const line = document.getElementById("session-context");
+  line.textContent = parts.join(" · ");
+  line.hidden = false;
+  const chip = document.getElementById("reference-date");
+  chip.textContent = fill(t("dataAsOf"), { date: formatDate(payload.as_of) });
+  chip.hidden = false;
+}
+
+let lastTransactions = null;
 
 async function loadTransactions() {
   const response = await api("/api/v1/transactions");
@@ -291,26 +384,44 @@ async function loadTransactions() {
     renderError(payload, response.status);
     return;
   }
-  document.getElementById("reference-date").textContent = `${t("field_referenceDate")}: ${formatDate(payload.as_of)}`;
+  lastTransactions = payload;
+  renderSessionContext(payload);
   const box = document.getElementById("transactions");
   box.textContent = "";
-  payload.transactions.forEach((tx) => {
-    const item = el("button", "candidate");
-    item.type = "button";
-    item.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
-    item.append(el("span", "chat-sub", ` ${tx.merchant}`));
-    item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
-    item.append(el("span", "chat-sub tx-status", ` · ${t("field_state")}: ${statusLabel(tx.status)}`));
-    if (!tx.eligible) {
-      item.disabled = true;
-      item.append(el("span", "chat-sub", ` ${t(tx.ineligibleKey || "candidateOutOfWindow")}`));
-    } else {
-      item.addEventListener("click", () => selectCandidate(tx));
-    }
-    box.append(item);
-  });
+  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
   renderDemoPrompts(payload.transactions);
 }
+
+/* Charges change when a reply opens a case or a handoff ticket. */
+async function refreshCharges() {
+  const response = await api("/api/v1/transactions");
+  if (!response.ok) return;
+  const payload = await response.json().catch(() => null);
+  if (!payload) return;
+  lastTransactions = payload;
+  const box = document.getElementById("transactions");
+  box.textContent = "";
+  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+}
+
+/* Side panels: columns on a wide screen, a drawer behind a button on a phone. */
+function closeDrawers() {
+  document.querySelectorAll(".side-panel.drawer-open").forEach((panel) => panel.classList.remove("drawer-open"));
+  document.querySelectorAll("[data-drawer]").forEach((button) => button.setAttribute("aria-expanded", "false"));
+}
+
+function toggleDrawer(button) {
+  const panel = document.getElementById(button.getAttribute("data-drawer"));
+  const open = !panel.classList.contains("drawer-open");
+  closeDrawers();
+  panel.classList.toggle("drawer-open", open);
+  button.setAttribute("aria-expanded", String(open));
+}
+
+document.querySelectorAll("[data-drawer]").forEach((button) => {
+  button.addEventListener("click", () => toggleDrawer(button));
+});
+
 /* Demo prompts: built from the customer's own charges, never hardcoded.
    Normal picks the newest charge in the account's own currency that the backend
    marks eligible, using only the listing. Eligibility already carries the
@@ -366,6 +477,8 @@ function renderDemoPrompts(transactions) {
     );
   }
   if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
+  const blocked = rows.find((tx) => tx.case_state === "outside_window" && tx.currency === localCurrency());
+  if (blocked) prompts.push(fill(t("demoWhy"), { merchant: blocked.merchant }));
   prompts.push(t("demoPerson"));
 
   prompts.forEach((phrase) => {
@@ -544,6 +657,7 @@ document.getElementById("locale-group").addEventListener("click", (event) => {
 async function loadDemoEntry() {
   const response = await fetch("/api/v1/auth/demo");
   const available = response.ok;
+  demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
   document.getElementById("demo-banner").hidden = !available;
   document.getElementById("password-login").open = !available;
