@@ -264,7 +264,7 @@ function renderReply(body) {
     thread.append(el("div", "msg msg-bot", explanationText(body)));
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
-    box.append(el("strong", "", t(body.message_key)));
+    box.append(el("strong", "", fillTemplate(t(body.message_key), body.values)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
