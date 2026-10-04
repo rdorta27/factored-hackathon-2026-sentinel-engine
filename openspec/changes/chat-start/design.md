@@ -8,13 +8,15 @@ last_reviewed: 2026-10-04
 
 ## Decisions
 
-1. **Openers are code, after the router.** The router keeps four labels plus `status` (router v3). A greeting is `missing`. A short list of patterns in es-419 and pt-BR picks the subtype: greeting, thanks, goodbye, identity. The patterns run only on `missing` and only on short messages, so a greeting followed by a request keeps its own intent.
-2. **Status answers do not change state.** The status reply reads the verified candidate and the case store. It never opens the box.
-3. **The why answer reuses the explanation module.** A named charge goes through the policy engine without the box. The answer cites the rule id and its values, the same as `decision-explanation`.
-4. **Parsers stay deterministic.** Amounts in words use a small number grammar (units, tens, hundreds, "mil") in Spanish and Portuguese. Date phrases resolve against the reference date. A parsed value that matches no candidate is dropped.
-5. **Wording variants are reviewed text.** Each key has variants in es-419 and pt-BR. The index is `turn_count mod n`, so a replay gives the same text.
+1. **The contract is the seam.** The loop reads contract v3 fields only through `UnderstandResult`. Each field is optional, so every behavior has a path for v2 and the baseline.
+2. **Fallbacks stay out of the baseline.** Opener patterns and the amount and date parsers live in the orchestrator and `grounding.py`, not in `app/ai/demo.py`. The baseline labels stay the same as in `eval-v7`.
+3. **Slots never select alone.** A slot narrows only among verified candidates. One match goes to the confirm box; several show only those; none says what was searched.
+4. **Status and why do not change state.** They read the candidate, the case store and the policy result. They never open a box.
+5. **Words by turn kind.** A table maps each reply kind to "draft allowed" or "template only". Confirm box, case confirmation, policy refusal, handoff and error are template only.
+6. **Reproducible templates.** Variant index = turn count mod n, so a replay gives the same text.
 
 ## Risks
 
-- The opener patterns can hide a real request. Mitigation: only on `missing`, only below a length limit; tests with greeting-plus-request cases.
-- Frozen replays can change. Mitigation: run `verify` on `2024Q4-resolution-v2`; freeze a new run if it changes.
+- Opener patterns can hide a request: only on `missing`, only on short messages, with greeting-plus-request tests.
+- Frozen replays change: run `verify` on `2024Q4-resolution-v2` and freeze a new run if the change is intended.
+- The draft adds an injection surface: the validator of `router-v3` and the adversarial suite cover it.

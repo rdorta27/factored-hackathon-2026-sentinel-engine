@@ -12,18 +12,21 @@ The first message of a chat is the first thing that a customer and a judge see. 
 
 - "hola", "gracias" or "¿eres un bot?" get "I can only help with charges".
 - "quiero ver el estado de mi último cargo" ("I want to see the status of my last charge") gets "which charge?".
-- "¿por qué no puedo reclamar el de enero?" ("why can't I dispute the January one?") gets a generic answer. The explanation exists only as a follow-up to a refusal.
-- "un cobro de mil pesos" ("a charge of one thousand pesos") does not find the 1,000 charge.
+- "¿por qué no puedo reclamar el de enero?" ("why can't I dispute the January one?") gets a generic answer (Felix 6).
+- "un cobro de mil pesos" ("a charge of one thousand pesos") finds nothing (Felix 8).
+- Every reply is one fixed sentence.
 
-The brief asks the system to keep context, clarify ambiguity and explain decisions from rules (REQ-0001, REQ-0002, REQ-0029, REQ-0044).
+[`router-v3`](../router-v3/proposal.md) makes the model read more (contract v3). This change makes the loop use it, with a code fallback when `router_v2` or the baseline serves (REQ-0001, REQ-0002, REQ-0029, REQ-0044).
 
 ## What Changes
 
-- **Openers in code.** When the router labels a message `missing`, a deterministic check finds a greeting, thanks, a goodbye or "are you a bot". The reply is friendly, says what the assistant can do, and never hands off.
-- **Charge status.** With the `status` label of [router v3](../router-v3/proposal.md), the reply gives the status, date and dispute eligibility of the verified charge. It opens no case. With `router_v2` or the baseline, the behavior stays as today.
-- **Why for a named charge.** "¿Por qué no puedo reclamar el de enero?" grounds the charge and answers from the policy rule and its values, the same as the existing "why?" answer.
-- **Amounts and dates in words.** The narrowing parsers read amounts in words in es-419 and pt-BR ("mil pesos", "setecientos", "mil reais") and more date phrases. A parsed value counts only if it matches a verified candidate.
-- **Varied fixed wording.** Two or three reviewed variants per key and language, picked by a deterministic rule from the turn count. Verified values come from the candidate, never from the model.
+- **Openers:** a `missing` result with a subtype (greeting, thanks, goodbye, identity, help) gets a friendly reply and what the assistant can do, never a handoff. Without a subtype (v2, baseline), short patterns in code find the opener.
+- **Charge status:** a `status` result gets the status, date and eligibility of the verified charge, without a confirm box.
+- **Out of scope by subtype:** the reply says what is not possible and what is (loan, balance, card, address, transfer), then the advisor offer that already exists.
+- **Slots ground the charge:** merchant words (fuzzy, accent-insensitive), amount, date phrase and "twice" match verified candidates; a slot that matches nothing is dropped. Code parsers read amounts in words and more date phrases as a fallback.
+- **Why for a named charge:** grounds the charge and answers from the policy rule and its values.
+- **Words:** in turns that do not decide, the reply shows the model draft only if the validator of `router-v3` accepts it, with verified values in the placeholders (decision 024). Otherwise, one of two or three reviewed template variants, picked by turn count. Decision turns always use templates.
+- **Contract:** the reply adds an optional `text` beside `message_key`; the page shows `text` when present.
 
 ## Capabilities
 
@@ -31,16 +34,15 @@ The brief asks the system to keep context, clarify ambiguity and explain decisio
 (none)
 
 ### Modified Capabilities
-- `chat`: openers, charge status, why for a named charge, amounts in words, wording variants.
+- `chat`: openers, charge status, out-of-scope subtypes, slot grounding, why for a named charge, validated words.
 
 ## Impact
 
-- `sentinel-ai-core/app/orchestrator/step.py`, `app/ai/grounding.py`, `app/orchestrator/explanation.py`, locale files, tests, [conversation rules](../../../docs/build/conversation.md).
-- `router-v3` measures the result in `eval-v8`, so this change merges before the v8 seal.
+- `sentinel-ai-core/app/orchestrator/step.py`, `app/ai/grounding.py`, `app/orchestrator/explanation.py`, `app/schemas/chat.py`, `app/routers/demo_chat.py`, locale files, `static/app.js` (read `text` only), tests, [conversation rules](../../../docs/build/conversation.md).
+- Merges after `flow-fixes`. `router-v3` measures the result in `eval-v8`.
 
 ## Non-goals
 
-- New model labels other than `status` (they belong to `router-v3`).
-- Replies written by the model (step 5 of the chat behaviour plan).
+- Model words in turns that decide.
 - Changes to the keyword baseline.
-- Loans, balances and other out-of-scope requests (decision 008).
+- Balances or any second flow (decision 008).
