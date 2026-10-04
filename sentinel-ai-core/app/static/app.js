@@ -475,6 +475,12 @@ function toggleDrawer(button) {
 document.querySelectorAll("[data-drawer]").forEach((button) => {
   button.addEventListener("click", () => toggleDrawer(button));
 });
+document.querySelectorAll("[data-close-drawer]").forEach((button) => {
+  button.addEventListener("click", closeDrawers);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeDrawers();
+});
 
 /* Demo prompts: built from the customer's own charges, never hardcoded.
    Normal picks the newest charge in the account's own currency that the backend

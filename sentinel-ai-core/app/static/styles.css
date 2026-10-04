@@ -173,6 +173,12 @@ main {
   margin: 0;
 }
 
+.drawer-close {
+  display: none;
+  width: 100%;
+  margin: 0 0 12px;
+}
+
 .drawer-buttons {
   display: none;
   gap: 8px;
@@ -234,6 +240,9 @@ main {
   /* The side panels leave the page and open from the buttons. */
   .side-panel {
     display: none;
+  }
+  .side-panel.drawer-open .drawer-close {
+    display: block;
   }
   .side-panel.drawer-open {
     display: block;
@@ -415,4 +424,15 @@ main {
 
 .handoff-card > .chat-sub {
   margin: 12px 0 0;
+}
+
+@media (max-width: 700px) {
+  .login-form input,
+  #password-login summary {
+    min-height: 44px;
+  }
+  #password-login summary {
+    display: flex;
+    align-items: center;
+  }
 }

@@ -221,3 +221,14 @@ def test_handoff_package_codes_all_have_a_label() -> None:
             assert f"handoffOpen.{code}" in strings, (name, code)
         for code in demo_chat._CUSTOMER_PHRASES:
             assert f"handoffSaid.{code}" in strings, (name, code)
+
+
+def test_phone_layout_uses_drawers_and_44_px_targets() -> None:
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "@media (max-width: 1100px)" in styles
+    assert ".side-panel.drawer-open" in styles
+    assert "min-height: 44px" in styles
+    assert "overflow-x: auto" in styles.split("@media (max-width: 700px)")[1], "the language group scrolls, not the page"
+    for marker in ('data-drawer="steps-col"', 'data-drawer="charges-col"', "data-close-drawer"):
+        assert marker in INDEX, marker
+    assert "Escape" in APP_JS and "closeDrawers" in APP_JS
