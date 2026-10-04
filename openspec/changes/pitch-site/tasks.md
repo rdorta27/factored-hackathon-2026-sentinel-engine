@@ -21,7 +21,7 @@ Decisions: [018](../../../docs/build/decisions/018-evaluation-acceptance.md), [0
 ## 3. Pitch
 
 - [ ] 3.1 Add the `## Roadmap` section to the README. Evidence: README, REQ-0030 evidence.
-- [ ] 3.2 Translate the three canvas slides to English and add the problem, results and limits slides. Evidence: the canvas link and its export in `docs/build/delivery.md`.
+- [ ] 3.2 Build the six slides as static HTML in `site/slides/` (1280×720, English), from the local copy of the canvas in `.local/final-push/design/`, and export them to PDF with a headless browser. Evidence: `site/slides/` and the PDF listed in `docs/build/delivery.md`.
 - [ ] 3.3 Write the video script, Why → What → How, with the shot list. Evidence: `docs/build/delivery.md`.
 
 ## 4. Final numbers
