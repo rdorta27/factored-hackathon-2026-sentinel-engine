@@ -24,5 +24,6 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [008](../../../docs/bui
 ## 3. Evidence
 
 - [ ] 3.1 Run the adversarial suite and `eval.run verify 2024Q4-resolution-v2`; freeze a new run if the change is intended. Evidence: new runs and the verify output.
-- [ ] 3.2 Human review G2 with the real model; record the findings. Evidence: `team/chat-manual-tests.md`.
+- [ ] 3.2 Write `scripts/chat_transcripts.py`: about 40 scripted conversations (the phrases of Felix, openers, a loan request, amounts in words) in the four variants with the real model. It checks the expected kind and subtype, that no draft carries an unverified datum, the language, and that an opener never hands off. It writes the full conversations to a report, reusing `scripts/sentinel_client.py`. Evidence: the script and its report under `team/chat-manual-tests.md`.
+- [ ] 3.3 Human review G2: the owner reads the report and asks for changes. Evidence: notes in `team/chat-manual-tests.md`.
 - [ ] 3.3 Update the conversation rules. Evidence: `docs/build/conversation.md`.
