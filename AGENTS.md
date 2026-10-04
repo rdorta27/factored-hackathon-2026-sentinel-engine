@@ -32,6 +32,24 @@ bodies and PR descriptions. The rules that matter most:
 - Tables and lists instead of long paragraphs.
 - Keep exact technical names as they are: code identifiers, field paths,
   REQ ids, decision numbers and dataset values.
+- Keep the headings of a page you rewrite. Other pages link to their anchors.
+
+**Mark each file written or rewritten in ASD-STE100** with this frontmatter
+at the top of the file, before the title. Set `ste_reviewed` to the date of
+the last full ASD-STE100 pass:
+
+```yaml
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+```
+
+A file without this frontmatter is not yet in ASD-STE100. When you rewrite
+it, add the frontmatter. Do not add the frontmatter to a file that you only
+edit in part. To list the files that are done:
+`grep -rl '^style: ASD-STE100' --include=*.md .`
 There is no translation pass at the end. Tracked as REQ-0051; the status table lives in
 [`docs/build/delivery.md`](docs/build/delivery.md#language).
 

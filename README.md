@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Sentinel Engine
 
 Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**

@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # What is real and what is not
 
 This page tells which parts of the submission are real, which are mocks, and which numbers are simulations or projections. The brief asks for this split ("Identify which inputs are real, de-identified, synthetic, or team-generated"; REQ-0031, REQ-0032).

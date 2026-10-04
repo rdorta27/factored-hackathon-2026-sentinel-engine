@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # What the model never receives
 
 ## Choice

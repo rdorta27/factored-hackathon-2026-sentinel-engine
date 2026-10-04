@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Rationale
 
 Why the system is built this way. The evaluators are the readers. Each page explains one choice, so it can go into the [presentation](../build/delivery.md#presentation) and the [video](../build/delivery.md#video-pitch).

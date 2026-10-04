@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Policy thresholds
 
 Decisions [010](../build/decisions/010-fraud-handoff-rule.md) and [011](../build/decisions/011-high-amount-threshold.md). OpenSpec change `add-fraud-and-high-amount-rules`.

@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Documentation
 
 This folder holds the challenge, the requirements, the design and the reasons for each choice. Team planning is in [`team/`](../team/). The measurement runs are in [`evidence/`](../evidence/README.md).

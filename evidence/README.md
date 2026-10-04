@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Evidence
 
 This folder holds the frozen measurement runs. The documentation cites these runs. Each run is one folder with a `summary.json`. Cite a field of `summary.json`. Do not copy a number by hand.

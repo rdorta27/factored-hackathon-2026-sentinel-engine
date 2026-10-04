@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+ste_reviewed: 2026-10-04
+---
+
 # Router model selection
 
 Decision [016](../build/decisions/016-router-models.md).
