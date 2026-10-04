@@ -126,11 +126,9 @@ def evaluate(request: PolicyRequest) -> PolicyHit:
     if request.policy is None or request.policy.country != request.country:
         return PolicyHit(HitOutcome.HANDOFF, "country.unknown")
     policy = request.policy
-    if request.person_asks >= 2 or (
-        request.intent is Intent.PERSON and request.person_asks >= 2
-    ):
-        return PolicyHit(HitOutcome.HANDOFF, "person.insist")
     if request.intent is Intent.PERSON and request.person_asks >= 2:
+        # Only a person request escalates on insistence. A filed handoff must
+        # not block a later request about another charge (REQ-0001, REQ-0008).
         return PolicyHit(HitOutcome.HANDOFF, "person.insist")
     fraud = _fraud(request, policy)
     if fraud is not None:

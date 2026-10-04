@@ -14,13 +14,13 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [009](../../../docs/bui
 
 ## 2. Fixes
 
-- [ ] 2.1 Keep the handoff reference per case; answer "case with an advisor (`HO-…`)" only for the same case; let other requests continue; never rewrite a filed reason. Evidence: tests 1.1 pass.
-- [ ] 2.2 Add the dispute-status check before the model, in es-419 and pt-BR, that answers from the case store or says no case exists. Evidence: tests with positive and negative phrases.
-- [ ] 2.3 Let a correction close the confirm box and ground the new candidate. Evidence: the "1.000 then 700" test opens the 700 charge.
-- [ ] 2.4 Warn about an open dispute before the box. Evidence: test.
-- [ ] 2.5 Name the searched date when no charge matches. Evidence: test and locale keys in es-419 and pt-BR.
-- [ ] 2.6 Verify the 2000-character limit in `schemas/chat.py` and add a test that 2001 characters return 422. The page already sets `maxlength="2000"`, and `bank-ui` owns `static/`. Evidence: a test that 2001 characters return 422.
-- [ ] 2.7 Add the `trace_id` to the 429 body. The error bubble already shows `body.trace_id`, and `bank-ui` owns `static/`. Evidence: a test of the body.
+- [x] 2.1 Keep the handoff reference per case; answer "case with an advisor (`HO-…`)" only for the same case; let other requests continue; never rewrite a filed reason. Evidence: `tests/test_flow_fixes.py`; the person rule fires for `Intent.PERSON` only, and `finish_turn` reuses the filed reference and reason.
+- [x] 2.2 Add the dispute-status check before the model, in es-419 and pt-BR, that answers from the case store or says no case exists. Evidence: `tests/test_flow_fixes.py`; the reply is an `explanation` with `values.case_id` and `values.case_status`.
+- [x] 2.3 Let a correction close the confirm box and ground the new candidate. Evidence: the "1.000 then 320" test opens the `TXN-1006` charge.
+- [x] 2.4 Warn about an open dispute before the box. Evidence: the already-disputed test passes; `SessionBoundLookup._mark` already reads the case store.
+- [x] 2.5 Name the searched date when no charge matches. Evidence: `tests/test_flow_fixes.py`, `values.searched_date`, and the keys `charge.notFoundDate` in es-419 and pt-BR.
+- [x] 2.6 Verify the 2000-character limit in `schemas/chat.py` and add a test that 2001 characters return 422. The page already sets `maxlength="2000"`, and `bank-ui` owns `static/`. Evidence: a test that 2001 characters return 422.
+- [x] 2.7 Add the `trace_id` to the 429 body. The error bubble already shows `body.trace_id`, and `bank-ui` owns `static/`. Evidence: a test of the body in `tests/test_flow_fixes.py` and `tests/test_rate_limits.py`.
 
 ## 3. Evidence
 

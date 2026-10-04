@@ -46,6 +46,19 @@ def test_another_charge_after_a_handoff_continues() -> None:
     assert reply["candidate"]["reference"] == "TXN-1006"
 
 
+def test_the_same_charge_after_a_handoff_keeps_its_ticket() -> None:
+    """F1: a message about the filed charge answers with its ticket."""
+    api = logged_in()
+    filed = chat(api, selected_reference="TXN-1101")
+    assert filed["kind"] == "handoff"
+    assert filed["reason_key"] == "handoff.amountHigh"
+
+    again = chat(api, selected_reference="TXN-1101")
+    assert again["kind"] == "handoff"
+    assert again["reference"] == filed["reference"]
+    assert again["reason_key"] == "handoff.amountHigh"
+
+
 def test_a_filed_ticket_reason_does_not_change() -> None:
     """F1: a later turn reuses the reference and the reason of the filed ticket."""
     api = logged_in()
@@ -76,7 +89,7 @@ def test_dispute_status_question_never_opens_a_case(question: str) -> None:
     before = len(api.app.state.cases.for_customer(CUSTOMER))
 
     reply = chat(api, message=question)
-    assert reply["kind"] == "text", "a status question is not a new dispute"
+    assert reply["kind"] == "explanation", "a status question is not a new dispute"
     assert case_id in json.dumps(reply), "the reply names the existing case"
     assert len(api.app.state.cases.for_customer(CUSTOMER)) == before
 
