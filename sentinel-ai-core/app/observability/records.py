@@ -11,6 +11,7 @@ STEPS = frozenset({"understand", "decide", "act", "verify", "escalate", "session
 OUTCOMES = frozenset({"ok", "rejected", "failed", "timeout"})
 LANGUAGES = frozenset({"es-419", "pt-BR"})
 COUNTRIES = frozenset({"MX", "CO", "AR"})
+LABELS = frozenset({"charge", "missing", "out_of_scope", "person"})
 HEX16 = re.compile(r"^[0-9a-f]{16}$")
 _CUSTOMER_ID = re.compile(r"CUST-\d+|CLI-[A-Z0-9]{8,}")
 _IPV4 = re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b")
@@ -47,6 +48,12 @@ class StepRecord:
     # What the model detected from the text, kept beside the answered `language`
     # so the record reports both and contradicts neither.
     detected_language: str | None = None
+    # The label the router returned on an understand step, one of the four
+    # intents, or None on other steps.
+    label: str | None = None
+    # The router's confidence in the label, 0 to 1, or None when the provider
+    # returned no log-probabilities. Never shown to the customer.
+    confidence: float | None = None
     # Country policy file version and whether it is the team's synthetic policy.
     policy_version: str | None = None
     policy_synthetic: bool | None = None
@@ -68,6 +75,10 @@ class StepRecord:
             raise ValueError("token counts must be 0 or higher")
         if self.cost_usd < 0:
             raise ValueError("cost_usd must be 0 or higher")
+        if self.label is not None and self.label not in LABELS:
+            raise ValueError(f"label must be one of {sorted(LABELS)}")
+        if self.confidence is not None and not 0.0 <= self.confidence <= 1.0:
+            raise ValueError("confidence must be between 0 and 1")
         if not self.model or not self.route or not self.prompt_version:
             raise ValueError("model, route and prompt_version are never empty")
         if self.language not in LANGUAGES:

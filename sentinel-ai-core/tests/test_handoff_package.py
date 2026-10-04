@@ -5,7 +5,7 @@ import json
 from fastapi.testclient import TestClient
 
 from app.main import create_app
-from app.schemas.chat import Handoff
+from app.schemas.chat import Handoff, HandoffPackage
 from app.session.router import SESSION_COOKIE
 
 PASSWORD = "Testpass-001"
@@ -47,13 +47,17 @@ def test_actions_include_earlier_turns_and_failed_attempts() -> None:
     api = logged_in()
     chat(api, selected_reference="TXN-1006")
     next(iter(api.app.state.memories.values())).lookup_failures_left = 99
-    package = Handoff.model_validate(chat(api, selected_reference="TXN-1006")).package
+    raw = chat(api, selected_reference="TXN-1006")
+    package = Handoff.model_validate(raw).package
+    # The customer copy drops tool names; the stored ticket keeps them.
+    stored = HandoffPackage.model_validate(api.app.state.cases.get(raw["reference"]).package)
 
-    actions = [(a.turn, a.step, a.tool, a.outcome, a.attempt) for a in package.actions_taken]
+    actions = [(a.turn, a.step, a.tool, a.outcome, a.attempt) for a in stored.actions_taken]
     assert (1, "decide", None, "ok", 1) in actions, "the turn-1 policy decision travels with the ticket"
     assert (2, "act", "open_dispute", "ok", 1) in actions
     failed_reads = [a for a in actions if a[2] == "lookup_dispute"]
     assert [(a[3], a[4]) for a in failed_reads] == [("failed", 1), ("failed", 2), ("failed", 3)]
+    assert all("tool" not in item and "policy_rule" not in item for item in raw["package"]["actions_taken"])
     assert package.conversation[-1].system == "handoff" and package.conversation[-1].rule == "unverified"
 
 
@@ -73,10 +77,14 @@ def test_the_ticket_and_the_log_keep_the_full_package() -> None:
     api = logged_in()
     chat(api, message="quiero una persona")
     response = api.post("/api/v1/chat", json={"message": "quiero una persona"})
-    package = response.json()["package"]
-    assert api.app.state.cases.get(response.json()["reference"]).package == package
+    customer = response.json()["package"]
+    stored = api.app.state.cases.get(response.json()["reference"]).package
     turn = [r for r in api.app.state.recorder.records_for(response.headers["X-Trace-Id"]) if r.step == "turn"][-1]
-    assert turn.handoff == package and len(package["conversation"]) == 2
+    assert stored == turn.handoff, "the ticket and the log keep the full package"
+    assert len(stored["conversation"]) == 2
+    # The customer copy drops internals: no tool names, no policy rules.
+    assert "policy_rule" not in customer["evidence"]
+    assert all("tool" not in item and "policy_rule" not in item for item in customer["actions_taken"])
 
 
 def test_history_survives_a_restart_and_dies_with_the_session(monkeypatch, tmp_path) -> None:  # type: ignore[no-untyped-def]

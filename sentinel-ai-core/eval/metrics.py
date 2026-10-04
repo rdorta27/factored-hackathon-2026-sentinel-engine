@@ -7,6 +7,10 @@ instead of zero when a denominator is empty.
 
 from __future__ import annotations
 
+from collections import defaultdict
+
+from eval.intervals import DESCRIPTIVE_HALF_WIDTH, bootstrap_interval
+
 NOT_DEFINED = "not defined"
 
 
@@ -121,11 +125,13 @@ def variability(values: list[float]) -> dict:
     }
 
 
-def system_metrics(turns: list[dict]) -> dict:
+def _core_metrics(turns: list[dict]) -> dict:
     """Mandatory outcome metrics over replayed turns.
 
     Each turn carries ``id``, ``outcome``, ``requires_handoff``,
     ``must_not_pass``, ``fault``, ``latency_ms`` and ``cost_usd``.
+    Grouping fields (``variant``, ``country``, ``situation``) are read by
+    :func:`system_metrics` only.
     """
     attempted = [t for t in turns if (t.get("fault") or "none") == "none"]
     resolved = [t for t in attempted if t.get("outcome") == "case_confirmation"]
@@ -182,6 +188,67 @@ def system_metrics(turns: list[dict]) -> dict:
             "per_resolution": round(total_cost / resolved_n, 6) if resolved_n else NOT_DEFINED,
         },
     }
+
+
+def _resolution_interval(turns: list[dict]) -> tuple[list[float] | None, bool]:
+    """95% interval of the safe-resolution share, resampling situations.
+
+    The resampling unit is the base situation (``situation``, falling back to
+    the turn id), so the variants of one situation move together. Returns the
+    interval and whether the group is descriptive (half-width above ±10 points
+    or no interval at all).
+    """
+    clusters: dict[str, list[float]] = defaultdict(list)
+    for turn in turns:
+        if (turn.get("fault") or "none") != "none":
+            continue
+        key = str(turn.get("situation") or turn.get("base_id") or turn.get("id"))
+        clusters[key].append(1.0 if turn.get("outcome") == "case_confirmation" else 0.0)
+    interval = bootstrap_interval(clusters)
+    if interval is None:
+        return None, True
+    half_width = (interval[1] - interval[0]) / 2
+    return [interval[0], interval[1]], half_width > DESCRIPTIVE_HALF_WIDTH
+
+
+def _group_metrics(turns: list[dict]) -> dict:
+    """Core metrics for one variant or country, with a situation-level interval.
+
+    A group with no attempted case reports its rates as "not defined".
+    """
+    block = _core_metrics(turns)
+    if not [t for t in turns if (t.get("fault") or "none") == "none"]:
+        block["safe_resolution"]["share"] = NOT_DEFINED
+        block["containment"]["share"] = NOT_DEFINED
+        block["safe_resolution"]["interval_95"] = None
+        block["safe_resolution"]["descriptive"] = True
+        return block
+    interval, descriptive = _resolution_interval(turns)
+    block["safe_resolution"]["interval_95"] = interval
+    block["safe_resolution"]["descriptive"] = descriptive
+    return block
+
+
+def system_metrics(turns: list[dict]) -> dict:
+    """Core metrics plus per-variant and per-country breakdowns.
+
+    Every group carries its ``n`` and its safe-resolution interval over
+    situations; group counts add up to the run totals. The top-level block
+    keeps the historical shape so frozen runs are never recomputed.
+    """
+    block = _core_metrics(turns)
+    by_variant: dict[str, list[dict]] = defaultdict(list)
+    by_country: dict[str, list[dict]] = defaultdict(list)
+    for turn in turns:
+        by_variant[str(turn.get("variant") or turn.get("locale") or "unknown")].append(turn)
+        by_country[str(turn.get("country") or "unknown")].append(turn)
+    block["by_variant"] = {
+        name: _group_metrics(group) for name, group in sorted(by_variant.items())
+    }
+    block["by_country"] = {
+        name: _group_metrics(group) for name, group in sorted(by_country.items())
+    }
+    return block
 
 
 __all__ = [

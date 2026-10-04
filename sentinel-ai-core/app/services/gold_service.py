@@ -2,7 +2,7 @@
 Gold layer DuckDB connector (PII-free).
 
 Reads exclusively from ``v_service_dispute_eligible_transactions`` – the
-PII-free projection mandated by ADR 008.  All DuckDB calls are offloaded
+PII-free projection mandated by ADR 023.  All DuckDB calls are offloaded
 via ``asyncio.to_thread()`` so the FastAPI event loop is never blocked.
 
 Source priority for local development:

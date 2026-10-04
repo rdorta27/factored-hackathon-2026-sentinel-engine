@@ -90,6 +90,7 @@ class TextReply(BaseModel):
 
     kind: Literal["text"] = "text"
     message_key: str = Field(min_length=1, max_length=64)
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class Clarification(BaseModel):
@@ -99,6 +100,7 @@ class Clarification(BaseModel):
     message_key: str = Field(min_length=1, max_length=64)
     missing: str = Field(min_length=1, max_length=200)
     candidates: list[CandidateTransaction] = Field(default_factory=list, max_length=4)
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class ConfirmBox(BaseModel):
@@ -109,6 +111,7 @@ class ConfirmBox(BaseModel):
     kind: Literal["confirm_box"] = "confirm_box"
     message_key: str = Field(min_length=1, max_length=64)
     candidate: CandidateTransaction
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class ExplanationValues(BaseModel):
@@ -136,6 +139,7 @@ class Explanation(BaseModel):
     message_key: str = Field(min_length=1, max_length=64)
     rule_id: Optional[str] = Field(default=None, max_length=64)
     values: ExplanationValues = Field(default_factory=ExplanationValues)
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class TransactionFacts(BaseModel):
@@ -182,6 +186,7 @@ class CaseConfirmation(BaseModel):
     messages: MessageKeys
     attempt: int = Field(ge=1)
     source: Source = "mock"
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class VerifiedFacts(BaseModel):
@@ -254,6 +259,7 @@ class Handoff(BaseModel):
     attempt: Optional[int] = Field(default=None, ge=1)
     source: Source = "mock"
     package: HandoffPackage
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 class ErrorReply(BaseModel):
@@ -262,6 +268,7 @@ class ErrorReply(BaseModel):
     kind: Literal["error"] = "error"
     message_key: str = Field(min_length=1, max_length=64)
     trace_id: str = Field(min_length=1, max_length=64)
+    steps: list[str] = Field(default_factory=list, max_length=8)
 
 
 ChatReply = Union[
@@ -325,3 +332,36 @@ class AdvisorTicket(BaseModel):
     reason_key: Optional[str] = None
     reason_detail: Optional[str] = None
     package: HandoffPackage
+
+
+class TraceStep(BaseModel):
+    """One step of the escalating turn, as the advisor reads it.
+
+    The execution record without the salted session reference: no customer
+    text, no identifier (REQ-0008, REQ-0025).
+    """
+
+    model_config = StrictModel
+
+    step: str
+    tool: Optional[str] = None
+    outcome: str
+    attempt: int = Field(ge=1)
+    latency_ms: float = Field(ge=0)
+    model: str
+    route: str
+    prompt_version: str
+    cost_usd: float = Field(ge=0)
+    policy_version: Optional[str] = None
+    ts: str
+
+
+class AdvisorTrace(BaseModel):
+    """Trace of the turn that filed a ticket. Advisor role only."""
+
+    model_config = StrictModel
+
+    case_id: str
+    trace_id: Optional[str] = None
+    available: bool
+    steps: list[TraceStep] = Field(default_factory=list)

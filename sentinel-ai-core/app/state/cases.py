@@ -43,6 +43,7 @@ class CaseRow:
     reason: str | None = None
     reason_key: str | None = None
     package: dict[str, Any] | None = None
+    trace_id: str | None = None
 
 
 def new_case_id() -> str:
@@ -110,6 +111,7 @@ def _to_row(record: DisputeCase) -> CaseRow:
         reason=record.reason,
         reason_key=record.escalation_reason,
         package=json.loads(record.package) if record.package else None,
+        trace_id=record.trace_id,
     )
 
 
@@ -136,6 +138,7 @@ class SqliteCaseRepository:
                     reason=row.reason,
                     escalation_reason=row.reason_key,
                     package=json.dumps(row.package) if row.package is not None else None,
+                    trace_id=row.trace_id,
                 )
             )
 

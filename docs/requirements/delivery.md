@@ -10,7 +10,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 | [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Done |
 | [REQ-0036](#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
 | [REQ-0037](#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035) | Pending |
-| [REQ-0051](#req-0051) | Everything in English | P0 | all | [REQ-0036](#req-0036), [REQ-0037](#req-0037) | Pending |
+| [REQ-0051](#req-0051) | Everything in English | P0 | all | [REQ-0036](#req-0036), [REQ-0037](#req-0037) | In progress |
 | [REQ-0052](#req-0052) | Path to production | P0 | ai, all | [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050) | In progress |
 
 <a id="req-0013"></a>
@@ -24,7 +24,7 @@ State openly what the data cannot support: the dataset is synthetic, Spanish onl
 
 **Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024). Coverage limits come from the language support and the breakdown.
 
-**Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD.
+**Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD. Measured limits of the data: the balance has no usable as-of date, complaint history cannot be tied to a charge, and no customer signal adds to `fraud_score`, whose label is a generator artefact ([`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/README.md), [`dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/README.md), [investigation data support](../rationale/investigation-data-support.md)). Language limits: transcripts are two Spanish templates ([`transcript-chats/20261002T144836Z`](../../evidence/transcript-chats/20261002T144836Z/summary.json)), and the Portuguese cases are model-written ([018](../build/decisions/018-evaluation-acceptance.md)). Every input is labelled in [what is real](../architecture/what-is-real.md).
 
 Proven by (also): the README [limitations](../../README.md#limitations) section.
 
@@ -43,7 +43,7 @@ An honest list of what the prototype lacks before real use: capacity, data, lang
 
 **Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). Gathers the data, language and capacity limits.
 
-**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing_capacity.md) (REQ-0053).
+**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing_capacity.md) (REQ-0053), the [what is real](../architecture/what-is-real.md) page and the [investigation data support](../rationale/investigation-data-support.md) page. Missing also: a roadmap section in the README with each item not built and the evidence for why.
 
 Missing: the same limits on the slides.
 
@@ -106,13 +106,13 @@ A short, mandatory video (3 minutes at most) that shows the working solution and
 
 The README, slides, video script, `docs/` and `team/` are written in English, since the hackathon is judged in English.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
 
 **Source:** Own: [language](../build/delivery.md#language)
 
 **Depends on:** [REQ-0036](#req-0036), [REQ-0037](#req-0037). Language check covers the slides and video script.
 
-**Evidence:** Missing: the [pre-submission check](../build/delivery.md#language).
+**Evidence:** Proven by: every file under `docs/` and `team/` is in English, and AGENTS.md requires simplified technical English (ASD-STE100) for all documentation. The deliverable pages (README, `docs/README.md`, `docs/rationale/`, `evidence/README.md`, `docs/architecture/what-is-real.md`) are rewritten in it. Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
 
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production

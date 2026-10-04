@@ -140,6 +140,8 @@ def run_case(client: TestClient, case: Case) -> dict:
         "id": case.id,
         "locale": case.locale,
         "country": case.country,
+        "variant": case.variant or case.locale,
+        "situation": case.base_id or case.id,
         "expected_intent": case.expected_intent,
         "expected_outcome": case.expected_outcome,
         "outcome": kind,

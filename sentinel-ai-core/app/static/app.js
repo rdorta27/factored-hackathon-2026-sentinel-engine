@@ -44,17 +44,24 @@ function formatDate(value) {
   }).format(parsed);
 }
 
-/* The active interface language; `es-419` maps to the plain `es` tag. */
+/* The active interface language; `es-419` maps to the plain `es` tag.
+   Named buttons in #locale-group pick it; the codes never show as labels. */
+let currentLocale = "es-419";
+
 function activeLocale() {
-  const selected = document.getElementById("locale");
-  const locale = selected && selected.value ? selected.value : "es-419";
-  return locale === "es-419" ? "es" : locale;
+  return currentLocale === "es-419" ? "es" : currentLocale;
+}
+
+function setLocale(locale) {
+  currentLocale = locale;
+  document.querySelectorAll("#locale-group [data-locale]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.getAttribute("data-locale") === locale));
+  });
 }
 
 /* The selector's own value, exactly as the API accepts it. */
 function selectorLocale() {
-  const selected = document.getElementById("locale");
-  return selected && selected.value ? selected.value : "es-419";
+  return currentLocale;
 }
 
 /* Fill a template's {placeholders} without touching the rest of the text. */
@@ -84,6 +91,7 @@ function explanationText(body) {
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
+  setLocale(locale);
   document.documentElement.lang = locale;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
@@ -124,7 +132,6 @@ async function loadContext() {
   sessionCountry = me.country || null;
   const locale = COUNTRY_LOCALES[me.country];
   if (locale) {
-    document.getElementById("locale").value = locale;
     await loadLocale(locale);
   }
 }
@@ -154,6 +161,10 @@ function renderError(body, status) {
 }
 
 async function postChat(payload) {
+  // A new turn closes any open confirmation: an old "Confirmar" must not fire.
+  document.querySelectorAll(".chat-confirm button").forEach((button) => {
+    button.disabled = true;
+  });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
   try {
@@ -196,6 +207,32 @@ function renderCandidates(box, candidates) {
   box.append(chips);
 }
 
+/* "Cómo lo resolví": the ordered steps of this turn, in plain language.
+   The keys come from the reply; the page only translates them, so no rule
+   id, model or threshold ever reaches the screen. */
+function renderSteps(thread, body) {
+  if (!body.steps || !body.steps.length) return;
+  const panel = el("div", "msg msg-audit steps-panel");
+  panel.setAttribute("data-testid", "steps-panel");
+  panel.append(el("p", "chat-sub", t("howIResolved")));
+  const list = el("ol", "steps-list");
+  body.steps.forEach((key) => list.append(el("li", "", t(key))));
+  panel.append(list);
+  thread.append(panel);
+}
+
+/* Neutral transaction status: the dataset status only, never a fraud signal. */
+const STATUS_KEYS = {
+  Approved: "txStatusApproved",
+  Pending: "txStatusPending",
+  Reversed: "txStatusReversed",
+  Declined: "txStatusDeclined",
+};
+
+function statusLabel(status) {
+  return t(STATUS_KEYS[status] || "txStatusApproved");
+}
+
 function renderReply(body) {
   const thread = document.getElementById("thread");
   if (body.kind === "confirm_box") {
@@ -205,7 +242,11 @@ function renderReply(body) {
     box.append(el("p", "", humanStatement(item)));
     const button = el("button", "", t("confirmButton"));
     button.type = "button";
-    button.addEventListener("click", () => postChat({ selected_reference: item.reference }));
+    button.addEventListener("click", () => {
+      // One confirmation per box: the button turns off as soon as it is used.
+      button.disabled = true;
+      postChat({ selected_reference: item.reference });
+    });
     box.append(button);
     thread.append(box);
   } else if (body.kind === "case_confirmation") {
@@ -240,6 +281,7 @@ function renderReply(body) {
   } else {
     thread.append(el("div", "msg msg-bot", t(body.message_key)));
   }
+  renderSteps(thread, body);
 }
 
 async function loadTransactions() {
@@ -258,6 +300,7 @@ async function loadTransactions() {
     item.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
     item.append(el("span", "chat-sub", ` ${tx.merchant}`));
     item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
+    item.append(el("span", "chat-sub tx-status", ` · ${t("field_state")}: ${statusLabel(tx.status)}`));
     if (!tx.eligible) {
       item.disabled = true;
       item.append(el("span", "chat-sub", ` ${t(tx.ineligibleKey || "candidateOutOfWindow")}`));
@@ -337,19 +380,75 @@ function renderDemoPrompts(transactions) {
   box.hidden = prompts.length === 0;
 }
 
-/* Advisor view: the escalated tickets with why they came and what was tried. */
-function ticketCard(ticket) {
-  const pkg = ticket.package;
+/* Advisor view: escalated tickets, newest first. The list shows why each case
+   came (reason, country, language, age); the detail is read-only and adds the
+   handoff package and the trace of the turn that filed it. */
+function ticketRow(ticket) {
+  const row = el("button", "candidate queue-row");
+  row.type = "button";
+  row.setAttribute("data-testid", "queue-row");
+  row.setAttribute("data-case-id", ticket.case_id);
+  row.append(el("strong", "", ticket.case_id));
+  row.append(el("span", "chat-sub", ` · ${t("q_reason")}: ${t(ticket.reason_key)}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${ticket.country}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${ticket.package.language}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_created")}: ${formatDate(ticket.created_at)}`));
+  row.addEventListener("click", () => openTicket(ticket.case_id));
+  return row;
+}
+
+async function loadQueue() {
+  const response = await api("/api/v1/handoffs");
+  if (!response.ok) return;
+  const tickets = await response.json();
+  document.getElementById("queue-detail").hidden = true;
+  document.getElementById("queue-list").hidden = false;
+  const box = document.getElementById("queue");
+  box.textContent = "";
+  if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
+  tickets.forEach((ticket) => box.append(ticketRow(ticket)));
+}
+
+function field(labelKey, value) {
+  return el("p", "", `${t(labelKey)}: ${value}`);
+}
+
+function traceBlock(trace) {
   const card = el("div", "msg msg-audit");
-  card.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
-  card.append(el("p", "chat-sub", `${t("q_customer")}: ${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
-  const rule = pkg.evidence && pkg.evidence.policy_rule ? ` (${pkg.evidence.policy_rule})` : "";
-  card.append(el("p", "", `${t("q_reason")}: ${t(ticket.reason_key)}${rule}`));
-  card.append(el("p", "", `${t("q_summary")}: ${pkg.summary}`));
+  card.append(el("h4", "chat-title", t("q_trace")));
+  if (!trace.available) {
+    card.append(el("p", "chat-sub", t("q_traceUnavailable")));
+    return card;
+  }
+  const list = el("ul", "chat-sub");
+  trace.steps.forEach((step) => {
+    const parts = [
+      step.step,
+      step.tool,
+      step.outcome,
+      `${t("q_latency")}: ${Number(step.latency_ms).toFixed(1)}`,
+      `${t("q_model")}: ${step.model}`,
+      `${t("q_prompt")}: ${step.prompt_version}`,
+      `${t("q_cost")}: ${Number(step.cost_usd).toFixed(4)}`,
+    ];
+    if (step.policy_version) parts.push(`${t("q_policyVersion")}: ${step.policy_version}`);
+    list.append(el("li", "", parts.filter(Boolean).join(" · ")));
+  });
+  card.append(list);
+  return card;
+}
+
+function packageBlock(pkg) {
+  const card = el("div", "msg msg-audit");
+  card.append(el("h4", "chat-title", t("q_package")));
+  card.append(field("q_summary", pkg.summary));
   const facts = pkg.verified_facts;
   if (facts) {
     card.append(
-      el("p", "", `${t("q_transaction")}: ${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`)
+      field(
+        "q_transaction",
+        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`
+      )
     );
   }
   const actions = el("ul", "chat-sub");
@@ -359,18 +458,30 @@ function ticketCard(ticket) {
   });
   card.append(el("p", "", t("q_actions")));
   card.append(actions);
-  card.append(el("p", "", `${t("q_openQuestions")}: ${pkg.open_questions.join(", ")}`));
+  card.append(field("q_openQuestions", pkg.open_questions.join(", ")));
   return card;
 }
 
-async function loadQueue() {
-  const response = await api("/api/v1/handoffs");
+async function openTicket(caseId) {
+  const detail = document.getElementById("queue-detail");
+  const response = await api(`/api/v1/handoffs/${caseId}`);
   if (!response.ok) return;
-  const tickets = await response.json();
-  const box = document.getElementById("queue");
-  box.textContent = "";
-  if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
-  tickets.forEach((ticket) => box.append(ticketCard(ticket)));
+  const ticket = await response.json();
+  const traceResponse = await api(`/api/v1/handoffs/${caseId}/trace`);
+  const trace = traceResponse.ok ? await traceResponse.json() : { available: false, steps: [] };
+  detail.textContent = "";
+  const back = el("button", "theme-toggle", t("q_back"));
+  back.type = "button";
+  back.setAttribute("data-testid", "queue-back");
+  back.addEventListener("click", loadQueue);
+  detail.append(back);
+  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
+  detail.append(field("q_customer", `${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
+  detail.append(field("q_reason", t(ticket.reason_key)));
+  detail.append(packageBlock(ticket.package));
+  detail.append(traceBlock(trace));
+  document.getElementById("queue-list").hidden = true;
+  detail.hidden = false;
 }
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {
@@ -421,8 +532,41 @@ document.getElementById("logout").addEventListener("click", async () => {
   show("view-login");
 });
 
-document.getElementById("locale").addEventListener("change", (event) => {
-  loadLocale(event.target.value);
+document.getElementById("locale-group").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-locale]");
+  if (button) loadLocale(button.getAttribute("data-locale"));
+});
+
+/* Demo entry: one-click personas behind SENTINEL_DEMO_AUTH. The page asks
+   GET /api/v1/auth/demo: 200 lists the personas (banner + buttons shown,
+   password form left as a secondary link), 404 hides them and opens the
+   password form. The persona id is the only thing sent; no identifier. */
+async function loadDemoEntry() {
+  const response = await fetch("/api/v1/auth/demo");
+  const available = response.ok;
+  document.getElementById("demo-personas").hidden = !available;
+  document.getElementById("demo-banner").hidden = !available;
+  document.getElementById("password-login").open = !available;
+}
+
+async function demoLogin(persona) {
+  const response = await fetch(`/api/v1/auth/demo/${persona}`, { method: "POST" });
+  if (!response.ok) {
+    document.getElementById("login-error").textContent = t("loginFailed");
+    return;
+  }
+  const { locale } = await response.json();
+  clearThread();
+  show("view-chat");
+  await loadContext();
+  if (locale) await loadLocale(locale);
+  await loadTransactions();
+}
+
+document.getElementById("demo-personas").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-persona]");
+  if (button) demoLogin(button.getAttribute("data-persona"));
 });
 
 loadLocale("es-419");
+loadDemoEntry();

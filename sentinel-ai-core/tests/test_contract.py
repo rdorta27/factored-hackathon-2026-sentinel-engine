@@ -130,7 +130,11 @@ def test_handoff_package_is_logged_on_the_turn_record() -> None:
     response = api.post("/api/v1/chat", json={"message": "quiero una persona"})
     trace_id = response.headers["X-Trace-Id"]
     turn = [r for r in api.app.state.recorder.records_for(trace_id) if r.step == "turn"]
-    assert turn and turn[-1].handoff == response.json()["package"]
+    assert turn
+    logged = turn[-1].handoff
+    assert logged == api.app.state.cases.get(response.json()["reference"]).package
+    # The log keeps the full package; the customer reply drops tool names and rules.
+    assert "policy_rule" not in response.json()["package"]["evidence"]
 
 
 def test_why_followup_returns_a_strict_explanation() -> None:
@@ -169,3 +173,98 @@ def test_pipeline_failure_is_a_generic_error_with_trace() -> None:
     error = parsed(ErrorReply, chat(logged_in(model=BrokenModel()), message="hola"))
     assert error.message_key == "errorGeneric"
     assert len(error.trace_id) == 16
+
+
+STEP_KEYS = {
+    "step.understood",
+    "step.lookedUp",
+    "step.checkedPolicy",
+    "step.caseOpened",
+    "step.noCase",
+    "step.handedOff",
+    "step.refused",
+}
+
+
+def assert_steps(body: dict, expected: list[str]) -> None:
+    assert body["steps"] == expected
+    assert set(body["steps"]) <= STEP_KEYS
+    assert_translated(*body["steps"])
+
+
+def test_each_outcome_carries_its_closed_steps() -> None:
+    api = logged_in()
+    assert_steps(chat(api, message="hola"), ["step.understood", "step.lookedUp"])
+    assert_steps(
+        chat(api, selected_reference="TXN-1006"),
+        ["step.understood", "step.lookedUp", "step.checkedPolicy"],
+    )
+    assert_steps(
+        chat(api, selected_reference="TXN-1006"),
+        ["step.understood", "step.lookedUp", "step.checkedPolicy", "step.caseOpened"],
+    )
+
+
+def test_terminal_replies_say_no_case_was_opened() -> None:
+    api = logged_in()
+    assert_steps(
+        chat(api, message="quiero una persona"),
+        ["step.understood", "step.checkedPolicy", "step.noCase"],
+    )
+    chat(api, message="Hay un cobro de 2500 MXN en ACME Store")
+    assert_steps(
+        chat(api, message="¿en qué te basas, de dónde salen los 90 días?"),
+        ["step.understood", "step.checkedPolicy", "step.noCase"],
+    )
+
+
+def test_high_amount_handoff_shows_the_full_panel() -> None:
+    api = TestClient(create_app())
+    assert api.post("/api/v1/auth/login", json={"login": "CUST-0002", "password": PASSWORD}).status_code == 200
+    api.post("/api/v1/chat", json={"message": "no reconozco un cargo"})
+    raw = chat(api, selected_reference="TXN-2002")
+    assert raw["kind"] == "handoff"
+    assert_steps(
+        raw,
+        ["step.understood", "step.lookedUp", "step.checkedPolicy", "step.noCase", "step.handedOff"],
+    )
+
+
+def test_error_reply_only_refuses() -> None:
+    class BrokenModel:
+        def understand(self, message, turns, context=None):  # type: ignore[no-untyped-def]
+            raise RuntimeError("boom")
+
+        def classify(self, message):  # type: ignore[no-untyped-def]
+            return "unrecognized"
+
+    assert_steps(chat(logged_in(model=BrokenModel()), message="hola"), ["step.refused"])
+
+
+def test_customer_replies_hide_internals() -> None:
+    """No rule id, model, tool, score or threshold reaches the customer.
+
+    The explanation names the rule it was asked about (rule_id) and the
+    advisor conversation keeps its routing codes (pinned by
+    test_not_mine_claim); the steps, the tried actions and the evidence
+    carry keys and outcomes only.
+    """
+    api = logged_in()
+    bodies = [
+        chat(api, message="hola"),
+        chat(api, selected_reference="TXN-1006"),
+        chat(api, selected_reference="TXN-1006"),
+        chat(api, message="quiero una persona"),
+    ]
+    api.post("/api/v1/chat", json={"message": "quiero una persona"})
+    bodies.append(api.post("/api/v1/chat", json={"message": "quiero una persona"}).json())
+    for body in bodies:
+        raw = json.dumps(body)
+        assert '"policy_rule": "' not in raw, f"rule id value in {body['kind']}"
+        assert '"tool": "' not in raw, f"tool name in {body['kind']}"
+        assert '"model":' not in raw, f"model name in {body['kind']}"
+        for secret in ("7584", "28.5", "lookup_transactions", "open_dispute"):
+            assert secret not in raw, f"{secret} leaked in {body['kind']}"
+        assert set(body["steps"]) <= STEP_KEYS
+    handoff = bodies[-1]
+    assert "policy_rule" not in handoff["package"]["evidence"]

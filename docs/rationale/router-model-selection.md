@@ -1,35 +1,53 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Router model selection
 
 Decision [016](../build/decisions/016-router-models.md).
 
 ## Choice
 
-The learned router uses open-weight models served by Fireworks AI: a cheap model for frequent turns and a stronger one for ambiguous and Portuguese turns. Which models is decided by a rule written before measuring, on the same held-out cases as the keyword baseline.
+The learned router uses an open-weight model served by Fireworks AI: **GLM 5.3 Flash on both routes**. The team wrote the selection rule before the measurement. The selection used the development split only. The held-out set measured the result once.
 
 ## Why
 
-- **The brief asks for a learned component compared with a baseline** and for justified choices (REQ-0016). A rule fixed in advance plus a frozen run is a justification; a model's reputation is not.
-- **Cost does not decide here.** A router turn is about 300 input and 50 output tokens, so every candidate costs well under a cent per turn. That frees the choice to be made on measured quality.
-- **Quality that matters for this job:** valid JSON every time, correct intent, and no drop in Portuguese, which the dataset never covers.
-- **Open weights keep production portable:** the same model can run on Azure AI Foundry or Databricks later, without depending on the provider used to measure.
-- **Two routes match cost to difficulty:** most turns are simple; only ambiguous and Portuguese ones pay for a larger model.
+- **The brief asks for a learned component against a baseline,** with justified choices (REQ-0016). A rule fixed in advance and a frozen run are a justification. The reputation of a model is not.
+- **Cost does not decide here.** A router turn is about 300 input tokens and 50 output tokens. Every candidate costs much less than one cent per turn. So the choice can use measured quality.
+- **Quality for this job:** valid JSON every time, the correct intent, and no loss in Portuguese. The dataset has no Portuguese.
+- **Open weights keep production portable.** The same model can run on Azure AI Foundry or Databricks. Production does not depend on the provider of the measurement.
 
 ## The rule
 
-Per route, the cheapest model that returns valid JSON in 100% of cases, is within 2 points of the best accuracy on that route, and does not lose more than 5 points in pt-BR against es-419.
+Per route: the cheapest model that (a) returns valid JSON in 100% of cases, (b) is within 2 points of the best accuracy on that route, and (c) does not lose more than 5 points in pt-BR against es-419. The [amendment of 016](../build/decisions/016-router-models.md#amendment--selection-on-development-paired-pt-br-rule) makes the rule exact before the measurement.
+
+## Result
+
+Source: [`2024Q4-select-v2`](../../evidence/evaluation-runs/2024Q4-select-v2/summary.json), development split, n = 164. Fields are under `candidates.<model>` and `routes.heuristic.per_route_accuracy`.
+
+| Candidate | Result | Field |
+|---|---|---|
+| gpt-oss-120b | Fails (a): many replies are not valid JSON | `candidates.<model>.json_failures` |
+| DeepSeek V4.1 Flash | Fails (a) | `candidates.<model>.json_failures` |
+| GLM-5.3 | Passes (a) and (c), fails (b) on the strong route | `candidates.<model>.breakdown` |
+| **GLM 5.3 Flash** | Passes (a), (b) and (c) on both routes | `candidates.<model>.json_failures`, `pt_loss` |
+
+GLM 5.3 Flash alone was more accurate than every cheap-and-strong pair on these cases. A larger model on the strong route did not help. The held-out result of this choice is in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) and the [metrics report](../build/metrics-report.md).
+
+The amendment listed fewer strong candidates than the original rule. Under the original rule, GLM 5.3 Flash passes on the strong route. The owner chose this reading, and decision 016 states the conflict.
 
 ## Alternatives rejected
 
-- **Choosing by reputation:** not measurable, not defensible.
-- **A closed commercial model as the default:** strong, but ties production to one vendor; open weights met the need at lower cost.
-- **The largest model for every turn:** pays 10 to 60 times more for a classification task.
+- **Choose by reputation.** Not measurable, not defensible.
+- **A closed commercial model as the default.** Strong, but it ties production to one vendor. Open weights met the need at a lower cost.
+- **The largest model for every turn.** It costs 10 to 60 times more for a classification task.
 
 ## In production
 
-The chosen weights are served on Azure or Databricks, with per-route quotas, a spending cap and the keyword baseline as the fallback when the model is unavailable.
+The same weights run on Azure or Databricks, with quotas per route, a spend cap, and the keyword baseline as the fallback.
 
 ## On the slide
 
-"We measured open-weight models against our keyword baseline on the same held-out cases and picked, per route, the cheapest one that kept valid JSON and Portuguese quality. Open weights mean production is not tied to a provider."
-
-Results: fill from the frozen run once recorded; cite its `summary.json`, never hand-copied numbers.
+"We measured four open-weight models on development cases with a rule fixed before the measurement. One small model passed on every route and beat every pair. Then we measured it once on the sealed set."

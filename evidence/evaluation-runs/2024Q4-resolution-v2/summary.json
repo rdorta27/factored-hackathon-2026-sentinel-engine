@@ -1,0 +1,746 @@
+{
+  "case_mix": {
+    "by_country": {
+      "AR": 12,
+      "CO": 12,
+      "MX": 32
+    },
+    "by_locale": {
+      "es-419": 28,
+      "pt-BR": 28
+    },
+    "by_outcome": {
+      "case_confirmation": 16,
+      "handoff": 28,
+      "text": 12
+    },
+    "by_situation": {
+      "amount-ar-3002": 4,
+      "amount-co-2002": 4,
+      "amount-mx-1101": 4,
+      "disputed-mx-1004": 4,
+      "eligible-ar-3001": 4,
+      "eligible-co-2001": 4,
+      "eligible-mx-1001": 4,
+      "eligible-mx-1006": 4,
+      "fraud-ar-3003": 4,
+      "fraud-co-2003": 4,
+      "fraud-mx-1102": 4,
+      "notmine-mx-1001": 4,
+      "reversed-mx-1003": 4,
+      "window-mx-1002": 4
+    },
+    "by_variant": {
+      "es-AR": 6,
+      "es-CO": 6,
+      "es-MX": 16,
+      "pt-BR": 28
+    },
+    "n": 56
+  },
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "resolution",
+  "measured_commit": "4d6fe06a5328608bf4ff0d36a4077ccda137b3da",
+  "n": 56,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Simulation over a mock store: not a field resolution rate (decision 022).",
+    "Baseline and router_v2 on the same cases, session, store and reference date; intervals resample situations.",
+    "The system block replays the loop at measured_commit; a later loop change means a new run (task 1.1)."
+  ],
+  "paired_resolution": {
+    "above_zero": false,
+    "broken": [],
+    "fixed": [],
+    "interval_95": [
+      0.0,
+      0.0
+    ],
+    "n": 56,
+    "net": 0,
+    "net_share": 0.0
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "run_id": "2024Q4-resolution-v2",
+  "situations": {
+    "ids": [
+      "amount-ar-3002",
+      "amount-co-2002",
+      "amount-mx-1101",
+      "disputed-mx-1004",
+      "eligible-ar-3001",
+      "eligible-co-2001",
+      "eligible-mx-1001",
+      "eligible-mx-1006",
+      "fraud-ar-3003",
+      "fraud-co-2003",
+      "fraud-mx-1102",
+      "notmine-mx-1001",
+      "reversed-mx-1003",
+      "window-mx-1002"
+    ],
+    "n": 14
+  },
+  "spend": {
+    "cap_usd": null,
+    "capped": false,
+    "n": 0,
+    "spent_usd": 0.0
+  },
+  "system": {
+    "baseline": {
+      "attempted_n": 56,
+      "by_country": {
+        "AR": {
+          "attempted_n": 12,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.73,
+            "p95": 1.05
+          },
+          "n": 12,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "CO": {
+          "attempted_n": 12,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.72,
+            "p95": 1.16
+          },
+          "n": 12,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "MX": {
+          "attempted_n": 32,
+          "containment": {
+            "contained": 20,
+            "n": 32,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 32,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 32,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 32,
+            "p50": 0.59,
+            "p95": 1.11
+          },
+          "n": 32,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 32,
+            "resolved": 8,
+            "share": 0.25
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 32,
+            "rate": "0/32"
+          }
+        }
+      },
+      "by_variant": {
+        "es-AR": {
+          "attempted_n": 6,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.66,
+            "p95": 0.78
+          },
+          "n": 6,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-CO": {
+          "attempted_n": 6,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.75,
+            "p95": 1.24
+          },
+          "n": 6,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-MX": {
+          "attempted_n": 16,
+          "containment": {
+            "contained": 10,
+            "n": 16,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 16,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 16,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 16,
+            "p50": 0.6,
+            "p95": 0.98
+          },
+          "n": 16,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 16,
+            "resolved": 4,
+            "share": 0.25
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 16,
+            "rate": "0/16"
+          }
+        },
+        "pt-BR": {
+          "attempted_n": 28,
+          "containment": {
+            "contained": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "cost_usd": {
+            "n": 28,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 28,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 28,
+            "p50": 0.72,
+            "p95": 1.13
+          },
+          "n": 28,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0714,
+              0.5714
+            ],
+            "n": 28,
+            "resolved": 8,
+            "share": 0.2857
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 28,
+            "rate": "0/28"
+          }
+        }
+      },
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.0,
+        "per_resolution": 0.0,
+        "total": 0.0
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.65,
+        "p95": 1.18
+      },
+      "n": 56,
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    },
+    "router_v2": {
+      "attempted_n": 56,
+      "by_country": {
+        "AR": {
+          "attempted_n": 12,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000479,
+            "total": 0.001916
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.86,
+            "p95": 1.21
+          },
+          "n": 12,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "CO": {
+          "attempted_n": 12,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000479,
+            "total": 0.001916
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.65,
+            "p95": 1.13
+          },
+          "n": 12,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "MX": {
+          "attempted_n": 32,
+          "containment": {
+            "contained": 20,
+            "n": 32,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 32,
+            "per_attempted": 0.000161,
+            "per_resolution": 0.000642,
+            "total": 0.00514
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 32,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 32,
+            "p50": 0.57,
+            "p95": 0.87
+          },
+          "n": 32,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 32,
+            "resolved": 8,
+            "share": 0.25
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 32,
+            "rate": "0/32"
+          }
+        }
+      },
+      "by_variant": {
+        "es-AR": {
+          "attempted_n": 6,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.000161,
+            "per_resolution": 0.000484,
+            "total": 0.000968
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.8,
+            "p95": 1.19
+          },
+          "n": 6,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-CO": {
+          "attempted_n": 6,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.000161,
+            "per_resolution": 0.000484,
+            "total": 0.000968
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.68,
+            "p95": 0.79
+          },
+          "n": 6,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-MX": {
+          "attempted_n": 16,
+          "containment": {
+            "contained": 10,
+            "n": 16,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 16,
+            "per_attempted": 0.000162,
+            "per_resolution": 0.000646,
+            "total": 0.002585
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 16,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 16,
+            "p50": 0.59,
+            "p95": 0.77
+          },
+          "n": 16,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 16,
+            "resolved": 4,
+            "share": 0.25
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 16,
+            "rate": "0/16"
+          }
+        },
+        "pt-BR": {
+          "attempted_n": 28,
+          "containment": {
+            "contained": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "cost_usd": {
+            "n": 28,
+            "per_attempted": 0.000159,
+            "per_resolution": 0.000557,
+            "total": 0.004452
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 28,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 28,
+            "p50": 0.64,
+            "p95": 1.13
+          },
+          "n": 28,
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0714,
+              0.5714
+            ],
+            "n": 28,
+            "resolved": 8,
+            "share": 0.2857
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 28,
+            "rate": "0/28"
+          }
+        }
+      },
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.00016,
+        "per_resolution": 0.000561,
+        "total": 0.008973
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.64,
+        "p95": 1.09
+      },
+      "n": 56,
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    }
+  }
+}

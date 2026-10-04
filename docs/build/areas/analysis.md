@@ -36,6 +36,8 @@ REQ-0053. The dataset has about 730–900 call-center interactions a day (800K o
 
 The bank operates in MX, CO, and AR, with different integrations per country. Breaking down latency, tool failures, escalations, and complaints by country reveals operational problems and supports the fairness analysis. Country and accent are attributes already present in the data: they require no model.
 
+The monitoring is implemented and evidenced: `sentinel-ai-core/eval/monitor.py` aggregates the turn log per country and language (turns, p50/p95 latency, failed or timed-out steps, escalations, handoffs, fallback turns, cost; aggregates only, a country outside MX, CO and AR reported apart, write-once). The frozen evidence is [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) over the simulated replay workload (256 turns, 888 records), reported in the [metrics report](../metrics-report.md) (section 6, country monitoring). A field run would use the same script over the Azure turn log; that log is not committed.
+
 ## Credit limits
 
 A learned segment (e.g., "premium") cannot change eligibility rules, which are decided by the policy service. It can be used to prioritize service, measuring the effect by segment.

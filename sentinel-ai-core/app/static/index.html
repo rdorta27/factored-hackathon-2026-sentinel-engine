@@ -13,30 +13,43 @@
 <body>
 <div class="chat app">
   <header class="chat-header">
-    <span class="chat-badge" aria-hidden="true">SE</span>
+    <span class="chat-badge" data-testid="brand-mark" role="img" aria-label="Sentinel mark"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 5-3.5 8.2-8 9.5C7.5 20.2 4 17 4 12V6l8-3.5Z"/><ellipse cx="12" cy="11.5" rx="3.6" ry="2.4"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg></span>
     <div class="app-headings">
       <p class="chat-title" data-i18n="appTitle">Sentinel Engine</p>
+      <p class="chat-sub" data-i18n="purposeLine">Disputas de cargos no reconocidos</p>
       <p class="chat-sub" id="reference-date"></p>
     </div>
     <div class="topbar-controls">
-      <label>
-        <span class="sr-only" data-i18n="languageLabel">Language</span>
-        <select id="locale" class="theme-toggle" aria-label="Language">
-          <option value="es-419">es-419</option>
-          <option value="es-MX">es-MX</option>
-          <option value="es-CO">es-CO</option>
-          <option value="es-AR">es-AR</option>
-          <option value="pt-BR">pt-BR</option>
-        </select>
-      </label>
+      <div id="locale-group" role="group" aria-label="Language">
+        <button type="button" class="theme-toggle" data-locale="es-419" data-testid="locale-button" aria-pressed="true">Español · Latinoamérica</button>
+        <button type="button" class="theme-toggle" data-locale="es-MX" data-testid="locale-button" aria-pressed="false">Español · México</button>
+        <button type="button" class="theme-toggle" data-locale="es-CO" data-testid="locale-button" aria-pressed="false">Español · Colombia</button>
+        <button type="button" class="theme-toggle" data-locale="es-AR" data-testid="locale-button" aria-pressed="false">Español · Argentina</button>
+        <button type="button" class="theme-toggle" data-locale="pt-BR" data-testid="locale-button" aria-pressed="false">Português · Brasil</button>
+      </div>
       <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
     </div>
   </header>
+  <div id="demo-banner" class="msg msg-audit" data-testid="demo-banner" hidden>
+    <strong data-i18n="demoBannerTitle">Demo · simulated data</strong>
+    <p class="chat-sub" data-i18n="demoBannerText">Test access needs no password</p>
+  </div>
   <main>
     <section id="view-login" class="msg msg-bot login-card">
       <h2 class="chat-title" data-i18n="loginTitle">Test login</h2>
       <p class="chat-sub" data-i18n="mockBadge">Demo data</p>
-      <form id="login-form" class="login-form">
+      <div id="demo-personas" data-testid="demo-personas" hidden>
+        <h3 class="chat-title" data-i18n="demoPersonasTitle">Pick a test case</h3>
+        <div class="chips">
+          <button type="button" class="candidate" data-persona="normal" data-testid="demo-persona" data-i18n="personaNormal">Normal case · Mexico</button>
+          <button type="button" class="candidate" data-persona="ambiguous" data-testid="demo-persona" data-i18n="personaAmbiguous">Ambiguous case · Portuguese</button>
+          <button type="button" class="candidate" data-persona="high-amount" data-testid="demo-persona" data-i18n="personaHighAmount">High amount · Colombia</button>
+          <button type="button" class="candidate" data-persona="not-me" data-testid="demo-persona" data-i18n="personaNotMe">“Not me” · Argentina</button>
+        </div>
+      </div>
+      <details id="password-login">
+        <summary data-i18n="passwordLoginLink">Use user and password</summary>
+        <form id="login-form" class="login-form">
         <label>
           <span data-i18n="userLabel">User</span>
           <input id="login-user" autocomplete="username" required>
@@ -48,6 +61,7 @@
         <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
         <p id="login-error" class="chat-sub" role="alert"></p>
       </form>
+      </details>
     </section>
     <section id="view-chat" hidden>
       <div class="chat-grid">
@@ -68,8 +82,11 @@
       </div>
     </section>
     <section id="view-queue" hidden>
-      <h3 class="chat-title" data-i18n="queueTitle">Escalated cases</h3>
-      <div id="queue" class="tx-list"></div>
+      <div id="queue-list">
+        <h3 class="chat-title" data-i18n="queueTitle">Escalated cases</h3>
+        <div id="queue" class="tx-list"></div>
+      </div>
+      <div id="queue-detail" data-testid="queue-detail" hidden></div>
     </section>
   </main>
 </div>

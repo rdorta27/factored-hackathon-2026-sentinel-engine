@@ -33,6 +33,27 @@ no login by customer number alone. Do not send `customer_id` in the body.
 Customers land on the chat; the advisor lands on the escalated tickets
 (`GET /api/v1/handoffs`, role `advisor` only).
 
+## Demo entry (evaluators only)
+
+With `SENTINEL_DEMO_AUTH=1` the login page offers four one-click personas
+(normal in es-MX, ambiguous in pt-BR on the Mexican account, high amount in
+es-CO, "not me" in es-AR) under a banner stating the data is simulated and
+needs no password: `POST /api/v1/auth/demo/{persona}`. Without the flag the
+route answers 404 and the user-and-password form is the only entry.
+
+Limitation: a persona id alone proves nothing about identity. One-click
+sign-in is a demo shortcut for evaluators, never an authentication method;
+keep the flag off outside the demo.
+
+## Screens
+
+Four screens: the demo entry, the chat with the "Cómo lo resolví" panel, the
+advisor ticket list and the advisor detail (package and turn trace). They are
+captured in es-MX and pt-BR at desktop and phone width under
+[`docs/build/screenshots/ui-product/`](../docs/build/screenshots/ui-product/),
+regenerated from the repository root with
+`python3 scripts/capture_ui_product.py` (headless Chromium, demo mode).
+
 ## API
 
 One app, one API under `/api/v1`: `auth/{login,logout,me}`, `transactions`,

@@ -1,12 +1,18 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # System Architecture
 
-Target architecture of Sentinel Engine for the transaction-disputes flow: an account inquiry about a charge that becomes a dispute only when it has to. The [Demo Architecture](demo-architecture.md) has the same sections and diagrams, with the mocked parts marked. Behaviour and contracts are in the [Architecture Specification](specification.md).
+This page shows the target architecture of Sentinel Engine for the transaction-disputes flow: an account inquiry about a charge that becomes a dispute only when necessary. The [Demo Architecture](demo-architecture.md) has the same sections and diagrams, with the mocks marked. The [Architecture Specification](specification.md) gives the behavior and the contracts.
 
 Legend for every diagram: violet = component, blue = data store, grey = outside the system.
 
 ## Central principle
 
-**AI understands; code executes and verifies.** The LLM interprets the customer and drafts replies. Permissions, confirmations, actions and their verification live in code. The loop is the one the hackathon asks for: **Understand → Decide → Act → Verify → Escalate**.
+**AI understands; code executes and verifies.** The LLM labels what the customer says. Templates and verified Gold facts make the reply. Permissions, confirmations, actions and their verification are in code. The loop is the one that the hackathon asks for: **Understand → Decide → Act → Verify → Escalate**.
 
 ## Layers
 
@@ -37,9 +43,13 @@ flowchart LR
     class client,advisor ext
 ```
 
-- **Data layer.** Batch medallion pipeline. Bronze keeps the files as received; Silver enforces the schema contracts and quality rules and sends invalid rows to quarantine instead of dropping them; Gold holds denormalised tables ready to serve. The service reads Gold and never writes to it.
-- **Service layer.** One process serves the page and the API (`/api/v1`); there is no second app. The advisor reads escalated tickets in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
-- **Two stores, two jobs.** Charges are read from Gold, which the pipeline refreshes in batches. Disputes and handoff tickets are written to an operational case store and read back at once, so the customer only hears a case number that exists. Sessions and conversation state live in the same relational store, outside the process.
+- **Data layer.** A batch medallion pipeline.
+  - Bronze keeps the files as received.
+  - Silver enforces the schema contracts and the quality rules. It sends invalid rows to quarantine. It does not drop them.
+  - Gold holds denormalized tables, ready to serve.
+  - The service reads Gold and never writes to it.
+- **Service layer.** One process serves the page and the API (`/api/v1`). There is no second app. The advisor reads escalated tickets in a read-only view of the same page ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
+- **Two stores, two jobs.** The service reads charges from Gold. The pipeline refreshes Gold in batches. The service writes disputes and handoff tickets to an operational case store and reads them back at once. So the customer gets only a case number that exists. Sessions and conversation state are in the same relational store, outside the process.
 
 ## Components
 
@@ -110,20 +120,20 @@ flowchart TB
 
 | Component | Role |
 |---|---|
-| HTTP layer: auth and roles | Every route sits under `/api/v1` behind the session cookie. Login needs a password; the role stored on the session decides which routes answer (customer: chat, transactions, disputes; advisor: handoffs). A role failure is a 403 recorded as `access_denied`. |
-| Chat page and `POST /api/v1/chat` | The customer's entry point. State-changing actions are confirmed with a confirm box, not with free text. |
-| Disputes API | `/api/v1/disputes`: the same dispute workflow without chat, in two steps (preview = confirm box, create = confirmation) on the same orchestrator turn, plus the customer's own case list. Not a second business path. |
-| Session and conversation state | Trusted session (password login, role stored) that carries `customer_id`; recent turns, pending confirmation and a per-turn history, kept outside the process and deleted on logout or expiry. |
-| Orchestrator | Runs the loop and owns every call. It injects `customer_id` into tools; the LLM never sees or chooses it. |
-| LLM router | Sends each LLM call to a model by route. Understands intent, language and the charge; drafts the reply. |
+| HTTP layer: auth and roles | Every route is under `/api/v1`, behind the session cookie. Login needs a password. The role on the session decides which routes answer (customer: chat, transactions, disputes; advisor: handoffs). A role failure is a 403, recorded as `access_denied`. |
+| Chat page and `POST /api/v1/chat` | The entry point of the customer. A confirm box confirms each action that changes state. Free text does not. |
+| Disputes API | `/api/v1/disputes`: the same dispute workflow without chat, in two steps (preview = confirm box, create = confirmation) on the same orchestrator turn, and the list of the cases of the customer. It is not a second business path. |
+| Session and conversation state | A trusted session (password login, stored role) that carries `customer_id`. Recent turns, the pending confirmation and a history per turn, outside the process. Logout or expiry deletes them. |
+| Orchestrator | Runs the loop and makes every call. It gives `customer_id` to the tools. The LLM never sees or chooses it. |
+| LLM router | Sends each LLM call to a model per route. It labels the intent, the language and the "not mine" claim. It does not write the reply. |
 | Learned component | See [below](#learned-component). |
-| Policy engine and configuration | Evaluates rules in code (status, eligibility, confirmation, handoff triggers) with per-country parameters from configuration. A policy outcome is final. |
+| Policy engine and configuration | Evaluates rules in code (status, eligibility, confirmation, handoff triggers) with parameters per country from configuration. A policy outcome is final. |
 | Tools | Four functions bound to the session: look up charges, open a dispute (idempotent, one open dispute per charge), read it back, hand off. |
-| Case store | Operational relational store (PostgreSQL) for disputes and handoff tickets, with sessions and conversation state alongside. Never Gold. |
+| Case store | An operational relational store (PostgreSQL) for disputes and handoff tickets, and for sessions and conversation state. Never Gold. |
 | Handoffs route and advisor view | `GET /api/v1/handoffs`, role `advisor`: each escalated ticket with its reason, summary, verified facts, actions attempted and open questions. Read-only ([009](../build/decisions/009-demo-ui-and-advisor-view.md)). |
-| Ports and adapters | Four contracts the code depends on: `ModelPort` (understanding), `GoldTransactions` (charges), the case store (disputes and tickets) and the session and conversation store. The adapter behind each one is chosen by configuration, so the demo and production run the same loop. |
-| Observability | Turn records (one per loop step plus one closing record per turn: `trace_id`, rule, latency, cost) and audit events (login, logout, `access_denied`), with no customer text or identifier in clear. They serve tracing, monitoring and the evaluation metrics. |
-| Evaluation runner | Replays labelled conversations against `POST /api/v1/chat` and computes the metrics the brief asks for. |
+| Ports and adapters | Four contracts that the code uses: `ModelPort` (understanding), `GoldTransactions` (charges), the case store (disputes and tickets), and the session and conversation store. Configuration selects the adapter behind each one, so the demo and production run the same loop. |
+| Observability | Turn records (one per loop step and one closing record per turn: `trace_id`, rule, latency, cost) and audit events (login, logout, `access_denied`). They hold no customer text and no clear identifier. They serve tracing, monitoring and the evaluation metrics. |
+| Evaluation runner | Replays labelled conversations against `POST /api/v1/chat` and calculates the metrics that the brief asks for. |
 
 ## Walkthrough of a case
 
@@ -170,11 +180,17 @@ sequenceDiagram
     end
 ```
 
-A timeout is not success: if the read-back fails after bounded retries, the case is handed off and no case number is given.
+A timeout is not a success. If the read-back fails after the bounded retries, the case goes to a person, and the customer gets no case number.
 
 ## Learned component
 
-The one learned component is an **intent router**: a prompted LLM with development examples that reads the customer's masked message and returns a bounded JSON label: the intent (`charge`, `missing`, `out_of_scope`, `person`), the language and whether the customer states the charge was not theirs ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)). It refines [007](../build/decisions/007-learned-component.md), which first proposed classifying the dispute category; the category recorded on a dispute is set by a keyword rule in code.
+The one learned component is an **intent router**: a prompted LLM with development examples. It reads the masked message of the customer and returns a bounded JSON label ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)):
+
+- the intent (`charge`, `missing`, `out_of_scope`, `person`),
+- the language,
+- whether the customer says that the charge is not theirs.
+
+It refines [007](../build/decisions/007-learned-component.md), which first proposed to classify the dispute category. A keyword rule in code sets the category of a dispute.
 
 ```mermaid
 flowchart LR
@@ -189,24 +205,24 @@ flowchart LR
     class msg ext
 ```
 
-- **Where it runs:** in Understand, after masking and after the code checks that refuse prompt extraction and record injection attempts. Narrowing the shown charges uses deterministic parsers, not the model.
-- **What it decides:** only the label. Policy, eligibility, the confirm box, the read-back and the handoff stay in code; a model failure is answered by the baseline for that turn.
-- **How it is judged:** against the keyword baseline on the same sealed held-out set, measured once (`2024Q4-eval-v7`: 0.98 against 0.54 intent accuracy, n = 280), and end to end on the multi-turn resolution set (`2024Q4-resolution-v1`). Cases are model-written simulation in `es-419` and `pt-BR`, declared as such.
+- **Where it runs:** in Understand, after the masking and after the code checks that refuse prompt extraction and record injection attempts. Deterministic parsers, not the model, narrow the list of charges.
+- **What it decides:** only the label. Policy, eligibility, the confirm box, the read-back and the handoff stay in code. When the model fails, the baseline answers that turn.
+- **How we judge it:** against the keyword baseline on the same sealed held-out set, measured once ([`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): intent accuracy 0.9821 against 0.5393, n = 280, `component.versions.<version>.breakdown.overall`), and end to end on the multi-turn resolution set ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)). The cases are model-written simulation in `es-419` and `pt-BR`, and we say so.
 
 ## Stack and deployment
 
 | Piece | Target |
 |---|---|
 | Platform | Azure; Linux for local development |
-| Backend | Python and FastAPI, one process; loop implementation (LangGraph or plain Python) deferred |
+| Backend | Python and FastAPI, one process. The loop is plain Python; LangGraph stays deferred ([005](../build/decisions/005-backend.md)). |
 | Frontend | One page served by the same process (customer chat and read-only advisor view), styled with the `branding/` files |
 | Data pipeline | Delta Lake: DuckDB locally, Azure Databricks in production, same `sentinel_data` package |
-| Gold serving | Not decided. The Databricks pipeline is implemented in code (Asset Bundle, Bronze and Silver jobs), but Gold on Databricks is meant for historical analytics, so the read path at request time is open |
+| Gold serving | Not decided. The Databricks pipeline is in the code (Asset Bundle, Bronze and Silver jobs). Gold on Databricks is for historical analytics, so the read path at request time is open. |
 | Case store | PostgreSQL: disputes, handoff tickets, sessions, conversation state |
-| LLM | Hybrid router; model per route not decided |
+| LLM | Open-weight model per route (GLM 5.3 Flash on both routes today), served on Azure AI Foundry or Databricks, with the keyword baseline as the fallback ([016](../build/decisions/016-router-models.md)) |
 | Identity and secrets | Identity provider; Azure Key Vault |
 | Serving | Azure Container Apps, autoscaled |
-| Observability | Centralised logs and traces, alerts by country |
+| Observability | Central logs and traces, alerts per country |
 
 ## Repository layout
 
@@ -226,7 +242,7 @@ flowchart TB
     class repo store
 ```
 
-Two code folders (`sentinel-login/` only keeps the original page as a reference). Components are folders, not services: no second HTTP service for the model and no separate web package. Owners and progress per folder are in the team plan.
+Two code folders. `sentinel-login/` keeps only the original page as a reference. Components are folders, not services: there is no second HTTP service for the model and no separate web package. The team plan gives the owners and the progress per folder.
 
 ## References
 
