@@ -32,3 +32,17 @@ The service SHALL serve v3 only after `2024Q4-eval-v8` is frozen and v3 meets ev
 
 - **WHEN** the app starts with v3
 - **THEN** its example ids equal those in the `eval-v8` summary, or startup fails
+
+### Requirement: Prompt v3 labels a status question
+
+Prompt v3 SHALL add the label `status` for a question about the status of a charge. A question about the status of an existing dispute SHALL stay with the code check of `flow-fixes`. The keyword baseline SHALL NOT change. Traces to REQ-0002 (P0, Done) and REQ-0016 (P0, Done).
+
+#### Scenario: Status of a charge
+
+- **WHEN** the message is "quiero ver el estado de mi último cargo"
+- **THEN** prompt v3 returns the label `status`
+
+#### Scenario: The baseline is unchanged
+
+- **WHEN** the baseline reads the same message
+- **THEN** its label is the same as in `2024Q4-eval-v7`
