@@ -7,13 +7,15 @@ context: |
   Stack: Python + FastAPI serving one-page chat (HTML+JS) on POST /chat; Azure; local Linux.
   Policy, authenticated session, idempotency in code; no orchestrator ever sees customer_id.
   All docs/code in English from first draft. Banking terms in ES/PT kept original with English explanation on first use.
+  All documentation in simplified technical English (ASD-STE100): one idea per sentence, max 20 words per procedure step and 25 per description, active voice, present tense, one term per concept.
+  Label what is real: real, mock, synthetic, team-generated, simulation or projection (docs/architecture/what-is-real.md).
   Locales BCP 47 only: es-MX, es-CO, es-AR, es-419, pt-BR. Never ES/PT alone.
   No secrets/data in repo (.env and data/ gitignored). Conventional Commits with mandatory two-block body.
 
 # Per-artifact rules (strict hackathon, English-only)
 rules:
   proposal:
-    - English only; ES/PT banking terms with English explanation on first use
+    - English only, written in ASD-STE100; ES/PT banking terms with English explanation on first use
     - Max 500 words, must include Non-goals section
     - Never include secrets, credentials, or dataset rows
     - Cite REQ-XXXX IDs and docs/build/decisions/ files
@@ -34,3 +36,4 @@ operations:
   archive:
     guidance:
       - Update requirements status table and summarize outcome before finishing
+      - Add each new evidence run to evidence/README.md with its status and data type

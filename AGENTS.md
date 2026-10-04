@@ -14,12 +14,31 @@ English, including working documents.
 | Root [`README.md`](README.md), slides, video script | English | The deliverable the evaluators read. |
 
 **Rule of thumb: everything is drafted in English from the first draft.**
+
+**All documentation is written in simplified technical English
+(ASD-STE100).** This applies to every new or edited Markdown file: README,
+`docs/`, `team/`, `evidence/` READMEs, OpenSpec artifacts, decisions, commit
+bodies and PR descriptions. The rules that matter most:
+
+- One idea per sentence. At most 20 words in a procedure step and 25 words
+  in a description.
+- Active voice and present tense. Write "the router labels the intent", not
+  "the intent is labelled by the router".
+- One instruction per sentence, in the imperative: "Set the variable."
+- One term for one concept. Do not use synonyms for variety (for example,
+  always "handoff", never also "transfer" and "escalation" for the same thing).
+- Simple, common words. Do not use idioms, phrasal verbs with a vague meaning,
+  or noun clusters longer than three words.
+- Tables and lists instead of long paragraphs.
+- Keep exact technical names as they are: code identifiers, field paths,
+  REQ ids, decision numbers and dataset values.
 There is no translation pass at the end. Tracked as REQ-0051; the status table lives in
 [`docs/build/delivery.md`](docs/build/delivery.md#language).
 
 For agents:
 
-- Write new documentation in English. Do **not** reintroduce Spanish files
+- Write new documentation in English and in ASD-STE100. When you edit a
+  page, rewrite the parts you touch in ASD-STE100. Do **not** reintroduce Spanish files
   under `docs/` or `team/` unless explicitly asked.
 - Do **not** write new documentation in Portuguese. The system must answer in
   Spanish and Portuguese; our own writing stays in English.
@@ -35,12 +54,13 @@ For agents:
 
 | Path | What it holds |
 |---|---|
-| [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture and their specification |
+| [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture, their specification, and [what is real](docs/architecture/what-is-real.md) (real, mock, synthetic, team-generated, simulation, projection) |
+| [`docs/rationale/`](docs/rationale/README.md) | Why each choice, with an evidence table and the slide sentence |
 | [`docs/understand/`](docs/understand/) | The challenge and the data in one read; [`reference/`](docs/understand/reference/) holds the official data dictionary |
 | [`docs/requirements/`](docs/requirements/) | Requirements: [`requirements.md`](docs/requirements/requirements.md) is the index (sources, status, dependencies); one file per type holds the cards with description and evidence |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
-| [`evidence/`](evidence/) | Frozen, reproducible data runs (scripts + `summary.json`) cited by the docs |
+| [`evidence/`](evidence/README.md) | Frozen, reproducible runs (scripts + `summary.json`) cited by the docs. [`evidence/README.md`](evidence/README.md) indexes every run with its status and data type |
 | [`openspec/`](openspec/) | OpenSpec config, specs and changes |
 | [`scripts/`](scripts/) | Repository scripts; `render_flow_measurements.py` generates the flow measurements page and can verify it against a fresh run |
 | [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Natalia. |
@@ -84,9 +104,15 @@ Accepted decisions that code must follow:
   use the template); team decisions go to [`team/plan.md`](team/plan.md).
   Requirements cited by a decision are listed in
   [`docs/requirements/requirements.md`](docs/requirements/requirements.md).
+- **Label what is real.** Every component, data source and number is real,
+  mock, synthetic, team-generated, simulation or projection, as defined in
+  [what is real](docs/architecture/what-is-real.md). Never present a
+  simulation or a projection as a production measurement.
 - **Evidence runs are write-once.** A new run goes in a new folder under
   `evidence/flows/` (e.g. `2024Q4-v3/`) or `evidence/adversarial/`; never edit
-  a committed run. Cite `summary.json` fields, never hand-copied numbers.
+  a committed run. Cite `summary.json` fields, never hand-copied numbers. Add each new run to
+  [`evidence/README.md`](evidence/README.md) with its status (current or
+  superseded), data type and requirements.
   Scripts read the bucket name from `.env` and data from the gitignored
   `data/`; never write the bucket name, account IDs or dataset rows in the repo.
 - **Adversarial evidence** is produced by the test suite, not by hand. Run
