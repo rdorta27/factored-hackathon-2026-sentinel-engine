@@ -1,0 +1,38 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
+# Proposal
+
+## Why
+
+[`router-v3`](../router-v3/proposal.md) builds the candidate: contract v3, prompt v3, the draft validator and the cut-offs. Judging it needs a different kind of work: rules written before the numbers, a sealed set written by isolated authors, one single measurement, and a verdict that decides what the service serves. That work has a different pace and different dependencies. The sealed set can be written, reviewed and sealed before the code freeze. Only the measurement must wait, because the runner refuses to measure a seal twice and the owner will review the chat before the freeze, so the prompt can still change.
+
+## What Changes
+
+- **Amendment of 018** (rules before numbers): new metrics, targets from development numbers of the baseline and `router_v2`, the spend cap, and the gates of `eval-v7` kept.
+- **Two sealed blocks** by isolated authors: the intent block (kind, subtype, slots, openers) and the multi-turn resolution block over the mock store. Both reviewed, back-translated and sealed under a new hash before the measurement.
+- **Dress rehearsal** of the whole pipeline on development data: every candidate, the new metrics, the report and the spend cap, with no sealed case.
+- **One measurement, `2024Q4-eval-v8`,** after the code freeze: baseline, trained baseline, `router_v2`, `router_v2` with cut-offs, v3, v3 with cut-offs, with a breakdown by language and country.
+- **Verdict and serving:** the service serves v3 by default only if it passes every gate; otherwise `router_v2` stays. Then the metrics report, README, REQ-0016 evidence, the evidence index and the CI replay list are updated.
+
+## Capabilities
+
+### New Capabilities
+(none)
+
+### Modified Capabilities
+- `sealed-case-set`: a second sealed set with openers, subtypes, slots and multi-turn resolution.
+- `llm-router`: v3 is served by default only after `eval-v8` passes.
+- `evaluation-runner`: the new metrics of v8.
+
+## Impact
+
+- `sentinel-ai-core/eval/` (metrics, runner, report, cases, seal), decision 018 amendment, `evidence/evaluation-runs/2024Q4-eval-v8/`, the metrics report, README, requirements evidence, the evidence index and the CI workflow.
+
+## Non-goals
+
+- Changes to the prompt, the contract or the validator (they belong to `router-v3`).
+- A measurement before the code freeze, or a second measurement of the same seal.
