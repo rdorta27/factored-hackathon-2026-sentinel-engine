@@ -24,9 +24,13 @@ from app.ai.transport import HttpTransport, ModelTransport, ModelUnavailable
 log = logging.getLogger("sentinel.model")
 
 PROMPT_WITH_EXAMPLES = "v2"
+PROMPT_V3_WITH_EXAMPLES = "v3"
 # A copy of the eval examples, so the image needs neither eval/ nor the case files
 # (and never ships the sealed held-out set). A test keeps it equal to the eval loader.
 EXAMPLES_PATH = Path(__file__).resolve().parent / "examples_v2.json"
+# Contract v3 is selected with SENTINEL_LLM_PROMPT_VERSION=v3 only. It becomes
+# the default only after 2024Q4-eval-v8 approves it; until then v2 stays served.
+EXAMPLES_V3_PATH = Path(__file__).resolve().parent / "examples_v3.json"
 # The calibrated cut-offs, next to the examples, with the run that chose them
 # (018 amendment). Loaded only when the setting below is on.
 CUTOFFS_PATH = Path(__file__).resolve().parent / "router_config.json"
@@ -84,6 +88,18 @@ def load_examples() -> tuple[Example, ...]:
     return examples
 
 
+def load_examples_v3() -> tuple[Example, ...]:
+    """The v3 examples; fail rather than serve another v3."""
+    try:
+        rows = json.loads(EXAMPLES_V3_PATH.read_text(encoding="utf-8"))["examples"]
+        examples = tuple(Example(case_id=row["case_id"], message=row["message"], reply=row["reply"]) for row in rows)
+    except (OSError, KeyError, TypeError, ValueError) as exc:
+        raise RuntimeError(f"prompt v3 needs its development examples: {exc}") from exc
+    if not examples:
+        raise RuntimeError("prompt v3 needs its development examples: the list is empty")
+    return examples
+
+
 def cutoffs_enabled() -> bool:
     """Off by default: without the setting the app serves v2 without cut-offs."""
     return os.environ.get("SENTINEL_LLM_CUTOFFS", "").strip().lower() in ("1", "true", "on", "yes")
@@ -106,6 +122,8 @@ def router_config() -> RouterConfig:
     config = RouterConfig.from_env()
     if config.prompt_version == PROMPT_WITH_EXAMPLES:
         config.examples = load_examples()
+    elif config.prompt_version == PROMPT_V3_WITH_EXAMPLES:
+        config.examples = load_examples_v3()
     if cutoffs_enabled():
         config.cutoffs = load_cutoffs()
     return config

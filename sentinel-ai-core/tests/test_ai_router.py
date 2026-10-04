@@ -766,3 +766,85 @@ def test_digest_rejects_unknown_fields_and_personal_data() -> None:
         build_messages("hola", [], None, context={"sys_questions": "missing"})  # type: ignore[dict-item]
     with pytest.raises(ValueError, match="forbidden"):
         build_messages("hola", [], None, context={"sys_questions": [], "customer_id": "CUST-1"})  # type: ignore[dict-item]
+
+
+def test_contract_v3_defaults_keep_v1_v2_and_baseline() -> None:
+    from app.ai.demo import DemoModel
+    from app.ai.port import UnderstandSlots
+
+    for result in (
+        DemoModel().understand("no reconozco este cargo", []),
+        _router('{"intent": "charge", "language": "es-419"}').understand("hola", []),
+    ):
+        assert result.subtype is None
+        assert result.slots == UnderstandSlots()
+        assert result.reply_draft is None
+
+
+def test_contract_v3_reads_status_kind_and_kind_alias() -> None:
+    assert _router('{"intent": "status", "language": "es-419"}').understand("hola", []).kind.value == "status"
+    assert _router('{"kind": "status", "language": "es-419"}').understand("hola", []).kind.value == "status"
+
+
+def test_contract_v3_reads_loan_subtype() -> None:
+    content = '{"intent": "out_of_scope", "subtype": "loan", "language": "es-419"}'
+    result = _router(content).understand("quiero un préstamo", [])
+    assert result.kind.value == "out_of_scope"
+    assert result.subtype == "loan"
+
+
+def test_contract_v3_reads_greeting_subtype() -> None:
+    content = '{"intent": "missing", "subtype": "greeting", "language": "es-419"}'
+    result = _router(content).understand("hola", [])
+    assert result.kind.value == "missing"
+    assert result.subtype == "greeting"
+
+
+def test_contract_v3_reads_numeric_amount_slot() -> None:
+    content = (
+        '{"intent": "charge", "language": "es-419", '
+        '"slots": {"merchant_words": "cafeteria", "amount": 1000, '
+        '"date_phrase": "ayer", "twice": false}}'
+    )
+    result = _router(content).understand("un cobro de mil pesos", [])
+    assert result.slots.amount == 1000
+    assert result.slots.merchant_words == "cafeteria"
+    assert result.slots.date_phrase == "ayer"
+    assert result.slots.twice is False
+
+
+def test_contract_v3_reader_is_tolerant() -> None:
+    from app.ai.llm import parse_v3
+
+    subtype, slots, draft = parse_v3(
+        '{"intent": "charge", "language": "es-419", "amount": 1000, "unknown_field": 1}'
+    )
+    assert subtype is None
+    assert slots.amount == 1000
+    assert draft is None
+    subtype, _, _ = parse_v3('{"intent": "missing", "subtype": "nonsense", "language": "es-419"}')
+    assert subtype is None
+    subtype, _, _ = parse_v3('{"intent": "charge", "subtype": "loan", "language": "es-419"}')
+    assert subtype is None
+
+
+def test_contract_v3_keeps_draft_text() -> None:
+    content = '{"intent": "missing", "subtype": "greeting", "language": "es-419", "reply_draft": "Hola {merchant}"}'
+    result = _router(content).understand("hola", [])
+    assert result.reply_draft == "Hola {merchant}"
+
+
+def test_contract_v3_serving_selects_v3_only_with_the_flag(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
+    import json
+
+    from app.ai import serving
+
+    monkeypatch.setenv("SENTINEL_LLM_PROMPT_VERSION", "v3")
+    monkeypatch.setattr(serving, "EXAMPLES_V3_PATH", tmp_path / "missing.json")
+    with pytest.raises(RuntimeError, match="prompt v3 needs"):
+        serving.router_config()
+    payload = {"examples": [{"case_id": "dv-x", "message": "hola", "reply": {"intent": "missing"}}]}
+    path = tmp_path / "examples_v3.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    monkeypatch.setattr(serving, "EXAMPLES_V3_PATH", path)
+    assert serving.load_examples_v3()[0].case_id == "dv-x"

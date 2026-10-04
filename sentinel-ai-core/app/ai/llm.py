@@ -8,7 +8,14 @@ import threading
 from dataclasses import dataclass
 from math import exp
 
-from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
+from app.ai.port import (
+    SUBTYPE_MISSING,
+    SUBTYPE_OUT_OF_SCOPE,
+    ModelInfo,
+    UnderstandKind,
+    UnderstandResult,
+    UnderstandSlots,
+)
 from app.ai.transport import InvalidReply, ModelTransport, TokenLogprob
 from app.orchestrator.types import Language
 
@@ -191,17 +198,24 @@ def claim_cued(message: str) -> bool:
     return any(phrase in text for phrase in demo._NOT_MINE)
 
 
-def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
+def _load_body(content: str) -> dict:
     try:
         body = json.loads(content)
         if not isinstance(body, dict):
             raise json.JSONDecodeError("not an object", content, 0)
     except json.JSONDecodeError as exc:
         raise InvalidReply(f"unparsable model reply: {exc}") from exc
-    intent = str(body.get("intent", "")).lower()
+    return body
+
+
+def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
+    body = _load_body(content)
+    raw_intent = body.get("kind", body.get("intent", ""))
+    intent = str(raw_intent or "").strip().lower()
     language = str(body.get("language", ""))
     kinds = {
         "charge": UnderstandKind.CHARGE,
+        "status": UnderstandKind.STATUS,
         "missing": UnderstandKind.MISSING,
         "out_of_scope": UnderstandKind.OUT_OF_SCOPE,
         "person": UnderstandKind.PERSON,
@@ -215,6 +229,86 @@ def parse_content(content: str) -> tuple[UnderstandKind, Language, bool]:
     else:
         raise InvalidReply(f"unknown language: {language!r}")
     return kinds[intent], lang, body.get("not_mine") is True
+
+
+def parse_subtype(body: dict, kind: UnderstandKind) -> str | None:
+    """The v3 subtype, or None when absent, unknown or misplaced.
+
+    Unknown values fall back to None so v1, v2 and the baseline still fit.
+    """
+    raw = body.get("subtype", "")
+    subtype = str(raw or "").strip().lower()
+    if not subtype:
+        return None
+    if kind is UnderstandKind.MISSING and subtype in SUBTYPE_MISSING:
+        return subtype
+    if kind is UnderstandKind.OUT_OF_SCOPE and subtype in SUBTYPE_OUT_OF_SCOPE:
+        return subtype
+    return None
+
+
+def _parse_amount(value: object) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        amount = float(value)
+    elif isinstance(value, str) and value.strip():
+        try:
+            amount = float(value.strip().replace(",", ""))
+        except ValueError:
+            return None
+    else:
+        return None
+    if amount != amount or amount in (float("inf"), float("-inf")) or amount < 0:
+        return None
+    return amount
+
+
+def parse_slots(body: dict) -> UnderstandSlots:
+    """The v3 slots as hints. Every field is optional; a wrong slot is None."""
+    raw_slots = body.get("slots")
+    slots_body = raw_slots if isinstance(raw_slots, dict) else {}
+    merchant_raw = slots_body.get("merchant_words", "")
+    merchant_words = str(merchant_raw or "").strip() or None
+    if merchant_words is not None and len(merchant_words) > 80:
+        merchant_words = merchant_words[:80].strip() or None
+    amount = _parse_amount(slots_body.get("amount", body.get("amount", None)))
+    date_raw = slots_body.get("date_phrase", "")
+    date_phrase = str(date_raw or "").strip() or None
+    if date_phrase is not None and len(date_phrase) > 80:
+        date_phrase = date_phrase[:80].strip() or None
+    return UnderstandSlots(
+        merchant_words=merchant_words,
+        amount=amount,
+        date_phrase=date_phrase,
+        twice=slots_body.get("twice") is True,
+    )
+
+
+def parse_reply_draft(body: dict) -> str | None:
+    raw = body.get("reply_draft", "")
+    if not isinstance(raw, str):
+        return None
+    draft = raw.strip()
+    return draft or None
+
+
+def parse_v3(content: str) -> tuple[str | None, UnderstandSlots, str | None]:
+    """The optional v3 fields of a model reply. Never raises on them."""
+    body = _load_body(content)
+    raw_intent = body.get("kind", body.get("intent", ""))
+    intent = str(raw_intent or "").strip().lower()
+    kinds = {
+        "charge": UnderstandKind.CHARGE,
+        "status": UnderstandKind.STATUS,
+        "missing": UnderstandKind.MISSING,
+        "out_of_scope": UnderstandKind.OUT_OF_SCOPE,
+        "person": UnderstandKind.PERSON,
+    }
+    kind = kinds.get(intent)
+    if kind is None:
+        raise InvalidReply(f"unknown intent: {intent!r}")
+    return parse_subtype(body, kind), parse_slots(body), parse_reply_draft(body)
 
 
 # The first token each label is emitted as. ``out_of_scope`` tokenizes as
@@ -380,8 +474,11 @@ class PromptedLLMRouter:
         kind, language, not_mine = parse_content(response.content)
         if not_mine and not claim_cued(message):
             not_mine = False
+        subtype, slots, reply_draft = parse_v3(response.content)
         confidence = label_confidence(kind, response.logprobs)
         kind = self._apply_cutoffs(kind, confidence)
+        if kind is not UnderstandKind.MISSING and kind is not UnderstandKind.OUT_OF_SCOPE:
+            subtype = None
         self._last.route = route
         self._last.model = model
         return UnderstandResult(
@@ -392,6 +489,9 @@ class PromptedLLMRouter:
             cost_usd=response.cost_usd,
             not_mine=not_mine,
             confidence=confidence,
+            subtype=subtype,
+            slots=slots,
+            reply_draft=reply_draft,
         )
 
     def classify(self, message: str) -> str:
