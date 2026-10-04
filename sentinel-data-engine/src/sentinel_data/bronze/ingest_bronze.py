@@ -293,7 +293,7 @@ class BronzeIngestor:
                     '{batch_id}'          AS _batch_id
                 FROM read_csv_auto('{source_file}', header = true)
                 """
-            ).to_arrow_table()
+            ).fetch_arrow_table()
             write_deltalake(delta_path, arrow_table, mode="append")
             appended += 1
 

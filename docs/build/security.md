@@ -76,4 +76,4 @@ The full history was scanned before submission. `gitleaks git --redact` covered 
 
 - [ ] Choose test authentication mechanism
 - [ ] Define retention policy
-- [x] Propose security cases for the adversarial set (the set owner is [ML](areas/ml.md), REQ-0021); delivered in [tests/adversarial](../../sentinel-ai-core/tests/adversarial/README.md) — 29 attacks, `0/29` unsafe
+- [x] Propose security cases for the adversarial set (the set owner is [ML](areas/ml.md), REQ-0021); delivered in [tests/adversarial](../../sentinel-ai-core/tests/adversarial/README.md) — 42 attacks, `0/42` unsafe ([run](../../evidence/adversarial/20261002T222323Z/summary.json)). Prompt extraction is refused in code (`extraction_refused`). Injection is recorded (`injection_suspected`), not refused, so a measured reply does not change. Gold reads run under `SENTINEL_GOLD_TIMEOUT_S` (default 2 s, above the measured 0.28 s cold read); a timeout is a failed attempt and three of them hand off with no case number.

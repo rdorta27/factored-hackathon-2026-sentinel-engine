@@ -55,11 +55,14 @@ class DuckDbGoldStore:
         self._as_of = as_of
 
     def get(self, reference: str, customer_id: str) -> GoldRow | None:
-        record = gold_service._sync_fetch_transaction(customer_id, reference)
+        record = gold_service._sync_fetch_transaction(customer_id, reference, self._as_of)
         return None if record is None else to_gold_row(record, self._as_of)
 
     def list_for_customer(self, customer_id: str) -> list[GoldRow]:
-        rows = [to_gold_row(record, self._as_of) for record in gold_service._sync_fetch_transactions(customer_id)]
+        rows = [
+            to_gold_row(record, self._as_of)
+            for record in gold_service._sync_fetch_transactions(customer_id, self._as_of)
+        ]
         return sorted(rows, key=lambda row: row.date, reverse=True)
 
 
@@ -70,9 +73,11 @@ def select_gold(as_of: str) -> tuple[GoldTransactions, str]:
     ``duckdb`` still falls back to the mock, with a warning, if the probe fails.
 
     Source priority (``auto`` mode):
-      1. ``data/gold_bank.duckdb``  – single-file DuckDB from the Medallion pipeline.
-      2. ``data/gold/``             – Delta Lake directory (``SENTINEL_GOLD_DIR``).
+      1. ``SENTINEL_GOLD_DUCKDB``, or the repository-relative DuckDB file.
+      2. ``SENTINEL_GOLD_DIR``      – Delta Lake directory.
       3. Mock data                  – when neither source is present or readable.
+
+    ``mock`` returns before any file is opened.
     """
     if os.environ.get("SENTINEL_GOLD_SOURCE", "auto").lower() == "mock":
         return MockGoldStore(as_of=as_of), "mock"

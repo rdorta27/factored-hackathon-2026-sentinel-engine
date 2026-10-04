@@ -1,8 +1,37 @@
+import os
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 from dataclasses import replace
 
 from app.orchestrator.types import Candidate
 from app.tools.gold import GoldTransactions, to_candidate
 from app.tools.ports import OpenResult
+
+# Well above the measured 0.28 s cold DuckDB read. Tests set a smaller value.
+DEFAULT_GOLD_TIMEOUT_S = 2.0
+_POOL = ThreadPoolExecutor(max_workers=4, thread_name_prefix="gold-read")
+
+
+class GoldTimeout(Exception):
+    """A Gold read exceeded SENTINEL_GOLD_TIMEOUT_S."""
+
+
+def gold_timeout_s() -> float:
+    raw = os.environ.get("SENTINEL_GOLD_TIMEOUT_S", "").strip()
+    if not raw:
+        return DEFAULT_GOLD_TIMEOUT_S
+    try:
+        value = float(raw)
+    except ValueError:
+        return DEFAULT_GOLD_TIMEOUT_S
+    return value if value > 0 else DEFAULT_GOLD_TIMEOUT_S
+
+
+def _bounded(fn, *args):  # type: ignore[no-untyped-def]
+    future = _POOL.submit(fn, *args)
+    try:
+        return future.result(timeout=gold_timeout_s())
+    except FuturesTimeout as exc:
+        raise GoldTimeout() from exc
 
 
 class SessionBoundLookup:
@@ -30,11 +59,12 @@ class SessionBoundLookup:
         ]
 
     def lookup_transactions(self) -> list[Candidate]:
-        return self._mark([to_candidate(row) for row in self._gold.list_for_customer(self._customer_id)])
+        rows = _bounded(self._gold.list_for_customer, self._customer_id)
+        return self._mark([to_candidate(row) for row in rows])
 
     def candidate(self, reference: str) -> Candidate | None:
         """One of the customer's charges, marked like the listing; None if not theirs."""
-        row = self._gold.get(reference, self._customer_id)
+        row = _bounded(self._gold.get, reference, self._customer_id)
         return None if row is None else self._mark([to_candidate(row)])[0]
 
     def open_dispute(

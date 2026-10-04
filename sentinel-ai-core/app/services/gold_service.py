@@ -6,9 +6,10 @@ PII-free projection mandated by ADR 008.  All DuckDB calls are offloaded
 via ``asyncio.to_thread()`` so the FastAPI event loop is never blocked.
 
 Source priority for local development:
-  1. ``data/gold_bank.duckdb``  – single-file DuckDB written by the Medallion pipeline.
+  1. ``SENTINEL_GOLD_DUCKDB``, or one path fixed relative to the repository.
   2. ``data/gold/``             – Delta Lake directory (``SENTINEL_GOLD_DIR``).
-  3. Mock data                  – when neither source is present.
+  3. Mock data                  – when neither source is present, or when
+     ``SENTINEL_GOLD_SOURCE`` is ``mock`` (no file is opened).
 """
 
 from __future__ import annotations
@@ -24,17 +25,17 @@ from app.schemas.status import StatusCandidate, to_candidate
 
 _GOLD_DIR = Path(os.getenv("SENTINEL_GOLD_DIR", "data/gold"))
 _VIEW_TABLE = "v_service_dispute_eligible_transactions"
+_DATE_PREDICATE = "CAST(transaction_date AS DATE) <= CAST(? AS DATE)"
 
-# Candidate paths probed in order when SENTINEL_GOLD_DUCKDB is not set.
-# Each entry is relative to the current working directory at runtime so the
-# service resolves correctly whether launched from the monorepo root, from
-# inside sentinel-ai-core/, or from sentinel-data-engine/.
-_DUCKDB_CANDIDATES: tuple[Path, ...] = (
-    Path("data/gold_bank.duckdb"),
-    Path("sentinel-data-engine/data/gold_bank.duckdb"),
-    Path("../sentinel-data-engine/data/gold_bank.duckdb"),
-    Path("../data/gold_bank.duckdb"),
-)
+
+def repo_root() -> Path:
+    """Repository root, from this file, never from the process working directory."""
+    return Path(__file__).resolve().parents[3]
+
+
+def default_gold_duckdb_path() -> Path:
+    """The one DuckDB file the app looks for when ``SENTINEL_GOLD_DUCKDB`` is unset."""
+    return repo_root() / "sentinel-data-engine" / "data" / "gold_bank.duckdb"
 
 
 def _gold_path() -> Path:
@@ -42,24 +43,22 @@ def _gold_path() -> Path:
 
 
 def gold_duckdb_path() -> Path | None:
-    """Return the first resolvable path to ``gold_bank.duckdb``, or None.
+    """Return the DuckDB Gold file, or None.
 
-    Resolution order:
-      1. ``SENTINEL_GOLD_DUCKDB`` env var (must point to an existing file).
-      2. Candidate paths in ``_DUCKDB_CANDIDATES`` (first existing file wins).
+    ``SENTINEL_GOLD_DUCKDB`` when set (absolute, or relative to the repository).
+    Otherwise ``sentinel-data-engine/data/gold_bank.duckdb`` next to this package.
+    A relative value is never resolved from the folder the process was started from.
+    A set value that is not a file does not fall through to another path.
     """
     env_val = os.getenv("SENTINEL_GOLD_DUCKDB", "").strip()
     if env_val:
-        p = Path(env_val).resolve()
-        if p.is_file():
-            return p
-
-    for candidate in _DUCKDB_CANDIDATES:
+        candidate = Path(env_val)
+        if not candidate.is_absolute():
+            candidate = repo_root() / candidate
         resolved = candidate.resolve()
-        if resolved.is_file():
-            return resolved
-
-    return None
+        return resolved if resolved.is_file() else None
+    candidate = default_gold_duckdb_path()
+    return candidate if candidate.is_file() else None
 
 
 # ---------------------------------------------------------------------------
@@ -67,7 +66,7 @@ def gold_duckdb_path() -> Path | None:
 # ---------------------------------------------------------------------------
 
 
-def _sync_fetch_transactions_duckdb(customer_id: str, db_path: str) -> list[dict[str, Any]]:
+def _sync_fetch_transactions_duckdb(customer_id: str, db_path: str, as_of: str) -> list[dict[str, Any]]:
     """Query ``v_service_dispute_eligible_transactions`` from the local .duckdb file."""
     con = duckdb.connect(database=db_path, read_only=True)
     try:
@@ -76,9 +75,10 @@ def _sync_fetch_transactions_duckdb(customer_id: str, db_path: str) -> list[dict
             SELECT *
             FROM {_VIEW_TABLE}
             WHERE customer_id = ?
+              AND {_DATE_PREDICATE}
             ORDER BY transaction_date DESC
             """,
-            [customer_id],
+            [customer_id, as_of],
         ).fetchall()
         col_names = [d[0] for d in con.execute(f"DESCRIBE {_VIEW_TABLE}").fetchall()]
         result: list[dict[str, Any]] = []
@@ -94,7 +94,9 @@ def _sync_fetch_transactions_duckdb(customer_id: str, db_path: str) -> list[dict
         con.close()
 
 
-def _sync_fetch_transaction_duckdb(customer_id: str, transaction_id: str, db_path: str) -> dict[str, Any] | None:
+def _sync_fetch_transaction_duckdb(
+    customer_id: str, transaction_id: str, db_path: str, as_of: str
+) -> dict[str, Any] | None:
     """Return a single transaction from the local .duckdb file, or None."""
     con = duckdb.connect(database=db_path, read_only=True)
     try:
@@ -104,9 +106,10 @@ def _sync_fetch_transaction_duckdb(customer_id: str, transaction_id: str, db_pat
             FROM {_VIEW_TABLE}
             WHERE customer_id = ?
               AND transaction_id = ?
+              AND {_DATE_PREDICATE}
             LIMIT 1
             """,
-            [customer_id, transaction_id],
+            [customer_id, transaction_id, as_of],
         ).fetchall()
         if not rows:
             return None
@@ -125,7 +128,7 @@ def _sync_fetch_transaction_duckdb(customer_id: str, transaction_id: str, db_pat
 # ---------------------------------------------------------------------------
 
 
-def _sync_fetch_transactions(customer_id: str) -> list[dict[str, Any]]:
+def _sync_fetch_transactions(customer_id: str, as_of: str) -> list[dict[str, Any]]:
     """
     Query the PII-free Gold view for a single customer's eligible transactions.
 
@@ -136,7 +139,7 @@ def _sync_fetch_transactions(customer_id: str) -> list[dict[str, Any]]:
     """
     db_file = gold_duckdb_path()
     if db_file is not None:
-        return _sync_fetch_transactions_duckdb(customer_id, str(db_file))
+        return _sync_fetch_transactions_duckdb(customer_id, str(db_file), as_of)
     table_path = str(_gold_path() / _VIEW_TABLE)
     con = duckdb.connect(database=":memory:", read_only=False)
     try:
@@ -146,9 +149,10 @@ def _sync_fetch_transactions(customer_id: str) -> list[dict[str, Any]]:
             SELECT *
             FROM delta_scan('{table_path}')
             WHERE customer_id = ?
+              AND {_DATE_PREDICATE}
             ORDER BY transaction_date DESC
             """,
-            [customer_id],
+            [customer_id, as_of],
         ).fetchall()
         col_names = [
             d[0]
@@ -169,7 +173,7 @@ def _sync_fetch_transactions(customer_id: str) -> list[dict[str, Any]]:
         con.close()
 
 
-def _sync_fetch_transaction(customer_id: str, transaction_id: str) -> dict[str, Any] | None:
+def _sync_fetch_transaction(customer_id: str, transaction_id: str, as_of: str) -> dict[str, Any] | None:
     """Return a single transaction row for ``customer_id`` + ``transaction_id``, or None.
 
     Dispatches to the local DuckDB file (Priority 1) when present; otherwise
@@ -177,7 +181,7 @@ def _sync_fetch_transaction(customer_id: str, transaction_id: str) -> dict[str, 
     """
     db_file = gold_duckdb_path()
     if db_file is not None:
-        return _sync_fetch_transaction_duckdb(customer_id, transaction_id, str(db_file))
+        return _sync_fetch_transaction_duckdb(customer_id, transaction_id, str(db_file), as_of)
     table_path = str(_gold_path() / _VIEW_TABLE)
     con = duckdb.connect(database=":memory:", read_only=False)
     try:
@@ -188,9 +192,10 @@ def _sync_fetch_transaction(customer_id: str, transaction_id: str) -> dict[str, 
             FROM delta_scan('{table_path}')
             WHERE customer_id = ?
               AND transaction_id = ?
+              AND {_DATE_PREDICATE}
             LIMIT 1
             """,
-            [customer_id, transaction_id],
+            [customer_id, transaction_id, as_of],
         ).fetchall()
         if not rows:
             return None
@@ -214,17 +219,18 @@ def _sync_fetch_transaction(customer_id: str, transaction_id: str) -> dict[str, 
 # ---------------------------------------------------------------------------
 
 
-async def fetch_transactions_for_customer(customer_id: str) -> list[dict[str, Any]]:
+async def fetch_transactions_for_customer(customer_id: str, as_of: str) -> list[dict[str, Any]]:
     """
     Async wrapper: fetch all PII-free transactions for *customer_id*.
 
     Offloads the DuckDB read to a thread pool so the event loop stays free.
+    Rows dated after *as_of* are excluded in the query.
     """
-    return await asyncio.to_thread(_sync_fetch_transactions, customer_id)
+    return await asyncio.to_thread(_sync_fetch_transactions, customer_id, as_of)
 
 
 async def fetch_transaction(
-    customer_id: str, transaction_id: str
+    customer_id: str, transaction_id: str, as_of: str
 ) -> dict[str, Any] | None:
     """
     Async wrapper: fetch a single transaction scoped to *customer_id*.
@@ -232,4 +238,4 @@ async def fetch_transaction(
     Returns None when the transaction does not exist or belongs to a
     different customer (session isolation enforced at the SQL layer).
     """
-    return await asyncio.to_thread(_sync_fetch_transaction, customer_id, transaction_id)
+    return await asyncio.to_thread(_sync_fetch_transaction, customer_id, transaction_id, as_of)

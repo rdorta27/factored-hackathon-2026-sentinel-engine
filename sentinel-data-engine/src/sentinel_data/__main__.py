@@ -62,6 +62,12 @@ def _parse_args() -> argparse.Namespace:
         default="data_quality_report.md",
         help="Output path for the Markdown data-quality report (used by --layer=all).",
     )
+    p.add_argument(
+        "--verify",
+        action="store_true",
+        help="With --layer=all: recompute figures from --duckdb-out and compare "
+        "with --report-out instead of running the pipeline (verify mode).",
+    )
 
     # Bronze-specific
     p.add_argument("--s3-bucket", default="")
@@ -122,11 +128,17 @@ def main() -> None:
     elif args.layer == "all":
         from sentinel_data.local_runner import LocalPipelineRunner
 
-        LocalPipelineRunner(
+        runner = LocalPipelineRunner(
             raw_dir=args.raw_dir,
             duckdb_path=args.duckdb_out,
             report_path=args.report_out,
-        ).run()
+        )
+        if args.verify:
+            mismatches = runner.verify()
+            if mismatches:
+                raise SystemExit(1)
+        else:
+            runner.run()
 
     elif args.layer == "silver":
         from sentinel_data.silver.transform_silver import (

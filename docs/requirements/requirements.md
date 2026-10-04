@@ -47,21 +47,21 @@ Counted from the *Status* column of the tables below; update it whenever a statu
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 32 | 6 | 3 | 78% |
+| P0 | 41 | 33 | 5 | 3 | 80% |
 | P1 | 12 | 10 | 1 | 1 | 83% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 43 | 7 | 7 | 75% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Status by type
 
 | Type | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| [Frontend and backend](frontend-backend.md) | 19 | 15 | 1 | 3 | 79% |
+| [Frontend and backend](frontend-backend.md) | 19 | 16 | 0 | 3 | 84% |
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
 | [Data and ML](data-ml.md) | 10 | 7 | 2 | 1 | 70% |
 | [Analytics](analytics.md) | 7 | 7 | 0 | 0 | 100% |
 | [Delivery](delivery.md) | 8 | 2 | 3 | 3 | 25% |
-| **Total** | **57** | 43 | 7 | 7 | 75% |
+| **Total** | **57** | 44 | 6 | 7 | 77% |
 
 ## Frontend and backend
 
