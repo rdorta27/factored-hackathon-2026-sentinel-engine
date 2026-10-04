@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: YYYY-MM-DD
+---
+
 # NNN · Decision title
 
 **Date:** YYYY-MM-DD
@@ -6,7 +12,7 @@
 
 ## Context
 
-What problem we are solving and which constraints apply (cite requirements `REQ-####`).
+The problem and its constraints. Cite the requirements (`REQ-####`). Write in ASD-STE100: one idea per sentence, active voice, present tense.
 
 ## Options
 
@@ -15,8 +21,8 @@ What problem we are solving and which constraints apply (cite requirements `REQ-
 
 ## Decision
 
-What we chose and why.
+The choice and the reason.
 
 ## Consequences
 
-What we gain, what we sacrifice, and what remains pending.
+The gain, the cost, and what stays open.

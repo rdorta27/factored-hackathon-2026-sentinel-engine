@@ -44,7 +44,7 @@ class GoldDisputeCustomer360(BaseModel):
     ``customer_id`` is retained in this prototype to support sub-50 ms
     point-lookups with local DuckDB.  Production deployments must apply
     dynamic tokenization via Azure Key Vault before exposing this table
-    outside the data platform boundary.  See ADR 008-pii-gold-handling.
+    outside the data platform boundary.  See ADR 023-pii-gold-handling.
     """
 
     # Identity

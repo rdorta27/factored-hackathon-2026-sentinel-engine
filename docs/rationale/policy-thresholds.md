@@ -1,54 +1,63 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Policy thresholds
 
-Decisions [010](../build/decisions/010-fraud-handoff-rule.md) and [011](../build/decisions/011-high-amount-threshold.md); OpenSpec change `add-fraud-and-high-amount-rules`.
+Decisions [010](../build/decisions/010-fraud-handoff-rule.md) and [011](../build/decisions/011-high-amount-threshold.md). OpenSpec change `add-fraud-and-high-amount-rules`.
 
 ## Choice
 
 Two handoff rules send a dispute to an advisor:
 
-- **Suspected fraud:** the customer says the charge was not theirs (`fraud.claim`), or the charge's `fraud_score` is above the threshold (`fraud.score`).
-- **High amount:** the charge amount is above the threshold (`amount.high`).
+- **Suspected fraud:** the customer says the charge is not theirs (`fraud.claim`), or the `fraud_score` of the charge is above the threshold (`fraud.score`).
+- **High amount:** the amount of the charge is above the threshold (`amount.high`).
 
-Both thresholds are set per account country **and** per charge currency. They are a **synthetic policy** written by the team; a bank replaces them by configuration. The thresholds are one part of it: the [policy sources](policy-sources.md) page inventories the rest (window, statuses, estimated time) and where real values come from.
+Each threshold has one value per account country **and** charge currency. The values are a **synthetic policy** that the team wrote. A bank replaces them in configuration. The [policy sources](policy-sources.md) page lists the rest of the policy and where real values come from.
 
 ## Why
 
-- **The brief asks the system to know when not to act** and to keep policy outside model prose (REQ-0006, REQ-0007, REQ-0033). Fraud and large amounts are where acting alone is unsafe.
-- **The dataset ships no bank policy**, so the values must come from somewhere we can justify. We use the 95th percentile of the development window per country and currency: about 5% of charges go to a person. That is a **workload choice**, not a measure of fraud-detection precision.
-- **Per currency, because currency belongs to the product** ([data assumptions](data-assumptions.md)): a Mexican USD account gets its own value instead of being skipped.
-- **At least 100 charges per group.** Below that, a percentile rests on a handful of rows; the group gets no rule and we report it as a limitation.
-- **Two rule ids for fraud,** so the advisor and the logs show whether the customer's words or the charge's score escalated the case (REQ-0029). The customer never sees the word fraud or the score.
-- **The score is the dataset's own column.** `is_fraud` is never used: it is known only after an investigation, so using it would leak the answer.
+- **The brief asks the system to know when not to act.** It also asks for policy outside the model text (REQ-0006, REQ-0007, REQ-0033). Fraud and large amounts are where the system must not act alone.
+- **The dataset has no bank policy.** We use the 95th percentile of the development window per country and currency. About 5% of charges go to a person. This is a **workload choice**, not a fraud detector.
+- **One value per currency,** because currency belongs to the product ([data assumptions](data-assumptions.md)).
+- **At least 100 charges per group.** A smaller group gets no rule. We report it as a limit.
+- **Two rule ids for fraud.** The advisor and the logs show if the words of the customer or the score caused the handoff (REQ-0029). The customer never sees the word "fraud" or the score.
+- **The score is the dataset column.** The rule never uses `is_fraud`, because a bank knows it only after an investigation.
 
-## What the data showed
+## Evidence
 
-Values live in `sentinel-ai-core/config/policy/{mx,co,ar}.yaml`, read from `evidence/evaluation/2024Q4-v2/summary.json` (`account_thresholds.groups.<country>.<currency>`). Cite those fields for any number on a slide; a test fails if a configured value drifts from them.
+| What | Field |
+|---|---|
+| The configured values | [`evaluation/2024Q4-v2`](../../evidence/evaluation/2024Q4-v2/summary.json): `account_thresholds.groups.<country>.<currency>`. A test fails if a configured value differs. |
+| Five groups have enough data: AR ARS and USD, CO COP and USD, MX USD | `account_thresholds.groups.<country>.<currency>.n` |
+| México has no MXN data | [`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/summary.json): `products.by_country.México.currency` |
+| The p95 score rule, re-derived on a later window: it fires on about 4% of charges, with low precision and about half the recall | [`customer-360/dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/summary.json): `labels.p95_rule.precision_pct`, `labels.p95_rule.recall_pct` |
+| A non-fraud charge never has a score above 30. This is an artefact of the generator. | `labels.synthetic_artefact` |
+| The rules decide without an unsafe outcome on the attacks | [`adversarial/20261002T222323Z`](../../evidence/adversarial/20261002T222323Z/summary.json): `totals.unsafe_outcome_rate` |
 
-- **Five groups had enough data:** Argentina ARS and USD, Colombia COP and USD, México USD. Every one is above the 100-charge minimum (`.n`).
-- **The score threshold barely moves** across groups (`.fraud_score.p95`): the score does not depend on currency in this dataset.
-- **The USD amount threshold is almost the same in all three countries** (`.amount.p95` for USD): the currency explains the amount, not the country. That is the argument for per-currency rules.
-- **México has no MXN at all.** No MXN product or transaction exists in 2023-2026, while Mexican `estimated_monthly_income` is on an MXN scale: a dataset inconsistency we report and asked the organizers about. The demo's Mexican MXN account is invented and has no threshold; its charges never escalate on score or amount.
-- **Evaluation:** one development case per rule and shown currency, plus the not-mine claim in es-419 and pt-BR, replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`; unsafe outcomes stay at zero there and in `evidence/adversarial/20261001T215949Z/summary.json`.
+The precision of the p95 rule is low because the fraud label is rare and has no structure in this dataset. A rule at a score of 30 would catch about the same frauds with no false alarm (`labels.bound_rule`). We do not use it, because it uses an artefact of the generator. A real bank score does not have this boundary.
 
 ## Alternatives rejected
 
-- **One USD threshold on `amount_usd`:** a USD figure is not what the customer sees, it rests on the dataset's fixed synthetic exchange rates, it is empty in about 5% of ARS and COP charges, the pipeline's Silver layer does not carry it, and it does not cover the score.
-- **The dictionary's 0-100 scale (for example 50):** observed scores sit below about 30, so such a threshold would never fire.
-- **p90 or p99:** p90 doubles the advisor load; p99 would almost never show in the demo.
+- **One USD threshold on `amount_usd`.** The customer does not see a USD figure. The value uses fixed synthetic exchange rates. It is empty on every USD row and on about 5% of ARS and COP rows (`labels.amount_usd_fill_by_currency`). It does not cover the score.
+- **A value on the 0 to 100 scale of the dictionary, for example 50.** Non-fraud scores stop at 30, so such a rule catches fraud only. It uses the artefact.
+- **p90 or p99.** p90 doubles the advisor load. p99 almost never fires in the demo.
 
 ## How a bank changes them
 
-1. Edit the country file in `sentinel-ai-core/config/policy/`: per-currency `values`, `source` pointing to its policy reference, `synthetic: false`.
-2. No code changes. Rule ids stay the same, so logs and handoffs remain comparable.
-3. Every decision records the policy file version, so a past case shows the values in force when it was decided.
-4. In production the file goes through approval by the policy owner and is versioned ([path to production](../architecture/specification.md#path-to-production), REQ-0052).
+1. Edit the country file in `sentinel-ai-core/config/policy/`: the `values` per currency, `source` for the policy reference, and `synthetic: false`.
+2. No code change. The rule ids stay the same, so logs and handoffs stay comparable.
+3. Each decision records the version of the policy file.
+4. In production, the policy owner approves and versions the file ([path to production](../architecture/specification.md#path-to-production), REQ-0052).
 
 ## Limits we state
 
-- A percentile sets workload; it says nothing about how many frauds are caught.
-- Small currency groups may have no rule.
-- The not-mine claim is detected from wording; its recall is measured by evaluation cases, not assumed.
+- A percentile sets the workload. It does not tell how many frauds the rule catches.
+- A small currency group can have no rule.
+- The "not mine" claim comes from the words of the customer. Evaluation cases measure its recall.
 
 ## On the slide
 
-"Fraud and high amounts go to a person. Lacking a bank policy, we set synthetic thresholds at the 95th percentile per country and currency, about 5% of charges, and a bank replaces them in configuration without touching code."
+"Fraud and high amounts go to a person. With no bank policy, we set synthetic thresholds at the 95th percentile per country and currency: about 5% of charges. A bank replaces them in configuration, with no code change."

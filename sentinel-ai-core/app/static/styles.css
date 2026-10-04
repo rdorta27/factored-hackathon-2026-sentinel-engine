@@ -7,16 +7,13 @@
    branding/chat.css. If a surface needs a new color, add it to the brand
    palette and reference the variable here — never inline it.
 
-   The single place the app may override is --app-verified, below: the brand
-   palette currently has no dedicated success color (--ok equals the accent),
-   so verified state points at a brand variable and the team can repoint it in
-   one line when a success color lands.
+   The single place the app may override is --app-verified, below: it points
+   at the brand success token (--success, falling back to --ok).
    ------------------------------------------------------------------ */
 
 :root {
-  /* Verified state color. Points at a brand token; change this one line when
-     branding/ gains a dedicated success variable. */
-  --app-verified: var(--ok);
+  /* Verified state color. Points at the brand success token. */
+  --app-verified: var(--success, var(--ok));
 }
 
 /* --- Shell ------------------------------------------------------------ */
@@ -80,7 +77,7 @@ main {
 
 .confirm-button {
   border: none;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 10px 22px;
   cursor: pointer;
 }
@@ -190,6 +187,34 @@ main {
 .timeline {
   margin: 12px 0 0;
   padding-left: 18px;
+}
+
+/* "How it was resolved" panel: one list per turn. */
+.steps-panel {
+  margin-top: 8px;
+}
+
+.steps-list {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.steps-list li {
+  margin: 2px 0;
+}
+
+.tx-status {
+  white-space: nowrap;
+}
+
+/* Advisor queue: a row per ticket, the detail replaces the list. */
+.queue-row {
+  width: 100%;
+  text-align: left;
+}
+
+#queue-detail .msg {
+  margin-top: 12px;
 }
 
 .metrics-table {

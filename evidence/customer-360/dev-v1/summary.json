@@ -1,0 +1,338 @@
+{
+  "balance": {
+    "asof_last_updated_before_latest_txn_pct": 96.42,
+    "asof_usable": false,
+    "balance_tracks_movements": false,
+    "card_balance_over_limit_pct": 1.21,
+    "card_credit_limit_null_pct": 5.11,
+    "contradictory_pct": 6.51,
+    "currency_mismatch_product_vs_txn_pct": 0.0,
+    "deposit_implied_opening_negative_pct": 6.59,
+    "deposit_products_asof_after_txns": 6493,
+    "first_txn_before_opening_date_pct": 20.07,
+    "last_transaction_date_checkable": 110142,
+    "last_transaction_date_contradicts_txns_pct": 6.11,
+    "last_transaction_date_equals_a_txn_pct": 0.0,
+    "last_transaction_date_null_pct": 10.04,
+    "last_transaction_date_same_day_as_a_txn_pct": 1.16,
+    "negative_balance_by_type_dev": {
+      "Cuenta Ahorro": 0,
+      "Cuenta Corriente": 0,
+      "Inversión": 0,
+      "Préstamo Hipotecario": 0,
+      "Préstamo Personal": 0,
+      "Seguro": 0,
+      "Tarjeta Crédito": 0,
+      "Tarjeta Débito": 0
+    },
+    "plausibly_coherent_pct": 2.54,
+    "products_with_txns": 278062,
+    "rule": "safe_to_show = contradictory_pct < 5.0 and asof_last_updated_before_latest_txn_pct < 5.0 and spearman deposit_balance_vs_net_flow >= 0.3 in every currency",
+    "safe_to_show": false,
+    "spearman_by_currency": {
+      "ARS": {
+        "card_balance_vs_purchases_minus_payments": -0.005,
+        "deposit_balance_vs_gross_flow": 0.328,
+        "deposit_balance_vs_net_flow": -0.169
+      },
+      "COP": {
+        "card_balance_vs_purchases_minus_payments": -0.002,
+        "deposit_balance_vs_gross_flow": 0.315,
+        "deposit_balance_vs_net_flow": -0.167
+      },
+      "USD": {
+        "card_balance_vs_purchases_minus_payments": 0.002,
+        "deposit_balance_vs_gross_flow": 0.316,
+        "deposit_balance_vs_net_flow": -0.163
+      }
+    },
+    "undetermined_asof_before_txns_pct": 90.96,
+    "zero_balance_pct_by_type_dev": {
+      "Cuenta Ahorro": 2.27,
+      "Cuenta Corriente": 2.26,
+      "Inversión": 2.19,
+      "Préstamo Hipotecario": 2.44,
+      "Préstamo Personal": 2.1,
+      "Seguro": 100.0,
+      "Tarjeta Crédito": 2.17,
+      "Tarjeta Débito": 2.09
+    }
+  },
+  "complaints": {
+    "affected_product_id_fill_pct": 66.54,
+    "affected_product_owned_by_complainant_pct": 0.0,
+    "affected_product_resolves_pct": 100.0,
+    "amount_match": {
+      "customer": {
+        "any_txn_in_lookback_pct": 75.71,
+        "baseline_pct": 0.0,
+        "match_pct": 0.0,
+        "n": 14745,
+        "within_1pct_baseline_pct": 0.36,
+        "within_1pct_match_pct": 0.52
+      },
+      "product": {
+        "any_txn_in_lookback_pct": 53.39,
+        "baseline_pct": 0.0,
+        "match_pct": 0.0,
+        "n": 9799,
+        "within_1pct_baseline_pct": 0.22,
+        "within_1pct_match_pct": 0.14
+      }
+    },
+    "cargo_no_reconocido_n": 8269,
+    "charge_linkable": false,
+    "charge_reference_fields": [
+      "affected_product_id",
+      "claimed_amount"
+    ],
+    "claimed_amount_fill_pct": 32.49,
+    "claimed_amount_fill_pct_by_case_type": {
+      "Claim": 38.29,
+      "Complaint": 38.11,
+      "Request": 0.0,
+      "Suggestion": 0.0
+    },
+    "claimed_currency_equals_product_currency_pct": 25.09,
+    "complaints_per_customer": {
+      "1": 33553,
+      "2": 5098,
+      "3": 491,
+      "4": 37,
+      "5": 2,
+      "6": 1
+    },
+    "customer_linkable": true,
+    "has_merchant_field": false,
+    "has_transaction_id_field": false,
+    "lookback_days": 90,
+    "n_dev": 45386,
+    "origin_interaction_id_fill_pct": 0.0,
+    "orphan_complaint_to_customer_pct": 0.0,
+    "product_linkable": false,
+    "rule": "charge_linkable = best amount_match rate (exact or within 1%) >= 1% and >= 2.0x its shifted-amount baseline (product or customer scope); product_linkable = affected_product_owned_by_complainant_pct >= 95"
+  },
+  "held_out_cut": "2025-07-01",
+  "products": {
+    "by_country": {
+      "Argentina": {
+        "currency": {
+          "ARS": 58481,
+          "USD": 6482
+        },
+        "product_status": {
+          "Active": 55325,
+          "Blocked": 3236,
+          "Closed": 5128,
+          "Suspended": 1274
+        },
+        "product_type": {
+          "Cuenta Ahorro": 19475,
+          "Cuenta Corriente": 16271,
+          "Inversión": 933,
+          "Préstamo Hipotecario": 1899,
+          "Préstamo Personal": 3250,
+          "Seguro": 326,
+          "Tarjeta Crédito": 16300,
+          "Tarjeta Débito": 6509
+        }
+      },
+      "Colombia": {
+        "currency": {
+          "COP": 88344,
+          "USD": 10066
+        },
+        "product_status": {
+          "Active": 83629,
+          "Blocked": 4819,
+          "Closed": 7963,
+          "Suspended": 1999
+        },
+        "product_type": {
+          "Cuenta Ahorro": 29521,
+          "Cuenta Corriente": 24712,
+          "Inversión": 1446,
+          "Préstamo Hipotecario": 2913,
+          "Préstamo Personal": 4831,
+          "Seguro": 496,
+          "Tarjeta Crédito": 24588,
+          "Tarjeta Débito": 9903
+        }
+      },
+      "México": {
+        "currency": {
+          "USD": 163662
+        },
+        "product_status": {
+          "Active": 139137,
+          "Blocked": 8178,
+          "Closed": 13080,
+          "Suspended": 3267
+        },
+        "product_type": {
+          "Cuenta Ahorro": 49242,
+          "Cuenta Corriente": 40847,
+          "Inversión": 2420,
+          "Préstamo Hipotecario": 4909,
+          "Préstamo Personal": 8187,
+          "Seguro": 817,
+          "Tarjeta Crédito": 41007,
+          "Tarjeta Débito": 16233
+        }
+      }
+    },
+    "credit_limit_fill_by_type": {
+      "Cuenta Ahorro": {
+        "credit_limit_filled": 0,
+        "fill_pct": 0.0,
+        "n": 98238
+      },
+      "Cuenta Corriente": {
+        "credit_limit_filled": 0,
+        "fill_pct": 0.0,
+        "n": 81830
+      },
+      "Inversión": {
+        "credit_limit_filled": 0,
+        "fill_pct": 0.0,
+        "n": 4799
+      },
+      "Préstamo Hipotecario": {
+        "credit_limit_filled": 9213,
+        "fill_pct": 94.77,
+        "n": 9721
+      },
+      "Préstamo Personal": {
+        "credit_limit_filled": 15454,
+        "fill_pct": 95.0,
+        "n": 16268
+      },
+      "Seguro": {
+        "credit_limit_filled": 0,
+        "fill_pct": 0.0,
+        "n": 1639
+      },
+      "Tarjeta Crédito": {
+        "credit_limit_filled": 77712,
+        "fill_pct": 94.89,
+        "n": 81895
+      },
+      "Tarjeta Débito": {
+        "credit_limit_filled": 0,
+        "fill_pct": 0.0,
+        "n": 32645
+      }
+    },
+    "currency": {
+      "ARS": 58481,
+      "COP": 88344,
+      "USD": 180210
+    },
+    "customers_by_product_count_dev": {
+      "1": 36750,
+      "2": 40361,
+      "3": 29470,
+      "4": 15783,
+      "5+": 10590
+    },
+    "customers_total": 150000,
+    "customers_without_products_pct": 6.95,
+    "duplicate_product_id": 0,
+    "duplicate_product_number": 6,
+    "n_transactions_dev": 2994597,
+    "nulls_dev": {
+      "currency": 0,
+      "current_balance": 0,
+      "customer_id": 0,
+      "last_transaction_date": 76851,
+      "last_updated": 0,
+      "opening_date": 0,
+      "product_id": 0,
+      "product_status": 0,
+      "product_type": 0
+    },
+    "orphan_product_to_customer_pct": 0.0,
+    "orphan_txn_to_product_pct": 0.0,
+    "product_status": {
+      "Active": 278091,
+      "Blocked": 16233,
+      "Closed": 26171,
+      "Suspended": 6540
+    },
+    "product_type": {
+      "Cuenta Ahorro": 98238,
+      "Cuenta Corriente": 81830,
+      "Inversión": 4799,
+      "Préstamo Hipotecario": 9721,
+      "Préstamo Personal": 16268,
+      "Seguro": 1639,
+      "Tarjeta Crédito": 81895,
+      "Tarjeta Débito": 32645
+    },
+    "rows_dev": 327035,
+    "rows_excluded_heldout": 72965,
+    "rows_snapshot": 400000,
+    "txn_customer_mismatch_product_owner_pct": 0.0,
+    "txn_product_not_in_dev_snapshot_pct": 18.21
+  },
+  "script_version": "2026-10-04+c360-dev-v1",
+  "status": {
+    "baseline_approved_followed_pct": 0.0,
+    "dictionary_duplicate_noise_pct": 2.0,
+    "duplicate_transaction_id": 0,
+    "exact_duplicate_rows_pct": 0.0,
+    "n_transactions_dev": 2994597,
+    "near_duplicate_minutes": 10,
+    "near_duplicate_rows_pct": 0.0,
+    "non_active_products_have_txns": false,
+    "pending_follow_days": 7,
+    "pending_followed_pct": 0.0,
+    "products_by_status_full_snapshot": {
+      "Active": {
+        "last_transaction_date_filled_pct": 89.93,
+        "products": 339965,
+        "with_dev_txns_pct": 99.99
+      },
+      "Blocked": {
+        "last_transaction_date_filled_pct": 0.0,
+        "products": 19935,
+        "with_dev_txns_pct": 0.0
+      },
+      "Closed": {
+        "last_transaction_date_filled_pct": 0.0,
+        "products": 32039,
+        "with_dev_txns_pct": 0.0
+      },
+      "Suspended": {
+        "last_transaction_date_filled_pct": 0.0,
+        "products": 8061,
+        "with_dev_txns_pct": 0.0
+      }
+    },
+    "status_change_date_available": false,
+    "transaction_status": {
+      "Approved": 2754563,
+      "Declined": 149727,
+      "Pending": 59831,
+      "Reversed": 30476
+    },
+    "transaction_status_pct": {
+      "Approved": 91.98,
+      "Declined": 5.0,
+      "Pending": 2.0,
+      "Reversed": 1.02
+    },
+    "txns_by_product_status": {
+      "Active": {
+        "after_last_updated_pct": 84.34,
+        "declined_pct": 5.0,
+        "n": 2449302
+      }
+    },
+    "txns_on_blocked_closed_suspended": 0,
+    "txns_on_blocked_closed_suspended_pct": 0.0
+  },
+  "window": "dev",
+  "window_end": "2025-07-01",
+  "window_start": "2023-06-01"
+}

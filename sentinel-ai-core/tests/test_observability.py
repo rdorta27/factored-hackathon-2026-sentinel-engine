@@ -74,6 +74,17 @@ def test_record_rejects_bad_identifiers_and_enums() -> None:
         _valid(attempt=0)
     with pytest.raises(ValueError, match="never empty"):
         _valid(model="")
+    with pytest.raises(ValueError, match="label"):
+        _valid(label="refund")
+    with pytest.raises(ValueError, match="confidence"):
+        _valid(confidence=1.5)
+
+
+def test_record_serializes_label_and_confidence() -> None:
+    body = json.loads(_valid(step="understand", label="charge", confidence=0.87).to_json())
+    assert body["label"] == "charge"
+    assert body["confidence"] == 0.87
+    assert json.loads(_valid().to_json())["confidence"] is None
 
 
 def _logged_in_client(tmp_path):  # type: ignore[no-untyped-def]
@@ -205,6 +216,23 @@ def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-unt
     assert recorder.records_for("0" * 16) == [first]
     lines = (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()
     assert [json.loads(line)["trace_id"] for line in lines] == ["0" * 16, "f" * 16]
+
+
+def test_persisted_for_reads_a_trace_back_after_a_restart(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.observability import Recorder
+
+    path = tmp_path / "turns.jsonl"
+    written = Recorder(path=path, salt="test-salt")
+    written.emit(_valid(trace_id="a" * 16))
+    written.emit(_valid(trace_id="b" * 16, step="escalate"))
+
+    # A new process: nothing in memory, the log still holds the trace.
+    fresh = Recorder(path=path, salt="test-salt")
+    assert fresh.records_for("a" * 16) == []
+    loaded = fresh.persisted_for("a" * 16)
+    assert [record.step for record in loaded] == ["decide"]
+    assert loaded[0].trace_id == "a" * 16
+    assert fresh.persisted_for("c" * 16) == []
 
 
 def test_session_ref_is_stable_and_not_the_identifier() -> None:

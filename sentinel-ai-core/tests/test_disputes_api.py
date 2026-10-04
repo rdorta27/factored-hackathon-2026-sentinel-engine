@@ -104,7 +104,8 @@ def test_second_session_cannot_dispute_the_same_charge_again() -> None:
 
     logged_in(api)
     again = api.post("/api/v1/chat", json={"selected_reference": "TXN-1006"}).json()
-    assert again == {"kind": "text", "message_key": "already.disputed"}
+    assert again["kind"] == "text" and again["message_key"] == "already.disputed"
+    assert again["steps"] == ["step.understood", "step.checkedPolicy", "step.noCase"]
     existing = api.post("/api/v1/disputes", json={"reference": "TXN-1006"})
     assert existing.status_code == 200 and existing.json()["case_id"] == first["case_id"]
     assert len([row for row in api.get("/api/v1/disputes").json() if row["kind"] == "dispute"]) == 1
@@ -119,4 +120,7 @@ def test_handoff_is_filed_as_a_ticket() -> None:
         (handoff["reference"], "handoff", "Escalated", "handoff.person")
     ]
     stored = api.app.state.cases.get(handoff["reference"])
-    assert stored.package == handoff["package"], "the advisor ticket keeps the whole package"
+    assert stored.package is not None, "the advisor ticket keeps the whole package"
+    assert stored.package["evidence"]["policy_rule"] == "person.insist"
+    assert "policy_rule" not in handoff["package"]["evidence"]
+    assert all("policy_rule" not in item and "tool" not in item for item in handoff["package"]["actions_taken"])

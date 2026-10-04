@@ -151,9 +151,55 @@ def test_resolution_run_builds_offline_with_a_model_factory(
     assert "| router_v2 | 16 of 56 |" in report
 
 
+def _calibration_row(confidence, correct: bool, index: int) -> dict:
+    return {
+        "id": f"c-{index}",
+        "base_id": None,
+        "split": "validation",
+        "expected": "charge",
+        "predicted": "charge" if correct else "missing",
+        "confidence": confidence,
+    }
+
+
+def test_calibration_chooses_cutoffs_on_validation() -> None:
+    rows = [
+        _calibration_row(0.60, True, 1),
+        _calibration_row(0.70, False, 2),
+        _calibration_row(0.80, True, 3),
+        _calibration_row(0.95, True, 4),
+        _calibration_row(0.99, True, 5),
+    ]
+    cutoffs = run._choose_cutoffs(rows)
+    assert cutoffs["t_act"] == 0.80
+    assert cutoffs["t_abstain"] == 0.0
+    block = run._split_report(rows, cutoffs["t_act"], cutoffs["t_abstain"])
+    assert block["actions"]["acted"] == {"n": 3, "share": 0.6}
+    assert block["actions"]["clarified"] == {"n": 2, "share": 0.4}
+    assert block["actions"]["abstained"] == {"n": 0, "share": 0.0}
+    assert block["bands"]["0.60-0.70"]["accuracy"] == 1.0
+
+
+def test_calibration_without_confidence_abstains_from_choosing() -> None:
+    rows = [_calibration_row(None, False, 1)]
+    cutoffs = run._choose_cutoffs(rows)
+    assert (cutoffs["t_act"], cutoffs["t_abstain"]) == (1.0, 0.0)
+    assert run._split_report(rows, 1.0, 0.0)["actions"]["abstained"]["n"] == 1
+
+
 def test_verify_ignores_spend_and_latency_only() -> None:
     a = {"spend": {"n": 3}, "x": {"latency_ms": {"p50": 1.0}, "accuracy": 0.9}}
     b = {"spend": {"n": 0}, "x": {"latency_ms": {"p50": 900.0}, "accuracy": 0.9}}
     assert run._comparable(a) == run._comparable(b)
     b["x"]["accuracy"] = 0.8
     assert run._comparable(a) != run._comparable(b)
+
+
+def test_verify_ignores_the_breakdown_view() -> None:
+    """Frozen runs that predate the per-variant/per-country view still verify:
+    the view is derived from the same turns and covered by unit tests."""
+    frozen = {"system": {"router_v2": {"safe_resolution": {"n": 2, "resolved": 1, "share": 0.5}}}}
+    replayed = {"system": {"router_v2": {"safe_resolution": {"n": 2, "resolved": 1, "share": 0.5},
+                                          "by_variant": {"es-MX": {"n": 2}},
+                                          "by_country": {"MX": {"n": 2}}}}}
+    assert run._comparable(replayed) == run._comparable(frozen)

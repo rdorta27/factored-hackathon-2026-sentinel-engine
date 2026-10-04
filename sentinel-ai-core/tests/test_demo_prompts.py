@@ -245,6 +245,21 @@ def test_loading_the_page_posts_nothing_to_the_chat() -> None:
     assert api.get("/api/v1/disputes").json() == turns_before
 
 
+def test_chips_only_for_supported_flows() -> None:
+    """Each chip is gated by the precondition of a flow supported end to end.
+
+    Normal needs an eligible local charge, ambiguous a repeated merchant, and
+    the person chip maps to the supported handoff. A chip with no data behind
+    it is hidden instead of offered and then failing.
+    """
+    start = APP_JS.index("function renderDemoPrompts")
+    end = APP_JS.index("/* Advisor view")
+    block = APP_JS[start:end]
+    assert "if (charge)" in block and "if (merchant)" in block
+    assert 'prompts.push(t("demoPerson"))' in block
+    assert "box.hidden = prompts.length === 0" in block
+
+
 def test_app_does_not_post_chat_while_building_the_chips() -> None:
     """Static guard: the chip path contains no POST to the chat."""
     start = APP_JS.index("function renderDemoPrompts")
