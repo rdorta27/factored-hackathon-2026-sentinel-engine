@@ -10,7 +10,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [009](../../../docs/bui
 
 ## 1. Regression tests first
 
-- [ ] 1.1 Write one failing test per defect: stuck handoff, changing reason, dispute status opens a case, correction with the box open, box for an already disputed charge, date with no match. Evidence: `tests/test_flow_fixes.py` fails on `main`.
+- [x] 1.1 Write one failing test per defect: stuck handoff, changing reason, dispute status opens a case, correction with the box open, box for an already disputed charge, date with no match. Evidence: `tests/test_flow_fixes.py`. Seven tests fail on `main`. The already-disputed test and the length test pass, because `SessionBoundLookup._mark` and the schema already cover them; they stay as guards.
 
 ## 2. Fixes
 
@@ -25,4 +25,5 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [009](../../../docs/bui
 ## 3. Evidence
 
 - [ ] 3.1 Run the adversarial suite and `eval.run verify 2024Q4-resolution-v2`; freeze a new resolution run if the replay changes. Evidence: a new `evidence/adversarial/` run and the verify output in the commit body.
-- [ ] 3.2 Repeat the manual test of Felix and record the result. Evidence: `team/chat-manual-tests.md`.
+- [ ] 3.2 Write `scripts/felix_replay.py`. It replays the ten points of Felix against the app over HTTP, on a clean SQLite file and a new session per point. It uses port 8002 and writes a pass/fail table to `team/chat-manual-tests.md` and to the screen. Points 4 and 8 depend on the model: mark them "out of scope (router-v3)". Evidence: the script and the table.
+- [ ] 3.3 G1: Rubén reads the report of task 3.2. Evidence: the report.
