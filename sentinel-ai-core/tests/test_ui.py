@@ -284,3 +284,9 @@ def test_static_files_are_revalidated_so_versions_never_mix() -> None:
     api = TestClient(create_app())
     for path in ("/ui/app.js", "/ui/styles.css", "/branding/chat.css"):
         assert api.get(path).headers["cache-control"] == "no-cache", path
+
+
+def test_flags_close_the_header_so_a_longer_label_does_not_move_them() -> None:
+    assert INDEX.index('id="agent"') < INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+    assert 'rel="icon"' in INDEX
+    assert (STATIC / "favicon.svg").is_file()

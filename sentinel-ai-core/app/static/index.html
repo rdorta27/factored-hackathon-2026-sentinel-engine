@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>Sentinel Engine</title>
+<link rel="icon" type="image/svg+xml" href="/ui/favicon.svg">
 <link rel="stylesheet" href="/branding/brand.css">
 <link rel="stylesheet" href="/branding/chat.css">
 <link rel="stylesheet" href="/ui/styles.css">
@@ -22,6 +23,8 @@
     <p class="chat-sub session-context" id="session-context" data-testid="session-context" hidden></p>
     <p class="demo-chip" id="reference-date" data-testid="reference-date" hidden></p>
     <div class="topbar-controls">
+      <button id="agent" class="theme-toggle" type="button" data-i18n="agentButton" hidden>Talk to an agent</button>
+      <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
       <div id="locale-group" role="group" aria-label="Language">
         <button type="button" class="theme-toggle locale-button" data-locale="es-419" data-testid="locale-button" aria-pressed="true" aria-label="Español · Latinoamérica" title="Español · Latinoamérica"><svg class="flag" width="24" height="16" viewBox="0 0 24 16" aria-hidden="true"><circle cx="12" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8h13M12 1.5c-3 3-3 10 0 13M12 1.5c3 3 3 10 0 13" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
         <button type="button" class="theme-toggle locale-button" data-locale="es-MX" data-testid="locale-button" aria-pressed="false" aria-label="Español · México" title="Español · México"><svg class="flag" width="24" height="16" viewBox="0 0 24 16" aria-hidden="true"><rect width="8" height="16" fill="#006847"/><rect x="8" width="8" height="16" fill="#fff"/><rect x="16" width="8" height="16" fill="#ce1126"/><circle cx="12" cy="8" r="2" fill="#8c6b2f"/></svg></button>
@@ -30,8 +33,6 @@
         <button type="button" class="theme-toggle locale-button" data-locale="pt-BR" data-testid="locale-button" aria-pressed="false" aria-label="Português · Brasil" title="Português · Brasil"><svg class="flag" width="24" height="16" viewBox="0 0 24 16" aria-hidden="true"><rect width="24" height="16" fill="#009c3b"/><path d="M12 2.2 21.4 8 12 13.8 2.6 8Z" fill="#ffdf00"/><circle cx="12" cy="8" r="3.2" fill="#002776"/></svg></button>
       </div>
       <p class="chat-sub locale-current" id="locale-current" aria-live="polite"></p>
-      <button id="agent" class="theme-toggle" type="button" data-i18n="agentButton" hidden>Talk to an agent</button>
-      <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
     </div>
   </header>
   <div id="demo-banner" class="msg msg-audit" data-testid="demo-banner" hidden>

@@ -562,3 +562,21 @@ main {
 .step-dot {
   position: relative;
 }
+
+/* The language flags close the header on the right and never move: the text
+   buttons sit to their left, so a longer label pushes only the buttons. */
+.topbar-controls {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 700px) {
+  .topbar-controls {
+    flex-wrap: wrap;
+  }
+  #locale-group {
+    order: -2;
+  }
+  .topbar-controls .locale-current {
+    order: -1;
+  }
+}
