@@ -249,3 +249,9 @@ def test_entry_has_promises_and_four_persona_cards_with_tag_language_and_story()
         for suffix in ("", "Title", "Story"):
             assert f'data-i18n="persona{persona}{suffix}"' in INDEX, (persona, suffix)
     assert 'data-testid="demo-banner"' in INDEX
+
+
+def test_hidden_attribute_always_wins_over_a_display_rule() -> None:
+    """Regression: `.entry { display: flex }` kept the entry visible under the advisor queue."""
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "[hidden] {\n  display: none !important;" in styles

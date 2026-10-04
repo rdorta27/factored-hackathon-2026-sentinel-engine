@@ -16,6 +16,11 @@
   --app-verified: var(--success, var(--ok));
 }
 
+/* An author rule such as `display: flex` must not show an element the page hid. */
+[hidden] {
+  display: none !important;
+}
+
 /* --- Shell ------------------------------------------------------------ */
 
 .app {
