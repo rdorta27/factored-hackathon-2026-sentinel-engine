@@ -74,6 +74,7 @@ class CandidateTransaction(BaseModel):
     status: str = Field(min_length=1, max_length=16)
     eligible: bool
     ineligibleKey: Optional[str] = Field(default=None, max_length=64)
+    case_state: Optional[str] = Field(default=None, max_length=24)
 
 
 class TransactionList(BaseModel):

@@ -10,7 +10,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 
 ## 1. API
 
-- [ ] 1.1 Add `case_state` per charge to `GET /api/v1/transactions`. Evidence: `tests/test_transactions.py` for each state, and no new personal field (`tests/adversarial/`).
+- [x] 1.1 Add `case_state` per charge to `GET /api/v1/transactions`. Evidence: `tests/test_transactions.py` for each state, and no new personal field (`tests/adversarial/`).
 
 ## 2. Page
 

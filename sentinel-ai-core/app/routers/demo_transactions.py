@@ -22,6 +22,7 @@ from app.policy.load import load_country
 from app.schemas.chat import CandidateTransaction, TransactionList
 from app.session.models import Session
 from app.session.router import require_customer
+from app.state.cases import OPEN
 from app.tools.gold import to_candidate
 
 router = APIRouter(prefix="/api/v1", tags=["transactions"])
@@ -57,6 +58,26 @@ def candidate_view(candidate: Candidate, country: str, today: date) -> Candidate
     )
 
 
+_STATE_BY_KEY = {
+    "candidateOutOfWindow": "outside_window",
+    "candidateDisputed": "already_disputed",
+}
+
+
+def case_state(view: CandidateTransaction, in_review: set[str], with_advisor: set[str]) -> str:
+    """State of one charge for the recent-charges panel, from the case store and the policy.
+
+    A dispute opened here wins, then a handoff ticket. The policy result decides the rest.
+    """
+    if view.reference in in_review:
+        return "in_review"
+    if view.reference in with_advisor:
+        return "with_advisor"
+    if view.ineligibleKey is None:
+        return "eligible"
+    return _STATE_BY_KEY.get(view.ineligibleKey, "not_disputable")
+
+
 @router.get("/transactions")
 def list_transactions(
     request: Request,
@@ -68,8 +89,14 @@ def list_transactions(
     gold = request.app.state.gold
     ref_date = request.app.state.reference_date
     rows = gold.list_for_customer(session.customer_id)
+    cases = request.app.state.cases.for_customer(session.customer_id)
+    in_review = {c.transaction_id for c in cases if c.kind == "dispute" and c.status == OPEN and c.transaction_id}
+    with_advisor = {c.transaction_id for c in cases if c.kind == "handoff" and c.transaction_id}
+    views = [candidate_view(to_candidate(row), session.country, ref_date) for row in rows]
     return TransactionList(
         as_of=ref_date.isoformat(),
         # Raw Gold vocabulary never reaches the API: rows go through the candidate adapter.
-        transactions=[candidate_view(to_candidate(row), session.country, ref_date) for row in rows],
+        transactions=[
+            view.model_copy(update={"case_state": case_state(view, in_review, with_advisor)}) for view in views
+        ],
     )
