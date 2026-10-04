@@ -24,11 +24,14 @@ repeatable execution.  Re-running the pipeline overwrites existing tables.
 
 from __future__ import annotations
 
+import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
 
 import duckdb
+
+from sentinel_data.catalog import get_table
 
 from sentinel_data.transforms import (
     DATASET_CUTOFF_DATE,
@@ -78,6 +81,15 @@ _ENTITY_ALIASES: dict[str, list[str]] = {
     "marketing_campaigns":       ["marketing_campaigns", "marketing_campaign", "campaigns", "campaign"],
     "call_transcripts":          ["call_transcripts", "call_transcript", "transcripts"],
     "campaign_sends":            ["campaign_sends", "campaign_send", "sends"],
+}
+
+# Event-date vs partition-date columns for late-arrival detection.
+# Maps Silver table -> (event_date_col, process_date_col).
+_LATE_ARRIVAL_COLS: dict[str, tuple[str, str]] = {
+    "transactions": ("transaction_date", "process_date"),
+    "complaints": ("creation_date", "process_date"),
+    "call_center_interactions": ("interaction_date", "process_date"),
+    "satisfaction_surveys": ("survey_date", "process_date"),
 }
 
 
@@ -138,12 +150,85 @@ class LocalPipelineRunner:
             self._build_gold_tables()
             gold_counts = self._collect_gold_counts()
             quality_metrics = self._collect_quality_metrics()
-            self._generate_report(bronze_counts, silver_counts, gold_counts, quality_metrics)
+            quarantine_metrics = self._collect_quarantine_metrics()
+            orphan_metrics = self._collect_orphan_metrics()
+            late_metrics = self._collect_late_arrival_metrics()
+            null_metrics = self._collect_null_metrics()
+            self._generate_report(
+                bronze_counts,
+                silver_counts,
+                gold_counts,
+                quality_metrics,
+                quarantine_metrics,
+                orphan_metrics,
+                late_metrics,
+                null_metrics,
+            )
         finally:
             self._con.close()
             self._con = None
 
         logger.info("LocalPipelineRunner complete | report=%s", self.report_path)
+
+    def verify(self, report_path: str | Path | None = None) -> dict[str, tuple[object, object]]:
+        """Recompute report figures from the DuckDB file and compare with the committed report.
+
+        Returns an empty dict when every figure matches. Otherwise returns a
+        mapping of figure-name -> (expected, actual) for each mismatch.
+        Prints aggregates only (no raw rows).
+        """
+        from pathlib import Path as _Path
+
+        target = _Path(report_path) if report_path is not None else _Path(self.report_path)
+        if not target.is_file():
+            raise FileNotFoundError(f"Committed report not found: {target}")
+        if not self.duckdb_path.is_file():
+            raise FileNotFoundError(f"DuckDB file not found: {self.duckdb_path}")
+
+        self._con = duckdb.connect(str(self.duckdb_path))
+        try:
+            # Recompute figures without rebuilding tables (read-only).
+            bronze_counts = self._collect_bronze_counts()
+            silver_counts = self._collect_silver_counts()
+            gold_counts = self._collect_gold_counts()
+            quality_metrics = self._collect_quality_metrics()
+            quarantine_metrics = self._collect_quarantine_metrics()
+            orphan_metrics = self._collect_orphan_metrics()
+            late_metrics = self._collect_late_arrival_metrics()
+            null_metrics = self._collect_null_metrics()
+            actual = self._figures_dict(
+                bronze_counts,
+                silver_counts,
+                gold_counts,
+                quality_metrics,
+                quarantine_metrics,
+                orphan_metrics,
+                late_metrics,
+                null_metrics,
+            )
+        finally:
+            self._con.close()
+            self._con = None
+
+        expected = self._parse_figures_block(target.read_text(encoding="utf-8"))
+        mismatches: dict[str, tuple[object, object]] = {}
+        for key, exp_val in expected.items():
+            act_val = actual.get(key, "__missing__")
+            if act_val != exp_val:
+                mismatches[key] = (exp_val, act_val)
+        # Also flag figures present in actual but absent from the report.
+        for key, act_val in actual.items():
+            if key not in expected:
+                mismatches[key] = ("__missing__", act_val)
+
+        if mismatches:
+            print(f"verify FAILED: {len(mismatches)} figure(s) differ from {target}")
+            for key in sorted(mismatches)[:50]:
+                exp_val, act_val = mismatches[key]
+                print(f"  - {key}: expected={exp_val} actual={act_val}")
+        else:
+            print(f"verify OK: all {len(actual)} figures match {target}")
+        return mismatches
 
     # ------------------------------------------------------------------ #
     # Bronze                                                               #
@@ -220,59 +305,142 @@ class LocalPipelineRunner:
             logger.info("Bronze view registered: bronze_%s → %s", entity, source_glob)
 
     def _collect_bronze_counts(self) -> dict[str, int]:
-        """
-        Return row counts for Bronze source tables.
+        """Return row counts for every Bronze view that exists.
 
-        Only flat (single-file) tables are counted at this stage.  Partitioned
-        tables containing thousands of CSV files would require a full multi-file
-        scan just to produce a number for the report; that cost is unjustified.
-        Their Bronze count is omitted here and reported as '—' in the report.
-        The Silver table counts (from materialised DuckDB tables) are always
-        exact and are the primary quality signal.
+        All Bronze views are counted (including partitioned tables) so the
+        report can explain the Bronze→Silver drop in full. Counting is a
+        single sequential scan per table.
         """
-        # Tables backed by a single flat CSV — counting is essentially free.
-        _FLAT_TABLES = {"customers", "products", "service_agents"}
         counts: dict[str, int] = {}
         for table in _SILVER_TABLES:
-            if table not in _FLAT_TABLES:
-                continue
             if self._view_exists(f"bronze_{table}"):
-                counts[table] = self._con.execute(
-                    f"SELECT COUNT(*) FROM bronze_{table}"
-                ).fetchone()[0]
+                try:
+                    counts[table] = self._con.execute(
+                        f"SELECT COUNT(*) FROM bronze_{table}"
+                    ).fetchone()[0]
+                except Exception as exc:  # noqa: BLE001 – report '—' instead of failing
+                    logger.warning("Bronze count failed for %s: %s", table, exc)
         return counts
+
+    def _validation_expr(self, table: str, available_cols: set[str] | None = None) -> str:
+        """Return a SQL expression yielding ';'-separated failed rule names for *table*.
+
+        Rules whose target column is absent from the Bronze view are skipped so
+        small fixtures (or evolved schemas) do not fail validation.
+        """
+        try:
+            rules = get_table(table).quality_rules
+        except KeyError:
+            return "''"
+        if available_cols is not None:
+            rules = [r for r in rules if r.column in available_cols]
+        if not rules:
+            return "''"
+        fragments = " || ';' || ".join(
+            f"CASE WHEN NOT ({r.sql_predicate}) THEN '{r.rule_name}' ELSE '' END"
+            for r in rules
+        )
+        return f"TRIM(BOTH ';' FROM ({fragments}))"
 
     # ------------------------------------------------------------------ #
     # Silver  (delegates SQL to sentinel_data.transforms)                  #
     # ------------------------------------------------------------------ #
 
     def _build_silver_tables(self) -> None:
-        """
-        Build all Silver tables from Bronze views using canonical SQL from
-        ``sentinel_data.transforms``.
+        """Build Silver tables with quarantine split, deduplication and normalisation.
 
-        Transformations applied per table:
-        - Deduplication via ``SELECT DISTINCT``.
-        - Missing-value imputation: categorical columns → ``'UNSPECIFIED'``.
-        - Country normalisation (REQ-0015): ``'Mexico'`` → ``'México'``.
+        For each table: rows failing catalog quality rules go to
+        ``rejected_records`` (with ``table_name``, ``rejection_reason``,
+        ``rejected_at`` and ``raw_record`` JSON); clean rows flow through the
+        canonical Silver SQL (``SELECT DISTINCT`` dedup + ``UNSPECIFIED``
+        imputation + country normalisation).
         """
-        builders: dict[str, tuple[str, str]] = {
-            "customers":                ("bronze_customers",               silver_customers_sql("bronze_customers")),
-            "transactions":             ("bronze_transactions",            silver_transactions_sql("bronze_transactions")),
-            "products":                 ("bronze_products",                silver_products_sql("bronze_products")),
-            "complaints":               ("bronze_complaints",              silver_complaints_sql("bronze_complaints")),
-            "service_agents":           ("bronze_service_agents",          silver_service_agents_sql("bronze_service_agents")),
-            "call_center_interactions": ("bronze_call_center_interactions", silver_call_center_interactions_sql("bronze_call_center_interactions")),
-            "satisfaction_surveys":     ("bronze_satisfaction_surveys",    silver_satisfaction_surveys_sql("bronze_satisfaction_surveys")),
+        from sentinel_data.transforms import (
+            silver_call_center_interactions_sql as _s_cci,
+            silver_complaints_sql as _s_comp,
+            silver_customers_sql as _s_cust,
+            silver_products_sql as _s_prod,
+            silver_satisfaction_surveys_sql as _s_surv,
+            silver_service_agents_sql as _s_agent,
+            silver_transactions_sql as _s_txn,
+        )
+
+        self._con.execute(
+            """
+            CREATE TABLE IF NOT EXISTS rejected_records (
+                table_name VARCHAR,
+                rejection_reason VARCHAR,
+                rejected_at VARCHAR,
+                raw_record VARCHAR
+            )
+            """
+        )
+        # Fresh run → fresh quarantine (idempotent reruns must not double-count).
+        self._con.execute("DELETE FROM rejected_records")
+
+        builders: dict[str, str] = {
+            "customers": _s_cust("bronze_customers_clean"),
+            "transactions": _s_txn("bronze_transactions_clean"),
+            "products": _s_prod("bronze_products_clean"),
+            "complaints": _s_comp("bronze_complaints_clean"),
+            "service_agents": _s_agent("bronze_service_agents_clean"),
+            "call_center_interactions": _s_cci("bronze_call_center_interactions_clean"),
+            "satisfaction_surveys": _s_surv("bronze_satisfaction_surveys_clean"),
         }
-        for table, (bronze_view, sql) in builders.items():
-            if self._view_exists(bronze_view):
-                self._con.execute(
-                    f"CREATE OR REPLACE TABLE silver_{table} AS {sql};"
-                )
-                logger.info("Silver table built: silver_%s", table)
-            else:
+        rejected_at = datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        for table, silver_sql in builders.items():
+            bronze_view = f"bronze_{table}"
+            if not self._view_exists(bronze_view):
                 logger.warning("Skipping silver_%s – bronze view absent", table)
+                continue
+            try:
+                bronze_cols = {
+                    r[0]
+                    for r in self._con.execute(f"SELECT * FROM {bronze_view} LIMIT 0").description
+                }
+            except Exception:  # noqa: BLE001
+                bronze_cols = set()
+            validation = self._validation_expr(table, bronze_cols)
+            # Clean view: only rows passing every rule.
+            self._con.execute(
+                f"CREATE OR REPLACE VIEW {bronze_view}_validated AS "
+                f"SELECT *, ({validation}) AS _rejection_reason FROM {bronze_view}"
+            )
+            self._con.execute(
+                f"CREATE OR REPLACE VIEW {bronze_view}_clean AS "
+                f"SELECT * EXCLUDE (_rejection_reason) FROM {bronze_view}_validated "
+                f"WHERE _rejection_reason = ''"
+            )
+            # Quarantine: failing rows appended with rule names + JSON payload.
+            cols = [
+                r[0]
+                for r in self._con.execute(
+                    f"SELECT * FROM {bronze_view}_validated LIMIT 0"
+                ).description
+                if r[0] != "_rejection_reason"
+            ]
+            if cols:
+                struct_args = ", ".join(f'"{c}" := "{c}"' for c in cols)
+                # Escape single quotes in the timestamp-safe literal path.
+                safe_ts = rejected_at.replace("'", "''")
+                self._con.execute(
+                    f"""
+                    INSERT INTO rejected_records
+                    SELECT
+                        '{table}' AS table_name,
+                        _rejection_reason AS rejection_reason,
+                        '{safe_ts}' AS rejected_at,
+                        TO_JSON(STRUCT_PACK({struct_args})) AS raw_record
+                    FROM {bronze_view}_validated
+                    WHERE _rejection_reason != ''
+                    """
+                )
+            try:
+                self._con.execute(f"CREATE OR REPLACE TABLE silver_{table} AS {silver_sql};")
+            except Exception as exc:  # noqa: BLE001 – missing bronze column in fixture
+                logger.warning("Skipping silver_%s – build failed: %s", table, exc)
+                continue
+            logger.info("Silver table built: silver_%s", table)
 
     def _collect_silver_counts(self) -> dict[str, int]:
         counts: dict[str, int] = {}
@@ -365,9 +533,12 @@ class LocalPipelineRunner:
         for table, col in [("customers", "country"), ("transactions", "transaction_country")]:
             key = f"mexico_normalised_{table}"
             if self._view_exists(f"bronze_{table}"):
-                metrics[key] = self._con.execute(
-                    f"SELECT COUNT(*) FROM bronze_{table} WHERE TRIM({col}) = 'Mexico'"
-                ).fetchone()[0]
+                try:
+                    metrics[key] = self._con.execute(
+                        f"SELECT COUNT(*) FROM bronze_{table} WHERE TRIM({col}) = 'Mexico'"
+                    ).fetchone()[0]
+                except Exception:  # noqa: BLE001 – missing column means 0
+                    metrics[key] = 0
             else:
                 metrics[key] = 0
 
@@ -402,6 +573,172 @@ class LocalPipelineRunner:
 
         return metrics
 
+    def _collect_quarantine_metrics(self) -> dict[str, object]:
+        """Counts per rejection rule from ``rejected_records`` (empty when absent)."""
+        metrics: dict[str, object] = {"quarantine_total": 0, "by_table": {}, "by_rule": {}}
+        if not self._table_exists("rejected_records"):
+            return metrics
+        try:
+            rows = self._con.execute(
+                "SELECT table_name, rejection_reason FROM rejected_records"
+            ).fetchall()
+        except Exception:  # noqa: BLE001
+            return metrics
+        by_table: dict[str, int] = {}
+        by_rule: dict[str, int] = {}
+        for table_name, reason in rows:
+            by_table[table_name] = by_table.get(table_name, 0) + 1
+            for rule in str(reason or "").split(";"):
+                rule = rule.strip().strip(";").strip()
+                if rule:
+                    by_rule[rule] = by_rule.get(rule, 0) + 1
+        metrics["quarantine_total"] = len(rows)
+        metrics["by_table"] = by_table
+        metrics["by_rule"] = by_rule
+        return metrics
+
+    def _collect_orphan_metrics(self) -> dict[str, int]:
+        """Anti-join orphan counts (FKs in facts missing from dimensions)."""
+        orphans: dict[str, int] = {}
+
+        def _count(sql: str) -> int:
+            try:
+                return int(self._con.execute(sql).fetchone()[0])
+            except Exception:  # noqa: BLE001 – missing table/column → 0
+                return 0
+
+        if self._table_exists("silver_transactions"):
+            if self._table_exists("silver_customers"):
+                orphans["transactions_missing_customer"] = _count(
+                    "SELECT COUNT(*) FROM silver_transactions t "
+                    "LEFT JOIN silver_customers c ON c.customer_id = t.customer_id "
+                    "WHERE c.customer_id IS NULL"
+                )
+            if self._table_exists("silver_products"):
+                orphans["transactions_missing_product"] = _count(
+                    "SELECT COUNT(*) FROM silver_transactions t "
+                    "LEFT JOIN silver_products p ON p.product_id = t.product_id "
+                    "WHERE p.product_id IS NULL"
+                )
+        if self._table_exists("silver_complaints") and self._table_exists("silver_customers"):
+            orphans["complaints_missing_customer"] = _count(
+                "SELECT COUNT(*) FROM silver_complaints k "
+                "LEFT JOIN silver_customers c ON c.customer_id = k.customer_id "
+                "WHERE c.customer_id IS NULL"
+            )
+        return orphans
+
+    def _collect_late_arrival_metrics(self) -> dict[str, int]:
+        """Per-table late arrivals: process_date later than the event date."""
+        late: dict[str, int] = {}
+        for table, (event_col, proc_col) in _LATE_ARRIVAL_COLS.items():
+            if not self._table_exists(f"silver_{table}"):
+                continue
+            try:
+                cols = {r[0] for r in self._con.execute(f"SELECT * FROM silver_{table} LIMIT 0").description}
+            except Exception:  # noqa: BLE001
+                continue
+            if event_col not in cols or proc_col not in cols:
+                continue
+            try:
+                late[table] = int(
+                    self._con.execute(
+                        f"SELECT COUNT(*) FROM silver_{table} "
+                        f"WHERE TRY_CAST({proc_col} AS DATE) IS NOT NULL "
+                        f"AND TRY_CAST({event_col} AS DATE) IS NOT NULL "
+                        f"AND TRY_CAST({proc_col} AS DATE) > TRY_CAST({event_col} AS DATE)"
+                    ).fetchone()[0]
+                )
+            except Exception:  # noqa: BLE001
+                late[table] = 0
+        return late
+
+    def _collect_null_metrics(self) -> dict[str, dict[str, dict[str, float | int]]]:
+        """Null count + rate per column per Silver table (single scan per table)."""
+        nulls: dict[str, dict[str, dict[str, float | int]]] = {}
+        for table in _SILVER_TABLES:
+            silver = f"silver_{table}"
+            if not self._table_exists(silver):
+                continue
+            try:
+                desc = self._con.execute(f"SELECT * FROM {silver} LIMIT 0").description
+                cols = [r[0] for r in desc]
+            except Exception:  # noqa: BLE001
+                continue
+            if not cols:
+                continue
+            total = int(self._con.execute(f"SELECT COUNT(*) FROM {silver}").fetchone()[0])
+            if total == 0:
+                nulls[table] = {c: {"nulls": 0, "rate": 0.0} for c in cols}
+                continue
+            aggs = ", ".join(
+                f"SUM(CASE WHEN \"{c}\" IS NULL THEN 1 ELSE 0 END) AS \"__n_{c}\""
+                for c in cols
+            )
+            try:
+                row = self._con.execute(f"SELECT {aggs} FROM {silver}").fetchone()
+            except Exception:  # noqa: BLE001
+                continue
+            table_nulls: dict[str, dict[str, float | int]] = {}
+            for c, n in zip(cols, row):
+                n_int = int(n or 0)
+                table_nulls[c] = {"nulls": n_int, "rate": n_int / total if total else 0.0}
+            nulls[table] = table_nulls
+        return nulls
+
+    def _figures_dict(
+        self,
+        bronze_counts: dict[str, int],
+        silver_counts: dict[str, int],
+        gold_counts: dict[str, int],
+        quality_metrics: dict[str, object],
+        quarantine_metrics: dict[str, object],
+        orphan_metrics: dict[str, int],
+        late_metrics: dict[str, int],
+        null_metrics: dict[str, dict[str, dict[str, float | int]]],
+    ) -> dict[str, object]:
+        """Flat figure map used by the report footer and ``verify``."""
+        figures: dict[str, object] = {}
+        for tbl in _SILVER_TABLES:
+            if tbl in bronze_counts:
+                figures[f"bronze.{tbl}"] = int(bronze_counts[tbl])
+            if tbl in silver_counts:
+                figures[f"silver.{tbl}"] = int(silver_counts[tbl])
+        for k, v in gold_counts.items():
+            figures[f"gold.{k}"] = int(v)
+        for key in ("eligible_count", "ineligible_count", "total_txn_count", "total_mexico_normalised",
+                    "mexico_normalised_customers", "mexico_normalised_transactions"):
+            figures[f"quality.{key}"] = int(quality_metrics.get(key, 0) or 0)
+        figures["quarantine.total"] = int(quarantine_metrics.get("quarantine_total", 0) or 0)
+        for rule, n in (quarantine_metrics.get("by_rule", {}) or {}).items():
+            figures[f"quarantine.rule.{rule}"] = int(n)
+        for tbl, n in (quarantine_metrics.get("by_table", {}) or {}).items():
+            figures[f"quarantine.table.{tbl}"] = int(n)
+        for k, v in orphan_metrics.items():
+            figures[f"orphan.{k}"] = int(v)
+        for k, v in late_metrics.items():
+            figures[f"late.{k}"] = int(v)
+        for tbl, cols in null_metrics.items():
+            for col, stats in cols.items():
+                figures[f"null.{tbl}.{col}"] = int(stats.get("nulls", 0) or 0)
+        return figures
+
+    @staticmethod
+    def _parse_figures_block(report_text: str) -> dict[str, object]:
+        """Extract the embedded `````json figures`` block written by ``_generate_report``."""
+        start = report_text.find("```json figures")
+        if start < 0:
+            return {}
+        start = report_text.find("\n", start) + 1
+        end = report_text.find("```", start)
+        if end < 0:
+            return {}
+        try:
+            data = json.loads(report_text[start:end].strip())
+            return {k: v for k, v in data.items()}
+        except Exception:  # noqa: BLE001 – corrupt block means 0 figures
+            return {}
+
     # ------------------------------------------------------------------ #
     # Report                                                               #
     # ------------------------------------------------------------------ #
@@ -412,9 +749,18 @@ class LocalPipelineRunner:
         silver_counts: dict[str, int],
         gold_counts: dict[str, int],
         quality_metrics: dict[str, object],
+        quarantine_metrics: dict[str, object] | None = None,
+        orphan_metrics: dict[str, int] | None = None,
+        late_metrics: dict[str, int] | None = None,
+        null_metrics: dict[str, dict[str, dict[str, float | int]]] | None = None,
     ) -> None:
-        """Write the structured Markdown data-quality report."""
+        """Write the full structured Markdown data-quality report (all sections generated)."""
         ts = datetime.now(tz=timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+
+        quarantine_metrics = quarantine_metrics or {}
+        orphan_metrics = orphan_metrics or {}
+        late_metrics = late_metrics or {}
+        null_metrics = null_metrics or {}
 
         total = quality_metrics.get("total_txn_count", 0) or 1
         eligible = quality_metrics.get("eligible_count", 0)
@@ -423,20 +769,18 @@ class LocalPipelineRunner:
         pct_inelig = 100.0 * ineligible / total if total else 0.0
         total_mexico = quality_metrics.get("total_mexico_normalised", 0)
         svc_cols = quality_metrics.get("service_view_columns", [])
-        dup_removed = sum(
-            bronze_counts.get(t, 0) - silver_counts.get(t, 0)
-            for t in _SILVER_TABLES
-            if t in bronze_counts and t in silver_counts
-        )
+        quarantine_total = int(quarantine_metrics.get("quarantine_total", 0) or 0)
+        by_rule = quarantine_metrics.get("by_rule", {}) or {}
+        by_table = quarantine_metrics.get("by_table", {}) or {}
 
         lines: list[str] = []
-
         lines += [
             "# Sentinel Engine — Data Quality Report",
             "",
             f"**Execution timestamp:** {ts}",
             f"**Dataset cutoff date:** {DATASET_CUTOFF_DATE}",
             f"**DuckDB file:** `{self.duckdb_path}`",
+            f"**Requirement:** REQ-0015",
             "",
             "---",
             "",
@@ -444,22 +788,37 @@ class LocalPipelineRunner:
             "",
             "### Bronze → Silver (per table)",
             "",
-            "| Table | Bronze rows | Silver rows | Duplicates removed |",
-            "|---|---:|---:|---:|",
+            "| Table | Bronze rows | Silver rows | Drop (Bronze−Silver) | Quarantined |",
+            "|---|---:|---:|---:|---:|",
         ]
         for tbl in _SILVER_TABLES:
+            q = by_table.get(tbl, 0) if isinstance(by_table, dict) else 0
             if tbl in bronze_counts and tbl in silver_counts:
                 b = bronze_counts[tbl]
                 s = silver_counts[tbl]
-                lines.append(f"| {tbl} | {b:,} | {s:,} | {b - s:,} |")
+                lines.append(f"| {tbl} | {b:,} | {s:,} | {b - s:,} | {q:,} |")
             elif tbl in silver_counts:
-                lines.append(f"| {tbl} | — | {silver_counts[tbl]:,} | — |")
+                lines.append(f"| {tbl} | — | {silver_counts[tbl]:,} | — | {q:,} |")
             else:
-                lines.append(f"| {tbl} | — | — | — |")
-        lines.append(
-            "*Note: For large partitioned tables, Bronze layer row counts are omitted (—) "
-            "during ingestion to optimize I/O and avoid redundant CSV scans.*"
-        )
+                lines.append(f"| {tbl} | — | — | — | {q:,} |")
+
+        lines += [
+            "",
+            "### Drop breakdown",
+            "",
+            "Bronze−Silver per table decomposes into deduplication (`SELECT DISTINCT`), "
+            "quarantine filtering (`rejected_records`) and orphan exclusion in Gold joins. "
+            "Quarantine totals come from `rejected_records`; orphans from anti-joins below.",
+            "",
+            f"| Quarantined rows (all tables) | {quarantine_total:,} |",
+            "|---|---|",
+        ]
+        if by_rule:
+            lines += ["", "#### Quarantine per rule", "", "| Rule | Rows |", "|---|---:|"]
+            for rule in sorted(by_rule):
+                lines.append(f"| {rule} | {by_rule[rule]:,} |")
+        else:
+            lines += ["", "_No quarantined rows in this run._"]
 
         lines += [
             "",
@@ -475,11 +834,66 @@ class LocalPipelineRunner:
             "",
             "---",
             "",
-            "## 2. Data Quality Metrics",
+            "## 2. Orphans & Late Arrivals",
+            "",
+            "### Orphans (referential integrity)",
+            "",
+            "| Check | Orphan rows |",
+            "|---|---:|",
+        ]
+        if orphan_metrics:
+            for k in sorted(orphan_metrics):
+                lines.append(f"| {k} | {orphan_metrics[k]:,} |")
+        else:
+            lines.append("| *(no Silver facts built)* | — |")
+
+        lines += [
+            "",
+            "### Late arrivals per partitioned table",
+            "",
+            "`process_date` later than the event date counts as a late arrival.",
+            "",
+            "| Table | Late rows |",
+            "|---|---:|",
+        ]
+        if late_metrics:
+            for k in sorted(late_metrics):
+                lines.append(f"| {k} | {late_metrics[k]:,} |")
+        else:
+            lines.append("| *(no partitioned Silver tables built)* | — |")
+
+        lines += [
+            "",
+            "---",
+            "",
+            "## 3. Nulls & Country Normalisation",
+            "",
+            "### Null counts and rates (mandatory and optional fields)",
+            "",
+            "| Table | Column | Nulls | Rate |",
+            "|---|---|---:|---:|",
+        ]
+        any_nulls = False
+        for tbl in _SILVER_TABLES:
+            cols = null_metrics.get(tbl, {})
+            for col in sorted(cols):
+                stats = cols[col]
+                n = int(stats.get("nulls", 0) or 0)
+                rate = float(stats.get("rate", 0.0) or 0.0)
+                # Show every column with nulls plus mandatory PK/FK columns even at 0,
+                # so optional nulls stay visible without flooding the report.
+                if n > 0 or col in ("transaction_id", "customer_id", "amount", "transaction_date"):
+                    lines.append(f"| {tbl} | {col} | {n:,} | {rate:.2%} |")
+                    any_nulls = True
+        if not any_nulls:
+            lines.append("| *(no nulls)* | — | — | — |")
+
+        lines += [
+            "",
+            "### Country normalisation",
             "",
             "| Metric | Value |",
             "|---|---:|",
-            f"| Duplicates removed (flat-file tables only) | {dup_removed:,} |",
             f"| Rows with `'Mexico'` normalised → `'México'` (customers) | {quality_metrics.get('mexico_normalised_customers', 0):,} |",
             f"| Rows with `'Mexico'` normalised → `'México'` (transactions) | {quality_metrics.get('mexico_normalised_transactions', 0):,} |",
             f"| **Total country entries normalised (REQ-0015)** | **{total_mexico:,}** |",
@@ -496,7 +910,7 @@ class LocalPipelineRunner:
             "",
             "---",
             "",
-            "## 3. PII Compliance Verification",
+            "## 4. PII Compliance Verification",
             "",
             "The view `v_service_dispute_eligible_transactions` is the surface exposed to the",
             "FastAPI backend and any downstream service without explicit PII-READ permission.",
@@ -519,11 +933,19 @@ class LocalPipelineRunner:
             "",
             "---",
             "",
-            "*Generated by `sentinel_data.local_runner.LocalPipelineRunner`.*",
+            "*Generated by `sentinel_data.local_runner.LocalPipelineRunner`. Satisfies REQ-0015.*",
+            "",
+            "<!-- verify-figures: machine-readable aggregates for `verify` mode. Do not edit by hand. -->",
+            "```json figures",
         ]
+        figures = self._figures_dict(
+            bronze_counts, silver_counts, gold_counts, quality_metrics,
+            quarantine_metrics, orphan_metrics, late_metrics, null_metrics,
+        )
+        lines.append(json.dumps(figures, indent=2, sort_keys=True))
+        lines += ["```", ""]
 
         report = "\n".join(lines) + "\n"
-
         self.report_path.parent.mkdir(parents=True, exist_ok=True)
         self.report_path.write_text(report, encoding="utf-8")
         logger.info("Data quality report written → %s", self.report_path)

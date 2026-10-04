@@ -1,4 +1,10 @@
-## ADDED Requirements
+# continuous-checks Specification
+
+## Purpose
+
+Runs both test suites on every push and pull request without secrets or cloud access, so a red check means the change is broken and a defence that regresses fails loudly.
+
+## Requirements
 
 ### Requirement: Checks run on every change without secrets
 
