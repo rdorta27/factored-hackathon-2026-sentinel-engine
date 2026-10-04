@@ -6,11 +6,11 @@ last_reviewed: 2026-10-04
 
 # Tasks
 
-Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/build/decisions/007-learned-component.md), [013](../../../docs/build/decisions/013-experiment-tracking.md), [018](../../../docs/build/decisions/018-evaluation-acceptance.md). Paths are under `sentinel-ai-core/`. Merge before the v8 seal of `router-v3`.
+Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/build/decisions/007-learned-component.md), [013](../../../docs/build/decisions/013-experiment-tracking.md), [018](../../../docs/build/decisions/018-evaluation-acceptance.md). Paths are under `sentinel-ai-core/`. Merge before the rehearsal of `eval-v8` (task 3.1).
 
 ## 1. Rules first
 
-- [ ] 1.1 Amend 007 and 013 and add the trained baseline to the 018 amendment of `router-v3` before any training. Evidence: the decision files and their commit order.
+- [ ] 1.1 Amend 007 and 013 to add the trained baseline and its training run. Training reads development data only, so it does not wait for any other rule. The 018 amendment that names the trained baseline as a candidate belongs to [`eval-v8`](../eval-v8/proposal.md) (task 1.2), which needs only the name `trained_baseline` and the training split. Evidence: the decision files.
 
 ## 2. Training
 
