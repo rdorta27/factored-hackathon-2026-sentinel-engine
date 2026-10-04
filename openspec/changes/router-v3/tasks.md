@@ -10,7 +10,7 @@ Areas: [ml](../../../docs/build/areas/ml.md), [ai](../../../docs/build/areas/ai.
 
 ## 1. Contract (first)
 
-- [ ] 1.1 Write decision 024 and the 007 amendment, and extend `UnderstandResult` to contract v3 with optional fields; the baseline and v2 still fit. Evidence: `app/ai/port.py`, `tests/test_ai_router.py`, the decision files.
+- [ ] 1.1 Extend `UnderstandResult` to contract v3 with optional fields; the baseline and v2 still fit. Decision [024](../../../docs/build/decisions/024-model-wording.md) and the 007 update are done (branch `model-wording`). Evidence: `app/ai/port.py`, `tests/test_ai_router.py`.
 - [ ] 1.2 Add the draft validator with placeholders and rejection reasons. Evidence: `app/ai/drafts.py`, `tests/test_drafts.py` with figure, name, date, promise, language and length cases.
 
 ## 2. Cases and rules
