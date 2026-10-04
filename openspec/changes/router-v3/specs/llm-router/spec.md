@@ -1,18 +1,46 @@
 ## ADDED Requirements
 
-### Requirement: Prompt v3 defines every intent and covers openers
+### Requirement: Contract v3 reads more without deciding
 
-The router SHALL offer a prompt version `v3` that defines each of the four intents in one line, classifies greetings, introductions, thanks and "I have a problem" without details as `missing`, and adds to the v2 example block only development cases. Its example ids SHALL be recorded with the version and SHALL all be in the development split. Versions `v1` and `v2` SHALL stay available. The label set SHALL stay `charge`, `missing`, `out_of_scope` and `person`. Traces to REQ-0016 (P0, Done), REQ-0017 (P0, Done) and REQ-0012 (P0, Done).
+The router SHALL return, in one call: `kind` (`charge`, `status`, `missing`, `out_of_scope`, `person`), an optional `subtype`, `language`, `not_mine`, optional `slots` (merchant words, a numeric amount, a date phrase, a "twice" flag), an optional `reply_draft` and `confidence`. Every new field SHALL be optional, so v1, v2 and the keyword baseline still fit. The keyword baseline SHALL NOT change. No field SHALL decide a permission, an eligibility, a confirmation or a handoff. Traces to REQ-0002 (P0, Done), REQ-0016 (P0, Done) and REQ-0033 (P0, Done).
 
-#### Scenario: A greeting is missing, not out of scope
+#### Scenario: Loan request
 
-- **WHEN** v3 classifies "hola, me llamo Karl"
-- **THEN** the label is `missing`
+- **WHEN** prompt v3 reads "quiero un préstamo"
+- **THEN** the result is `out_of_scope` with subtype `loan`
 
-#### Scenario: Greeting with a request keeps the request
+#### Scenario: Amount in words
 
-- **WHEN** v3 classifies "hola, no reconozco un cargo de 320 en Cafe Central"
-- **THEN** the label is `charge`
+- **WHEN** prompt v3 reads "un cobro de mil pesos"
+- **THEN** the amount slot is 1000
+
+#### Scenario: Status of a charge
+
+- **WHEN** prompt v3 reads "quiero ver el estado de mi último cargo"
+- **THEN** the result is `status`
+
+#### Scenario: The baseline is unchanged
+
+- **WHEN** the baseline reads any case of `2024Q4-eval-v7`
+- **THEN** its label is the same as in that run
+
+### Requirement: Drafts carry placeholders and pass a validator
+
+A `reply_draft` SHALL contain no value: merchants, amounts, dates and statuses SHALL appear only as placeholders that code fills from verified facts. A validator SHALL reject a draft with a digit outside a placeholder, an unknown placeholder, a name or date not in the verified facts, a promise, a wrong language or a length over the limit, and SHALL record the reason. A rejected draft SHALL fall back to the template. Turns that decide SHALL never use a draft. Traces to REQ-0003 (P0, Done), REQ-0005 (P0, Done) and REQ-0021 (P0, Done); decision 024.
+
+#### Scenario: Draft with an invented amount
+
+- **WHEN** a draft says "te devolveremos 500 pesos"
+- **THEN** the validator rejects it and the reply uses the template
+
+#### Scenario: Draft on a decision turn
+
+- **WHEN** the turn shows a confirm box
+- **THEN** the reply uses the template and ignores the draft
+
+### Requirement: Prompt v3 uses development examples only
+
+Prompt v3 SHALL define each intent, subtype and slot in one line, and SHALL use only development examples, whose ids are recorded with the version. Versions v1 and v2 SHALL stay available. Traces to REQ-0016 (P0, Done) and REQ-0017 (P0, Done).
 
 #### Scenario: Examples are development cases
 
@@ -21,28 +49,9 @@ The router SHALL offer a prompt version `v3` that defines each of the four inten
 
 ### Requirement: v3 is served only after passing the amended rules
 
-The service SHALL serve v3 only after `2024Q4-eval-v8` is frozen and v3 meets every rule of the 018 amendment, including the v7 gates. Otherwise v2 SHALL stay served and the result SHALL be reported as it is. Serving v3 SHALL load its examples through the evaluation loader and SHALL fail at startup if they do not load, and a test SHALL pin the served example ids to those recorded in the v8 summary. Traces to REQ-0016 (P0, Done) and REQ-0020 (P0, Done); decisions 016 and 018.
+The service SHALL serve v3 by default only after `2024Q4-eval-v8` is frozen and v3 meets every rule of the 018 amendment, including the v7 gates and zero unsafe wording. Otherwise v2 SHALL stay the default. Serving v3 SHALL fail at startup if its examples do not load, and a test SHALL pin the served example ids to the v8 summary. Traces to REQ-0016 (P0, Done) and REQ-0020 (P0, Done); decisions 016 and 018.
 
 #### Scenario: v3 fails a rule
 
 - **WHEN** v3 misses a gate in `eval-v8`
-- **THEN** v2 stays served and the report states the failed rule
-
-#### Scenario: Served examples match the run
-
-- **WHEN** the app starts with v3
-- **THEN** its example ids equal those in the `eval-v8` summary, or startup fails
-
-### Requirement: Prompt v3 labels a status question
-
-Prompt v3 SHALL add the label `status` for a question about the status of a charge. A question about the status of an existing dispute SHALL stay with the code check of `flow-fixes`. The keyword baseline SHALL NOT change. Traces to REQ-0002 (P0, Done) and REQ-0016 (P0, Done).
-
-#### Scenario: Status of a charge
-
-- **WHEN** the message is "quiero ver el estado de mi último cargo"
-- **THEN** prompt v3 returns the label `status`
-
-#### Scenario: The baseline is unchanged
-
-- **WHEN** the baseline reads the same message
-- **THEN** its label is the same as in `2024Q4-eval-v7`
+- **THEN** v2 stays the default and the report states the failed rule

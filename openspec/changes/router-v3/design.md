@@ -1,35 +1,29 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
 # Design
 
 ## Context
 
-Prompt v2 (`app/ai/llm.py`) lists the four intents without definitions and carries eight development examples, none of them an opener. The runner seals a set by hash (`eval/seal.py`), refuses a second measurement of a measured hash (`eval/measured.json`), and freezes runs write-once. `eval-v7` measured baseline, v1 and v2 on 280 main cases; its system block does not replay offline, which `resolution-eval` investigates. The app serves v2 from the environment and fails at startup if its examples do not load (`app/ai/serving.py`). The detailed step order is in `team/router-v3-plan.md`. See proposal.md for motivation.
-
-## Goals / Non-Goals
-
-**Goals:**
-- The opener gap is measured on a set that contains openers, against v2 and the baseline, with rules fixed first.
-- v3 replaces v2 only on evidence.
-
-**Non-Goals:**
-- More intents, slots or wording by the model; they stay in `team/chat-behavior-plan.md`.
+Prompt v2 (`app/ai/llm.py`) lists four intents without definitions, asks for an `amount` that the code ignores, and has eight development examples, none an opener. Replies carry translation keys only (`app/schemas/chat.py`). The runner seals by hash, refuses a second measurement of a hash, and freezes runs write-once. The app serves v2 and fails at startup if its examples do not load.
 
 ## Decisions
 
-**1. Greetings map to `missing`.** The reply to `missing` already asks what the customer needs, which is the right answer to "hola". Alternative: a new `chitchat` label with friendly replies; rejected here because it changes the label set, the reply contract and every measured comparison.
-
-**2. No code guard for openers.** A keyword guard would turn real out-of-scope requests without keywords into clarifications (15 of 39 development cases) and would hide what v8 measures. Checks for security (prompt extraction, injection record) are separate and do not touch intent.
-
-**3. Amendment before any v3 number.** Metrics added: unnecessary-handoff rate (turns ending in a handoff or offer when the expected outcome is not one) and system outcome match. Gates kept: 0 unsafe on attacks, 0 missed transfers, no loss on v7 categories beyond the interval. Targets for the new metrics come from development numbers of baseline and v2, set before v3 runs on the sealed set.
-
-**4. Sizing as in v7, plus a resolution block.** About 70 bases times four variants for intent, with openers as at least one fifth of the bases, so the opener category alone has an interval narrow enough to decide; plus multi-turn resolution situations over the mock store's charges in the four variants, resampled by situation. A block whose interval is wider than ±10 points is labelled descriptive.
-
-**5. Same settings as v7.** GLM 5.3 Flash on both routes, reasoning low, 400 tokens, temperature 0, same seed and cluster bootstrap; spend cap fixed in the amendment.
-
-**6. Freeze after the loop settles.** The v8 seal and measurement wait for the loop changes in flight, and the run records the commit it measured, so a later replay mismatch can be traced.
+1. **Contract first.** `UnderstandResult` v3 is the interface for `chat-start`, the isolated author of the sealed set, and `trained-baseline`. It is fixed and committed before prompt work. New fields are optional, so v1, v2 and the baseline still fit.
+2. **Status is a model label; dispute status is code.** A question about the status of a charge is `status`. A question about an existing dispute stays the code check of `flow-fixes`, so it works with any model.
+3. **Subtypes instead of new intents.** Greetings stay `missing` with a subtype; a loan stays `out_of_scope` with a subtype. The intent block of v7 stays comparable.
+4. **Slots are hints, not facts.** Code matches each slot against verified candidates; a slot that matches nothing is dropped. A wrong slot cannot select a charge.
+5. **Drafts with placeholders (decision 024).** The model never writes a value. The validator (`app/ai/drafts.py`) checks for digits outside placeholders, unknown placeholders, names and dates not in the facts, promise words, language and length. Rejections are logged as `draft_rejected` with a reason.
+6. **Amendment before numbers.** It extends the 018 amendment of `router-confidence`. It keeps every v7 gate, adds the new metrics, sets targets from development numbers, and fixes the spend cap.
+7. **Two authoring steps.** The isolated author writes the intent block as soon as the contract is fixed, and the multi-turn block after the human review of the chat, when the behavior is fixed.
+8. **Same settings as v7.** GLM 5.3 Flash on both routes, reasoning low, temperature 0, same seed; the token cap may rise for the draft and is reported.
 
 ## Risks / Trade-offs
 
-- **Time.** Cases, isolated authoring, review, sealing and a measurement take more than a day; if the submission comes first, v2 stays served with the opener limit declared.
-- **Model-written cases.** Same provenance limit as v7: one model family writes and reviews; stated.
-- **Regression on v7 categories.** Mitigated by the gate; failing it keeps v2.
-- **Prompt length.** More definitions and examples raise cost and latency; both are reported, with the v7 numbers beside them.
+- **Time:** the full measurement is long. The multi-turn block is the first cut.
+- **Injection through the draft:** covered by the validator, adversarial tests and the unsafe-wording metric.
+- **Latency and cost:** a longer prompt and a draft cost more; both are reported beside v7.
+- **Model-written cases:** the same provenance limit as v7; stated.
