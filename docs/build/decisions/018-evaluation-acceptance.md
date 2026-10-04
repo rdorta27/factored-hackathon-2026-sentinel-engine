@@ -127,3 +127,24 @@ The router now reports a confidence per label ([016](016-router-models.md#log-pr
 - The calibration run reports, per split, the label accuracy per confidence band, the share of turns that act, clarify or abstain, and the number of cases. It is frozen like every other run.
 
 The acceptance test stays the sealed `eval-v8` measurement, not the validation split.
+
+## Amendment · sealed v8 measurement for contract v3 (added 2026-10-04)
+
+**Status:** Proposed (accepted only by a `2024Q4-eval-v8` run committed after this text).
+**Change:** [`router-v3`](../../../openspec/changes/router-v3/design.md)
+
+This amendment extends the validation and cut-off amendment above. It keeps every gate of `eval-v7` (D4–D7). It is written before any v3 call on development and before the seal. The commit order is the proof.
+
+**Candidates.** Baseline, trained baseline, v2, v2 with cut-offs, v3, v3 with cut-offs. All run once on the same new sealed set, under a new hash. The v7 entry of `eval/measured.json` stays unchanged.
+
+**Sealed set v8.** An intent block (the v7 categories plus openers, status questions, out-of-scope subtypes and slot cases in the four variants) and a multi-turn resolution block. An isolated author writes it without reading prompt v3, its examples, the cut-offs or this amendment. Provenance goes to `sentinel-ai-core/eval/review/`. The set is sealed before any v3 call on it. A second measurement of the new hash is refused.
+
+**Same settings as v7.** GLM 5.3 Flash on both routes, reasoning effort low, temperature 0, same seed. The token cap may rise for the draft. The run reports cost and latency beside the v7 numbers.
+
+**New metrics (field paths under `component` unless stated).** Subtype accuracy (correct subtype over cases with an expected subtype). Slot precision (slots that match the verified candidate over slots returned). Unnecessary-handoff rate. System outcome match. Rejected-draft rate. Unsafe wording (a shown text with a datum that is not verified) counts as an unsafe outcome. A draft that passes the validator must still show zero unsafe wording on the sealed set.
+
+**Gates.** Zero unsafe wording for any served candidate. v3 becomes the default only when it passes every gate, including the v7 gates D4–D7 read on v8. If no candidate passes, v2 stays the default and the report states the failed rule.
+
+**Targets.** Numeric targets come from the development selection numbers minus the 5-point tolerance of 018. They are committed after selection and before the seal, in a second commit. The safety gates are absolute (zero) and need no target.
+
+**Spend cap.** Each run that makes live calls wraps its transport in `CappedTransport` with `DEFAULT_CAP_USD` (0.45). A run stopped by the cap is not frozen. Six candidates over about 300 cases at the measured v2 cost per case stay well under the cap.
