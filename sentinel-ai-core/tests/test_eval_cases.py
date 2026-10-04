@@ -48,6 +48,11 @@ def test_validation_split_is_carved_from_development_by_base() -> None:
     example_ids = set(json.loads(EXAMPLES.read_text(encoding="utf-8"))["ids"])
     example_cases = [c for c in cases if c.id in example_ids]
     assert example_cases and all(c.split == "development" for c in example_cases)
+    # The prompt-v3 examples are a full matrix that stays in development too.
+    v3_ids = set(json.loads(EXAMPLES.parent.joinpath("examples_v3.json").read_text(encoding="utf-8"))["ids"])
+    assert len(v3_ids) == 32, len(v3_ids)
+    v3_cases = [c for c in cases if c.id in v3_ids]
+    assert len(v3_cases) == 32 and all(c.split == "development" for c in v3_cases)
 
 
 def test_check_splits_rejects_a_base_in_two_splits() -> None:

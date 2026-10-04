@@ -834,6 +834,37 @@ def test_contract_v3_keeps_draft_text() -> None:
     assert result.reply_draft == "Hola {merchant}"
 
 
+def _kind_logprobs(token: str, top: tuple[tuple[str, float], ...]) -> tuple[TokenLogprob, ...]:
+    """A content stream that reaches the kind value at ``token``."""
+    return (
+        TokenLogprob('{"', 0.0),
+        TokenLogprob("kind", 0.0),
+        TokenLogprob('":', 0.0),
+        TokenLogprob(' "', 0.0),
+        TokenLogprob(token, top[0][1], top),
+    )
+
+
+def test_confidence_reads_the_v3_kind_key() -> None:
+    top = (("charge", -0.01), ("missing", -5.0), ("out", -6.0), ("person", -7.0))
+    router = _router(
+        '{"kind": "charge", "language": "es-419"}', logprobs=_kind_logprobs("charge", top)
+    )
+    result = router.understand("no reconozco un cargo", [])
+    expected = math.exp(-0.01) / sum(math.exp(lp) for _, lp in top)
+    assert result.confidence == pytest.approx(expected)
+
+
+def test_confidence_covers_the_status_label() -> None:
+    top = (("status", -0.02), ("charge", -4.0), ("missing", -5.0), ("out", -6.0))
+    router = _router(
+        '{"kind": "status", "language": "es-419"}', logprobs=_kind_logprobs("status", top)
+    )
+    result = router.understand("quiero ver el estado de mi último cargo", [])
+    assert result.kind.value == "status"
+    assert result.confidence == pytest.approx(math.exp(-0.02) / sum(math.exp(lp) for _, lp in top))
+
+
 def test_contract_v3_serving_selects_v3_only_with_the_flag(monkeypatch: pytest.MonkeyPatch, tmp_path) -> None:  # type: ignore[no-untyped-def]
     import json
 
