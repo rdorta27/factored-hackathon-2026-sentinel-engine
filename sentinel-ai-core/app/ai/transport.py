@@ -23,11 +23,69 @@ class InvalidReply(ModelUnavailable):
 
 
 @dataclass(frozen=True)
+class TokenLogprob:
+    """One content token and its alternatives, as the provider returns them.
+
+    ``top`` holds (token, logprob) pairs in the provider's order, the chosen
+    token included; an empty tuple when the provider sent no alternatives.
+    """
+
+    token: str
+    logprob: float
+    top: tuple[tuple[str, float], ...] = ()
+
+
+@dataclass(frozen=True)
 class LLMResponse:
     content: str
     tokens_in: int = 0
     tokens_out: int = 0
     cost_usd: float = 0.0
+    # Content-token log-probabilities when the provider returned them, else None.
+    # Absent means the turn has no confidence and behaves as before (REQ-0016).
+    logprobs: tuple[TokenLogprob, ...] | None = None
+
+
+def parse_logprobs(raw: object) -> tuple[TokenLogprob, ...] | None:
+    """Read ``choices[].logprobs.content`` into typed tokens; None when absent."""
+    if not isinstance(raw, list) or not raw:
+        return None
+    parsed: list[TokenLogprob] = []
+    for entry in raw:
+        if not isinstance(entry, dict) or not isinstance(entry.get("token"), str):
+            continue
+        top = tuple(
+            (str(alt["token"]), float(alt.get("logprob", 0.0) or 0.0))
+            for alt in (entry.get("top_logprobs") or [])
+            if isinstance(alt, dict) and isinstance(alt.get("token"), str)
+        )
+        parsed.append(
+            TokenLogprob(
+                token=str(entry["token"]),
+                logprob=float(entry.get("logprob", 0.0) or 0.0),
+                top=top,
+            )
+        )
+    return tuple(parsed) or None
+
+
+def logprobs_to_json(logprobs: tuple[TokenLogprob, ...] | None) -> list[dict] | None:
+    """Serialize log-probabilities for a recording; None stays None."""
+    if logprobs is None:
+        return None
+    return [
+        {
+            "token": entry.token,
+            "logprob": entry.logprob,
+            "top_logprobs": [{"token": token, "logprob": logprob} for token, logprob in entry.top],
+        }
+        for entry in logprobs
+    ]
+
+
+def logprobs_from_json(raw: object) -> tuple[TokenLogprob, ...] | None:
+    """Rebuild log-probabilities from a recording body; None when absent."""
+    return parse_logprobs(raw)
 
 
 class ModelTransport(Protocol):
@@ -61,6 +119,8 @@ class HttpTransport:
         max_tokens: int | None = 200,
         json_mode: bool = True,
         reasoning_effort: str | None = None,
+        logprobs: bool = True,
+        top_logprobs: int = 5,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._api_key = api_key
@@ -77,6 +137,10 @@ class HttpTransport:
         self._max_tokens = max_tokens
         self._json_mode = json_mode
         self._reasoning_effort = reasoning_effort
+        # Ask for the label token's alternatives so the router can score its
+        # label; a reply without them still works (confidence stays absent).
+        self._logprobs = logprobs
+        self._top_logprobs = top_logprobs
 
     def _cost(self, model: str, tokens_in: int, tokens_out: int, cached_in: int) -> float:
         if self._prices is not None or self._require_price:
@@ -105,6 +169,10 @@ class HttpTransport:
             payload["response_format"] = {"type": "json_object"}
         if self._reasoning_effort:
             payload["reasoning_effort"] = self._reasoning_effort
+        if self._logprobs:
+            payload["logprobs"] = True
+            if self._top_logprobs > 0:
+                payload["top_logprobs"] = self._top_logprobs
         headers = {"Content-Type": "application/json"}
         if self._api_key:
             headers["Authorization"] = f"Bearer {self._api_key}"
@@ -133,11 +201,13 @@ class HttpTransport:
                 details = usage.get("prompt_tokens_details") or {}
                 cached_in = int(details.get("cached_tokens", 0) or 0)
                 cost = self._cost(model, tokens_in, tokens_out, cached_in)
+                logprobs = parse_logprobs((choice.get("logprobs") or {}).get("content"))
                 return LLMResponse(
                     content=str(content),
                     tokens_in=tokens_in,
                     tokens_out=tokens_out,
                     cost_usd=cost,
+                    logprobs=logprobs,
                 )
             except (httpx.TimeoutException, httpx.TransportError) as exc:
                 last_error = exc

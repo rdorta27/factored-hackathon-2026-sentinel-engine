@@ -39,7 +39,7 @@ At least one learned component evaluated against a simpler baseline on held-out 
 
 **Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). Comparison needs valid labels and a shared held-out.
 
-**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md).
+**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md). The router also reports a confidence per label; the two cut-offs were calibrated on the development + validation split and frozen in [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive), behind `SENTINEL_LLM_CUTOFFS` and handed to router-v3 for the `eval-v8` measurement.
 
 Missing: nothing for the brief; the cases are model-written simulation, a limit stated in [018](../build/decisions/018-evaluation-acceptance.md).
 
