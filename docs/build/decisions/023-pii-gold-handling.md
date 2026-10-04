@@ -1,4 +1,4 @@
-# ADR 008 – PII Handling in the Gold Layer
+# ADR 023 – PII Handling in the Gold Layer
 
 | Field       | Value                               |
 |-------------|-------------------------------------|

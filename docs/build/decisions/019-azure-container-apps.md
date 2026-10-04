@@ -26,7 +26,7 @@ Azure Container Apps, one container, `minReplicas 1` and `maxReplicas 1` (amende
 - **Aligned with [001](001-azure-platform.md):** the submission runs on the platform already chosen for production; the 012 exception exists no more.
 - **Works when an evaluator opens it:** one replica stays up until the awards, so there is no cold start; the earlier scale-to-zero woke in about 24 s here, and the free grant no longer covers an always-on replica.
 - **Cost inside published limits (REQ-0035):** ACR Basic is about 0.08 USD/day for the image, Container Apps stays inside the monthly free grant at this traffic, and both are covered by the trial credit. Hosting cannot run a few USD per month, with no usage surprises beyond the published free grant.
-- **Same container, same code:** the Dockerfile from 012 moved to [deploy/azure](../../deploy/azure/Dockerfile); [deploy.sh](../../deploy/azure/deploy.sh) stages the build context, builds and pushes the image, and creates the app.
+- **Same container, same code:** the Dockerfile from 012 moved to [deploy/azure](../../../deploy/azure/Dockerfile); [deploy.sh](../../../deploy/azure/deploy.sh) stages the build context, builds and pushes the image, and creates the app.
 - **Secrets stay out of the image and the repo:** `SENTINEL_SESSION_SALT` is a Container App secret and `SENTINEL_SECURE_COOKIES=true` an app setting. The image bakes only non-secret defaults (mock Gold, SQLite, reference date, demo auth).
 - **Ephemeral disk stays as 012 accepted it:** a scale-to-zero or restart may lose sessions and cases; logging in again is enough for a demo.
 

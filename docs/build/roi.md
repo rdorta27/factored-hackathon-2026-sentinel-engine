@@ -8,12 +8,12 @@
 
 | Input | Value | Origin | Source |
 |---|---|---|---|
-| Transactional (*Transaccional*) calls, 2023-06-17 to 2026-06-18 | 240,056 of 686,296 | measured | [call-center aggregates](../evidence/roi/2023-2026-callcenter-v1/summary.json): `transactional_calls.n`, `window` |
+| Transactional (*Transaccional*) calls, 2023-06-17 to 2026-06-18 | 240,056 of 686,296 | measured | [call-center aggregates](../../evidence/roi/2023-2026-callcenter-v1/summary.json): `transactional_calls.n`, `window` |
 | Mean handle time | 3.68 minutes (206,465 calls with a duration; 33,591 without one) | derived | same summary: `transactional.handle_time` |
 | Human first-contact resolution | 0.9151 (219,671 of 240,056) | derived | same summary: `transactional.first_contact_resolution` |
 | Human escalation share | 0.0993 (23,841 of 240,056) | derived | same summary: `transactional.escalation` |
 | Monthly transactional volume | about 6,661 calls (240,056 over 36.0 months) | derived | same summary, same window |
-| AI cost per attempted case | USD 0.00016 (per resolution USD 0.000561) | measured, simulated replay | [resolution run 2024Q4-resolution-v2](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json): `system.router_v2.cost_usd` |
+| AI cost per attempted case | USD 0.00016 (per resolution USD 0.000561) | measured, simulated replay | [resolution run 2024Q4-resolution-v2](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json): `system.router_v2.cost_usd` |
 | Infrastructure | USD 20 to 60 a month | estimated (team estimate, not validated pricing) | [cost](cost.md) |
 | Advisor hour | USD 5 to 25 an hour | **assumed** — cites no dataset; replaceable by the reader | none |
 
@@ -44,7 +44,7 @@ where `V` is the monthly transactional volume, `h` the mean handle time in hours
 | USD 20 | USD 8,170 | 0.26% / 0.75% |
 | USD 25 | USD 10,213 | 0.21% / 0.60% |
 
-Beside it, the measured simulated rate: **16 of 56 = 0.2857** safe resolutions (numerator 16, denominator 56), a **simulation** over a mock store ([resolution run 2024Q4-resolution-v2](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json), decision 022) — not field behaviour, and above every break-even rate in the table.
+Beside it, the measured simulated rate: **16 of 56 = 0.2857** safe resolutions (numerator 16, denominator 56), a **simulation** over a mock store ([resolution run 2024Q4-resolution-v2](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json), decision 022) — not field behaviour, and above every break-even rate in the table.
 
 ## The headroom finding, plainly
 

@@ -4,7 +4,7 @@
 **Date:** 2026-10-01  
 **Author:** Natalia Restrepo — Lead Data Engineer  
 **Requirement:** REQ-0031 · Approved data, labeled by origin (P0)  
-**Governing decision:** [ADR 008](build/decisions/008-pii-gold-handling.md)
+**Governing decision:** [ADR 023](build/decisions/023-pii-gold-handling.md)
 
 ---
 
@@ -81,7 +81,7 @@ S3 Bucket (organizer)
     ├─ gold_dispute_customer_360         (~150,000 rows)
     ├─ gold_dispute_eligible_transactions (~5,000,000 rows)
     ├─ gold_dispute_cases_summary        (~80,000 rows)
-    └─ v_service_dispute_eligible_transactions  ← PII-free view (ADR 008)
+    └─ v_service_dispute_eligible_transactions  ← PII-free view (ADR 023)
 ```
 
 ### 2.1 Core Banking & Accounts
@@ -122,7 +122,7 @@ The Factored Datathon 2026 dataset was generated synthetically. According to the
 
 ### 3.2 PII enforcement at the Gold layer
 
-Even though the upstream synthetic data was never real PII, the pipeline treats the fields that *structurally resemble* PII as sensitive and enforces their removal before any data reaches the LLM layer. This is governed by **ADR 008** (`docs/build/decisions/008-pii-gold-handling.md`).
+Even though the upstream synthetic data was never real PII, the pipeline treats the fields that *structurally resemble* PII as sensitive and enforces their removal before any data reaches the LLM layer. This is governed by **ADR 023** (`docs/build/decisions/023-pii-gold-handling.md`).
 
 The view `v_service_dispute_eligible_transactions` is the **only surface** exposed to `sentinel-ai-core`. It explicitly drops:
 
@@ -154,4 +154,4 @@ The following data sources are explicitly **not used** and are prohibited by REQ
 | REQ-0015 — Repeatable pipeline | In progress | Unblocked by REQ-0031 |
 | REQ-0014 — Analytics data-backed problem | In progress | Unblocked by REQ-0031 |
 | REQ-0054 — Justified external data | Pending | No external data used; requirement is satisfied by absence |
-| ADR 008 — PII Gold handling | Implemented | `v_service_dispute_eligible_transactions` is live |
+| ADR 023 — PII Gold handling | Implemented | `v_service_dispute_eligible_transactions` is live |

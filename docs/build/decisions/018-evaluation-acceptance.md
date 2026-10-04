@@ -4,7 +4,7 @@
 **Status:** Accepted 2026-10-02 (rules committed before the run; results below cite `2024Q4-eval-v7`)
 **Participants:** Rubén (owner)
 
-Change: [`llm-evaluation`](../../../openspec/changes/llm-evaluation/design.md). Model selection rules: [016](016-router-models.md#amendment--selection-on-development-paired-pt-br-rule). Portuguese method: [017](017-portuguese.md).
+Change: [`llm-evaluation`](../../../openspec/changes/archive/2026-10-02-llm-evaluation/design.md). Model selection rules: [016](016-router-models.md#amendment--selection-on-development-paired-pt-br-rule). Portuguese method: [017](017-portuguese.md).
 
 ## Context
 

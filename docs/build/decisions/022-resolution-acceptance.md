@@ -4,7 +4,7 @@
 **Status:** Accepted (rules committed before the run)
 **Participants:** Rubén (owner)
 
-Change: [`resolution-eval`](../../../openspec/changes/resolution-eval/design.md). Related: [018](018-evaluation-acceptance.md), [016](016-router-models.md).
+Change: [`resolution-eval`](../../../openspec/changes/archive/2026-10-02-resolution-eval/design.md). Related: [018](018-evaluation-acceptance.md), [016](016-router-models.md).
 
 ## Context
 

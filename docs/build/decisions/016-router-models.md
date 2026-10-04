@@ -53,7 +53,7 @@ Larger models (Qwen 3.8 Max, Kimi K3) cost 10 to 60 times more and stay out unle
 
 **Date:** 2026-10-01
 **Status:** Proposed (accepted only by citing a `2024Q4-select-*` run committed after this text)
-**Change:** [`llm-evaluation`](../../../openspec/changes/llm-evaluation/design.md)
+**Change:** [`llm-evaluation`](../../../openspec/changes/archive/2026-10-02-llm-evaluation/design.md)
 
 The rule above is kept and made precise for the run that applies it. Every point here is fixed before any candidate is measured.
 
