@@ -19,7 +19,7 @@ a tag set (`edge`, `adversarial`, `noisy`) and a split (`development` or
 `variant` (`es-MX`, `es-CO`, `es-AR` or `pt-BR`), and a noisy case SHALL name its
 `perturbation`. The variant SHALL agree with the locale and country. The text
 SHALL be team-written and declared as simulation, never a dataset row. Traces
-to REQ-0017 (P0, In progress) and REQ-0031 (P0, Done).
+to REQ-0017 (P0, Done) and REQ-0031 (P0, Done).
 
 #### Scenario: Every case is fully labelled
 
@@ -41,8 +41,8 @@ to REQ-0017 (P0, In progress) and REQ-0031 (P0, Done).
 The harness SHALL run the model port directly over the case set and compute:
 intent accuracy and per-class precision, recall and F1 by locale; a safety pass
 rate over the cases that must not pass; an automation proxy; and stability as
-the agreement across repeated runs. Traces to REQ-0016 (P0, Pending) and
-REQ-0020 (P0, Pending).
+the agreement across repeated runs. Traces to REQ-0016 (P0, Done) and
+REQ-0020 (P0, Done).
 
 #### Scenario: Intent metrics per class and locale
 
@@ -65,8 +65,8 @@ The harness SHALL run the keyword baseline, the router without examples and the
 router with examples over the same cases on the same split, so a result compares
 like with like. A sealed held-out set SHALL be measured once: the harness SHALL
 keep a committed record of measured seal hashes and SHALL refuse a second
-held-out measurement of the same hash. Traces to REQ-0020 (P0, In progress) and
-REQ-0017 (P0, In progress).
+held-out measurement of the same hash. Traces to REQ-0020 (P0, Done) and
+REQ-0017 (P0, Done).
 
 #### Scenario: Both models see the same cases
 
@@ -92,7 +92,7 @@ and asks for confirmation, the harness SHALL send the selection and then the
 confirmation as separate turns, and SHALL stop at the first reply that is not a
 `confirm_box`. A case SHALL count as resolved only when the last reply is a
 `case_confirmation`. The harness SHALL NOT confirm a case that does not ask for it.
-Traces to REQ-0025 (P1, Done), REQ-0021 (P0, Done) and REQ-0055 (P0, In progress).
+Traces to REQ-0025 (P1, Done), REQ-0021 (P0, Done) and REQ-0055 (P0, Done).
 
 #### Scenario: A case is replayed end to end
 
@@ -130,8 +130,8 @@ The harness SHALL compute safe automated resolution with the share where
 automation was attempted, containment, escalation quality (missed and
 unnecessary transfers), unsafe outcomes with counts and denominators, p50 and
 p95 latency, and cost per attempted case and per successful resolution
-("not defined" when there are none). Traces to REQ-0055 (P0, Pending) and
-REQ-0057 (P1, Pending).
+("not defined" when there are none). Traces to REQ-0055 (P0, Done) and
+REQ-0057 (P1, Done).
 
 #### Scenario: Every mandatory metric is present
 
@@ -150,8 +150,7 @@ prompt versions and the variability across runs, and the report SHALL list the
 failures, not only the successes. Metrics SHALL be reported per variant (es-MX,
 es-CO, es-AR, pt-BR) and per intent as well as overall, each with its n and a
 95% interval. A breakdown whose interval is wider than ±10 points SHALL be
-labelled descriptive. Traces to REQ-0022 (P0, In progress), REQ-0019 (P1, In
-progress), REQ-0024 (P1, In progress) and REQ-0013 (P0, In progress).
+labelled descriptive. Traces to REQ-0022 (P0, Done), REQ-0019 (P1, Done), REQ-0024 (P1, Done) and REQ-0013 (P0, In progress).
 
 #### Scenario: A metric without n is not reported
 
@@ -172,7 +171,7 @@ progress), REQ-0024 (P1, In progress) and REQ-0013 (P0, In progress).
 
 The harness SHALL run without network access using recorded responses, and the
 same case set SHALL produce the same result on a re-run. Traces to REQ-0028 (P0,
-Pending).
+Done).
 
 #### Scenario: The runner opens no connection
 
@@ -188,7 +187,7 @@ Pending).
 
 A run SHALL write one new `evidence/evaluation-runs/<run-id>/summary.json` and
 SHALL never edit a committed run; the report SHALL cite `summary.json` fields.
-Traces to REQ-0028 (P0, Pending).
+Traces to REQ-0028 (P0, Done).
 
 #### Scenario: A new run gets a new folder
 
@@ -204,7 +203,7 @@ Traces to REQ-0028 (P0, Pending).
 
 The harness SHALL consume the pinned label set and SHALL record with its results
 the run id and the hash of the label set it used. Traces to REQ-0016 (P0,
-Pending) and REQ-0017 (P0, In progress).
+Done) and REQ-0017 (P0, Done).
 
 #### Scenario: The result names the label set source
 
@@ -218,8 +217,8 @@ report the cases each version fixes and breaks, the net difference and its 95%
 interval. Intervals SHALL be computed by resampling base situations, not single
 cases, because the four variants of a base are not independent. For variants it
 SHALL report, per variant, the net loss in shared bases against the best
-variant, with the list of the bases lost. Traces to REQ-0016 (P0, In progress)
-and REQ-0012 (P0, In progress).
+variant, with the list of the bases lost. Traces to REQ-0016 (P0, Done)
+and REQ-0012 (P0, Done).
 
 #### Scenario: Fixed and broken cases are named
 
@@ -235,8 +234,7 @@ and REQ-0012 (P0, In progress).
 
 Stability SHALL be computed from separate recorded repetitions of the same
 input, never from replaying one recording several times. The report SHALL state
-on how many cases repetitions were recorded. Traces to REQ-0016 (P0, In
-progress) and REQ-0022 (P0, In progress).
+on how many cases repetitions were recorded. Traces to REQ-0016 (P0, Done) and REQ-0022 (P0, Done).
 
 #### Scenario: Replayed repetitions are not stability
 
@@ -248,8 +246,8 @@ progress) and REQ-0022 (P0, In progress).
 A run that makes live calls SHALL accept a spend cap in USD, SHALL stop before a
 call that would exceed it based on the cost so far, and SHALL record the spend
 and whether the cap stopped the run. A run stopped by the cap SHALL NOT be
-frozen as a measurement. Traces to REQ-0055 (P0, In progress) and REQ-0057 (P1,
-In progress).
+frozen as a measurement. Traces to REQ-0055 (P0, Done) and REQ-0057 (P1,
+Done).
 
 #### Scenario: Cap reached
 
@@ -260,8 +258,7 @@ In progress).
 
 Model selection and route tuning SHALL run on the development split only and
 SHALL write their own evidence run, separate from the held-out measurement. A
-selection run that reads a held-out case SHALL fail. Traces to REQ-0017 (P0, In
-progress) and REQ-0019 (P1, In progress).
+selection run that reads a held-out case SHALL fail. Traces to REQ-0017 (P0, Done) and REQ-0019 (P1, Done).
 
 #### Scenario: Held-out case in a selection run
 

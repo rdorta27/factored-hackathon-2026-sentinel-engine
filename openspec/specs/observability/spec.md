@@ -8,7 +8,7 @@ Gives every conversation turn a structured, PII-free receipt that tracing, monit
 
 ### Requirement: One record per loop step
 
-Each pass through the charge-inquiry loop SHALL emit one JSON record per step (`understand`, `decide`, `act`, `verify`, `escalate`) carrying `ts`, `trace_id`, `session_ref`, `step`, `tool`, `outcome` (`ok`, `rejected`, `failed`, `timeout`), `attempt` (integer, 1 or higher), `policy_rule` (the deciding rule id, or null when the step evaluated no policy), `latency_ms` (number, 0 or higher), `model`, `route`, `prompt_version` (non-empty strings; mock values while fakes serve), `tokens_in`, `tokens_out` (integers), `cost_usd` (number), `language` (`es-419` or `pt-BR`), and `country` (`MX`, `CO`, or `AR`). Traces to REQ-0025 (P0, In progress) and REQ-0019 (P1, Pending).
+Each pass through the charge-inquiry loop SHALL emit one JSON record per step (`understand`, `decide`, `act`, `verify`, `escalate`) carrying `ts`, `trace_id`, `session_ref`, `step`, `tool`, `outcome` (`ok`, `rejected`, `failed`, `timeout`), `attempt` (integer, 1 or higher), `policy_rule` (the deciding rule id, or null when the step evaluated no policy), `latency_ms` (number, 0 or higher), `model`, `route`, `prompt_version` (non-empty strings; mock values while fakes serve), `tokens_in`, `tokens_out` (integers), `cost_usd` (number), `language` (`es-419` or `pt-BR`), and `country` (`MX`, `CO`, or `AR`). Traces to REQ-0025 (P1, Done) and REQ-0019 (P1, Done).
 
 #### Scenario: Decide step names its rule
 
@@ -22,7 +22,7 @@ Each pass through the charge-inquiry loop SHALL emit one JSON record per step (`
 
 ### Requirement: One closing record per turn
 
-Every `POST /api/v1/chat` turn SHALL emit exactly one closing record with the final outcome and aggregated cost and latency, sharing the turn `trace_id`, including turns that end in error or handoff so failures stay measurable. When the turn ends in `handoff`, the closing record SHALL carry the same advisor package the reply carries, checked for personal data like every other field. Traces to REQ-0055 (P0, In progress), REQ-0025 (P1, In progress), and REQ-0008 (P0, In progress).
+Every `POST /api/v1/chat` turn SHALL emit exactly one closing record with the final outcome and aggregated cost and latency, sharing the turn `trace_id`, including turns that end in error or handoff so failures stay measurable. When the turn ends in `handoff`, the closing record SHALL carry the same advisor package the reply carries, checked for personal data like every other field. Traces to REQ-0055 (P0, Done), REQ-0025 (P1, Done), and REQ-0008 (P0, Done).
 
 #### Scenario: Failed turns stay measurable
 
@@ -36,7 +36,7 @@ Every `POST /api/v1/chat` turn SHALL emit exactly one closing record with the fi
 
 ### Requirement: Records never carry personal data
 
-No record SHALL contain customer text, `customer_id`, passwords, confirmation tokens, client IPs, or full session tokens. `session_ref` SHALL be a salted hash of the session, never the identifier. Traces to REQ-0047 (P0, In progress) and REQ-0029 (P1, In progress).
+No record SHALL contain customer text, `customer_id`, passwords, confirmation tokens, client IPs, or full session tokens. `session_ref` SHALL be a salted hash of the session, never the identifier. Traces to REQ-0047 (P0, Done) and REQ-0029 (P1, Done).
 
 #### Scenario: Grep over the log finds no personal data
 
@@ -45,7 +45,7 @@ No record SHALL contain customer text, `customer_id`, passwords, confirmation to
 
 ### Requirement: Dual sink readable by the runner
 
-Records SHALL append to an in-memory list and to a JSON-lines file whose path is configurable, so the evaluation runner can replay a whole turn by filtering on `trace_id`. Traces to REQ-0025 (P0, In progress) and REQ-0024/REQ-0050 (P1, Pending, language and country breakdown).
+Records SHALL append to an in-memory list and to a JSON-lines file whose path is configurable, so the evaluation runner can replay a whole turn by filtering on `trace_id`. Traces to REQ-0025 (P1, Done) and REQ-0024/REQ-0050 (P1, Pending, language and country breakdown).
 
 #### Scenario: Turn replay from the file
 
@@ -54,7 +54,7 @@ Records SHALL append to an in-memory list and to a JSON-lines file whose path is
 
 ### Requirement: Decisions record the policy version
 
-Every `decide` record SHALL carry, next to `policy_rule`, the version of the country policy file that produced the decision (a content hash or version id) and whether that file is synthetic. Traces to REQ-0029 (P1, Done), REQ-0025 (P1, Done) and REQ-0006 (P0, In progress); decisions 25 and 26.
+Every `decide` record SHALL carry, next to `policy_rule`, the version of the country policy file that produced the decision (a content hash or version id) and whether that file is synthetic. Traces to REQ-0029 (P1, Done), REQ-0025 (P1, Done) and REQ-0006 (P0, Done); decisions 25 and 26.
 
 #### Scenario: A past case shows the values in force
 

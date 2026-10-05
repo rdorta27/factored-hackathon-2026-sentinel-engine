@@ -8,7 +8,7 @@ Gives the authenticated customer a chat endpoint that answers only from verified
 
 ### Requirement: Message-only chat request
 
-The system SHALL accept a chat request on `POST /api/v1/chat` carrying the customer message and, optionally, `selected_reference`, and SHALL derive the customer identity exclusively from the session cookie. Those SHALL be the only accepted fields. `selected_reference` SHALL be validated for shape only; authorization SHALL come from resolving it inside the session customer's rows. `selected_reference` SHALL NOT open a dispute by itself. It SHALL be a selection when no confirm box is pending, and the confirmation turn only when it matches the pending box and was shown. A charge from the session customer's transaction panel counts as shown. The system SHALL NOT accept a `confirmation_token` or a `customer_id` in the body. Traces to REQ-0001 (P0, In progress), REQ-0006 (P0, In progress), and REQ-0027 (P0, In progress).
+The system SHALL accept a chat request on `POST /api/v1/chat` carrying the customer message and, optionally, `selected_reference`, and SHALL derive the customer identity exclusively from the session cookie. Those SHALL be the only accepted fields. `selected_reference` SHALL be validated for shape only; authorization SHALL come from resolving it inside the session customer's rows. `selected_reference` SHALL NOT open a dispute by itself. It SHALL be a selection when no confirm box is pending, and the confirmation turn only when it matches the pending box and was shown. A charge from the session customer's transaction panel counts as shown. The system SHALL NOT accept a `confirmation_token` or a `customer_id` in the body. Traces to REQ-0001 (P0, Done), REQ-0006 (P0, Done), and REQ-0027 (P0, Done).
 
 #### Scenario: Chat without session is rejected
 
@@ -86,7 +86,7 @@ Every chat answer SHALL use exactly one variant, validated by a strict model in 
 
 ### Requirement: Verify-before-claim confirmations
 
-The system SHALL emit `case_confirmation` only after re-reading the created case from the store, and the confirmation SHALL include the case id, transaction facts, `verified_at`, `verified=true`, the reference date, a rule key, a no-funds key, and `source=mock`. The system SHALL never present a merely registered case as resolved. The confirmation SHALL NOT require a priority, a service-level deadline, a queue status, or a receipt download. Traces to REQ-0003 (P0, Pending) and REQ-0005 (P0, Pending).
+The system SHALL emit `case_confirmation` only after re-reading the created case from the store, and the confirmation SHALL include the case id, transaction facts, `verified_at`, `verified=true`, the reference date, a rule key, a no-funds key, and `source=mock`. The system SHALL never present a merely registered case as resolved. The confirmation SHALL NOT require a priority, a service-level deadline, a queue status, or a receipt download. Traces to REQ-0003 (P0, Done) and REQ-0005 (P0, Done).
 
 #### Scenario: Confirmation carries re-read proof
 
@@ -105,7 +105,7 @@ The system SHALL emit `case_confirmation` only after re-reading the created case
 
 ### Requirement: Bounded retries then handoff
 
-When creation or verification fails, the system SHALL retry a bounded number of times and then return `handoff` instead of failing silently or claiming success. Traces to REQ-0026 (P1, Pending) and REQ-0011 (P0, Pending).
+When creation or verification fails, the system SHALL retry a bounded number of times and then return `handoff` instead of failing silently or claiming success. Traces to REQ-0026 (P1, Done) and REQ-0011 (P0, Done).
 
 #### Scenario: Persistent failure becomes a handoff
 
@@ -114,7 +114,7 @@ When creation or verification fails, the system SHALL retry a bounded number of 
 
 ### Requirement: Agent request escalates
 
-When the customer asks to speak to a person, the system SHALL make a single offer to help and, if they insist, SHALL escalate immediately via `handoff`. Traces to REQ-0040 (P0, Pending).
+When the customer asks to speak to a person, the system SHALL make a single offer to help and, if they insist, SHALL escalate immediately via `handoff`. Traces to REQ-0040 (P0, Done).
 
 #### Scenario: Insistent customer reaches a human
 
@@ -123,7 +123,7 @@ When the customer asks to speak to a person, the system SHALL make a single offe
 
 ### Requirement: Transaction grounding before creation
 
-The system SHALL select a charge only when the customer's stated facts match one transaction exactly on date, amount, and merchant, or when the customer sends `selected_reference` for one shown candidate. The system SHALL never open a dispute on that selection alone, and SHALL never create a case on a transaction that does not match the customer's stated facts or was not explicitly selected. Grounding SHALL accept Spanish and Portuguese phrasing, including month names in both languages, dispute words such as `cargo` (a charge), `cobro` (a charge), and `cobrança` (a charge), and amounts written in either regional format (`1.000,00` and `1,000.00`). A person request or an out-of-scope request SHALL be classified before grounding. Traces to REQ-0003 (P0, Pending), REQ-0042 (P1, Pending), and REQ-0048 (P0, Pending).
+The system SHALL select a charge only when the customer's stated facts match one transaction exactly on date, amount, and merchant, or when the customer sends `selected_reference` for one shown candidate. The system SHALL never open a dispute on that selection alone, and SHALL never create a case on a transaction that does not match the customer's stated facts or was not explicitly selected. Grounding SHALL accept Spanish and Portuguese phrasing, including month names in both languages, dispute words such as `cargo` (a charge), `cobro` (a charge), and `cobrança` (a charge), and amounts written in either regional format (`1.000,00` and `1,000.00`). A person request or an out-of-scope request SHALL be classified before grounding. Traces to REQ-0003 (P0, Done), REQ-0042 (P1, Done), and REQ-0048 (P0, Done).
 
 #### Scenario: Exact match opens the case
 
@@ -162,7 +162,7 @@ The system SHALL select a charge only when the customer's stated facts match one
 
 ### Requirement: Demo outcomes on the chat endpoint
 
-The chat endpoint SHALL make three outcomes distinguishable, in both `es-419` and `pt-BR`: a confirmed dispute yields `case_confirmation` only after read-back, an ambiguous or unsupported request does not open a dispute, and a repeated request for a person yields `handoff`. The first request for a person SHALL offer help and SHALL NOT hand off. Displayed transaction facts SHALL come from the session customer's rows. Each mock-sourced confirmation SHALL be labeled `source=mock`. Traces to REQ-0032 (P1, Pending), REQ-0009 (P0, Pending), REQ-0010 (P0, Pending), REQ-0011 (P0, Pending), and REQ-0040 (P0, Pending).
+The chat endpoint SHALL make three outcomes distinguishable, in both `es-419` and `pt-BR`: a confirmed dispute yields `case_confirmation` only after read-back, an ambiguous or unsupported request does not open a dispute, and a repeated request for a person yields `handoff`. The first request for a person SHALL offer help and SHALL NOT hand off. Displayed transaction facts SHALL come from the session customer's rows. Each mock-sourced confirmation SHALL be labeled `source=mock`. Traces to REQ-0032 (P1, Done), REQ-0009 (P0, Done), REQ-0010 (P0, Done), REQ-0011 (P0, Done), and REQ-0040 (P0, Done).
 
 #### Scenario: Normal case after confirmation
 
@@ -181,7 +181,7 @@ The chat endpoint SHALL make three outcomes distinguishable, in both `es-419` an
 
 ### Requirement: Handoff filed as a ticket
 
-Every `handoff` reply SHALL be filed as a case with `kind=handoff`, `status=Escalated`, the reply's reference and reason key, and the full advisor package, so the human side receives the ticket and why it was raised. Traces to REQ-0008 (P0, In progress) and REQ-0011 (P0, In progress).
+Every `handoff` reply SHALL be filed as a case with `kind=handoff`, `status=Escalated`, the reply's reference and reason key, and the full advisor package, so the human side receives the ticket and why it was raised. Traces to REQ-0008 (P0, Done) and REQ-0011 (P0, Done).
 
 #### Scenario: Insistent customer leaves a ticket
 
@@ -190,7 +190,7 @@ Every `handoff` reply SHALL be filed as a case with `kind=handoff`, `status=Esca
 
 ### Requirement: Handoff package covers the whole conversation
 
-The handoff package SHALL carry a `summary` and a `conversation` list with one entry per turn of the session (turn number, what the customer did as a code, the verified charge reference if any, the reply kind and the rule or message key), and `actions_taken` SHALL list every step the system attempted in any turn of the session, failed attempts included, each tagged with its turn. `history` SHALL be bounded to 50 entries and `actions` to 200 entries per session; when the bound is exceeded the oldest entries SHALL be discarded and the stored record SHALL carry an `overflow` mark. The summary SHALL be built deterministically from those entries, never by a model, and SHALL NOT contain the customer's words. A reference that did not resolve to the session customer's charge SHALL NOT appear in the package. The history SHALL be stored with the conversation state and deleted with it. Traces to REQ-0008 (P0, In progress) and REQ-0047 (P0, In progress).
+The handoff package SHALL carry a `summary` and a `conversation` list with one entry per turn of the session (turn number, what the customer did as a code, the verified charge reference if any, the reply kind and the rule or message key), and `actions_taken` SHALL list every step the system attempted in any turn of the session, failed attempts included, each tagged with its turn. `history` SHALL be bounded to 50 entries and `actions` to 200 entries per session; when the bound is exceeded the oldest entries SHALL be discarded and the stored record SHALL carry an `overflow` mark. The summary SHALL be built deterministically from those entries, never by a model, and SHALL NOT contain the customer's words. A reference that did not resolve to the session customer's charge SHALL NOT appear in the package. The history SHALL be stored with the conversation state and deleted with it. Traces to REQ-0008 (P0, Done) and REQ-0047 (P0, Done).
 
 #### Scenario: The advisor sees why and what was tried
 
@@ -209,7 +209,7 @@ The handoff package SHALL carry a `summary` and a `conversation` list with one e
 
 ### Requirement: Repeated ambiguity hands off
 
-After two clarification rounds the next still-ambiguous turn SHALL return `handoff` with reason `fields.missing` instead of a third question. Traces to REQ-0001 (P0, In progress), REQ-0006 (P0, In progress), and REQ-0011 (P0, Pending).
+After two clarification rounds the next still-ambiguous turn SHALL return `handoff` with reason `fields.missing` instead of a third question. Traces to REQ-0001 (P0, Done), REQ-0006 (P0, Done), and REQ-0011 (P0, Done).
 
 #### Scenario: Third vague turn hands off
 

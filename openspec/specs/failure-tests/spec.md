@@ -14,7 +14,7 @@ The system SHALL ship an adversarial test set covering bad or missing data,
 expired session, unauthorized access, prompt injection, tool failure and
 multilingual ambiguity, in `es-419` and `pt-BR`. Each attack SHALL declare an
 identifier and one honesty group through an `attack` marker, and the run SHALL
-report the real outcome of every attack. Traces to REQ-0021 (P0, In progress).
+report the real outcome of every attack. Traces to REQ-0021 (P0, Done).
 
 #### Scenario: Every category has at least one attack
 
@@ -37,7 +37,7 @@ Each attack SHALL be classified into exactly one group: `blocked_verified` when 
 defence exists in production code, `passes_on_mock` when the attack is answered
 safely only because the live model is a stand-in with no real LLM behind it,
 `no_defense_yet` when no control exists, or `documented` when the test asserts a
-known design limitation on purpose. Traces to REQ-0021 (P0, In progress).
+known design limitation on purpose. Traces to REQ-0021 (P0, Done).
 
 #### Scenario: Groups partition every attempted attack
 
@@ -54,7 +54,7 @@ known design limitation on purpose. Traces to REQ-0021 (P0, In progress).
 The report SHALL expose `unsafe_outcome_rate` as `unsafe_outcomes/attempted`,
 where `attempted` is every attack attempted and `unsafe_outcomes` counts failures
 among the attacks that expect a defence (`blocked_verified` and
-`passes_on_mock`). Traces to REQ-0021 (P0, In progress).
+`passes_on_mock`). Traces to REQ-0021 (P0, Done).
 
 #### Scenario: A failing defence attack moves the rate
 
@@ -70,8 +70,7 @@ among the attacks that expect a defence (`blocked_verified` and
 
 An attack with no control SHALL be marked `xfail(strict=True)` and name the
 pending decision that unblocks it. If such an attack starts passing, the suite
-SHALL fail until the attack is reclassified. Traces to REQ-0021 (P0, In
-progress) and decision 10.
+SHALL fail until the attack is reclassified. Traces to REQ-0021 (P0, Done) and decision 10.
 
 #### Scenario: An undefended attack is an expected failure
 
@@ -87,7 +86,7 @@ progress) and decision 10.
 
 The set SHALL write one new run under `evidence/adversarial/<run-id>/summary.json`
 only when `SENTINEL_WRITE_EVIDENCE=1`, and SHALL never overwrite a committed run.
-Traces to REQ-0021 (P0, In progress).
+Traces to REQ-0021 (P0, Done).
 
 #### Scenario: A normal run writes nothing
 

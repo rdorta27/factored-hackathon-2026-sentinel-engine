@@ -14,7 +14,7 @@ The router SHALL classify each customer message into exactly one intent
 (`charge`, `missing`, `out_of_scope`, `person`) and detect the reply language
 (`es-419` or `pt-BR`), returning both through `ModelPort.understand`. A request
 for a person and a request out of scope SHALL be distinguished from a charge
-inquiry. Traces to REQ-0001 (P0, In progress) and REQ-0012 (P0, In progress).
+inquiry. Traces to REQ-0001 (P0, Done) and REQ-0012 (P0, Done).
 
 #### Scenario: Charge inquiry is understood
 
@@ -38,7 +38,7 @@ ambiguous or Portuguese turns may be served by different models, without
 changing the loop's behavior or outcomes. An unknown route SHALL fall back to a
 configured default model, never to no model. The rule that assigns a turn to a
 route SHALL be declared in a decision before it is measured, and SHALL be tuned
-on the development split only. Traces to REQ-0019 (P1, In progress) and
+on the development split only. Traces to REQ-0019 (P1, Done) and
 decision 016.
 
 #### Scenario: The route is chosen before the call
@@ -62,7 +62,7 @@ Every understanding call SHALL report its `model`, `route` and `prompt_version`
 through a single describe seam, and the `understand` record SHALL carry those
 real values plus `tokens_in`, `tokens_out` and `cost_usd`. No record SHALL keep
 the mock placeholders once a real model serves. Traces to REQ-0019 (P1,
-Pending) and REQ-0055 (P0, Pending).
+Done) and REQ-0055 (P0, Done).
 
 #### Scenario: Understand record carries identity and cost
 
@@ -84,7 +84,7 @@ charge fields it reasons over SHALL follow the service contract
 (numeric amount, no name, document or credit score). It SHALL NOT send the
 fraud score: the policy engine reads it from Gold, the model never needs it, and
 data the model does not need does not leave for an external provider. Traces to
-REQ-0047 (P0, In progress) and REQ-0033 (P0, Done).
+REQ-0047 (P0, Done) and REQ-0033 (P0, Done).
 
 #### Scenario: No identifier in the request
 
@@ -111,7 +111,7 @@ REQ-0047 (P0, In progress) and REQ-0033 (P0, Done).
 The router SHALL return understanding only. Eligibility, confirmation and every
 write SHALL stay in policy and code, so a model output or an injected
 instruction SHALL have no effect on permissions or on opening a dispute. Traces
-to REQ-0007 (P0, In progress) and REQ-0021 (P0, Done).
+to REQ-0007 (P0, Done) and REQ-0021 (P0, Done).
 
 #### Scenario: Injected instruction cannot open a dispute
 
@@ -127,7 +127,7 @@ to REQ-0007 (P0, In progress) and REQ-0021 (P0, Done).
 
 The system SHALL run with either the prompted router or the keyword baseline
 behind the same port, selected at startup, so the loop and its outcomes do not
-depend on which model serves. Traces to REQ-0032 (P1, In progress).
+depend on which model serves. Traces to REQ-0032 (P1, Done).
 
 #### Scenario: The baseline runs the same loop
 
@@ -147,7 +147,7 @@ response SHALL be keyed by model, prompt version, input and repetition index, so
 two models or two repetitions of the same input never share a recording. Each
 recorded response SHALL carry its `model`, `prompt_version` and repetition, and
 SHALL NOT contain personal data, request headers or credentials. Traces to
-REQ-0028 (P0, Done) and REQ-0019 (P1, In progress).
+REQ-0028 (P0, Done) and REQ-0019 (P1, Done).
 
 #### Scenario: No network call is attempted
 
@@ -183,7 +183,7 @@ handoff, never an unverified answer. Traces to REQ-0021 (P0, Done) and REQ-0026
 
 ### Requirement: Not-mine claim is reported, not decided
 
-The understanding step SHALL report whether the customer explicitly states the charge was not made by them (for example "no fui yo", "alguien usó mi tarjeta", "não fui eu", "clonaram meu cartão"). Saying a charge is not recognized ("no reconozco este cargo", "não reconheço esta cobrança") SHALL NOT count as that claim. The keyword baseline and the prompted router SHALL report it in the same field, in es-419 and pt-BR. The claim SHALL only feed the policy engine; the model SHALL NOT decide the handoff. Traces to REQ-0006 (P0, In progress), REQ-0012 (P0, In progress) and REQ-0033 (P0, Done); decision 25.
+The understanding step SHALL report whether the customer explicitly states the charge was not made by them (for example "no fui yo", "alguien usó mi tarjeta", "não fui eu", "clonaram meu cartão"). Saying a charge is not recognized ("no reconozco este cargo", "não reconheço esta cobrança") SHALL NOT count as that claim. The keyword baseline and the prompted router SHALL report it in the same field, in es-419 and pt-BR. The claim SHALL only feed the policy engine; the model SHALL NOT decide the handoff. Traces to REQ-0006 (P0, Done), REQ-0012 (P0, Done) and REQ-0033 (P0, Done); decision 25.
 
 #### Scenario: Spanish not-mine claim
 
@@ -225,7 +225,7 @@ The `cost_usd` of a live call SHALL be computed from the provider's reported
 token usage and the input and output price of the model that served it, taken
 from a declared price table dated with its source. A model without a declared
 price SHALL fail the call in recording mode rather than use a generic price.
-Traces to REQ-0055 (P0, In progress) and REQ-0057 (P1, In progress).
+Traces to REQ-0055 (P0, Done) and REQ-0057 (P1, Done).
 
 #### Scenario: Two models, two prices
 
@@ -242,7 +242,7 @@ Traces to REQ-0055 (P0, In progress) and REQ-0057 (P1, In progress).
 Each understanding call SHALL request JSON output and SHALL cap the output
 tokens, including any reasoning tokens the provider reports. A reply that is
 not valid JSON after the cap SHALL count as a JSON failure for model selection
-and SHALL degrade safely in the loop. Traces to REQ-0019 (P1, In progress) and
+and SHALL degrade safely in the loop. Traces to REQ-0019 (P1, Done) and
 REQ-0026 (P1, Done).
 
 #### Scenario: Capped reply
@@ -256,7 +256,7 @@ The router SHALL support a prompt version that adds a fixed block of examples
 before the customer message. Every example SHALL be a development case, and the
 example ids SHALL be recorded with the prompt version. The version without
 examples SHALL stay available, so both are measured on the same cases. Traces
-to REQ-0016 (P0, In progress) and REQ-0017 (P0, In progress).
+to REQ-0016 (P0, Done) and REQ-0017 (P0, Done).
 
 #### Scenario: Example block is traceable
 
