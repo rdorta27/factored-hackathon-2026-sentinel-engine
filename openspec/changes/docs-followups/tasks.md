@@ -21,7 +21,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 3. Evidence index
 
-- [ ] 3.1 Add each run that exists now (`select-v3d`, `calibration-v3`, the problem run, the charge-ranker runs, `train-v1` and the runs of `robustness-evidence`) to `evidence/README.md` with its status and data type. Update the sentence on which runs verify offline. The `eval-v8` and robustness runs are added by `post-freeze` (tasks 2.4 and 3.3). Evidence: the file.
+- [x] 3.1 Add each run that exists now (`select-v3d`, `calibration-v3`, the problem run, the charge-ranker runs, `train-v1` and the runs of `robustness-evidence`) to `evidence/README.md` with its status and data type. Update the sentence on which runs verify offline. The `eval-v8` and robustness runs are added by `post-freeze` (tasks 2.4 and 3.3). The merge of `origin/main` already listed every run in `evidence/`. This task re-ran `verify` on 2026-10-05 and updated its column and sentence. Evidence: the file.
 
 ## 4. Archive and branches (when the owner asks)
 
