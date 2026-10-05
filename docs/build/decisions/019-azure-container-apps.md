@@ -47,7 +47,7 @@ The reasons:
 - **Secrets stay out of the image and the repository:** `SENTINEL_SESSION_SALT` is a Container App secret. `SENTINEL_SECURE_COOKIES=true` is an app setting. The image contains only non-secret defaults (mock Gold, SQLite, reference date, demo auth).
 - **Ephemeral disk, as 012 accepted it:** a scale-to-zero or a restart can lose sessions and cases. A new login is sufficient for a demo. *Updated 10/3:* the deploy now mounts an Azure Files share, and a restart keeps the state (see the consequences).
 
-Configuration: `SENTINEL_DEMO_AUTH=1`, `SENTINEL_SECURE_COOKIES=true`, `SENTINEL_REFERENCE_DATE=2026-06-17`, a random `SENTINEL_SESSION_SALT`, and Gold on the labelled mock (no dataset in the image).
+Configuration: `SENTINEL_DEMO_AUTH=1` (the advisor role), `SENTINEL_DEMO_PERSONAS=0` (no one-click entry on the link), `SENTINEL_USERS_PATH=/mnt/sentinel/users.json` (the judge credentials, hashes only), `SENTINEL_SECURE_COOKIES=true`, `SENTINEL_REFERENCE_DATE=2026-06-17`, a random `SENTINEL_SESSION_SALT`, and Gold on the labelled mock (no dataset in the image).
 
 ## Consequences
 
@@ -57,3 +57,4 @@ Configuration: `SENTINEL_DEMO_AUTH=1`, `SENTINEL_SECURE_COOKIES=true`, `SENTINEL
 - [Cost](../cost.md) records the Azure lines (registry and free grant) instead of a free Hugging Face tier.
 - Production stays on Azure, one configuration step away from the demo ([path to production](../../architecture/specification.md#path-to-production)).
 - The HF attempt leaves no product trace: the Space is deleted and `deploy/hf-space/` is gone. Only the history of decision 012 records it.
+- *Updated 10/5:* the link has no one-click entry and no documented password. The judges receive one shared set of credentials in the submission email. The users file holds salted hashes only and lives on the share ([`judge-access`](../../../openspec/changes/judge-access/tasks.md), [deploy notes](../../../deploy/azure/README.md)).

@@ -69,7 +69,7 @@ Without a model, the service uses the keyword baseline. To use the measured rout
 
 To publish to Azure, read [`deploy/azure/README.md`](deploy/azure/README.md).
 
-Open `http://localhost:8000/ui` and log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for tests only.
+Open `http://localhost:8000/ui` and log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for local runs and tests. The public link uses the credentials of the submission email.
 
 To see the advisor side, start the service with the demo roles. Log in as `ADV-0001` (password `Advisor-001`) after a customer asks for a person two times:
 
