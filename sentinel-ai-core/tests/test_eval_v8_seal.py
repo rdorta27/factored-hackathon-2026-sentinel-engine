@@ -1,7 +1,9 @@
-"""v8 seal guards: draft schema and the unchanged v7 entry (eval-v8 task 2.4)."""
+"""v8 seal guards: draft schema, the unchanged v7 entry and the measured v8 hashes."""
 
 import json
 from pathlib import Path
+
+import pytest
 
 from eval.cases import validate_case
 
@@ -31,20 +33,24 @@ def test_v7_seal_and_measurement_stay_unchanged():
     seal = json.loads((HERE / "eval" / "cases" / "seal.json").read_text(encoding="utf-8"))
     assert seal["hash"] == V7_HASH
     measured = json.loads((HERE / "eval" / "measured.json").read_text(encoding="utf-8"))
-    assert measured["measured"] == [{"hash": V7_HASH, "run_id": "2024Q4-eval-v7"}]
+    entries = {entry["hash"]: entry["run_id"] for entry in measured["measured"]}
+    assert entries[V7_HASH] == "2024Q4-eval-v7"
+    assert len(measured["measured"]) == 3
 
 
-def test_v8_seal_verifies_and_uses_no_measurement():
+def test_v8_seal_verifies_and_is_measured_once():
     import json as _json
 
-    from eval.seal import assert_not_measured, verify_seal
+    from eval.seal import SealRefused, assert_not_measured, verify_seal
 
     record = verify_seal(HERE / "eval" / "cases" / "sealed_v8", HERE / "eval" / "cases" / "sealed_v8" / "seal.json")
     assert record["n"] == 444
     assert record["hash"] != V7_HASH
-    assert_not_measured(record["hash"], HERE / "eval" / "measured.json")
     measured = _json.loads((HERE / "eval" / "measured.json").read_text(encoding="utf-8"))
-    assert measured["measured"] == [{"hash": V7_HASH, "run_id": "2024Q4-eval-v7"}]
+    entries = {entry["hash"]: entry["run_id"] for entry in measured["measured"]}
+    assert entries[record["hash"]] == "2024Q4-eval-v8"
+    with pytest.raises(SealRefused):
+        assert_not_measured(record["hash"], HERE / "eval" / "measured.json")
 
 
 V8B_MIN_BASES_PER_THIN_INTENT = 6

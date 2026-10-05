@@ -1,0 +1,773 @@
+{
+  "model": "accounts/fireworks/models/glm-5p3-flash",
+  "prompt_version": "v2",
+  "input_hash": "0c76deba53d2cbd4",
+  "repetition": 2,
+  "input": {
+    "message": "Nego ter feito o pagamento de US$ 310 em Viajes Pacifico no dia 14 de junho. Eu reclamo.",
+    "turns": [
+      "Nego ter feito o pagamento de US$ 310 em Viajes Pacifico no dia 14 de junho. Eu reclamo."
+    ]
+  },
+  "content": "{\"intent\": \"charge\", \"language\": \"pt-BR\", \"amount\": 310, \"not_mine\": true}",
+  "tokens_in": 807,
+  "tokens_out": 29,
+  "cost_usd": 0.00013555000000000002,
+  "latency_ms": 3803.1,
+  "logprobs": [
+    {
+      "token": "</think>",
+      "logprob": -1.16079795,
+      "top_logprobs": [
+        {
+          "token": "</think>",
+          "logprob": -1.16079795
+        },
+        {
+          "token": "not",
+          "logprob": -1.78579795
+        },
+        {
+          "token": "Not",
+          "logprob": -2.16079807
+        },
+        {
+          "token": "Explicit",
+          "logprob": -2.28579807
+        },
+        {
+          "token": "Den",
+          "logprob": -2.66079807
+        }
+      ]
+    },
+    {
+      "token": "{\"",
+      "logprob": -0.00011372,
+      "top_logprobs": [
+        {
+          "token": "{\"",
+          "logprob": -0.00011372
+        },
+        {
+          "token": "{",
+          "logprob": -11.25011349
+        },
+        {
+          "token": "{\\\"",
+          "logprob": -11.62511349
+        },
+        {
+          "token": "N",
+          "logprob": -11.68761349
+        },
+        {
+          "token": "O",
+          "logprob": -11.81261349
+        }
+      ]
+    },
+    {
+      "token": "intent",
+      "logprob": -0.00040142,
+      "top_logprobs": [
+        {
+          "token": "intent",
+          "logprob": -0.00040142
+        },
+        {
+          "token": "amount",
+          "logprob": -7.8754015
+        },
+        {
+          "token": "language",
+          "logprob": -12.2504015
+        },
+        {
+          "token": "int",
+          "logprob": -13.2504015
+        },
+        {
+          "token": "attempt",
+          "logprob": -13.4379015
+        }
+      ]
+    },
+    {
+      "token": "\":",
+      "logprob": -0.00672186,
+      "top_logprobs": [
+        {
+          "token": "\":",
+          "logprob": -0.00672186
+        },
+        {
+          "token": "\":\"",
+          "logprob": -5.00672197
+        },
+        {
+          "token": "\"",
+          "logprob": -13.1317215
+        },
+        {
+          "token": "\\\":",
+          "logprob": -13.6942215
+        },
+        {
+          "token": "”:",
+          "logprob": -14.1942215
+        }
+      ]
+    },
+    {
+      "token": " \"",
+      "logprob": -5.01e-06,
+      "top_logprobs": [
+        {
+          "token": " \"",
+          "logprob": -5.01e-06
+        },
+        {
+          "token": " \"\",",
+          "logprob": -13.50000477
+        },
+        {
+          "token": " null",
+          "logprob": -13.75000477
+        },
+        {
+          "token": " \\\"",
+          "logprob": -14.25000477
+        },
+        {
+          "token": " ",
+          "logprob": -15.18750477
+        }
+      ]
+    },
+    {
+      "token": "charge",
+      "logprob": -0.00331745,
+      "top_logprobs": [
+        {
+          "token": "charge",
+          "logprob": -0.00331745
+        },
+        {
+          "token": "missing",
+          "logprob": -6.50331736
+        },
+        {
+          "token": "out",
+          "logprob": -6.62831736
+        },
+        {
+          "token": "person",
+          "logprob": -8.00331783
+        },
+        {
+          "token": "dis",
+          "logprob": -9.37831783
+        }
+      ]
+    },
+    {
+      "token": "\",",
+      "logprob": -0.00040356,
+      "top_logprobs": [
+        {
+          "token": "\",",
+          "logprob": -0.00040356
+        },
+        {
+          "token": "\",\"",
+          "logprob": -7.8754034
+        },
+        {
+          "token": "|",
+          "logprob": -10.8754034
+        },
+        {
+          "token": " |",
+          "logprob": -14.0004034
+        },
+        {
+          "token": "\"",
+          "logprob": -14.8129034
+        }
+      ]
+    },
+    {
+      "token": " \"",
+      "logprob": -3.6e-07,
+      "top_logprobs": [
+        {
+          "token": " \"",
+          "logprob": -3.6e-07
+        },
+        {
+          "token": " \\\"",
+          "logprob": -16.25
+        },
+        {
+          "token": " \"_",
+          "logprob": -16.8125
+        },
+        {
+          "token": " \"\\",
+          "logprob": -17.8125
+        },
+        {
+          "token": " ",
+          "logprob": -17.875
+        }
+      ]
+    },
+    {
+      "token": "language",
+      "logprob": -9.107e-05,
+      "top_logprobs": [
+        {
+          "token": "language",
+          "logprob": -9.107e-05
+        },
+        {
+          "token": "amount",
+          "logprob": -9.5000906
+        },
+        {
+          "token": "anguage",
+          "logprob": -12.1250906
+        },
+        {
+          "token": "lang",
+          "logprob": -12.5000906
+        },
+        {
+          "token": "transaction",
+          "logprob": -13.8125906
+        }
+      ]
+    },
+    {
+      "token": "\":",
+      "logprob": -2.98e-06,
+      "top_logprobs": [
+        {
+          "token": "\":",
+          "logprob": -2.98e-06
+        },
+        {
+          "token": "\":\"",
+          "logprob": -13.12500286
+        },
+        {
+          "token": "\\\":",
+          "logprob": -14.50000286
+        },
+        {
+          "token": "\",",
+          "logprob": -15.62500286
+        },
+        {
+          "token": "\"",
+          "logprob": -15.75000286
+        }
+      ]
+    },
+    {
+      "token": " \"",
+      "logprob": -8.7e-06,
+      "top_logprobs": [
+        {
+          "token": " \"",
+          "logprob": -8.7e-06
+        },
+        {
+          "token": " null",
+          "logprob": -12.25000858
+        },
+        {
+          "token": " \"\",",
+          "logprob": -13.62500858
+        },
+        {
+          "token": " \"\"",
+          "logprob": -14.68750858
+        },
+        {
+          "token": " pt",
+          "logprob": -14.93750858
+        }
+      ]
+    },
+    {
+      "token": "pt",
+      "logprob": -0.00076991,
+      "top_logprobs": [
+        {
+          "token": "pt",
+          "logprob": -0.00076991
+        },
+        {
+          "token": "es",
+          "logprob": -7.25077009
+        },
+        {
+          "token": "en",
+          "logprob": -10.00076962
+        },
+        {
+          "token": "null",
+          "logprob": -13.31326962
+        },
+        {
+          "token": "PT",
+          "logprob": -13.93826962
+        }
+      ]
+    },
+    {
+      "token": "-B",
+      "logprob": -1.633e-05,
+      "top_logprobs": [
+        {
+          "token": "-B",
+          "logprob": -1.633e-05
+        },
+        {
+          "token": "-",
+          "logprob": -12.00001621
+        },
+        {
+          "token": "\",",
+          "logprob": -12.68751621
+        },
+        {
+          "token": "-br",
+          "logprob": -13.00001621
+        },
+        {
+          "token": "_BR",
+          "logprob": -13.50001621
+        }
+      ]
+    },
+    {
+      "token": "R",
+      "logprob": -2.03e-06,
+      "top_logprobs": [
+        {
+          "token": "R",
+          "logprob": -2.03e-06
+        },
+        {
+          "token": "RR",
+          "logprob": -13.87500191
+        },
+        {
+          "token": "RE",
+          "logprob": -15.12500191
+        },
+        {
+          "token": "RO",
+          "logprob": -15.75000191
+        },
+        {
+          "token": "RL",
+          "logprob": -16.25000191
+        }
+      ]
+    },
+    {
+      "token": "\",",
+      "logprob": -1.276e-05,
+      "top_logprobs": [
+        {
+          "token": "\",",
+          "logprob": -1.276e-05
+        },
+        {
+          "token": "\",\"",
+          "logprob": -11.6250124
+        },
+        {
+          "token": "\"",
+          "logprob": -13.1875124
+        },
+        {
+          "token": "\"}",
+          "logprob": -14.3750124
+        },
+        {
+          "token": " \",",
+          "logprob": -15.0000124
+        }
+      ]
+    },
+    {
+      "token": " \"",
+      "logprob": -4.8e-07,
+      "top_logprobs": [
+        {
+          "token": " \"",
+          "logprob": -4.8e-07
+        },
+        {
+          "token": " \\\"",
+          "logprob": -16.0
+        },
+        {
+          "token": " \"_",
+          "logprob": -16.9375
+        },
+        {
+          "token": " **",
+          "logprob": -17.25
+        },
+        {
+          "token": " ",
+          "logprob": -17.3125
+        }
+      ]
+    },
+    {
+      "token": "amount",
+      "logprob": -4.828e-05,
+      "top_logprobs": [
+        {
+          "token": "amount",
+          "logprob": -4.828e-05
+        },
+        {
+          "token": "not",
+          "logprob": -10.12504864
+        },
+        {
+          "token": "charge",
+          "logprob": -14.31254864
+        },
+        {
+          "token": "money",
+          "logprob": -14.31254864
+        },
+        {
+          "token": "message",
+          "logprob": -14.37504864
+        }
+      ]
+    },
+    {
+      "token": "\":",
+      "logprob": -3.93e-06,
+      "top_logprobs": [
+        {
+          "token": "\":",
+          "logprob": -3.93e-06
+        },
+        {
+          "token": "\",",
+          "logprob": -13.68750381
+        },
+        {
+          "token": "\\\":",
+          "logprob": -14.12500381
+        },
+        {
+          "token": "\"",
+          "logprob": -14.37500381
+        },
+        {
+          "token": " null",
+          "logprob": -14.93750381
+        }
+      ]
+    },
+    {
+      "token": " ",
+      "logprob": -0.22561938,
+      "top_logprobs": [
+        {
+          "token": " ",
+          "logprob": -0.22561938
+        },
+        {
+          "token": " null",
+          "logprob": -1.60061932
+        },
+        {
+          "token": " \"",
+          "logprob": -9.60061932
+        },
+        {
+          "token": "310",
+          "logprob": -10.66311932
+        },
+        {
+          "token": " false",
+          "logprob": -10.66311932
+        }
+      ]
+    },
+    {
+      "token": "310",
+      "logprob": -0.00039772,
+      "top_logprobs": [
+        {
+          "token": "310",
+          "logprob": -0.00039772
+        },
+        {
+          "token": "0",
+          "logprob": -8.62539768
+        },
+        {
+          "token": "8",
+          "logprob": -10.43789768
+        },
+        {
+          "token": "215",
+          "logprob": -10.56289768
+        },
+        {
+          "token": "31",
+          "logprob": -10.68789768
+        }
+      ]
+    },
+    {
+      "token": ",",
+      "logprob": -0.00253713,
+      "top_logprobs": [
+        {
+          "token": ",",
+          "logprob": -0.00253713
+        },
+        {
+          "token": ".",
+          "logprob": -6.00253725
+        },
+        {
+          "token": "0",
+          "logprob": -10.75253677
+        },
+        {
+          "token": "00",
+          "logprob": -11.00253677
+        },
+        {
+          "token": "}",
+          "logprob": -11.62753677
+        }
+      ]
+    },
+    {
+      "token": " \"",
+      "logprob": -1.67e-06,
+      "top_logprobs": [
+        {
+          "token": " \"",
+          "logprob": -1.67e-06
+        },
+        {
+          "token": " \\\"",
+          "logprob": -14.31250191
+        },
+        {
+          "token": " not",
+          "logprob": -15.31250191
+        },
+        {
+          "token": " ",
+          "logprob": -16.00000191
+        },
+        {
+          "token": " ...",
+          "logprob": -16.25000191
+        }
+      ]
+    },
+    {
+      "token": "not",
+      "logprob": -6.68e-06,
+      "top_logprobs": [
+        {
+          "token": "not",
+          "logprob": -6.68e-06
+        },
+        {
+          "token": "notif",
+          "logprob": -14.56250668
+        },
+        {
+          "token": "charge",
+          "logprob": -14.75000668
+        },
+        {
+          "token": "n",
+          "logprob": -14.87500668
+        },
+        {
+          "token": "no",
+          "logprob": -15.06250668
+        }
+      ]
+    },
+    {
+      "token": "_m",
+      "logprob": -6e-07,
+      "top_logprobs": [
+        {
+          "token": "_m",
+          "logprob": -6e-07
+        },
+        {
+          "token": "_g",
+          "logprob": -16.375
+        },
+        {
+          "token": "_l",
+          "logprob": -17.0625
+        },
+        {
+          "token": "_d",
+          "logprob": -17.3125
+        },
+        {
+          "token": "_n",
+          "logprob": -17.5625
+        }
+      ]
+    },
+    {
+      "token": "ine",
+      "logprob": -3.6e-07,
+      "top_logprobs": [
+        {
+          "token": "ine",
+          "logprob": -3.6e-07
+        },
+        {
+          "token": "ire",
+          "logprob": -15.0
+        },
+        {
+          "token": "ined",
+          "logprob": -16.5
+        },
+        {
+          "token": "ike",
+          "logprob": -17.25
+        },
+        {
+          "token": "ile",
+          "logprob": -18.0
+        }
+      ]
+    },
+    {
+      "token": "\":",
+      "logprob": -6e-07,
+      "top_logprobs": [
+        {
+          "token": "\":",
+          "logprob": -6e-07
+        },
+        {
+          "token": "\"",
+          "logprob": -14.62500095
+        },
+        {
+          "token": "\"}",
+          "logprob": -16.5
+        },
+        {
+          "token": "':",
+          "logprob": -17.125
+        },
+        {
+          "token": "\\\":",
+          "logprob": -17.25
+        }
+      ]
+    },
+    {
+      "token": " true",
+      "logprob": -0.04861174,
+      "top_logprobs": [
+        {
+          "token": " true",
+          "logprob": -0.04861174
+        },
+        {
+          "token": " false",
+          "logprob": -3.04861164
+        },
+        {
+          "token": "true",
+          "logprob": -11.36111164
+        },
+        {
+          "token": " null",
+          "logprob": -12.11111164
+        },
+        {
+          "token": "false",
+          "logprob": -13.48611164
+        }
+      ]
+    },
+    {
+      "token": "}",
+      "logprob": -0.00056048,
+      "top_logprobs": [
+        {
+          "token": "}",
+          "logprob": -0.00056048
+        },
+        {
+          "token": "}\n\n",
+          "logprob": -7.50056028
+        },
+        {
+          "token": ",",
+          "logprob": -12.12556076
+        },
+        {
+          "token": " }",
+          "logprob": -14.43806076
+        },
+        {
+          "token": "}\n",
+          "logprob": -14.50056076
+        }
+      ]
+    },
+    {
+      "token": "<|user|>",
+      "logprob": -2.456e-05,
+      "top_logprobs": [
+        {
+          "token": "<|user|>",
+          "logprob": -2.456e-05
+        },
+        {
+          "token": "<|assistant|>",
+          "logprob": -12.3750248
+        },
+        {
+          "token": " ####",
+          "logprob": -12.8750248
+        },
+        {
+          "token": "<|observation|>",
+          "logprob": -12.9375248
+        },
+        {
+          "token": " \n",
+          "logprob": -13.3125248
+        }
+      ]
+    }
+  ]
+}
