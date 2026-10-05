@@ -22,9 +22,9 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 ## 3. Guide for the judge
 
-- [ ] 3.1 Write the guide text in `es-419.json` and `pt-BR.json`. It says that the public link needs the credentials of the submission email (see `judge-access`). The "simulated data" banner belongs to `judge-access` 1.2: do not change it here. The guide has: the three cases to try (normal, ambiguous, person), what to look for in each, and the four simulated parts (Gold data, test login, demo advisor, synthetic policy), as in [what is real](../../../docs/architecture/what-is-real.md). Evidence: the two files.
-- [ ] 3.2 Add a collapsible panel on the entry page with `data-testid="judge-guide"`. It starts closed and does not move the persona cards on a phone. Evidence: `index.html`, `app.js`, `styles.css`.
-- [ ] 3.3 Test that the panel exists, starts closed and has text in both locales. Evidence: the test.
+- [x] 3.1 Write the guide text in `es-419.json` and `pt-BR.json`. It says that the public link needs the credentials of the submission email (see `judge-access`). The "simulated data" banner belongs to `judge-access` 1.2: do not change it here. The guide has: the three cases to try (normal, ambiguous, person), what to look for in each, and the four simulated parts (Gold data, test login, demo advisor, synthetic policy), as in [what is real](../../../docs/architecture/what-is-real.md). Evidence: the two files.
+- [x] 3.2 Add a collapsible panel on the entry page with `data-testid="judge-guide"`. It starts closed and does not move the persona cards on a phone. Evidence: `index.html`, `app.js`, `styles.css`.
+- [x] 3.3 Test that the panel exists, starts closed and has text in both locales. Evidence: the test.
 
 ## 4. Checks
 

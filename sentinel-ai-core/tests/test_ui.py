@@ -158,6 +158,33 @@ def test_the_why_followup_returns_an_explanation_over_http() -> None:
 
 
 
+def test_judge_guide_panel_exists_and_starts_closed() -> None:
+    """The entry page explains the demo in a closed panel.
+
+    It starts closed, so the persona cards keep their place on a phone. The
+    panel carries a text in both languages.
+    """
+    import json
+
+    assert 'data-testid="judge-guide"' in INDEX
+    tag = INDEX[INDEX.index('<details id="judge-guide"') :]
+    tag = tag[: tag.index(">") + 1]
+    assert " open" not in tag, "the guide must start closed"
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for key in ("judgeGuideTitle", "judgeGuideIntro", "judgeGuideCaseNormal", "judgeGuideSimGold"):
+            assert strings.get(key), (name, key)
+
+
+def test_judge_guide_lists_the_three_cases_and_four_mocks() -> None:
+    start = INDEX.index('<details id="judge-guide"')
+    panel = INDEX[start : INDEX.index("</details>", start)]
+    for key in ("judgeGuideCaseNormal", "judgeGuideCaseAmbiguous", "judgeGuideCasePerson"):
+        assert f'data-i18n="{key}"' in panel, key
+    for key in ("judgeGuideSimGold", "judgeGuideSimLogin", "judgeGuideSimAdvisor", "judgeGuideSimPolicy"):
+        assert f'data-i18n="{key}"' in panel, key
+
+
 def test_build_line_reads_health_and_hides_on_failure() -> None:
     """The footer names the served build from the public health endpoint.
 
