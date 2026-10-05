@@ -21,6 +21,8 @@ All the demo code is merged. The submission is due on 2026-10-05, 11:59 PM COT.
 
 ### 2026-10-05
 
+- #80 Write the changelog, the contribution guide and the release notes.
+- #79 Measure the sealed v8 set once and decide the served prompt.
 - #78 Complete the `ui-behavior` specification and add the browser test.
 - #77 Cover the page behavior fixes and close the `ui-behavior` change.
 - #76 Repair the chat page behavior and the advisor view.

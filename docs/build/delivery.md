@@ -106,7 +106,7 @@ Each row has one owner and one proof. A row stays pending until its proof exists
 | Item | Owner | Proof | Status |
 |---|---|---|---|
 | Repository | Rubén | The public repository and its [README](../../README.md) | Done |
-| Deployed link | Rubén | A response from the live link | Pending |
+| Deployed link | Rubén | The `GET /api/v1/health` response of the 2026-10-05 redeploy, with `bundle_hash` `2efe5962…` | Done |
 | Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run | Pending |
 | Slides PDF | Rubén | `python3 scripts/export_slides.py` writes `site/slides/sentinel-slides.pdf` | Pending |
 | Video | Rubén | The video, 3 minutes at most | Pending |
