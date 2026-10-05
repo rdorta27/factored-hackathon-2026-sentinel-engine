@@ -108,6 +108,35 @@ async function loadBrand() {
   applyBrand();
 }
 
+/* The build line links the page to the measured build: the model, the prompt
+   version, the first 8 characters of the bundle hash and the Gold source. It
+   reads the public health endpoint once, needs no session and writes no state.
+   The line stays hidden when the request fails; the chat does not depend on it. */
+let buildInfo = null;
+
+function renderBuildInfo() {
+  if (!buildInfo) return;
+  const line = document.getElementById("build-info");
+  line.textContent = [
+    `${t("buildInfoModel")}: ${buildInfo.model}`,
+    `${t("buildInfoPrompt")}: ${buildInfo.prompt_version}`,
+    `${t("buildInfoBuild")}: ${String(buildInfo.bundle_hash || "").slice(0, 8)}`,
+    `${t("buildInfoGold")}: ${buildInfo.gold_source}`,
+  ].join(" · ");
+  line.hidden = false;
+}
+
+async function loadBuildInfo() {
+  try {
+    const response = await fetch("/api/v1/health");
+    if (!response.ok) return;
+    buildInfo = await response.json();
+    renderBuildInfo();
+  } catch (error) {
+    // The line stays hidden; the chat does not depend on the build line.
+  }
+}
+
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
@@ -117,6 +146,7 @@ async function loadLocale(locale) {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
   applyBrand();
+  renderBuildInfo();
   // A customer session repaints its header and charges in the new language.
   if (lastTransactions && !document.getElementById("view-chat").hidden) {
     renderSessionContext(lastTransactions);
@@ -901,3 +931,4 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
 loadLocale("es-419");
 loadBrand();
 loadDemoEntry();
+loadBuildInfo();

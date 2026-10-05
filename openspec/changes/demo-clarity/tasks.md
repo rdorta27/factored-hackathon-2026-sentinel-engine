@@ -17,8 +17,8 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 ## 2. Build line
 
-- [ ] 2.1 Add a footer line with `data-testid="build-info"`. It reads `GET /api/v1/health` once and shows the model, the prompt version, the first 8 characters of `bundle_hash` and `gold_source`. Hide it if the request fails. Evidence: `index.html`, `app.js`, `styles.css`.
-- [ ] 2.2 Add the label keys to `es-419.json` and `pt-BR.json` and test that the line shows the fields of a mocked health response and stays hidden on a failure. Evidence: the test.
+- [x] 2.1 Add a footer line with `data-testid="build-info"`. It reads `GET /api/v1/health` once and shows the model, the prompt version, the first 8 characters of `bundle_hash` and `gold_source`. Hide it if the request fails. Evidence: `index.html`, `app.js`, `styles.css`.
+- [x] 2.2 Add the label keys to `es-419.json` and `pt-BR.json` and test that the line shows the fields of a mocked health response and stays hidden on a failure. Evidence: the test.
 
 ## 3. Guide for the judge
 
@@ -30,7 +30,6 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 - [ ] 4.1 Run the UI tests, the demo tests and the contract tests: `tests/test_ui.py`, `tests/test_demo_prompts.py`, `tests/test_demo_pt_br.py`, `tests/test_contract.py` and the full suite. Evidence: the pass count in the commit body.
 - [ ] 4.2 Run `scripts/capture_ui_product.py` and check the phone layout at 390 px. Replace the screens in the docs that show the entry page and the chat. Evidence: the new screens and the commit body.
-- [ ] 4.3 Run `scripts/e2e_check.py` against a local service when `live-ops` 1.3 is merged. Evidence: the pass table.
 
 ## 5. Requirements and team
 
@@ -45,3 +44,7 @@ Found on 2026-10-05 in a local run. The server used the real Gold file, and the 
 - [ ] 6.2 Show the example buttons and their label only when the account has a charge or a repeated merchant. Do not show the single "talk to a person" button alone. Evidence: `app/static/app.js` and a test for an account without charges.
 - [ ] 6.3 Show the five most recent items in "My claims", with "Show all (N)" for the rest. Do this in the page. Do not change the API. Evidence: `app/static/` and a test with more than five cases.
 - [ ] 6.4 In `sentinel-ai-core/README.md`, say that a local run uses the real Gold file when it exists, that the fixture users exist only in the mock, and that the demo needs `SENTINEL_GOLD_SOURCE=mock`. Evidence: the README.
+
+## Moved to `post-freeze`
+
+The run of `scripts/e2e_check.py` needs the merged script of `live-ops` and the final build. It is task 1.2 of `post-freeze` (local) and task 4.3 (on the link). This plan closes when the other tasks are done.

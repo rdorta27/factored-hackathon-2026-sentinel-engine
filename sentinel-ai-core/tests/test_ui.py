@@ -158,6 +158,34 @@ def test_the_why_followup_returns_an_explanation_over_http() -> None:
 
 
 
+def test_build_line_reads_health_and_hides_on_failure() -> None:
+    """The footer names the served build from the public health endpoint.
+
+    It reads once, needs no session and writes no state. A failed request
+    returns before the line shows, so the chat works as before.
+    """
+    assert 'data-testid="build-info"' in INDEX
+    assert '"/api/v1/health"' in APP_JS
+    load = APP_JS[APP_JS.index("async function loadBuildInfo") :]
+    load = load[: load.index("\n}")]
+    render = APP_JS[APP_JS.index("function renderBuildInfo") :]
+    render = render[: render.index("\n}")]
+    assert "if (!response.ok) return" in load
+    assert load.index("if (!response.ok) return") < load.index("renderBuildInfo()")
+    # No session and no write: the plain fetch, not the session-aware api().
+    assert "fetch(" in load and "api(" not in load
+    for field in ("model", "prompt_version", "bundle_hash", "gold_source"):
+        assert field in render, field
+    assert "slice(0, 8)" in render
+    assert "line.hidden = false" in render
+
+
+def test_health_reports_the_build_fields_the_footer_shows() -> None:
+    body = TestClient(create_app()).get("/api/v1/health").json()
+    for field in ("model", "prompt_version", "bundle_hash", "gold_source"):
+        assert field in body, field
+
+
 def test_bank_shell_has_session_line_data_date_and_three_columns() -> None:
     for marker in ('id="session-context"', 'id="reference-date"', 'id="steps-col"', 'id="charges-col"', 'id="agent"'):
         assert marker in INDEX, marker
