@@ -30,8 +30,8 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 5. Cleanup
 
-- [ ] 5.1 Find every use of `sentinel-login/`: imports, tests, the Dockerfile, the CI workflow and the docs. Confirm that nothing serves or tests it ([009](../../../docs/build/decisions/009-demo-ui-and-advisor-view.md)). Evidence: the `grep` output in the commit body.
-- [ ] 5.2 Remove the folder with `git rm -r sentinel-login`. Add a short note to decision 009 that the reference page is removed and why. Evidence: the diff and both test suites green.
+- [x] 5.1 Find every use of `sentinel-login/`: imports, tests, the Dockerfile, the CI workflow and the docs. Confirm that nothing serves or tests it ([009](../../../docs/build/decisions/009-demo-ui-and-advisor-view.md)). Evidence: the `grep` output in the commit body.
+- [x] 5.2 Remove the folder with `git rm -r sentinel-login`. Add a short note to decision 009 that the reference page is removed and why. Evidence: the diff and both test suites green.
 - [ ] 5.3 Remove or rewrite each reference: `AGENTS.md` (layout table), `README.md`, `docs/architecture/system-architecture.md`, `sentinel-ai-core/README.md`, the comment in `sentinel-ai-core/app/schemas/chat.py`, `team/plan.md`, `team/tasks.md` and `team/pending-decisions.md`. Leave `openspec/changes/archive/` unchanged. Evidence: `grep -rI sentinel-login` finds only the archive.
 - [ ] 5.4 Add `scripts/check_links.py`: it checks that each relative link in the Markdown files outside the archive points to a file, and it runs in the CI workflow. Fix the links it finds. Evidence: the script prints no broken link.
 
@@ -52,5 +52,5 @@ Run this group after group 6. It touches `team/chat-manual-tests.md`, which task
 
 - [ ] 7.1 Rename `scripts/felix_replay.py` to `scripts/manual_test_replay.py` with `git mv`. Change its docstring, its usage examples and the prefix of its temporary folder. Change the start and end markers to `manual-test-replay:start` and `manual-test-replay:end`, and the generated title to `## Manual test replay (automated)`. Evidence: the diff.
 - [ ] 7.2 Change the same markers, the title and the run line in `team/chat-manual-tests.md`. Change both in the same commit, because the script finds its block by the markers. Evidence: the diff.
-- [ ] 7.3 Change the name in the comment of `scripts/sentinel_client.py` and in the evidence lines of `docs/requirements/frontend-backend.md`. Leave `openspec/changes/flow-fixes/` and `openspec/changes/robustness-evidence/` unchanged, because they are history. Evidence: `grep -rI "felix_replay\|felix-replay"` finds only those two plans.
+- [ ] 7.3 Change the name in `scripts/e2e_check.py` (from `live-ops` 1.3), in the comment of `scripts/sentinel_client.py` and in the evidence lines of `docs/requirements/frontend-backend.md`. Leave `openspec/changes/flow-fixes/` and `openspec/changes/robustness-evidence/` unchanged, because they are history. Evidence: `grep -rI "felix_replay\|felix-replay"` finds only those two plans.
 - [ ] 7.4 Run the script once against a local service. It must replace the existing block and not add a second one. Evidence: `git diff` of `team/chat-manual-tests.md` shows one block.
