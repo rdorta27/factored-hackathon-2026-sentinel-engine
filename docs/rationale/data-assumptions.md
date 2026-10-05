@@ -12,7 +12,7 @@ The system assumes that each account belongs to México, Colombia or Argentina. 
 
 ## Why
 
-The data dictionary states these facts ([reference](../understand/reference/)):
+The data dictionary states these facts ([reference](../data/reference/)):
 
 - `customers.country` is "Country (Mexico, Colombia, Argentina)" and NOT NULL. No other account country exists.
 - `products.currency` is "Currency (MXN, COP, ARS, USD)" and NOT NULL. Currency is per product.

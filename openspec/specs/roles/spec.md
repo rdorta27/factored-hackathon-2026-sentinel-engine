@@ -8,7 +8,7 @@ Restricts every endpoint to the role stored in the server-side session and gives
 
 ### Requirement: Documented mock users per role
 
-The repository SHALL document one false, test-only credential per active role (customers and the demo advisor) and SHALL state that the advisor needs `SENTINEL_DEMO_AUTH=1`. Traces to REQ-0028 (P0, In progress).
+The repository SHALL document one false, test-only credential per active role (customers and the demo advisor) and SHALL state that the advisor needs `SENTINEL_DEMO_AUTH=1`. Traces to REQ-0028 (P0, Done).
 
 #### Scenario: Each role can sign in from docs alone
 
@@ -17,7 +17,7 @@ The repository SHALL document one false, test-only credential per active role (c
 
 ### Requirement: Customer and advisor roles enforced in code
 
-The system SHALL store one role per session (`customer`, `advisor`) and SHALL check it on every role-restricted endpoint: chat, transactions and disputes require `customer`; `/api/v1/handoffs` requires `advisor`. A role failure SHALL return 403 and record `access_denied`. Traces to REQ-0007 (P0, In progress) and REQ-0027 (P0, In progress).
+The system SHALL store one role per session (`customer`, `advisor`) and SHALL check it on every role-restricted endpoint: chat, transactions and disputes require `customer`; `/api/v1/handoffs` requires `advisor`. A role failure SHALL return 403 and record `access_denied`. Traces to REQ-0007 (P0, Done) and REQ-0027 (P0, Done).
 
 #### Scenario: Customer cannot reach advisor endpoints
 
@@ -36,7 +36,7 @@ The system SHALL store one role per session (`customer`, `advisor`) and SHALL ch
 
 ### Requirement: Read-only advisor ticket view
 
-The advisor SHALL read escalated tickets at `GET /api/v1/handoffs` (newest first) and `GET /api/v1/handoffs/{id}`: reason key, summary, per-turn conversation, verified facts, actions attempted, evidence, open questions, and the customer id and country. The advisor SHALL NOT see names, the customer profile or the raw transcript. The view is read-only: no claim or state change. A dispute case id SHALL NOT be readable as a ticket. Traces to REQ-0008 (P0, In progress), REQ-0011 (P0, In progress), and REQ-0046 (P2, Pending).
+The advisor SHALL read escalated tickets at `GET /api/v1/handoffs` (newest first) and `GET /api/v1/handoffs/{id}`: reason key, summary, per-turn conversation, verified facts, actions attempted, evidence, open questions, and the customer id and country. The advisor SHALL NOT see names, the customer profile or the raw transcript. The view is read-only: no claim or state change. A dispute case id SHALL NOT be readable as a ticket. Traces to REQ-0008 (P0, Done), REQ-0011 (P0, Done), and REQ-0046 (P2, Pending).
 
 #### Scenario: Handoff appears in the ticket list
 

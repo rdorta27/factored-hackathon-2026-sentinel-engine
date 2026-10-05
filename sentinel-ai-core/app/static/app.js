@@ -108,27 +108,78 @@ async function loadBrand() {
   applyBrand();
 }
 
+/* The build line links the page to the measured build: the model, the prompt
+   version, the first 8 characters of the bundle hash and the Gold source. It
+   reads the public health endpoint once, needs no session and writes no state.
+   The line stays hidden when the request fails; the chat does not depend on it. */
+let buildInfo = null;
+
+function renderBuildInfo() {
+  if (!buildInfo) return;
+  const line = document.getElementById("build-info");
+  line.textContent = [
+    `${t("buildInfoModel")}: ${buildInfo.model}`,
+    `${t("buildInfoPrompt")}: ${buildInfo.prompt_version}`,
+    `${t("buildInfoBuild")}: ${String(buildInfo.bundle_hash || "").slice(0, 8)}`,
+    `${t("buildInfoGold")}: ${buildInfo.gold_source}`,
+  ].join(" · ");
+  line.hidden = false;
+}
+
+async function loadBuildInfo() {
+  try {
+    const response = await fetch("/api/v1/health");
+    if (!response.ok) return;
+    buildInfo = await response.json();
+    renderBuildInfo();
+  } catch (error) {
+    // The line stays hidden; the chat does not depend on the build line.
+  }
+}
+
+/* Two quick clicks on the selector: only the last request may paint. */
+let localeRequest = 0;
+
 async function loadLocale(locale) {
+  const request = ++localeRequest;
   const response = await fetch(`/i18n/${locale}`);
-  strings = await response.json();
+  if (!response.ok) return;
+  const loaded = await response.json();
+  if (request !== localeRequest) return;
+  strings = loaded;
+  document.body.removeAttribute("data-loading");
   setLocale(locale);
   document.documentElement.lang = locale;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
+  document.getElementById("chat-input").placeholder = t("chatPlaceholder");
+  document.getElementById("chat-input").setAttribute("aria-label", t("chatPlaceholder"));
   applyBrand();
+  renderBuildInfo();
   // A customer session repaints its header and charges in the new language.
   if (lastTransactions && !document.getElementById("view-chat").hidden) {
     renderSessionContext(lastTransactions);
     paintCharges(lastTransactions);
     renderDemoPrompts(lastTransactions.transactions);
-    renderThread();
   }
+  // The advisor list and the open case follow the language too.
+  if (!document.getElementById("view-queue").hidden) {
+    loadQueue();
+    if (openCaseId) openTicket(openCaseId);
+    else showQueueList();
+  }
+  // The thread follows the language too, even before the charges arrive
+  // (the welcome of a demo persona is drawn before its locale loads).
+  if (!document.getElementById("view-chat").hidden) renderThread();
 }
 
 async function api(path, options) {
   const response = await fetch(path, options);
   if (response.status === 401) {
+    sessionRole = null;
+    sessionLabel = null;
+    replaceRoute("/");
     clearThread();
     show("view-login");
     document.getElementById("login-error").textContent = t("sessionExpired");
@@ -143,6 +194,7 @@ function clearThread() {
   document.getElementById("transactions").textContent = "";
   document.getElementById("cases").textContent = "";
   lastTransactions = null;
+  casesShowAll = false;
 }
 
 /* The thread is a log of what happened. Changing the language draws it again, so
@@ -153,6 +205,7 @@ let threadLog = [];
 function logEntry(entry) {
   threadLog.push(entry);
   drawEntry(entry);
+  scrollToEnd();
   return entry;
 }
 
@@ -163,13 +216,27 @@ function drawEntry(entry) {
   else if (entry.type === "welcome") thread.append(el("div", "msg msg-bot", t("welcome")));
   else if (entry.type === "error") drawError(entry.body, entry.status);
   else if (entry.type === "reply") drawReply(entry.body, entry);
+  else if (entry.type === "info") document.getElementById("thread").append(chargeInfoCard(entry.tx));
 }
 
 function renderThread() {
   document.getElementById("thread").textContent = "";
   threadLog.forEach(drawEntry);
+  // A turn in flight keeps its typing line and its running steps.
+  if (typingNode) {
+    typingNode.textContent = t("typingLabel");
+    document.getElementById("thread").append(typingNode);
+    return;
+  }
   const last = [...threadLog].reverse().find((entry) => entry.type === "reply" && entry.body.steps);
   if (last) renderSteps(last.body, false);
+}
+
+/* Keep the newest message in view. */
+function scrollToEnd() {
+  const thread = document.getElementById("thread");
+  const last = thread.lastElementChild;
+  if (last) last.scrollIntoView({ block: "end", behavior: "smooth" });
 }
 
 function startThread() {
@@ -177,16 +244,22 @@ function startThread() {
   logEntry({ type: "welcome" });
 }
 
+let simulatedData = false;
+/* The one-click personas are on: the chat then offers example prompts. */
 let demoAvailable = false;
 
 function show(id) {
+  // An old login error must not wait on screen for the next visit.
+  if (id !== "view-login") document.getElementById("login-error").textContent = "";
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
+  if (id !== "view-queue") stopQueueRefresh();
   document.getElementById("logout").hidden = id === "view-login";
+  // The agent button lives in the chat column, away from the header flags.
   document.getElementById("agent").hidden = id !== "view-chat";
-  // The demo banner is for the entry; a customer session has the data-date chip.
-  document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
+  // The "simulated data" banner follows Gold, not the one-click entry.
+  document.getElementById("demo-banner").hidden = id !== "view-login" || !simulatedData;
   // The session line and the data date belong to a customer session only.
   if (id !== "view-chat") {
     document.getElementById("session-context").hidden = true;
@@ -243,24 +316,54 @@ function drawError(body, status) {
 /* Reply kinds that write to the case store, so the charge states change. */
 const CASE_CHANGING = new Set(["case_confirmation", "handoff"]);
 
+/* One turn at a time: while a turn runs, every control that sends a turn is
+   off, so a double click or an impatient tap cannot send it twice. */
+let typingNode = null;
+
+function isBusy() {
+  return typingNode !== null;
+}
+
+function setBusy(busy) {
+  document.getElementById("view-chat").setAttribute("aria-busy", String(busy));
+  document.querySelectorAll("#chat-form input, #chat-form button, #agent").forEach((control) => {
+    control.disabled = busy;
+  });
+  document.querySelectorAll("#demo-prompts button, #transactions button[data-eligible]").forEach((control) => {
+    control.disabled = busy;
+  });
+}
+
 async function postChat(payload) {
-  // A new turn closes any open confirmation: an old "Confirmar" must not fire.
-  document.querySelectorAll(".chat-confirm button").forEach((button) => {
-    button.disabled = true;
+  if (isBusy()) return;
+  // A new turn closes any open confirmation and any open list of candidates:
+  // an old "Confirmar" or an old chip must not fire.
+  document.querySelectorAll(".chat-confirm button, .chat-candidates .candidate").forEach((button) => {
+    if (!button.closest("#demo-prompts")) button.disabled = true;
   });
   threadLog.forEach((entry) => {
     entry.closed = true;
   });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
+  typingNode = typing;
+  setBusy(true);
   document.getElementById("thread").append(typing);
+  scrollToEnd();
   try {
-    const response = await api("/api/v1/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      // The selector's language rides with every turn, so the answer comes back
-      // in the language the customer chose, whatever the message looks like.
-      body: JSON.stringify({ ...payload, language: selectorLocale() }),
-    });
+    let response;
+    try {
+      response = await api("/api/v1/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // The selector's language rides with every turn, so the answer comes back
+        // in the language the customer chose, whatever the message looks like.
+        body: JSON.stringify({ ...payload, language: selectorLocale() }),
+      });
+    } catch (error) {
+      // The network dropped the turn: say so in the thread, and let `finally` unlock.
+      renderError({}, 0);
+      return;
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       renderError(body, response.status);
@@ -270,20 +373,27 @@ async function postChat(payload) {
     if (CASE_CHANGING.has(body.kind)) await refreshCharges();
   } finally {
     typing.remove();
+    typingNode = null;
+    setBusy(false);
+    const input = document.getElementById("chat-input");
+    if (!document.getElementById("view-chat").hidden) input.focus({ preventScroll: true });
   }
 }
 
 function selectCandidate(candidate) {
+  if (isBusy()) return;
   logEntry({ type: "charge", candidate });
   postChat({ selected_reference: candidate.reference });
 }
 
-function renderCandidates(box, candidates) {
+function renderCandidates(box, candidates, closed = false) {
   const chips = el("div", "chat-candidates");
   (candidates || []).forEach((candidate) => {
     const chip = el("button", "candidate", humanStatement(candidate));
     chip.type = "button";
-    if (!candidate.eligible) {
+    if (closed) {
+      chip.disabled = true;
+    } else if (!candidate.eligible) {
       chip.disabled = true;
       chip.append(el("span", "chat-sub", ` ${t(candidate.ineligibleKey || "candidateOutOfWindow")}`));
     } else {
@@ -298,7 +408,7 @@ function renderCandidates(box, candidates) {
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
 const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
-const STEP_PAUSE_MS = 1000;
+const STEP_PAUSE_MS = 500;
 let stepTimers = [];
 let stepResolve = null;
 
@@ -328,7 +438,10 @@ function renderSteps(body, animate = true) {
   if (stepResolve) stepResolve();
   stepResolve = null;
   list.textContent = "";
-  const staged = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // No staging when nobody can watch it: reduced motion, or the panel is a
+  // closed drawer on a phone. Then the answer shows at once.
+  const visible = list.offsetParent !== null;
+  const staged = animate && visible && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!staged) {
     body.steps.forEach((key, index) => list.append(stepItem(key, index, "done")));
     list.setAttribute("aria-busy", "false");
@@ -416,6 +529,29 @@ function handoffCard(body) {
   return card;
 }
 
+/* Information card of a closed charge: its state, why it is closed and the
+   verified facts the server sends (the case, or the window and its last day).
+   The page computes no date: every value comes from the listing. */
+function chargeInfoCard(tx) {
+  const state = tx.case_state || "not_disputable";
+  const card = el("div", "msg msg-audit charge-info");
+  card.setAttribute("data-testid", "charge-info");
+  const head = el("div", "handoff-head");
+  head.append(el("span", `pill pill-${STATE_TONES[state] || "neutral"}`, stateLabel(tx)));
+  if (tx.merchant) head.append(el("strong", "", tx.merchant));
+  card.append(head);
+  if (tx.merchant && tx.amount) card.append(el("p", "", receiptCharge(tx)));
+  const text = strings[`chargeInfo.${state}`];
+  if (text) card.append(el("p", "", fillTemplate(text, tx)));
+  const grid = el("div", "card-grid");
+  if (tx.case_id) grid.append(cardField("field_reference", tx.case_id));
+  if (state === "not_disputable" && tx.status) grid.append(cardField("chargeInfoStatus", statusLabel(tx.status)));
+  if (tx.window_days) grid.append(cardField("chargeInfoWindow", fill(t("chargeInfoDays"), { days: tx.window_days })));
+  if (tx.last_eligible_date) grid.append(cardField("whyLastDay", formatDate(tx.last_eligible_date)));
+  if (grid.childElementCount) card.append(grid);
+  return card;
+}
+
 /* "Por qué decidí esto": the rule behind a refusal, with the verified dates. */
 function whyCard(body) {
   const values = body.values;
@@ -474,9 +610,15 @@ function drawReply(body, entry) {
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
     box.append(el("strong", "", body.text ? body.text : fillTemplate(t(body.message_key), body.values)));
-    renderCandidates(box, body.candidates);
+    renderCandidates(box, body.candidates, Boolean(entry && entry.closed));
     thread.append(box);
   } else if (body.kind === "handoff") {
+    // Say what happened first, in plain words, then show the detail card.
+    // The ticket number (HO-…) is customer-facing, like under field_reference.
+    const ticket = fill(t("handoffLead"), { reference: body.reference });
+    const lead = el("div", "msg msg-bot", [ticket, t(body.reason_key), t("handoffNext")].join(" "));
+    lead.setAttribute("data-testid", "handoff-lead");
+    thread.append(lead);
     thread.append(handoffCard(body));
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
@@ -515,10 +657,19 @@ function renderCharge(tx) {
   bottom.append(el("span", `pill pill-${STATE_TONES[tx.case_state] || "neutral"} tx-status`, stateLabel(tx)));
   item.append(top, bottom);
   if (!tx.eligible) {
-    item.disabled = true;
-    item.setAttribute("aria-disabled", "true");
-    item.title = t(tx.ineligibleKey || "candidateOutOfWindow");
+    // A closed charge cannot start a dispute, but a tap still tells the customer
+    // why: an information card in the thread, with no turn sent to the chat.
+    item.classList.add("tx-closed");
+    const reason = t(tx.ineligibleKey || "candidateOutOfWindow");
+    item.title = reason;
+    item.append(el("span", "chat-sub tx-reason", reason));
+    item.addEventListener("click", () => {
+      closeDrawers();
+      logEntry({ type: "info", tx });
+    });
   } else {
+    item.setAttribute("data-eligible", "");
+    item.disabled = isBusy();
     item.addEventListener("click", () => {
       closeDrawers();
       selectCandidate(tx);
@@ -529,8 +680,29 @@ function renderCharge(tx) {
 
 /* The header line of a session: the masked product when the data has one,
    then country and language. Without a product the line has no type and no digits. */
+/* Who this session is, for the header. A demo persona shows its name; a
+   password login shows the user name the person typed. Nothing comes from the
+   server, so no identifier reaches the page through the API. The label rides
+   in the history entry, so a reload of the tab keeps it without any storage. */
+const PERSONA_KEYS = {
+  normal: "personaNormal",
+  ambiguous: "personaAmbiguous",
+  "high-amount": "personaHighAmount",
+  "not-me": "personaNotMe",
+};
+let sessionLabel = null;
+
+function sessionLabelText() {
+  if (!sessionLabel) return "";
+  if (sessionLabel.persona) return `${t("sessionDemo")}: ${t(PERSONA_KEYS[sessionLabel.persona] || "")}`;
+  if (sessionLabel.user) return `${t("sessionUser")}: ${sessionLabel.user}`;
+  return "";
+}
+
 function renderSessionContext(payload) {
   const parts = [];
+  const who = sessionLabelText();
+  if (who) parts.push(who);
   if (payload.product) parts.push(`${t(`product.${payload.product.kind}`)} •••• ${payload.product.last4}`);
   if (sessionCountry) parts.push(t(`country.${sessionCountry}`));
   parts.push(t(`lang.${currentLocale}`));
@@ -544,7 +716,31 @@ function renderSessionContext(payload) {
 
 let lastTransactions = null;
 
-/* "Mis reclamos": the cases of this customer, from the case store. */
+/* "Mis reclamos": the cases of this customer, from the case store. The panel
+   shows the five most recent and one control for the rest. The API still sends
+   every case, so the page pages them itself and no request changes. */
+const CASES_PAGE = 5;
+let casesShowAll = false;
+
+function casesShowAllButton(total) {
+  const button = el("button", "theme-toggle cases-toggle", fill(t("casesShowAll"), { count: total }));
+  button.type = "button";
+  button.setAttribute("data-testid", "cases-show-all");
+  button.addEventListener("click", () => {
+    casesShowAll = true;
+    if (lastTransactions) renderCases(lastTransactions.cases || []);
+  });
+  return button;
+}
+
+/* The charge behind a claim, from the listing; a claim with no charge (a
+   handoff that named none) shows its own facts. */
+function caseInfo(item) {
+  const rows = (lastTransactions && lastTransactions.transactions) || [];
+  const tx = rows.find((row) => row.case_id === item.case_id);
+  return tx || { ...item, status: "" };
+}
+
 function renderCases(cases) {
   const box = document.getElementById("cases");
   box.textContent = "";
@@ -552,9 +748,16 @@ function renderCases(cases) {
     box.append(el("p", "chat-sub", t("casesEmpty")));
     return;
   }
-  cases.forEach((item) => {
-    const card = el("div", "case-card");
+  const shown = casesShowAll ? cases : cases.slice(0, CASES_PAGE);
+  shown.forEach((item) => {
+    // A claim opens the same information card as its charge in the list.
+    const card = el("button", "candidate case-card");
+    card.type = "button";
     card.setAttribute("data-testid", "case-card");
+    card.addEventListener("click", () => {
+      closeDrawers();
+      logEntry({ type: "info", tx: caseInfo(item) });
+    });
     const top = el("span", "tx-line");
     top.append(el("strong", "case-id", item.case_id));
     top.append(el("span", `pill pill-${STATE_TONES[item.case_state] || "neutral"}`, t(`state.${item.case_state}`)));
@@ -563,6 +766,9 @@ function renderCases(cases) {
     card.append(el("span", "chat-sub", what.filter(Boolean).join(" · ")));
     box.append(card);
   });
+  if (!casesShowAll && cases.length > CASES_PAGE) {
+    box.append(casesShowAllButton(cases.length));
+  }
 }
 
 function paintCharges(payload) {
@@ -570,7 +776,12 @@ function paintCharges(payload) {
   renderCases(payload.cases || []);
   const box = document.getElementById("transactions");
   box.textContent = "";
-  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+  const rows = payload.transactions || [];
+  if (!rows.length) {
+    box.append(el("p", "chat-sub", t("txEmpty")));
+    return;
+  }
+  rows.forEach((tx) => box.append(renderCharge(tx)));
 }
 
 async function loadTransactions() {
@@ -675,48 +886,95 @@ function renderDemoPrompts(transactions) {
   if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
   const blocked = rows.find((tx) => tx.case_state === "outside_window" && tx.currency === localCurrency());
   if (blocked) prompts.push(fill(t("demoWhy"), { merchant: blocked.merchant }));
-  prompts.push(t("demoPerson"));
+  // The person chip never stands alone. An account without a charge and
+  // without a repeated merchant has nothing to demo, so the page hides all
+  // chips instead of offering one button that only opens a handoff ticket.
+  if (prompts.length) prompts.push(t("demoPerson"));
 
   prompts.forEach((phrase) => {
     const chip = el("button", "candidate", phrase);
     chip.type = "button";
+    chip.disabled = isBusy();
     chip.addEventListener("click", () => {
+      if (isBusy()) return;
       addBubble(phrase);
       postChat({ message: phrase });
     });
     box.append(chip);
   });
-  box.hidden = prompts.length === 0;
-  document.getElementById("demo-hint").hidden = prompts.length === 0;
+  const showExamples = demoAvailable && prompts.length > 0;
+  box.hidden = !showExamples;
+  document.getElementById("demo-hint").hidden = !showExamples;
 }
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
    came (reason, country, language, age); the detail is read-only and adds the
-   handoff package and the trace of the turn that filed it. */
+   handoff package and the trace of the turn that filed it. On a wide screen the
+   list and the detail sit side by side; on a phone the detail replaces the list. */
+/* Country and language codes as words; an unknown code shows as it is. */
+function countryName(code) {
+  return strings[`country.${code}`] || code;
+}
+
+function languageName(code) {
+  return strings[`lang.${code}`] || code;
+}
+
+let openCaseId = null;
+
 function ticketRow(ticket) {
   const row = el("button", "candidate queue-row");
   row.type = "button";
   row.setAttribute("data-testid", "queue-row");
   row.setAttribute("data-case-id", ticket.case_id);
-  row.append(el("strong", "", ticket.case_id));
-  row.append(el("span", "chat-sub", ` · ${t("q_reason")}: ${t(ticket.reason_key)}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${ticket.country}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${ticket.package.language}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_created")}: ${formatDate(ticket.created_at)}`));
-  row.addEventListener("click", () => openTicket(ticket.case_id));
+  if (ticket.case_id === openCaseId) row.setAttribute("aria-current", "true");
+  const top = el("span", "tx-line");
+  top.append(el("strong", "", ticket.case_id));
+  top.append(el("span", "chat-sub", `${t("q_created")}: ${formatDate(ticket.created_at)}`));
+  row.append(top);
+  const reason = el("strong", "queue-reason", t(ticket.reason_key));
+  reason.title = t("q_reason");
+  row.append(reason);
+  const tags = el("span", "queue-tags");
+  const country = el("span", "pill pill-neutral", countryName(ticket.country));
+  country.title = t("q_country");
+  const language = el("span", "pill pill-neutral", languageName(ticket.package.language));
+  language.title = t("q_language");
+  tags.append(country, language);
+  row.append(tags);
+  row.addEventListener("click", () => navigate(`/queue/${encodeURIComponent(ticket.case_id)}`));
   return row;
+}
+
+/* The list repaints on its own while the advisor watches it, so a case filed
+   in another tab shows up without a reload. The open detail stays as it is. */
+const QUEUE_REFRESH_MS = 15000;
+let queueTimer = null;
+
+function stopQueueRefresh() {
+  clearInterval(queueTimer);
+  queueTimer = null;
 }
 
 async function loadQueue() {
   const response = await api("/api/v1/handoffs");
   if (!response.ok) return;
   const tickets = await response.json();
-  document.getElementById("queue-detail").hidden = true;
-  document.getElementById("queue-list").hidden = false;
   const box = document.getElementById("queue");
   box.textContent = "";
+  document.getElementById("queue-count").textContent = String(tickets.length);
   if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
   tickets.forEach((ticket) => box.append(ticketRow(ticket)));
+  if (!queueTimer) queueTimer = setInterval(loadQueue, QUEUE_REFRESH_MS);
+}
+
+function showQueueList() {
+  openCaseId = null;
+  document.getElementById("view-queue").classList.remove("queue-open");
+  const detail = document.getElementById("queue-detail");
+  detail.textContent = "";
+  detail.append(el("p", "chat-sub queue-placeholder", t("q_select")));
+  document.querySelectorAll(".queue-row[aria-current]").forEach((row) => row.removeAttribute("aria-current"));
 }
 
 function field(labelKey, value) {
@@ -730,21 +988,33 @@ function traceBlock(trace) {
     card.append(el("p", "chat-sub", t("q_traceUnavailable")));
     return card;
   }
-  const list = el("ul", "chat-sub");
-  trace.steps.forEach((step) => {
-    const parts = [
-      step.step,
-      step.tool,
-      step.outcome,
-      `${t("q_latency")}: ${Number(step.latency_ms).toFixed(1)}`,
-      `${t("q_model")}: ${step.model}`,
-      `${t("q_prompt")}: ${step.prompt_version}`,
-      `${t("q_cost")}: ${Number(step.cost_usd).toFixed(4)}`,
-    ];
-    if (step.policy_version) parts.push(`${t("q_policyVersion")}: ${step.policy_version}`);
-    list.append(el("li", "", parts.filter(Boolean).join(" · ")));
+  // A table, one row per step: the columns line up, so the advisor compares steps.
+  const wrap = el("div", "trace-wrap");
+  const table = el("table", "metrics-table trace-table");
+  const head = el("tr");
+  ["q_step", "q_tool", "q_outcome", "q_latency", "q_model", "q_prompt", "q_cost", "q_policyVersion"].forEach((key) => {
+    head.append(el("th", "", t(key)));
   });
-  card.append(list);
+  const thead = el("thead");
+  thead.append(head);
+  const tbody = el("tbody");
+  trace.steps.forEach((step) => {
+    const row = el("tr");
+    [
+      step.step,
+      step.tool || "",
+      step.outcome || "",
+      Number(step.latency_ms).toFixed(1),
+      step.model || "",
+      step.prompt_version || "",
+      Number(step.cost_usd).toFixed(4),
+      step.policy_version || "",
+    ].forEach((value) => row.append(el("td", "", value)));
+    tbody.append(row);
+  });
+  table.append(thead, tbody);
+  wrap.append(table);
+  card.append(wrap);
   return card;
 }
 
@@ -788,27 +1058,206 @@ function packageBlock(pkg) {
   return card;
 }
 
+/* The handoff as the system filed it, for the JSON tab. The screen never shows
+   a customer identifier (decision 009), so the export leaves that field out too. */
+function handoffExport(ticket, trace) {
+  const shown = { ...ticket };
+  delete shown["customer_id"];
+  return { ticket: shown, trace };
+}
+
+function jsonBlock(caseId, data) {
+  const box = el("div", "msg msg-audit json-block");
+  const text = JSON.stringify(data, null, 2);
+  const bar = el("div", "json-bar");
+  const copy = el("button", "theme-toggle", t("q_copy"));
+  copy.type = "button";
+  copy.setAttribute("data-testid", "json-copy");
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      copy.textContent = t("q_copied");
+    } catch (error) {
+      copy.textContent = t("q_copyFailed");
+    }
+    setTimeout(() => {
+      copy.textContent = t("q_copy");
+    }, 1500);
+  });
+  const download = el("a", "theme-toggle", t("q_download"));
+  download.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+  download.download = `${caseId}.json`;
+  download.setAttribute("data-testid", "json-download");
+  bar.append(copy, download);
+  box.append(el("p", "chat-sub", t("q_jsonNote")), bar);
+  const pre = el("pre", "json-view", text);
+  pre.setAttribute("data-testid", "json-view");
+  pre.tabIndex = 0;
+  box.append(pre);
+  return box;
+}
+
+/* Three tabs: the summary for a person, the trace and the raw JSON. */
+const DETAIL_TABS = ["summary", "trace", "json"];
+let detailTab = "summary";
+
+function detailTabs(panels) {
+  const wrap = el("div", "detail-tabs");
+  const list = el("div", "tab-list");
+  list.setAttribute("role", "tablist");
+  const buttons = DETAIL_TABS.map((name) => {
+    const button = el("button", "theme-toggle tab", t(`q_tab.${name}`));
+    button.type = "button";
+    button.id = `tab-${name}`;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-controls", `panel-${name}`);
+    button.setAttribute("data-testid", `tab-${name}`);
+    list.append(button);
+    return button;
+  });
+  const select = (name) => {
+    detailTab = name;
+    DETAIL_TABS.forEach((other, index) => {
+      const on = other === name;
+      buttons[index].setAttribute("aria-selected", String(on));
+      buttons[index].tabIndex = on ? 0 : -1;
+      panels[other].hidden = !on;
+    });
+  };
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", () => select(DETAIL_TABS[index]));
+    button.addEventListener("keydown", (event) => {
+      const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+      if (!step) return;
+      const next = (index + step + DETAIL_TABS.length) % DETAIL_TABS.length;
+      select(DETAIL_TABS[next]);
+      buttons[next].focus();
+    });
+  });
+  wrap.append(list);
+  DETAIL_TABS.forEach((name) => {
+    panels[name].id = `panel-${name}`;
+    panels[name].setAttribute("role", "tabpanel");
+    panels[name].setAttribute("aria-labelledby", `tab-${name}`);
+    wrap.append(panels[name]);
+  });
+  select(detailTab);
+  return wrap;
+}
+
 async function openTicket(caseId) {
   const detail = document.getElementById("queue-detail");
-  const response = await api(`/api/v1/handoffs/${caseId}`);
-  if (!response.ok) return;
+  const [response, traceResponse] = await Promise.all([
+    api(`/api/v1/handoffs/${encodeURIComponent(caseId)}`),
+    api(`/api/v1/handoffs/${encodeURIComponent(caseId)}/trace`),
+  ]);
+  if (!response.ok) {
+    showQueueList();
+    detail.textContent = "";
+    detail.append(el("p", "chat-sub queue-placeholder", t("q_notFound")));
+    return;
+  }
   const ticket = await response.json();
-  const traceResponse = await api(`/api/v1/handoffs/${caseId}/trace`);
   const trace = traceResponse.ok ? await traceResponse.json() : { available: false, steps: [] };
+  openCaseId = ticket.case_id;
+  document.querySelectorAll(".queue-row").forEach((row) => {
+    if (row.getAttribute("data-case-id") === openCaseId) row.setAttribute("aria-current", "true");
+    else row.removeAttribute("aria-current");
+  });
   detail.textContent = "";
-  const back = el("button", "theme-toggle", t("q_back"));
+  const back = el("button", "theme-toggle queue-back", t("q_back"));
   back.type = "button";
   back.setAttribute("data-testid", "queue-back");
-  back.addEventListener("click", loadQueue);
+  back.addEventListener("click", () => navigate("/queue"));
   detail.append(back);
   detail.append(el("h3", "chat-title", `${ticket.case_id} · ${codeLabel("ticketStatus", ticket.status) || ticket.status}`));
   // No customer identifier on the screen: the advisor gets facts, not an id.
-  detail.append(field("q_country", `${ticket.country} · ${t("q_language")}: ${ticket.package.language}`));
-  detail.append(field("q_reason", t(ticket.reason_key)));
-  detail.append(packageBlock(ticket.package));
-  detail.append(traceBlock(trace));
-  document.getElementById("queue-list").hidden = true;
-  detail.hidden = false;
+  const summary = el("div", "");
+  summary.append(field("q_country", `${countryName(ticket.country)} · ${t("q_language")}: ${languageName(ticket.package.language)}`));
+  summary.append(field("q_reason", t(ticket.reason_key)));
+  summary.append(packageBlock(ticket.package));
+  const traceTab = el("div", "");
+  traceTab.append(traceBlock(trace));
+  const jsonTab = el("div", "");
+  jsonTab.append(jsonBlock(ticket.case_id, handoffExport(ticket, trace)));
+  detail.append(detailTabs({ summary, trace: traceTab, json: jsonTab }));
+  document.getElementById("view-queue").classList.add("queue-open");
+}
+
+/* Navigation: the view lives in the URL hash, so a reload keeps it, the Back
+   button works and an advisor can share the link of a case.
+     #/          entry (login)
+     #/chat      the customer chat
+     #/queue     the advisor list
+     #/queue/ID  the advisor list with one case open */
+let sessionRole = null;
+
+function currentRoute() {
+  const path = location.hash.replace(/^#/, "") || "/";
+  const match = path.match(/^\/queue\/(.+)$/);
+  if (match) return { view: "queue", caseId: decodeURIComponent(match[1]) };
+  if (path === "/queue") return { view: "queue", caseId: null };
+  if (path === "/chat") return { view: "chat", caseId: null };
+  return { view: "login", caseId: null };
+}
+
+/* A new entry in the history: the Back button returns here. */
+function navigate(path) {
+  if (location.hash === `#${path}`) applyRoute();
+  else location.hash = path;
+}
+
+/* Same entry, new URL: for the moves the Back button must not undo (login, logout). */
+function replaceRoute(path) {
+  history.replaceState(sessionLabel ? { sessionLabel } : null, "", `#${path}`);
+}
+
+async function applyRoute() {
+  const route = currentRoute();
+  if (sessionRole === "advisor") {
+    if (route.view !== "queue") {
+      replaceRoute("/queue");
+      return applyRoute();
+    }
+    if (document.getElementById("view-queue").hidden) {
+      show("view-queue");
+      await loadQueue();
+    }
+    if (route.caseId) await openTicket(route.caseId);
+    else showQueueList();
+  } else if (sessionRole === "customer") {
+    if (route.view !== "chat") replaceRoute("/chat");
+  }
+}
+
+window.addEventListener("hashchange", applyRoute);
+document.getElementById("queue-refresh").addEventListener("click", loadQueue);
+
+async function enterSession(role) {
+  sessionRole = role;
+  if (role === "advisor") {
+    // A shared case link opened before the login stays the target.
+    if (currentRoute().view !== "queue") replaceRoute("/queue");
+    await applyRoute();
+    return;
+  }
+  replaceRoute("/chat");
+  startThread();
+  show("view-chat");
+  await loadContext();
+  await loadTransactions();
+}
+
+/* A reload with a live session goes back to the same view, not to the login. */
+async function resumeSession() {
+  const response = await fetch("/api/v1/auth/me");
+  if (!response.ok) {
+    if (currentRoute().view === "chat") replaceRoute("/");
+    return;
+  }
+  const me = await response.json();
+  sessionLabel = (history.state && history.state.sessionLabel) || null;
+  await enterSession(me.role);
 }
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {
@@ -826,28 +1275,44 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     return;
   }
   const { role } = await response.json();
-  if (role === "advisor") {
-    show("view-queue");
-    loadQueue();
-    return;
-  }
-  startThread();
-  show("view-chat");
-  await loadContext();
-  await loadTransactions();
+  sessionLabel = role === "customer" ? { user: document.getElementById("login-user").value.trim() } : null;
+  resetPassword();
+  await enterSession(role);
+});
+
+function resetPassword() {
+  const field = document.getElementById("login-pass");
+  field.value = "";
+  field.type = "password";
+  const button = document.getElementById("toggle-pass");
+  button.setAttribute("aria-pressed", "false");
+  button.setAttribute("data-i18n", "showPassword");
+  button.textContent = t("showPassword");
+}
+
+/* Show or hide the password: the field changes type, the button says what it does next. */
+document.getElementById("toggle-pass").addEventListener("click", (event) => {
+  const field = document.getElementById("login-pass");
+  const show = field.type === "password";
+  field.type = show ? "text" : "password";
+  event.currentTarget.setAttribute("aria-pressed", String(show));
+  event.currentTarget.setAttribute("data-i18n", show ? "hidePassword" : "showPassword");
+  event.currentTarget.textContent = t(show ? "hidePassword" : "showPassword");
+  field.focus();
 });
 
 document.getElementById("chat-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = document.getElementById("chat-input");
   const value = input.value.trim();
-  if (!value) return;
+  if (!value || isBusy()) return;
   addBubble(value);
   postChat({ message: value });
   input.value = "";
 });
 
 document.getElementById("agent").addEventListener("click", () => {
+  if (isBusy()) return;
   const message = t("agentMessage");
   addBubble(t("agentButton"));
   postChat({ message });
@@ -857,6 +1322,11 @@ document.getElementById("logout").addEventListener("click", async () => {
   await fetch("/api/v1/auth/logout", { method: "POST" });
   clearThread();
   show("view-login");
+  document.getElementById("login-error").textContent = "";
+  resetPassword();
+  sessionRole = null;
+  sessionLabel = null;
+  replaceRoute("/");
 });
 
 document.getElementById("locale-group").addEventListener("click", (event) => {
@@ -873,8 +1343,17 @@ async function loadDemoEntry() {
   const available = response.ok;
   demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
-  document.getElementById("demo-banner").hidden = !available;
-  document.getElementById("password-login").open = !available;
+  // The password form stays visible with or without the personas.
+}
+
+/* The "simulated data" notice follows Gold, not the one-click entry. It shows
+   on the entry page whenever Gold is a mock, with or without the personas. */
+async function loadDataNotice() {
+  const response = await fetch("/api/v1/health");
+  if (!response.ok) return;
+  const body = await response.json().catch(() => ({}));
+  simulatedData = body.gold_source === "mock";
+  document.getElementById("demo-banner").hidden = !simulatedData || document.getElementById("view-login").hidden;
 }
 
 async function demoLogin(persona) {
@@ -884,6 +1363,9 @@ async function demoLogin(persona) {
     return;
   }
   const { locale } = await response.json();
+  sessionRole = "customer";
+  sessionLabel = { persona };
+  replaceRoute("/chat");
   startThread();
   show("view-chat");
   await loadContext();
@@ -896,6 +1378,8 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
   if (button) demoLogin(button.getAttribute("data-persona"));
 });
 
-loadLocale("es-419");
+loadLocale("es-419").then(resumeSession);
 loadBrand();
 loadDemoEntry();
+loadDataNotice();
+loadBuildInfo();

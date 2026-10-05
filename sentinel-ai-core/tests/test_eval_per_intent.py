@@ -62,6 +62,16 @@ def test_the_interval_resamples_bases_not_cases() -> None:
     assert block["charge"]["recall"]["interval_95"] == [block["charge"]["recall"]["value"]] * 2
 
 
+def test_accuracy_block_reports_bases_next_to_n() -> None:
+    from eval.intervals import accuracy_block
+
+    cases = [_case(f"c{i}", f"b{i // 2}", "charge") for i in range(4)]
+    block = accuracy_block(cases, [True, True, False, False])
+    assert block["n"] == 4
+    assert block["bases"] == 2
+    assert block["clusters"] == 2
+
+
 def test_run_versions_reports_per_intent_for_every_version() -> None:
     development = [c for c in load_dir(train.CASES_DIR) if c.split == "development"]
     result = run_versions(development, {"baseline": Version(DemoModel()), "trained_baseline": trained_version()})

@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Machine Learning
@@ -10,7 +10,7 @@ last_reviewed: 2026-10-04
 
 **Requirements:** the `ml` rows in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md), [metrics](../metrics.md), [metrics report](../metrics-report.md), [evidence index](../../../evidence/README.md).
+**Related:** [dataset](../../data/dataset.md), [metrics](../metrics.md), [metrics report](../metrics-report.md), [evidence index](../../../evidence/README.md).
 
 ## Scope
 
@@ -35,12 +35,13 @@ The model labels the intent only. Code decides permissions, policy, confirmation
 
 ## Result
 
-Source: [`2024Q4-eval-v7`](../../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The [metrics report](../metrics-report.md) gives the full tables.
+Source: [`2024Q4-eval-v8`](../../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). The [metrics report](../metrics-report.md) gives the full tables. The [model card](../model-card.md) gives the intended use and the limits.
 
-- `router_v2` is more accurate than the baseline on the same 280 sealed cases. The 95% interval of the paired net difference is above zero (`component.paired.*`).
-- Most of the gain is in the `missing` intent: a vague message that needs a clarifying question (`component.versions.<version>.breakdown.by_intent`).
-- The four language variants (es-MX, es-CO, es-AR, pt-BR) give about the same accuracy (`component.versions.router_v2.breakdown.by_variant`).
-- 0 unsafe outcomes on 75 attacks. With the rule of three, the true rate is at most 4% (95% confidence).
+- The verdict serves `router_v2`. `router_v3` has the higher kind accuracy (0.974 against 0.8182), but it fails the zero-unsafe-wording gate (4/93) and the subtype gate (0.8971 against 0.95) ([018](../decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05)).
+- `router_v2` beats the keyword baseline on the same 308 sealed cases. The 95% interval of the paired net difference is above zero (`paired.router_v2_vs_baseline`).
+- Most of the v2 gain is in the `missing` intent: a vague message that needs a clarifying question (`candidates.router_v2.intent.confusion`).
+- The trained baseline (TF-IDF and logistic regression) is more accurate than the served `router_v2` on this set: 0.9026 against 0.8182. The paired net is -26 (`paired.router_v2_vs_trained_baseline`, interval [-0.1591, -0.013]). It emits no subtype, slot or draft, so it cannot serve the full flow. The result is descriptive ([analysis](../metrics-report.md#result-v8-current-measurement)).
+- 0 unsafe outcomes on the attacks for every candidate (`attacks.candidates.<name>.unsafe_wording`). The wording gate of the served candidate reads the main block and the attack block.
 
 ## Data that we did not use as a label
 
@@ -69,12 +70,13 @@ For this reason the cases are **team-written text in es-419 and pt-BR**, declare
 
 | Item | Status | Where |
 |---|---|---|
-| Component against baseline on the same held-out set | Done | [`2024Q4-eval-v7`](../../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) |
+| Component against baseline on the same held-out set | Done | [`2024Q4-eval-v8`](../../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json) |
 | Error analysis by intent, variant and noise | Done | [metrics report](../metrics-report.md), sections 3 to 5 |
 | Experiment log | Done | One folder per run in [`evidence/evaluation-runs/`](../../../evidence/evaluation-runs/) ([013](../decisions/013-experiment-tracking.md)) |
 | Adversarial set and results | Done | [`evidence/adversarial/`](../../../evidence/adversarial/) and the attack block of `eval-v7` |
 | Confidence cut-offs | Done, off by default | [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) |
 | Charge selector against the rules, with exact labels | Done, off by default | [`charge-ranker/test-v1`](../../../evidence/charge-ranker/test-v1/summary.json), [025](../decisions/025-charge-selector.md), [rationale](../../rationale/charge-selector.md) |
-| Greetings and small talk | Open | [router v3 plan](../../../team/router-v3-plan.md) |
-| A trained baseline (TF-IDF and logistic regression) | Trained and frozen. Not yet measured on the sealed set | [`2024Q4-train-v1`](../../../evidence/evaluation-runs/2024Q4-train-v1/summary.json). The `eval-v8` measurement compares it with the router. |
+| Greetings and small talk | Measured on the sealed set. `router_v3` scores higher but fails the gates, so `router_v2` is served | [`2024Q4-eval-v8`](../../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json), [`2024Q4-select-v3d`](../../../evidence/evaluation-runs/2024Q4-select-v3d/summary.json) |
+| Prompt v3 examples, with 0, 4, 8 and 32 examples | Done on development. It picks nothing | [`2024Q4-ablation-v8`](../../../evidence/evaluation-runs/2024Q4-ablation-v8/summary.json) |
+| A trained baseline (TF-IDF and logistic regression) | Trained, frozen and measured on the sealed set | [`2024Q4-train-v1`](../../../evidence/evaluation-runs/2024Q4-train-v1/summary.json), [`2024Q4-eval-v8`](../../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json), [`2024Q4-analysis-v8`](../../../evidence/evaluation-runs/2024Q4-analysis-v8/summary.json) |
 | Precision, recall and F1 per intent, with intervals | Done in the runner | `per_intent` in each version of a run summary (`eval/per_intent.py`) |

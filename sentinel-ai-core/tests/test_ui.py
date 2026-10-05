@@ -91,6 +91,22 @@ def test_demo_entry_has_banner_personas_and_named_languages() -> None:
     assert "/api/v1/auth/demo" in APP_JS
 
 
+def test_simulated_data_notice_follows_gold_not_the_one_click_entry() -> None:
+    import json
+
+    assert 'id="demo-banner"' in INDEX
+    assert 'data-testid="demo-banner"' in INDEX
+    assert "/api/v1/health" in APP_JS
+    assert "simulatedData" in APP_JS
+    # The entry route no longer controls the banner.
+    block = APP_JS[APP_JS.index("async function loadDemoEntry") : APP_JS.index("async function loadDataNotice")]
+    assert "demo-banner" not in block
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        text = strings["demoBannerText"].lower()
+        assert "contrase" not in text and "senha" not in text and "password" not in text, (name, text)
+
+
 def test_resolution_panel_renders_the_closed_steps() -> None:
     assert "renderSteps" in APP_JS
     assert 'data-testid", "steps-panel"' in APP_JS
@@ -156,6 +172,89 @@ def test_the_why_followup_returns_an_explanation_over_http() -> None:
     assert body["values"]["window_days"] == 90
     assert body["values"]["synthetic"] is True
 
+
+
+def test_judge_guide_panel_exists_and_starts_closed() -> None:
+    """The entry page explains the demo in a closed panel.
+
+    It starts closed, so the persona cards keep their place on a phone. The
+    panel carries a text in both languages.
+    """
+    import json
+
+    assert 'data-testid="judge-guide"' in INDEX
+    tag = INDEX[INDEX.index('<details id="judge-guide"') :]
+    tag = tag[: tag.index(">") + 1]
+    assert " open" not in tag, "the guide must start closed"
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for key in ("judgeGuideTitle", "judgeGuideIntro", "judgeGuideCaseNormal", "judgeGuideSimGold"):
+            assert strings.get(key), (name, key)
+
+
+def test_judge_guide_lists_the_three_cases_and_four_mocks() -> None:
+    start = INDEX.index('<details id="judge-guide"')
+    panel = INDEX[start : INDEX.index("</details>", start)]
+    for key in ("judgeGuideCaseNormal", "judgeGuideCaseAmbiguous", "judgeGuideCasePerson"):
+        assert f'data-i18n="{key}"' in panel, key
+    for key in ("judgeGuideSimGold", "judgeGuideSimLogin", "judgeGuideSimAdvisor", "judgeGuideSimPolicy"):
+        assert f'data-i18n="{key}"' in panel, key
+
+
+def test_charges_panel_shows_a_message_when_the_account_has_no_charges() -> None:
+    """A local run against the real Gold file has no fixture charges.
+
+    The panel of recent charges was empty with no message. It now says so.
+    """
+    import json
+
+    block = APP_JS[APP_JS.index("function paintCharges") :]
+    block = block[: block.index("\n}")]
+    assert 't("txEmpty")' in block
+    assert "!rows.length" in block
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        assert strings.get("txEmpty"), name
+
+
+def test_claims_panel_shows_five_and_an_expand_control() -> None:
+    """The claims panel pages at five and adds one control for the rest."""
+    import json
+
+    assert "const CASES_PAGE = 5" in APP_JS
+    assert "cases.slice(0, CASES_PAGE)" in APP_JS
+    assert 'data-testid", "cases-show-all"' in APP_JS
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        assert strings.get("casesShowAll"), name
+
+
+def test_build_line_reads_health_and_hides_on_failure() -> None:
+    """The footer names the served build from the public health endpoint.
+
+    It reads once, needs no session and writes no state. A failed request
+    returns before the line shows, so the chat works as before.
+    """
+    assert 'data-testid="build-info"' in INDEX
+    assert '"/api/v1/health"' in APP_JS
+    load = APP_JS[APP_JS.index("async function loadBuildInfo") :]
+    load = load[: load.index("\n}")]
+    render = APP_JS[APP_JS.index("function renderBuildInfo") :]
+    render = render[: render.index("\n}")]
+    assert "if (!response.ok) return" in load
+    assert load.index("if (!response.ok) return") < load.index("renderBuildInfo()")
+    # No session and no write: the plain fetch, not the session-aware api().
+    assert "fetch(" in load and "api(" not in load
+    for field in ("model", "prompt_version", "bundle_hash", "gold_source"):
+        assert field in render, field
+    assert "slice(0, 8)" in render
+    assert "line.hidden = false" in render
+
+
+def test_health_reports_the_build_fields_the_footer_shows() -> None:
+    body = TestClient(create_app()).get("/api/v1/health").json()
+    for field in ("model", "prompt_version", "bundle_hash", "gold_source"):
+        assert field in body, field
 
 
 def test_bank_shell_has_session_line_data_date_and_three_columns() -> None:
@@ -286,8 +385,12 @@ def test_static_files_are_revalidated_so_versions_never_mix() -> None:
         assert api.get(path).headers["cache-control"] == "no-cache", path
 
 
-def test_flags_close_the_header_so_a_longer_label_does_not_move_them() -> None:
-    assert INDEX.index('id="agent"') < INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+def test_flags_close_the_header_and_the_agent_button_sits_with_the_chat() -> None:
+    # The header keeps the flags together: logout, then the language group.
+    assert INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+    # The agent button left the header for the chat column, so a longer label
+    # never moves the flags.
+    assert INDEX.index('id="view-chat"') < INDEX.index('id="agent"') < INDEX.index('id="view-queue"')
     assert 'rel="icon"' in INDEX
     assert (STATIC / "favicon.svg").is_file()
 
@@ -305,3 +408,74 @@ def test_advisor_detail_shows_no_customer_id_and_translates_status_and_turns() -
         strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
         for kind in ("text", "clarification", "confirm_box", "case_confirmation", "explanation", "handoff", "error"):
             assert f"turnSystem.{kind}" in strings, (name, kind)
+
+
+def test_a_double_click_sends_one_turn_and_the_controls_unlock() -> None:
+    """One click starts one turn. A double click and an impatient tap do not.
+
+    Every send control is off while the turn runs. The finally block turns them
+    on again, so a failed or timed-out turn never leaves the page locked.
+    """
+    assert "function isBusy()" in APP_JS
+    assert "function setBusy(busy)" in APP_JS
+    post = APP_JS[APP_JS.index("async function postChat") : APP_JS.index("function selectCandidate")]
+    # The turn entry point refuses a second call while one runs.
+    assert "if (isBusy()) return" in post
+    assert "setBusy(true)" in post
+    # The lock covers the input, the send button and the agent button.
+    lock = APP_JS[APP_JS.index("function setBusy") : APP_JS.index("async function postChat")]
+    assert "#chat-form input, #chat-form button, #agent" in lock
+    assert "aria-busy" in lock
+    # The unlock sits in the finally block, so a failed turn still unlocks.
+    assert "} finally {" in post
+    after_finally = post[post.index("} finally {") :]
+    assert "setBusy(false)" in after_finally
+    # A candidate pick is refused too while a turn runs.
+    candidate = APP_JS[APP_JS.index("function selectCandidate") : APP_JS.index("function renderCandidates")]
+    assert "if (isBusy()) return" in candidate
+
+
+def test_the_thread_redraws_and_only_the_last_locale_request_wins() -> None:
+    """A late answer of an old locale request must not win.
+
+    The thread and the persona welcome redraw in the new language. The raw i18n
+    keys stay hidden until the first locale loads.
+    """
+    load = APP_JS[APP_JS.index("async function loadLocale") : APP_JS.index("async function api")]
+    # Each call takes a ticket; only the newest ticket may paint.
+    assert "const request = ++localeRequest" in load
+    assert "if (request !== localeRequest) return" in load
+    # The thread redraws after the strings change.
+    assert "renderThread()" in load
+    # The first load lifts the raw-key cover.
+    assert 'document.body.removeAttribute("data-loading")' in load
+    assert "<body data-loading>" in INDEX
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "body[data-loading] main" in styles and "visibility: hidden" in styles
+
+
+def test_closed_chips_are_disabled_and_the_advisor_view_shows_names() -> None:
+    """A later turn closes the earlier candidates, so an old chip cannot fire.
+
+    The advisor list shows country and language words, not raw codes.
+    """
+    # A new turn closes every earlier entry.
+    post = APP_JS[APP_JS.index("async function postChat") : APP_JS.index("function selectCandidate")]
+    assert "entry.closed = true" in post
+    # The closed flag disables the chips when the thread redraws.
+    candidates = APP_JS[APP_JS.index("function renderCandidates") : APP_JS.index("const HAND_STEPS")]
+    assert "if (closed) {" in candidates
+    assert "chip.disabled = true" in candidates
+    assert "Boolean(entry && entry.closed)" in APP_JS
+    # The advisor row uses the name helpers, not the raw code.
+    row = APP_JS[APP_JS.index("function ticketRow") : APP_JS.index("const QUEUE_REFRESH_MS")]
+    assert "countryName(ticket.country)" in row
+    assert "languageName(ticket.package.language)" in row
+    import json
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in ("MX", "CO", "AR"):
+            assert strings.get(f"country.{code}"), (name, code)
+        for code in ("es-419", "es-MX", "es-CO", "es-AR", "pt-BR"):
+            assert strings.get(f"lang.{code}"), (name, code)

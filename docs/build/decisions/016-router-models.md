@@ -104,7 +104,7 @@ The app serves the pair chosen above, from `app/ai/serving.py`, when `SENTINEL_L
 
 ### Log-probability spike (added 2026-10-03)
 
-This is the feasibility check for [`router-confidence`](../../../openspec/changes/router-confidence/proposal.md) (task 1.1). The served model must return the alternatives of the label token before we build a confidence on it. One call per label, on the served configuration above.
+This is the feasibility check for [`router-confidence`](../../../openspec/changes/archive/2026-10-04-router-confidence/proposal.md) (task 1.1). The served model must return the alternatives of the label token before we build a confidence on it. One call per label, on the served configuration above.
 
 **Request settings.** Endpoint `POST {SENTINEL_LLM_BASE_URL}/chat/completions`, model `accounts/fireworks/models/glm-5p3-flash` (both routes), prompt v2 with the eight development examples (`app/ai/examples_v2.json`), `response_format: {"type": "json_object"}`, `reasoning_effort: low`, `max_tokens: 400`, `temperature: 0`, and `logprobs: true` with `top_logprobs: 5`. Fireworks refuses `top_logprobs` above 5 with HTTP 400 (`top_logprobs must be between 0 and 5`), so 5 is the maximum. The four turns are development cases, one per label: `charge`, `missing`, `out_of_scope`, `person`.
 

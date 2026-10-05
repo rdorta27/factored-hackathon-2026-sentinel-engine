@@ -162,11 +162,15 @@ class RecordingTransport(RecordedTransport):
         record: bool = False,
         api_key: str = "",
         repetition: int = 0,
+        force_live: bool = False,
     ) -> None:
         super().__init__(recordings_dir, prompt_version, repetition)
         self._live = live
         self._record = record
         self._api_key = api_key
+        # Live timing mode: ignore an existing recording and call the model, so
+        # every call is a live sample. The write keeps the run reproducible.
+        self._force_live = force_live
         self.live_calls = 0
         self.spent_usd = 0.0
 
@@ -179,7 +183,7 @@ class RecordingTransport(RecordedTransport):
     ) -> LLMResponse:
         self.last_latency_ms = 0.0
         path, digest = self.path_for(model, messages)
-        if path.is_file():
+        if path.is_file() and not self._force_live:
             return self.read(path, model)
         if not self._record or self._live is None:
             raise ModelUnavailable(

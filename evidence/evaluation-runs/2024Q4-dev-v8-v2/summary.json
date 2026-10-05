@@ -1,0 +1,6180 @@
+{
+  "baseline": {
+    "kind_accuracy": 0.5909,
+    "n": 198
+  },
+  "commit": "592f30d",
+  "eval_version": "2026-09-30+runner-v1",
+  "example_ids": [
+    "dv-b01-es-MX",
+    "dv-b03-pt-BR",
+    "dv-b10-pt-BR",
+    "dv-b14-es-CO",
+    "dv-b17-pt-BR",
+    "dv-b20-es-MX",
+    "dv-b24-es-CO",
+    "dv-b27-es-AR"
+  ],
+  "kind": "development",
+  "max_tokens": 400,
+  "models": {
+    "cheap": "accounts/fireworks/models/glm-5p3-flash",
+    "route_rule": "heuristic",
+    "strong": "accounts/fireworks/models/glm-5p3-flash"
+  },
+  "n": 198,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Development numbers for baseline and router_v2 on the router-v3 development split (018 amendment)."
+  ],
+  "paired_router_v2_vs_baseline": {
+    "above_zero": true,
+    "broken": [
+      "dev-adv-01",
+      "dev-charge-03",
+      "dev-charge-04",
+      "dev-oos-03",
+      "dev-person-02",
+      "dv-b11-pt-BR",
+      "dv-b12-es-CO",
+      "dv-b15-es-AR",
+      "dv-b15-es-CO",
+      "dv-b15-es-MX",
+      "dv-b15-pt-BR",
+      "ho-adv-01"
+    ],
+    "fixed": [
+      "dev-fault-02",
+      "dev-missing-03",
+      "dev-missing-04",
+      "dv-b10-es-AR",
+      "dv-b10-es-CO",
+      "dv-b10-es-MX",
+      "dv-b10-pt-BR",
+      "dv-b14-es-AR",
+      "dv-b14-es-CO",
+      "dv-b14-es-MX",
+      "dv-b14-pt-BR",
+      "dv-b16-es-AR",
+      "dv-b16-es-CO",
+      "dv-b16-es-MX",
+      "dv-b16-pt-BR",
+      "dv-b17-es-AR",
+      "dv-b18-es-AR",
+      "dv-b18-es-MX",
+      "dv-b18-pt-BR",
+      "dv-b19-es-AR",
+      "dv-b19-es-CO",
+      "dv-b19-es-MX",
+      "dv-b19-pt-BR",
+      "dv-b26-es-AR",
+      "dv-b26-es-MX",
+      "dv-b27-es-AR",
+      "dv-b27-es-CO",
+      "dv-b27-es-MX",
+      "dv-b27-pt-BR",
+      "dv-b29-es-AR",
+      "dv-b29-es-MX",
+      "dv-b29-pt-BR",
+      "dv-b30-es-AR",
+      "dv-b30-es-CO",
+      "dv-b30-es-MX",
+      "dv-b30-pt-BR",
+      "ho-missing-01",
+      "ho-missing-02",
+      "v3-balance-es-AR",
+      "v3-balance-es-MX",
+      "v3-balance-pt-BR",
+      "v3-help-es-AR",
+      "v3-help-es-CO",
+      "v3-help-es-MX",
+      "v3-help-pt-BR",
+      "v3-loan-es-AR",
+      "v3-loan-es-CO",
+      "v3-loan-es-MX",
+      "v3-loan-pt-BR",
+      "v3-unclear-es-AR",
+      "v3-unclear-es-CO",
+      "v3-unclear-es-MX",
+      "v3-unclear-pt-BR"
+    ],
+    "interval_95": [
+      0.0758,
+      0.3333
+    ],
+    "n": 198,
+    "net": 41,
+    "net_share": 0.2071
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "prompt_version": "v2",
+  "router_v2": {
+    "by_intent": {
+      "charge": 0.9041095890410958,
+      "missing": 0.5952380952380952,
+      "out_of_scope": 0.8222222222222222,
+      "person": 1.0,
+      "status": 0.0
+    },
+    "cost_usd": {
+      "n": 194,
+      "total": 0.025728
+    },
+    "drafts": {
+      "n": 0,
+      "reasons": {},
+      "rejected": 0
+    },
+    "invalid": 0,
+    "kind_accuracy": 0.8144329896907216,
+    "n": 198,
+    "slot_match": {
+      "amount": 0.8556701030927835,
+      "date_phrase": 0.979381443298969,
+      "merchant_words": 0.9690721649484536,
+      "twice": 0.979381443298969
+    },
+    "subtype_accuracy": 0.0,
+    "unavailable": 4
+  },
+  "rows": [
+    {
+      "confidence": 0.9975521004530826,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-charge-02",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "id": "dev-charge-03",
+      "status": "unavailable"
+    },
+    {
+      "id": "dev-charge-04",
+      "status": "unavailable"
+    },
+    {
+      "confidence": 0.9808724939438564,
+      "cost_usd": 0.0001315,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-charge-05",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9956830540936878,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-charge-07",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9889920868496996,
+      "cost_usd": 0.0001301,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-charge-08",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.8624550321343636,
+      "cost_usd": 0.0001292,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-missing-02",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9971035354629161,
+      "cost_usd": 0.0001289,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-missing-03",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9767179929691124,
+      "cost_usd": 0.0001295,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-missing-04",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9987890699174127,
+      "cost_usd": 0.0001301,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-oos-01",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997297592562105,
+      "cost_usd": 0.00013069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-oos-02",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "id": "dev-oos-03",
+      "status": "unavailable"
+    },
+    {
+      "confidence": 0.9956131436245621,
+      "cost_usd": 0.0001296,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-oos-04",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "id": "dev-person-02",
+      "status": "unavailable"
+    },
+    {
+      "confidence": 0.9999890483491712,
+      "cost_usd": 0.0001289,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-person-03",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996310727291641,
+      "cost_usd": 0.00015969999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-adv-01",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999904206257711,
+      "cost_usd": 0.0001372,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-adv-02",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9976595490191517,
+      "cost_usd": 0.00013239999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-fault-01",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9886471324454784,
+      "cost_usd": 0.0001285,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-fault-02",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9986339209684684,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-01",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9500073818349151,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-02",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9981475368294074,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-03",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9835327263998006,
+      "cost_usd": 0.00013069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-04",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9986117246050035,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-05",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9917110880861818,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-06",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.957726552763705,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-07",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.962870063486701,
+      "cost_usd": 0.00013039999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dev-rule-08",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9927144133448246,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-charge-02",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9746621962068562,
+      "cost_usd": 0.0001344,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-charge-03",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9911652752768927,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-missing-01",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9320014623601648,
+      "cost_usd": 0.00012859999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-missing-02",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999084411453077,
+      "cost_usd": 0.0001302,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-oos-02",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997672510103801,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-person-01",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.6762322376202259,
+      "cost_usd": 0.0001344,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "ho-adv-01",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.6733397932002433,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greet-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9367166203613456,
+      "cost_usd": 0.00013115,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greet-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.8596569304689158,
+      "cost_usd": 0.00013084999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greet-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.8470614123249427,
+      "cost_usd": 0.0001296,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greet-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9896774976988141,
+      "cost_usd": 0.00013039999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-thanks-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9723123096440384,
+      "cost_usd": 0.0001301,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-thanks-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9852156644034074,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-thanks-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9919424303393821,
+      "cost_usd": 0.0001296,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-thanks-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9828410789068519,
+      "cost_usd": 0.00013039999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-bye-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9800213486279933,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-bye-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.990506995709114,
+      "cost_usd": 0.0001301,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-bye-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9844662929491433,
+      "cost_usd": 0.00012989999999999999,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-bye-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.5903092853116424,
+      "cost_usd": 0.00013115,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-identity-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.6212140578595909,
+      "cost_usd": 0.00013055,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-identity-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.7761352325085075,
+      "cost_usd": 0.00013025,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-identity-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.7955952669577447,
+      "cost_usd": 0.00012964999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-identity-pt-BR",
+      "kind": "person",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.8148182766426134,
+      "cost_usd": 0.00012984999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-help-es-MX",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9998164001616402,
+      "cost_usd": 0.00013619999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-help-es-CO",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9551227730317606,
+      "cost_usd": 0.00013014999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-help-es-AR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9823950126476167,
+      "cost_usd": 0.0001295,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-help-pt-BR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9929643016822091,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-unclear-es-MX",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9952383782261093,
+      "cost_usd": 0.00013089999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-unclear-es-CO",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9933310941161572,
+      "cost_usd": 0.00012969999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-unclear-es-AR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9972968509076026,
+      "cost_usd": 0.0001301,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-unclear-pt-BR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9958782816976687,
+      "cost_usd": 0.00013089999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greetcharge-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.998743346868595,
+      "cost_usd": 0.00013209999999999999,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greetcharge-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9904913109623402,
+      "cost_usd": 0.00013089999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greetcharge-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9354619924487156,
+      "cost_usd": 0.00013130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-greetcharge-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.4301291634379137,
+      "cost_usd": 0.00013130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-status-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.6847983826066095,
+      "cost_usd": 0.00013045,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-status-es-CO",
+      "kind": "charge",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.5587827068258068,
+      "cost_usd": 0.00013045,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-status-es-AR",
+      "kind": "charge",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.7626769440956134,
+      "cost_usd": 0.00013039999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-status-pt-BR",
+      "kind": "charge",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997240576913552,
+      "cost_usd": 0.00013069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-loan-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9998476359104482,
+      "cost_usd": 0.0001316,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-loan-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9996678100251949,
+      "cost_usd": 0.00013069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-loan-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9993386902229974,
+      "cost_usd": 0.0001302,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-loan-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9999242600728006,
+      "cost_usd": 0.00013145,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-balance-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9999736950320304,
+      "cost_usd": 0.00013235,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-balance-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9998051004932172,
+      "cost_usd": 0.00013115,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-balance-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9998584641035273,
+      "cost_usd": 0.00013035,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-balance-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9998384691848416,
+      "cost_usd": 0.00013130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-card-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9986870238325422,
+      "cost_usd": 0.000131,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-card-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9994683989160401,
+      "cost_usd": 0.00013039999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-card-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9980402426421383,
+      "cost_usd": 0.0001302,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-card-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9968740439213186,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-transfer-es-MX",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9954085052620094,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-transfer-es-CO",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9954531002702971,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-transfer-es-AR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9891614929619926,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-transfer-pt-BR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": false
+    },
+    {
+      "confidence": 0.9996486245796447,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-amount-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": 1000,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9948550778529937,
+      "cost_usd": 0.0001306,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-amount-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": 1000,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9980389900090907,
+      "cost_usd": 0.0001398,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-amount-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": 1000,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9978701831237751,
+      "cost_usd": 0.00013069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-amount-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": 1000,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9991299725841848,
+      "cost_usd": 0.0001315,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-merchantdate-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": "ayer",
+          "match": false
+        },
+        "merchant_words": {
+          "expected": "cafetería",
+          "match": false
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9947585195589037,
+      "cost_usd": 0.0001318,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-merchantdate-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": "ayer",
+          "match": false
+        },
+        "merchant_words": {
+          "expected": "cafetería",
+          "match": false
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9905250856282346,
+      "cost_usd": 0.0001315,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-merchantdate-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": "ayer",
+          "match": false
+        },
+        "merchant_words": {
+          "expected": "cafetería",
+          "match": false
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9606553387971902,
+      "cost_usd": 0.000131,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-merchantdate-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": "ontem",
+          "match": false
+        },
+        "merchant_words": {
+          "expected": "cafeteria",
+          "match": false
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9959007683880782,
+      "cost_usd": 0.00013089999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-twice-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": "cafetería",
+          "match": false
+        },
+        "twice": {
+          "expected": true,
+          "match": false
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9927144133448246,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-twice-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": true,
+          "match": false
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9982960142570605,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-twice-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": true,
+          "match": false
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9767592903358838,
+      "cost_usd": 0.0001295,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "v3-twice-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": "cafeteria",
+          "match": false
+        },
+        "twice": {
+          "expected": true,
+          "match": false
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9982717813440004,
+      "cost_usd": 0.00013644999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b01-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993327899374194,
+      "cost_usd": 0.00013945,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b01-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9989947923184562,
+      "cost_usd": 0.00013825,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b01-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9981830184917615,
+      "cost_usd": 0.00013685,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b01-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993538612676778,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b02-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9962049794147896,
+      "cost_usd": 0.0001361,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b02-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9980389885030426,
+      "cost_usd": 0.00013480000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b02-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9969102202354476,
+      "cost_usd": 0.0001337,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b02-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9988446337529596,
+      "cost_usd": 0.00013969999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b03-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9990042963729692,
+      "cost_usd": 0.00014130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b03-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.99877916752828,
+      "cost_usd": 0.00014069999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b03-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9984880592823447,
+      "cost_usd": 0.0001346,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b03-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993889945403791,
+      "cost_usd": 0.000137,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b04-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9984144786119139,
+      "cost_usd": 0.0001336,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b04-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993154497659118,
+      "cost_usd": 0.00013859999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b04-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997544435305626,
+      "cost_usd": 0.00014,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b04-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9998529476518332,
+      "cost_usd": 0.00013419999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b05-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996243189310952,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b05-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9983437724608593,
+      "cost_usd": 0.00013419999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b05-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9992818609157067,
+      "cost_usd": 0.0001355,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b05-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9968212317569881,
+      "cost_usd": 0.0001375,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b06-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9963425754858232,
+      "cost_usd": 0.0001446,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b06-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9977784644400145,
+      "cost_usd": 0.00013859999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b06-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9915255399084956,
+      "cost_usd": 0.0001373,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b06-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996934354346579,
+      "cost_usd": 0.00013419999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b07-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993213265649791,
+      "cost_usd": 0.00013539999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b07-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9994616997318195,
+      "cost_usd": 0.00013419999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b07-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997241164457682,
+      "cost_usd": 0.00014130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b07-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996877215304817,
+      "cost_usd": 0.0001334,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b08-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9992457932758545,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b08-es-CO",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.998259562098836,
+      "cost_usd": 0.0001357,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b08-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9956080780976984,
+      "cost_usd": 0.00013519999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b08-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9832271840767591,
+      "cost_usd": 0.00013239999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b10-es-MX",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.994424350126586,
+      "cost_usd": 0.000133,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b10-es-CO",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9939111675225782,
+      "cost_usd": 0.0001327,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b10-es-AR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9968944562026842,
+      "cost_usd": 0.0001316,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b10-pt-BR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9931380009591688,
+      "cost_usd": 0.0001343,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b11-es-MX",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9897224476572768,
+      "cost_usd": 0.00013489999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b11-es-CO",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9702748624714735,
+      "cost_usd": 0.0001346,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b11-es-AR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9943023762549966,
+      "cost_usd": 0.0001338,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b11-pt-BR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.49934620761872067,
+      "cost_usd": 0.00013589999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b12-es-MX",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.5276808039458056,
+      "cost_usd": 0.0001357,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b12-es-CO",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9288743099557375,
+      "cost_usd": 0.00013639999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b12-es-AR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9930660731303883,
+      "cost_usd": 0.00013519999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b12-pt-BR",
+      "kind": "charge",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9987877582868145,
+      "cost_usd": 0.00013089999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b14-es-MX",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9994220690454418,
+      "cost_usd": 0.0001315,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b14-es-CO",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9986636775808188,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b14-es-AR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.998561004131794,
+      "cost_usd": 0.00013130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b14-pt-BR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9998703481319312,
+      "cost_usd": 0.00013780000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b15-es-MX",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9998490234247908,
+      "cost_usd": 0.0001416,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b15-es-CO",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9653238861405385,
+      "cost_usd": 0.00013539999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b15-es-AR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9690852096096103,
+      "cost_usd": 0.000135,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b15-pt-BR",
+      "kind": "missing",
+      "kind_ok": false,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": false
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9817307630205679,
+      "cost_usd": 0.00013135,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b16-es-MX",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.993283063720242,
+      "cost_usd": 0.00013164999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b16-es-CO",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9549833804907512,
+      "cost_usd": 0.00013135,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b16-es-AR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9862498290540104,
+      "cost_usd": 0.00013115,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b16-pt-BR",
+      "kind": "missing",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999361629640334,
+      "cost_usd": 0.00013084999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b17-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999282212902646,
+      "cost_usd": 0.00013084999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b17-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996203844210343,
+      "cost_usd": 0.00013084999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b17-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.99992391349281,
+      "cost_usd": 0.00013035,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b17-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996894708391341,
+      "cost_usd": 0.00013264999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b18-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9992691596195906,
+      "cost_usd": 0.00013294999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b18-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9998198216991842,
+      "cost_usd": 0.00013264999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b18-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9991716047057452,
+      "cost_usd": 0.00013215,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b18-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9992660221310273,
+      "cost_usd": 0.00013235,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b19-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9995265573810289,
+      "cost_usd": 0.00013235,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b19-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9988001848105711,
+      "cost_usd": 0.00013235,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b19-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9996400157297023,
+      "cost_usd": 0.00013215,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b19-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9998626595026711,
+      "cost_usd": 0.00013189999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b20-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999315603417024,
+      "cost_usd": 0.0001328,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b20-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9995684408112477,
+      "cost_usd": 0.0001328,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b20-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999721550590701,
+      "cost_usd": 0.00013139999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b20-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9988988821441563,
+      "cost_usd": 0.00013414999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b21-es-MX",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993220279845394,
+      "cost_usd": 0.00013475,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b21-es-CO",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9993879273734033,
+      "cost_usd": 0.00013445,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b21-es-AR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9966483249233994,
+      "cost_usd": 0.00013544999999999999,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b21-pt-BR",
+      "kind": "out_of_scope",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997488942550702,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b24-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.999997939684644,
+      "cost_usd": 0.0001306,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b24-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9997488942550702,
+      "cost_usd": 0.00013030000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b24-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.999993367938616,
+      "cost_usd": 0.0001298,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b24-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 1.0,
+      "cost_usd": 0.00012969999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b25-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9992590229833532,
+      "cost_usd": 0.0001306,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b25-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999851486342529,
+      "cost_usd": 0.00012939999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b25-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999951577707964,
+      "cost_usd": 0.0001289,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b25-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999985856663951,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b26-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999661711980731,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b26-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999985856663951,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b26-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999974081373312,
+      "cost_usd": 0.00013489999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b26-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999442613762599,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b27-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999548584111174,
+      "cost_usd": 0.0001315,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b27-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999442613762599,
+      "cost_usd": 0.0001312,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b27-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999768156657167,
+      "cost_usd": 0.00013130000000000002,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b27-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9147034929332832,
+      "cost_usd": 0.0001336,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b28-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.8174052100563324,
+      "cost_usd": 0.0001345,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b28-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9692285537822655,
+      "cost_usd": 0.00013389999999999997,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b28-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9045219113149282,
+      "cost_usd": 0.00013519999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b28-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.999307973631119,
+      "cost_usd": 0.0001291,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b29-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9995720549268838,
+      "cost_usd": 0.0001306,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b29-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.999613747264487,
+      "cost_usd": 0.00013,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b29-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9999984465065425,
+      "cost_usd": 0.00012859999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b29-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9801900859688945,
+      "cost_usd": 0.00013434999999999999,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b30-es-MX",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9987473853121313,
+      "cost_usd": 0.00013405,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b30-es-CO",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9985371794270579,
+      "cost_usd": 0.00013434999999999999,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b30-es-AR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    },
+    {
+      "confidence": 0.9991771207058944,
+      "cost_usd": 0.00013294999999999998,
+      "draft": null,
+      "draft_ok": null,
+      "draft_reason": null,
+      "id": "dv-b30-pt-BR",
+      "kind": "person",
+      "kind_ok": true,
+      "slots": {
+        "amount": {
+          "expected": null,
+          "match": true
+        },
+        "date_phrase": {
+          "expected": null,
+          "match": true
+        },
+        "merchant_words": {
+          "expected": null,
+          "match": true
+        },
+        "twice": {
+          "expected": null,
+          "match": true
+        }
+      },
+      "status": "ok",
+      "subtype": null,
+      "subtype_ok": true
+    }
+  ],
+  "run_id": "2024Q4-dev-v8-v2",
+  "spend": {
+    "cap_usd": 1.0,
+    "capped": false,
+    "n": 190,
+    "spent_usd": 0.025202
+  },
+  "split": "development"
+}

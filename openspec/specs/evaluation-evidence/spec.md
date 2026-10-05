@@ -13,7 +13,7 @@ The run SHALL persist every `category` and `subcategory` combination for
 `case_type = Claim` with its count and share, and SHALL persist the same for
 `case_type = Complaint` and for the whole history as the global taxonomy. The
 persisted set SHALL be the full counter, never a truncated top list. Traces to
-REQ-0016 (P0, Pending) and decision 007.
+REQ-0016 (P0, Done) and decision 007.
 
 #### Scenario: The full counter is persisted
 
@@ -30,7 +30,7 @@ REQ-0016 (P0, Pending) and decision 007.
 The run SHALL persist the Claim counts by month, country, reception channel,
 priority and status, and the claimed-amount percentiles per subcategory, so the
 evaluation set can be stratified to the real distribution. Traces to REQ-0020
-(P0, Pending) and REQ-0024 (P1, Pending).
+(P0, Done) and REQ-0024 (P1, Done).
 
 #### Scenario: Mix is available per dimension
 
@@ -46,8 +46,8 @@ evaluation set can be stratified to the real distribution. Traces to REQ-0020
 
 The run SHALL persist the `contact_reason` distribution and the escalation and
 resolution flags for the window, as the reference for the router case mix and
-the automation baseline. Traces to REQ-0016 (P0, Pending) and REQ-0055 (P0,
-Pending).
+the automation baseline. Traces to REQ-0016 (P0, Done) and REQ-0055 (P0,
+Done).
 
 #### Scenario: Contact reasons are counted in full
 
@@ -61,7 +61,7 @@ Pending).
 
 ### Requirement: Reference thresholds
 
-The run SHALL persist transaction-amount and fraud-score percentiles grouped by the customer's account country (from `customers.country`) and the charge currency, never by `transaction_country` alone and never pooling amounts of different currencies. Country names SHALL be normalized to `México`, `Colombia` and `Argentina` before grouping. The run SHALL also persist the share of products per account country and currency, with its denominator. Traces to REQ-0006 (P0, In progress), REQ-0016 (P0, In progress) and REQ-0015 (P0, In progress); decisions 25 and 26.
+The run SHALL persist transaction-amount and fraud-score percentiles grouped by the customer's account country (from `customers.country`) and the charge currency, never by `transaction_country` alone and never pooling amounts of different currencies. Country names SHALL be normalized to `México`, `Colombia` and `Argentina` before grouping. The run SHALL also persist the share of products per account country and currency, with its denominator. Traces to REQ-0006 (P0, Done), REQ-0016 (P0, Done) and REQ-0015 (P0, Done); decisions 25 and 26.
 
 #### Scenario: Thresholds are grounded in data
 
@@ -82,7 +82,7 @@ The run SHALL persist transaction-amount and fraud-score percentiles grouped by 
 
 No output of the run SHALL contain dataset rows, `customer_id`, names, documents
 or any personal data. Only counts, shares and percentile values SHALL be
-written. Traces to REQ-0047 (P0, In progress) and REQ-0031 (P0, Pending).
+written. Traces to REQ-0047 (P0, Done) and REQ-0031 (P0, Done).
 
 #### Scenario: No row leaves the process
 
@@ -93,7 +93,7 @@ written. Traces to REQ-0047 (P0, In progress) and REQ-0031 (P0, Pending).
 
 A run SHALL write to a new `evidence/evaluation/<run-id>/` folder and SHALL never
 edit a committed run. A `verify` mode SHALL recompute the data hashes and every
-summary field and SHALL fail on any mismatch. Traces to REQ-0028 (P0, Pending).
+summary field and SHALL fail on any mismatch. Traces to REQ-0028 (P0, Done).
 
 #### Scenario: A new run gets a new folder
 
@@ -109,7 +109,7 @@ summary field and SHALL fail on any mismatch. Traces to REQ-0028 (P0, Pending).
 
 The run SHALL read only the development zone and SHALL NOT read data at or after
 the held-out cut, and it SHALL report the held-out row count as zero. Traces to
-REQ-0017 (P0, In progress).
+REQ-0017 (P0, Done).
 
 #### Scenario: Held-out rows are not read
 
@@ -120,7 +120,7 @@ REQ-0017 (P0, In progress).
 
 The evaluation runner SHALL consume a derived label set that records the run id
 and the summary hash it came from, so a measured result is tied to one frozen
-run. Traces to REQ-0016 (P0, Pending) and REQ-0017 (P0, In progress).
+run. Traces to REQ-0016 (P0, Done) and REQ-0017 (P0, Done).
 
 #### Scenario: The label set names its source
 

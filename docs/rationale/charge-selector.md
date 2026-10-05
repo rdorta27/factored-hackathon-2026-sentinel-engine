@@ -50,7 +50,7 @@ The dataset has no real customer message that links to a charge. We checked the 
 | `silver_call_center_interactions.contact_reason` | 686,296 | 6 |
 
 - The texts are labels written as sentences. For example: "Queja relacionada con transactions".
-- The transcripts are templates. See [`dataset.md`](../understand/dataset.md) and [007](../build/decisions/007-learned-component.md).
+- The transcripts are templates. See [`dataset.md`](../data/dataset.md) and [007](../build/decisions/007-learned-component.md).
 - `origin_interaction_id` is empty in every complaint. No table links a complaint or a call to a `transaction_id`.
 - A label needs the charge that the customer meant. The dataset has none. We write the text from a known transaction, so the label is exact.
 

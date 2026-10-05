@@ -122,3 +122,39 @@ def test_single_turn_case_stays_single_turn() -> None:
     turn = run_case(build_client(FIXTURES, DemoModel()), case)
     assert turn["outcome"] == "clarification"
     assert turn["matched"] is True
+
+
+class _TimedTransport:
+    """A fake transport that sleeps, so the runner records a model latency."""
+
+    def __init__(self, delay_s: float = 0.02) -> None:
+        self.delay_s = delay_s
+        self.last_latency_ms = 0.0
+
+    def complete(self, *, model: str, messages: list, temperature: float = 0.0):  # type: ignore[no-untyped-def]
+        import time
+
+        from app.ai.transport import LLMResponse
+
+        time.sleep(self.delay_s)
+        self.last_latency_ms = self.delay_s * 1000
+        return LLMResponse(content='{"kind": "charge", "language": "es-419"}', cost_usd=0.001)
+
+
+def test_live_timing_records_the_model_call_and_labels_the_source() -> None:
+    from app.ai.llm import PromptedLLMRouter, RouterConfig
+
+    transport = _TimedTransport()
+    router = PromptedLLMRouter(
+        transport,
+        RouterConfig(cheap_model="cheap-eval", strong_model="strong-eval", default_model="default-eval"),
+    )
+    turn = run_case(build_client(FIXTURES, router), _resolution_case(), timing="live")
+    assert turn["latency_source"] == "live"
+    assert turn["model_latency_ms"] is not None
+    assert turn["model_latency_ms"] >= 20.0
+
+
+def test_replay_is_the_default_timing_source() -> None:
+    turn = run_case(build_client(FIXTURES), _case("dev-oos-01"))
+    assert turn["latency_source"] == "replay"

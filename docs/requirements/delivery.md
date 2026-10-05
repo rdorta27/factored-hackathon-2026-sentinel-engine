@@ -1,6 +1,12 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Requirements: Delivery
 
-What the evaluators receive: repository, deployed link, slides, video, limitations and the path to production. Back to the [requirements index](requirements.md), which holds the sources, the classification, the status counts and the dependency chains.
+This page covers what the evaluators receive: the repository, the deployed link, the slides, the video, the limits and the path to production. The [requirements index](requirements.md) holds the sources, the classification, the status counts and the dependency chains.
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -16,82 +22,131 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 <a id="req-0013"></a>
 ### REQ-0013 · Report data and language limits
 
-State openly what the data cannot support: the dataset is synthetic, Spanish only, and covers only Mexico, Colombia and Argentina, so Portuguese and other countries are untested against real material. The assumptions are listed once in the [dataset assumptions](../understand/dataset.md#assumptions).
+State openly what the data cannot support. The dataset is synthetic and in Spanish only. It covers only Mexico, Colombia and Argentina. No real material tests Portuguese or other countries. The [dataset assumptions](../data/dataset.md#assumptions) list the assumptions once.
 
 **Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** analysis
 
 **Source:** Problem statement: Scope · Kickoff p. 15 · Dataset summary
 
-**Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024). Coverage limits come from the language support and the breakdown.
+**Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024). The coverage limits come from the language support and the breakdown.
 
-**Evidence:** Proven by: the [dataset assumptions](../understand/dataset.md#assumptions) and [rationale](../rationale/data-assumptions.md): synthetic data, Spanish only, accounts only in México, Colombia and Argentina, and Mexican accounts only in USD. Measured limits of the data: the balance has no usable as-of date, complaint history cannot be tied to a charge, and no customer signal adds to `fraud_score`, whose label is a generator artefact ([`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/README.md), [`dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/README.md), [investigation data support](../rationale/investigation-data-support.md)). The [problem and demand](../rationale/problem-and-demand.md) page adds two: the product field is empty on most transactional calls, and no complaint links to a call. Language limits: transcripts are two Spanish templates ([`transcript-chats/20261002T144836Z`](../../evidence/transcript-chats/20261002T144836Z/summary.json)), and the Portuguese cases are model-written ([018](../build/decisions/018-evaluation-acceptance.md)). Every input is labelled in [what is real](../architecture/what-is-real.md).
+**Evidence:** Proven by:
 
-Proven by (also): the README [limitations](../../README.md#limitations) section.
+- The [dataset assumptions](../data/dataset.md#assumptions) and the [rationale](../rationale/data-assumptions.md). The data is synthetic and in Spanish only. Accounts exist only in México, Colombia and Argentina. Mexican accounts use only USD.
+- The measured limits of the data. The balance has no usable as-of date. A complaint cannot link to a charge. No customer signal adds to `fraud_score`, and its label is a generator artefact. See [`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/README.md), [`dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/README.md) and the [investigation data support](../rationale/investigation-data-support.md).
+- Two more limits on the [problem and demand](../rationale/problem-and-demand.md) page. The product field is empty on most transactional calls. No complaint links to a call.
+- The language limits. The transcripts are two Spanish templates ([`transcript-chats/20261002T144836Z`](../../evidence/transcript-chats/20261002T144836Z/summary.json)). A model wrote the Portuguese cases ([018](../build/decisions/018-evaluation-acceptance.md)).
+- The labels in [what is real](../architecture/what-is-real.md). Each input has a label.
+- The README section [limitations](../../README.md#limitations).
 
-The three demo pt-BR lines were written by grok-4.7 and back-translated by DeepSeek V4.1 Flash ([`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md)): no native speaker. A Colombian teammate accepted the three es-CO lines on 2026-10-02 after the normal line named the peso as mexicano. The same model found no drift on es-MX and es-AR; nobody on the team speaks those varieties. A 2% replay of `customer_text` on the development side of the 70/30 time split (held-out cut 2025-07-01) is in [`evidence/transcript-chats/20261002T144836Z/summary.json`](../../evidence/transcript-chats/20261002T144836Z/summary.json): 280 handoffs out of 280, and 2 distinct prefixes. The engine data directory has no transcript files, so the read was the analysis working copy; no customer data was copied into the repo. The local files are the 2024Q4 window only, so no held-out row was present to exclude. The 14,023 transcripts are two templates, not customer language. Pix hands off. `extrato` and `fatura` are not marked out of scope, because the sealed set uses them inside charge inquiries.
+**Review of the demo lines and the transcripts:**
 
-Missing: the limits on the slides, including the limits fixed in [018](../build/decisions/018-evaluation-acceptance.md): model-written and model-reviewed cases with no human or native-speaker review, and no strict equivalence between variants.
+- grok-4.7 wrote the three demo pt-BR lines. DeepSeek V4.1 Flash back-translated them ([`eval/review/demo-pt-br.md`](../../sentinel-ai-core/eval/review/demo-pt-br.md)). No native speaker reviewed them.
+- A Colombian teammate accepted the three es-CO lines on 2026-10-02. The normal line had named the peso as mexicano before that.
+- The same model found no drift on es-MX and es-AR. Nobody on the team speaks those varieties.
+- A 2% replay of `customer_text` used the development side of the 70/30 time split (held-out cut 2025-07-01). The result is in [`evidence/transcript-chats/20261002T144836Z/summary.json`](../../evidence/transcript-chats/20261002T144836Z/summary.json): 280 handoffs out of 280, and 2 distinct prefixes.
+- The engine data directory has no transcript files. The read used the analysis working copy. The team copied no customer data into the repository.
+- The local files cover the 2024Q4 window only. No held-out row was present to exclude.
+- The 14,023 transcripts are two templates. They are not customer language.
+- Pix hands off. `extrato` and `fatura` are not marked out of scope, because the sealed set uses them inside charge inquiries.
+
+Missing: the limits on the slides. They include the limits that [018](../build/decisions/018-evaluation-acceptance.md) fixes. The cases are model-written and model-reviewed. No human or native speaker reviewed them. The variants are not strictly equivalent.
+
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the [negative results](../rationale/negative-results.md) page records each rejected component and the rule that decided it; the [mocks](../architecture/mocks.md) page records each mock, its limit and its production backend. Remaining: the known limitation of the attack suite (category B, task 4.3), the 20-label human check (task 3.3) and the limits on the slides.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
 
-An honest list of what the prototype lacks before real use: capacity, data, languages, deployment and remaining risks.
+Give an honest list of what the prototype lacks before real use: capacity, data, languages, deployment and remaining risks.
 
 **Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
 
 **Source:** Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28)
 
-**Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). Gathers the data, language and capacity limits.
+**Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). The page gathers the data, language and capacity limits.
 
-**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing-capacity.md) (REQ-0053), the [what is real](../architecture/what-is-real.md) page and the [investigation data support](../rationale/investigation-data-support.md) page. Missing also: a roadmap section in the README with each item not built and the evidence for why.
+**Evidence:** Proven by:
+
+- The README section [limitations](../../README.md#limitations). It covers data, languages, model, state, privacy, safety evidence and deployment.
+- The [sizing](../sizing-capacity.md) (REQ-0053).
+- The [what is real](../architecture/what-is-real.md) page.
+- The [investigation data support](../rationale/investigation-data-support.md) page.
+
+Missing also: a roadmap section in the README. It must list each item that the team did not build, with the evidence for why.
 
 Missing: the same limits on the slides.
 
 <a id="req-0034"></a>
 ### REQ-0034 · Clean public repository
 
-The repository is delivered public as `factored-hackathon-2026-sentinel-engine`, with all links sent to `hackathon.admin@factored.ai`, so it must hold no secrets, private records or restricted data.
+The team delivers the repository as public, with the name `factored-hackathon-2026-sentinel-engine`. All links go to `hackathon.admin@factored.ai`. For this reason, the repository must hold no secrets, no private records and no restricted data.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
-**Depends on:** [REQ-0031](data-ml.md#req-0031). No restricted data in the public repo.
+**Depends on:** [REQ-0031](data-ml.md#req-0031). The public repository holds no restricted data.
 
-**Evidence:** Proven by: the current tree holds no bucket name or account id; `gitleaks git --redact` over the full history reports 0 findings across the 246 commits, with no AWS key shapes, no private key material and no real passwords; no dataset rows were ever committed (no `.csv`, `.parquet`, `.duckdb` or database blob, and no `data/` or `raw/` folder, in any commit); `.gitignore` covers `data/`, `.env` and the local data formats; and `.github/workflows/gitleaks.yml` scans the commits each push and pull request adds, so a new secret is caught as it enters the repository. The review and its blind spot are recorded in [security](../build/security.md#history-review-req-0034-101).
+**Evidence:** Proven by:
 
-Accepted residual risk, documented: the dataset bucket name is visible in commits before `d070faa`. The bucket is private, no credentials were exposed, and the team decided not to rewrite history. The name is public; access is not.
+- The current tree holds no bucket name and no account id.
+- `gitleaks git --redact` over the full history reports 0 findings across the 246 commits. It finds no AWS key shapes, no private key material and no real passwords.
+- The team never committed dataset rows. No commit has a `.csv`, `.parquet`, `.duckdb` or database blob, or a `data/` or `raw/` folder.
+- `.gitignore` covers `data/`, `.env` and the local data formats.
+- `.github/workflows/gitleaks.yml` scans the commits that each push and pull request adds. It catches a new secret when the secret enters the repository.
+
+The review and its blind spot are in [security](../build/security.md#history-review-req-0034-101).
+
+Accepted residual risk, documented: the dataset bucket name is visible in commits before `d070faa`. The bucket is private. No credentials were exposed. The team decided not to rewrite history. The name is public. Access is not.
 
 <a id="req-0035"></a>
 ### REQ-0035 · Deployed tool link
 
-A link to the running tool, with usage and spending limits. A minimal deployment is enough; cloud is not mandatory (help channel, 9/28).
+Give a link to the running tool, with usage limits and spending limits. A minimal deployment is enough. Cloud is not mandatory (help channel, 9/28).
 
 **Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering · **Area:** ai
 
 **Source:** Kickoff p. 18 · Help channel (9/28)
 
-**Depends on:** [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034). A public link needs the session and a clean repo.
+**Depends on:** [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034). A public link needs the session and a clean repository.
 
-**Evidence:** Proven by: the live link serves router_v2, checked on 2026-10-02 with `GET /api/v1/health` (`model` `accounts/fireworks/models/glm-5p3-flash`, `prompt_version` `v2`, `gold_source` `mock`). The image was redeployed on 2026-10-03 from `main` (`9664d9d`, PR #52), so it now carries the keys PRs #49 and #50 added. Earlier proof: the live link at `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`, deployed 10/02 from [deploy/azure](../../deploy/azure/deploy.sh) under [019](../build/decisions/019-azure-container-apps.md) (Hugging Face dropped its free Docker tier, so [012](../build/decisions/012-public-deployment.md) is superseded). Verified remotely on 10/02: `GET /api/v1/health` returns `{"status":"ok","gold_source":"mock","state_backend":"sqlite","reference_date":"2026-06-17"}`, the page and branding load, `CUST-0001` logs in and creates a dispute (201), and `ADV-0001` sees the handoffs. Usage and spending limits: hosting sits inside the Azure monthly free grant plus about USD 0.08/day for the registry, all within the USD 200 trial credit ([cost](../build/cost.md)). The 10/02 hardening changes the deploy to one replica (SQLite is per instance), a non-root user with state under `/tmp/sentinel`, a container healthcheck and a health route that answers 503 when the state store fails. The 10/03 redeploy runs with that image and the Azure Files share mounted at `/mnt/sentinel`: a dispute and a handoff ticket opened before the restart were both still there after `az containerapp revision restart` (health 200), `CUST-0001` read its own cases again and `ADV-0001` saw the queued ticket in `/api/v1/handoffs`. Monitoring: one JSON line per turn on standard output reaches Log Analytics, counted with no identifier in the query — `ContainerAppConsoleLogs_CL | where TimeGenerated > ago(2h) | where Log_s has "country" | extend rec = parse_json(Log_s) | summarize n = count() by country = tostring(rec.country), outcome = tostring(rec.outcome) | order by country asc` — which answered `MX | ok | 45` for the two hours after the restart.
+**Evidence:** Proven by:
+
+- **Router version.** The live link serves router_v2. The team checked it on 2026-10-02 with `GET /api/v1/health` (`model` `accounts/fireworks/models/glm-5p3-flash`, `prompt_version` `v2`, `gold_source` `mock`).
+- **Redeploy.** The team redeployed the image on 2026-10-03 from `main` (`9664d9d`, PR #52). It now carries the keys that PRs #49 and #50 added.
+- **Earlier proof.** The live link is `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. The team deployed it on 10/02 from [deploy/azure](../../deploy/azure/deploy.sh) under [019](../build/decisions/019-azure-container-apps.md). Hugging Face dropped its free Docker tier, so [019](../build/decisions/019-azure-container-apps.md) supersedes [012](../build/decisions/012-public-deployment.md).
+- **Remote checks on 10/02.** `GET /api/v1/health` returns `{"status":"ok","gold_source":"mock","state_backend":"sqlite","reference_date":"2026-06-17"}`. The page and the branding load. `CUST-0001` logs in and creates a dispute (201). `ADV-0001` sees the handoffs.
+- **Usage and spending limits.** Hosting sits inside the Azure monthly free grant. The registry adds about USD 0.08 a day. All of it stays within the USD 200 trial credit ([cost](../build/cost.md)).
+- **Hardening of 10/02.** The deploy uses one replica, because SQLite is per instance. It uses a non-root user, with state under `/tmp/sentinel`. It has a container healthcheck. The health route answers 503 when the state store fails.
+- **Redeploy of 10/03.** It runs with that image and the Azure Files share mounted at `/mnt/sentinel`. A dispute and a handoff ticket opened before the restart were both still there after `az containerapp revision restart` (health 200). `CUST-0001` read its own cases again. `ADV-0001` saw the queued ticket in `/api/v1/handoffs`.
+- **Monitoring.** The app writes one JSON line per turn to standard output. The line reaches Log Analytics. The query counts turns with no identifier. For the two hours after the restart, it answered `MX | ok | 45`:
+
+```
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(2h)
+| where Log_s has "country"
+| extend rec = parse_json(Log_s)
+| summarize n = count() by country = tostring(rec.country), outcome = tostring(rec.outcome)
+| order by country asc
+```
 
 <a id="req-0036"></a>
 ### REQ-0036 · Presentation, 4 to 6 slides
 
-A short slide deck describing the tool, part of the mandatory submission.
+Write a short slide deck that describes the tool. It is part of the mandatory submission.
 
 **Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
-**Depends on:** [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056). Slides present metrics and trade-offs.
+**Depends on:** [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056). The slides present the metrics and the trade-offs.
 
 **Evidence:** Missing: the slides. [Script](../build/delivery.md#presentation).
 
 <a id="req-0037"></a>
 ### REQ-0037 · Video pitch
 
-A short, mandatory video (3 minutes at most) that shows the working solution and explains the core architecture decisions.
+Make a short, mandatory video (3 minutes at most). It shows the working solution and explains the core architecture decisions.
 
 **Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
 
@@ -104,27 +159,33 @@ A short, mandatory video (3 minutes at most) that shows the working solution and
 <a id="req-0051"></a>
 ### REQ-0051 · Everything in English
 
-The README, slides, video script, `docs/` and `team/` are written in English, since the hackathon is judged in English.
+Write the README, the slides, the video script, `docs/` and `team/` in English. The hackathon is judged in English.
 
 **Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
 
 **Source:** Own: [language](../build/delivery.md#language)
 
-**Depends on:** [REQ-0036](#req-0036), [REQ-0037](#req-0037). Language check covers the slides and video script.
+**Depends on:** [REQ-0036](#req-0036), [REQ-0037](#req-0037). The language check covers the slides and the video script.
 
-**Evidence:** Proven by: every file under `docs/` and `team/` is in English, and AGENTS.md requires simplified technical English (ASD-STE100) for all documentation. The deliverable pages (README, `docs/README.md`, `docs/rationale/`, `evidence/README.md`, `docs/architecture/what-is-real.md`) are rewritten in it. Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
+**Evidence:** Proven by:
+
+- Every file under `docs/` and `team/` is in English.
+- `AGENTS.md` requires simplified technical English (ASD-STE100) for all documentation.
+- The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
+
+Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
 
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production
 
-A credible account of how the prototype would be deployed, scaled, monitored and secured, and what changes from the prototype.
+Give a credible account of how the team would deploy, scale, monitor and secure the prototype. State what changes from the prototype.
 
 **Priority:** P0 · **Status:** In progress · **Criterion:** AI Engineering / Rationale · **Area:** ai, all
 
 **Source:** Help channel (9/28) · Kickoff p. 15
 
-**Depends on:** [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050). Path to production includes monitoring.
+**Depends on:** [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050). The path to production includes monitoring.
 
-**Evidence:** Proven by: the [path to production](../architecture/specification.md#path-to-production). The demo's monitoring path is one JSON line per turn on standard output (`SENTINEL_LOG_STDOUT`), which Container Apps forwards to Log Analytics; the query text and its result landed under [REQ-0035](#req-0035) with the 10/03 redeploy. OpenTelemetry remains the production path.
+**Evidence:** Proven by the [path to production](../architecture/specification.md#path-to-production). The monitoring path of the demo is one JSON line per turn on standard output (`SENTINEL_LOG_STDOUT`). Container Apps forwards it to Log Analytics. The query text and its result are under [REQ-0035](#req-0035), with the 10/03 redeploy. OpenTelemetry remains the production path.
 
-Missing: alerts by country (REQ-0050). Handoff delivery is specified ([015](../build/decisions/015-handoff-delivery.md)).
+Missing: alerts by country (REQ-0050). The handoff delivery is specified ([015](../build/decisions/015-handoff-delivery.md)).

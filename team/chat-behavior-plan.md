@@ -1,8 +1,7 @@
 # Plan: a chat that behaves better
 
-Status: proposed, not started. Date: 2026-10-02. No time limit
-set for this work (the Sunday 10/4 freeze in [tasks](tasks.md) is lifted for
-it; the owner decides what is in the submission). Supersedes the prompt part
+Status: implemented on 2026-10-05, except the final measurement. The changes `router-v3` and `chat-start` (both archived) hold the code. The change `eval-v8` holds the sealed sets and the rehearsal. The single measurement waits for the code freeze. Decision [024](../docs/build/decisions/024-model-wording.md) accepted step 5 (model words) with a validator. Date of the plan: 2026-10-02. When we wrote it, no time limit
+was set for this work (the owner lifted the Sunday 10/4 freeze in [tasks](tasks.md) for it and decided what is in the submission). Supersedes the prompt part
 of [router v3](router-v3-plan.md), which becomes step 1 here.
 Requirements: REQ-0001, REQ-0002, REQ-0016, REQ-0017, REQ-0044, REQ-0047.
 
@@ -91,6 +90,8 @@ the held-out set → measure once → 7. Step 5 only after that, as its own chan
 
 ## Open decisions
 
-- Accept step 5 (model-written wording) now, later or never.
-- Who writes the sealed dialogues and how the review is recorded.
-- Budget cap for the eval-v8 run.
+Closed on 2026-10-05:
+
+- **Step 5 (model-written wording).** Accepted now, for turns that do not decide ([024](../docs/build/decisions/024-model-wording.md), option A).
+- **Author of the sealed dialogues.** Isolated authors write the sealed blocks, and each block has its provenance file in `sentinel-ai-core/eval/review/` (`eval-v8` design).
+- **Budget cap.** The rehearsal and development runs of `eval-v8` use a cap, and the final measurement uses the cap of the 018 amendment ([evidence index](../evidence/README.md#evaluation-runs)).

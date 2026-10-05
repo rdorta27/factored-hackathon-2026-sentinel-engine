@@ -4,7 +4,7 @@
 
 **Requirements:** those in the `analysis` area in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md), [metrics](../metrics.md), [candidate flows](../flows/01-flow-candidates.md).
+**Related:** [dataset](../../data/dataset.md), [metrics](../metrics.md), [candidate flows](../flows/01-flow-candidates.md).
 
 ## Scope
 

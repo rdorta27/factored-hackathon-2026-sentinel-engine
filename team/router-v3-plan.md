@@ -1,6 +1,6 @@
 # Plan: router v3 and a new held-out measurement (eval-v8)
 
-Status: proposed, not started; folded into [chat behaviour](chat-behavior-plan.md) as its first step. Date: 2026-10-02.
+Status: done on 2026-10-05, except the final measurement. Folded into [chat behaviour](chat-behavior-plan.md) as its first step. The change `router-v3` built the candidate (contract v3, prompt v3, draft validator, cut-offs) and is archived. The change `eval-v8` sealed the sets and ran the rehearsal. The single measurement waits for the code freeze. Date of the plan: 2026-10-02.
 Requirements: REQ-0016, REQ-0017, REQ-0019, REQ-0020, REQ-0047.
 
 ## Why
@@ -94,6 +94,8 @@ What eval-v8 must do with them:
 
 ## Open decisions
 
-- **Schedule.** [`team/tasks.md`](tasks.md) freezes code and results on Fri 10/2 and submits Sat 10/3 to Mon 10/5. This plan does not fit before that. Either it lands after submission (and the submission cites eval-v7 for v2 plus the limit above), or the freeze date moves. Owner to decide.
-- **Author of the new held-out set** and how the review is recorded.
-- **Budget:** the cap for the eval-v8 run (v7 cap in `eval/budget.py` as reference).
+Closed on 2026-10-05:
+
+- **Schedule.** The owner moved the code freeze to Sunday 10/4 night ([plan](plan.md)). The plan landed before the submission.
+- **Author of the new held-out set.** Two isolated authors write the sealed blocks, and each block has its provenance file in `sentinel-ai-core/eval/review/` (`eval-v8` design, decision 3).
+- **Budget.** The development run `2024Q4-dev-v8-v2` used a cap of USD 1 and spent USD 0.025202 ([evidence index](../evidence/README.md#evaluation-runs)). The cap of the final measurement is part of the 018 amendment.

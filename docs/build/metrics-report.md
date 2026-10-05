@@ -1,16 +1,37 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Final metrics report: router held-out measurement
 
-This page reports on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The `report.md` file next to it is the generated table view. Every number below comes from that `summary.json`. The field paths are under `component` unless stated. The [metrics](metrics.md) page lists the metrics and rules. Decision [018](decisions/018-evaluation-acceptance.md) gives the acceptance rules, written before the run. The [evidence index](../../evidence/README.md) lists every run.
+This page reports the current measurement, [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). Sections 1 to 9 report the previous measurement, [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json); read them as the history. Every number comes from a frozen `summary.json`. The field paths of the v8 run are under the block name. The [metrics](metrics.md) page lists the metrics and rules. Decision [018](decisions/018-evaluation-acceptance.md) gives the acceptance rules, written before the run. The [evidence index](../../evidence/README.md) lists every run.
 
-**Label of the measurement:** offline, simulation. The 405 cases are model-written text. They are not dataset rows and not production traffic ([018](decisions/018-evaluation-acceptance.md#case-provenance-declared-before-sealing), [what is real](../architecture/what-is-real.md#numbers)). Nothing here is a production improvement.
+**Label of the measurement:** offline, simulation. The cases are model-written text. They are not dataset rows and not production traffic ([018](decisions/018-evaluation-acceptance.md#case-provenance-declared-before-sealing), [what is real](../architecture/what-is-real.md#numbers)). Nothing here is a production improvement.
 
-**Scope:** the learned component is the intent router (GLM 5.3 Flash on both routes, reasoning low, 400-token cap, temperature 0), against the keyword baseline ([007](decisions/007-learned-component.md), [016](decisions/016-router-models.md)). If router v3 is merged, we generate this report again on `2024Q4-eval-v8` ([plan](../../team/router-v3-plan.md)). If not, v2 ships with the limit declared in section 8.
+## Result v8 (current measurement)
+
+The run measured two seals once: `seals.v8.hash` `3b4a472bb8071a24…` (444 rows) and `seals.v8b.hash` `ebdd937e5480014d…` (92 rows). Models: GLM 5.3 Flash on both routes, reasoning effort low, 400-token cap, temperature 0. The run measured commit `8ee4575` (`measured_commit`) and the served bundle hash `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`. Spend USD 0.388858 over 946 live calls (`spend`), cap USD 2.0, not capped. Blocks: main 308, noisy 52, attacks 84, top-up 92 (`case_mix`). The high-risk subset ran three times on the main block and twice on the attacks (`high_risk_repeats`).
+
+Six candidates of the 018 amendment ran on the same cases. D4 reads v2 against v3: v3 has the higher kind accuracy, and the paired difference is above zero (`paired.router_v3_vs_router_v2`, net 48, interval [0.0714, 0.2435]).
+
+| Candidate | Kind accuracy | Subtype | Unsafe wording | D5 vs baseline | D6 worst variant | D7 attacks |
+|---|---|---|---|---|---|---|
+| baseline | 0.6916 | 0.0 | 0/0 | no pair | 1 | 0 |
+| trained_baseline | 0.9026 | 0.0 | 0/0 | PASS, net 65 [0.1266, 0.3019] | 2 | 0 |
+| router_v2 | 0.8182 | 0.0 | 0/0 | PASS, net 39 [0.0617, 0.2045] | 0 | 0 |
+| router_v2_cutoffs | 0.8409 | 0.0 | 0/0 | PASS, net 46 [0.0812, 0.2305] | 1 | 0 |
+| router_v3 | 0.974 | 0.8971 | 4/93 | PASS, net 87 [0.1883, 0.3799] | 0 | 0 |
+| router_v3_cutoffs | 0.5097 | 0.9412 | 4/96 | FAIL, net -56 [-0.3182, -0.0422] | 10 | 0 |
+
+Fields: `candidates.<name>.intent.accuracy`, `candidates.<name>.subtype.accuracy`, `candidates.<name>.unsafe_wording`, `paired.<name>_vs_baseline`, `candidates.<name>.variant_losses.by_variant`, `attacks.candidates.<name>.unsafe_wording`.
+
+**Served choice: `router_v2`.** v3 fails the zero-unsafe-wording gate (`candidates.router_v3.unsafe_wording` 4/93) and the subtype gate (`candidates.router_v3.subtype.accuracy` 0.8971 against 0.95). The four unsafe-wording cases are `v8i-36-es-MX`, `v8i-36-es-CO`, `v8i-36-es-AR` and `v8i-42-pt-BR`. They are drafts that the validator rejected, so they were not shown; decision [018](decisions/018-evaluation-acceptance.md#the-validator-finding) records this as descriptive data and keeps the gate. v3 fails the subtype gate on its own: without the `unavailable` rows the subtype accuracy is 0.9385, still below 0.95 ([post hoc sensitivity](decisions/018-evaluation-acceptance.md#post-hoc-sensitivity-not-the-measurement)). The service serves the prompt that `eval-v7` measured, `v2`.
+
+**Reproduction.** `python3 -m eval.measure_v8 verify 2024Q4-eval-v8` reports the run as different, only in `router_v3` and `router_v3_cutoffs`: 30 transient `unavailable` calls (main 4, noisy 3, attacks 6, top-up 17) that a later pass recorded. The other four candidates match. Decision [018](decisions/018-evaluation-acceptance.md#the-verify-limitation) gives the detail. The team does not edit the frozen run.
+
+## The previous measurement (eval-v7)
 
 ## 1. What was measured: n, mix, versions
 
@@ -124,6 +145,22 @@ The final measurement is [`2024Q4-resolution-v2`](../../evidence/evaluation-runs
 - Both versions resolve the same 16 cases (the four eligible situations, in four variants each). They refuse or hand off the rest. The cost per resolution is USD 0.000561 for `router_v2`, from the 8 recorded live calls. v1 recorded them under the USD 0.45 cap. The v2 replay made no live call.
 - No ROI figure comes from this replay, other than the rate and the costs above. The projection is a separate, labelled page ([ROI](roi.md)).
 - The set does not cover `Pending`: the mock store has no `Pending` row. The set covers `Refunded` as `status.reversed`.
+
+#### Why the paired difference is 0: the policy ceiling
+
+The gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) compares the baseline and `router_v2` case by case. It replays the recordings of `2024Q4-resolution-v2`. It makes no live call. The script is `sentinel-ai-core/eval/resolution_gap.py`.
+
+| Case label | Count | Source field |
+|---|---|---|
+| Both resolve | 16 of 56 | `labels.both_resolve` |
+| Both fail | 40 of 56 | `labels.both_fail` |
+| Different | 0 of 56 | `labels.different` |
+
+- **The ceiling is 16 of 56 cases** (`ceiling.<version>.resolvable`, `ceiling_share` 0.2857). Policy sets the ceiling: 16 cases may resolve, and 40 require a handoff or must not pass. The router does not set it.
+- **Both systems resolve all 16 resolvable cases** (`ceiling.<version>.resolved` 16, `achieved_share` 1.0, `gap` 0). The paired difference is 0 because the baseline already reaches the ceiling. No resolvable case is left.
+- **No case differs in outcome or in intent label** (`outcome_differs.count` 0, `intent_differs.count` 0). The stated cause is `ceiling` (`cause`). The set cannot separate the two systems on resolution.
+- The router gain is in intent accuracy on the held-out component set (section 2). It is not a resolution gain on this set.
+- **Limit:** 56 cases come from 14 situations. Four eligible situations appear in four variants each. The set is too narrow to show a resolution difference between the two systems. Task 1.4 of [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md) decides if a router-sensitive block is added under a new hash, or if this note closes the question.
 
 ### Breakdown by variant and country (REQ-0024, simulated)
 
