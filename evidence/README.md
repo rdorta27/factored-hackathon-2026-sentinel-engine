@@ -149,11 +149,12 @@ The run `20261005T204313Z` repeats only the 3 `passes_on_mock` attacks (A1, A2, 
 
 ## Robustness
 
-The fault-injection run. Script: `scripts/inject_faults.py`. Data type: **Simulation**, **Mock store**. The app runs locally with the keyword baseline model and the Gold mock. Requirements: REQ-0021, REQ-0026.
+The fault-injection run and the load run. Scripts: `scripts/inject_faults.py` and `scripts/load_chat.py`. Data type: **Simulation**, **Mock store**. The app runs locally with the keyword baseline model and the Gold mock; the load run has one small **live model** part. Requirements: REQ-0021, REQ-0026, REQ-0053.
 
 | Run | Status | What it measures | Requirements |
 |---|---|---|---|
-| [`20261005T210525Z`](robustness/20261005T210525Z/summary.json) | **Current** | Seven faults, 12 turns each. The healthy baseline answers 12 of 12 turns. The model timeout, the model 5xx and the invalid JSON answer 12 of 12 through the baseline fallback. The slow Gold adds about 6 s per turn and answers 12 of 12. The Gold error answers 12 of 12. The store error answers 10 of 12 (one client read error and one unparseable reply). | REQ-0021, REQ-0026 |
+| [`20261005T210525Z`](robustness/20261005T210525Z/summary.json) | **Current** | Fault injection. Seven faults, 12 turns each. The healthy baseline answers 12 of 12 turns. The model timeout, the model 5xx and the invalid JSON answer 12 of 12 through the baseline fallback. The slow Gold adds about 6 s per turn and answers 12 of 12. The Gold error answers 12 of 12. The store error answers 10 of 12 (one client read error and one unparseable reply). | REQ-0021, REQ-0026 |
+| [`20261005T211031Z`](robustness/20261005T211031Z/summary.json) | **Current** | Load test of one chat replica with recorded model answers. On the host, `recorded_local` reaches 4.82, 9.59 and 17.51 requests per second at the targets 5, 10 and 20, with no error and no 429. In the container at 0.5 vCPU and 1 GiB, `recorded_container` reaches 4.29, 5.62 and 4.54 requests per second; the p95 rises to 918 ms at the target 20. The small live run `live_local` at the target 2 reaches 0.66 requests per second with p50 1394 ms and p95 3870 ms. | REQ-0053 |
 
 ## Monitoring
 
