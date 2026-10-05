@@ -9,7 +9,7 @@ Order: gate, measure, runs, redeploy, close. A step reads the frozen output of t
 
 ## 2. Measure (after the gate)
 
-- [ ] 2.1 Measure once as `2024Q4-eval-v8` with the three repeats of the high-risk subset. Record the measured commit and freeze the run. From `eval-v8` 5.1. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`. Ref: decision 018.
+- [ ] 2.1 Measure once as `2024Q4-eval-v8` on the v8 hash and on the top-up hash (`sealed_v8b`), each once, with the three repeats of the high-risk subset. Record the measured commit and freeze the run. From `eval-v8` 5.1. Evidence: `evidence/evaluation-runs/2024Q4-eval-v8/summary.json` and `eval/measured.json`. Ref: decision 018.
 - [ ] 2.2 Judge each candidate by the amendment and write the verdict. Serve v3 by default only if it passes every gate. From `eval-v8` 5.2. Evidence: the result section of the amendment and the `app/ai/serving.py` tests. Ref: decisions 016 and 018.
 - [ ] 2.3 Write `docs/rationale/router-error-analysis.md`: the ten most frequent confusions with case ids, cause and kind of fix; accuracy by intent with the number of bases; a note on the intents with fewer than 10 bases; confidence against accuracy from the run. Cite `summary.json` fields only. Evidence: the page. Ref: ml area, decision 018.
 - [ ] 2.4 Regenerate the metrics report. Update the README limits, REQ-0016 evidence and the evidence index. Add `eval-v8` and `train-v1` to the CI replay list if they verify offline. From `eval-v8` 5.3. Evidence: those files. Ref: ml area.

@@ -11,11 +11,11 @@ The owner SHALL confirm the freeze after all code plans are merged, the served c
 
 ### Requirement: The sealed v8 set is measured once
 
-`2024Q4-eval-v8` SHALL be measured once on the sealed hash, with three repeats of the high-risk subset, and the measured commit SHALL be recorded. The runner SHALL refuse a second measurement of the same hash. Traces to REQ-0016 (P0, Done) and REQ-0020 (P0, Done); decision 018.
+`2024Q4-eval-v8` SHALL be measured once on each sealed hash (the v8 set and its top-up block), with three repeats of the high-risk subset, and the measured commit SHALL be recorded. The runner SHALL refuse a second measurement of the same hash. Traces to REQ-0016 (P0, Done) and REQ-0020 (P0, Done); decision 018.
 
 #### Scenario: Measured once
 
-- **WHEN** a second measurement of the v8 hash is attempted
+- **WHEN** a second measurement of a v8 hash is attempted
 - **THEN** the runner refuses it
 
 ### Requirement: v3 is served by default only after passing the amended rules
