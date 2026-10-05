@@ -131,7 +131,7 @@ The acceptance test stays the sealed `eval-v8` measurement, not the validation s
 ## Amendment · sealed v8 measurement for contract v3 (added 2026-10-04)
 
 **Status:** Proposed (accepted only by a `2024Q4-eval-v8` run committed after this text).
-**Change:** [`router-v3`](../../../openspec/changes/router-v3/design.md)
+**Change:** [`router-v3`](../../../openspec/changes/archive/2026-10-05-router-v3/design.md)
 
 This amendment extends the validation and cut-off amendment above. It keeps every gate of `eval-v7` (D4–D7). It is written before any v3 call on development and before the seal. The commit order is the proof.
 

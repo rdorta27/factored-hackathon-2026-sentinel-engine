@@ -16,7 +16,7 @@ The first message of a chat is the first thing that a customer and a judge see. 
 - "un cobro de mil pesos" ("a charge of one thousand pesos") finds nothing (Felix 8).
 - Every reply is one fixed sentence.
 
-[`router-v3`](../router-v3/proposal.md) makes the model read more (contract v3). This change makes the loop use it, with a code fallback when `router_v2` or the baseline serves (REQ-0001, REQ-0002, REQ-0029, REQ-0044).
+[`router-v3`](../archive/2026-10-05-router-v3/proposal.md) makes the model read more (contract v3). This change makes the loop use it, with a code fallback when `router_v2` or the baseline serves (REQ-0001, REQ-0002, REQ-0029, REQ-0044).
 
 ## What Changes
 
