@@ -69,8 +69,8 @@ gantt
 | No standing milestone meetings. Ad hoc only (decision 8) | Accepted | [pending decisions](pending-decisions.md) |
 | One public repository (decision 21), organized by folders. No git submodules (decision 22). Service folder: `sentinel-ai-core/` | Accepted | [Folders](#folders) |
 | Public link on Azure Container Apps, one Docker container. It supersedes 012, after Hugging Face dropped its free Docker tier (closes decisions 13 and 16) | Accepted | [019](../docs/build/decisions/019-azure-container-apps.md) |
-| Documentation layout: the `docs/understand/` folder is split into `docs/overview.md`, `docs/data/` and `docs/glossary/` (decision 30 in [pending decisions](pending-decisions.md)) | Accepted | [`docs-followups`](../openspec/changes/docs-followups/tasks.md) |
-| Judge access: one shared set of test credentials, sent in the submission email. No passwordless entry on the public link | Accepted | [`judge-access`](../openspec/changes/judge-access/tasks.md) |
+| Documentation layout: the `docs/understand/` folder is split into `docs/overview.md`, `docs/data/` and `docs/glossary/` (decision 30 in [pending decisions](pending-decisions.md)) | Accepted | [`docs-followups`](../openspec/changes/archive/2026-10-05-docs-followups/tasks.md) |
+| Judge access: one shared set of test credentials, sent in the submission email. No passwordless entry on the public link | Accepted | [`judge-access`](../openspec/changes/archive/2026-10-05-judge-access/tasks.md) |
 | Keep `team/` in the submission, reviewed before the submission (closes decision 23) | Accepted | [pending decisions](pending-decisions.md) |
 | Demo UI with a role landing and a read-only advisor view in the ai-core page. We removed the old mock backend and its reference page. No admin panel (closes decision 29) | Accepted | [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 

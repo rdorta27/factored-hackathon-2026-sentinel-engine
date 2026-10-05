@@ -31,7 +31,7 @@ Starts after `post-freeze` and `release` are merged. Merge `origin/main` first. 
 ## 4. Plans and team
 
 - [x] 4.1 Run `openspec validate --all`. Fix each error in a document. Evidence: the output in the commit body.
-- [ ] 4.2 Archive the finished plans, in this order: `eval-v8`, `evidence-hardening`, `demo-clarity`, `judge-access`, `live-ops`, `pitch-site`, `release`, `post-freeze` and, last, this change. Sync the specs. Do not archive the `video` change: it runs later. Evidence: `openspec/changes/archive/`.
+- [x] 4.2 Archive the finished plans, in this order: `eval-v8`, `evidence-hardening`, `demo-clarity`, `judge-access`, `live-ops`, `pitch-site`, `release`, `post-freeze` and, last, this change. Sync the specs. Do not archive the `video` change: it runs later. Evidence: `openspec/changes/archive/`. The archive holds the ten complete changes, `eval-v8-measure` and `docs-followups` included, each with its main spec. The links to a moved plan point to the archive. `openspec validate --all` passes. This change goes last.
 - [x] 4.3 Update `team/tasks.md` (the status of each task), `team/plan.md` (the schedule and the decisions) and `team/pending-decisions.md` (close each open row). Evidence: the three files. The three pages follow the standard now, and `team/pending-decisions.md` has no open row.
 - [x] 4.4 Run `scripts/check_spec_citations.py` and fix each citation that differs from `requirements.md`. Evidence: the script prints no difference.
 

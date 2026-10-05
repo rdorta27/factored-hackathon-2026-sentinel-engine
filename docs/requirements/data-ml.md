@@ -159,7 +159,7 @@ This applies only if a model judges the answers. The team must document its rubr
 
 **Evidence:** Not used so far. Deterministic checks judge the answers. Close the requirement as not applicable if that stays true.
 
-Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): a 20-label check by a person. The sample is prepared in `eval/review/human-check-v1.md` (task 3.3). It checks label quality. It is not an LLM judge, so this requirement stays not applicable.
+Planned by [`evidence-hardening`](../../openspec/changes/archive/2026-10-05-evidence-hardening/tasks.md): a 20-label check by a person. The sample is prepared in `eval/review/human-check-v1.md` (task 3.3). It checks label quality. It is not an LLM judge, so this requirement stays not applicable.
 
 <a id="req-0031"></a>
 ### REQ-0031 · Approved data, labeled by origin

@@ -31,7 +31,7 @@ The demo runs on Azure Container Apps in one container ([019](../build/decisions
 | State survives a restart | REQ-0035, redeploy of 2026-10-03 from `main` (`9664d9d`) | a dispute and a handoff ticket were still present; health 200 |
 | Turn records reach Log Analytics, counted by country | REQ-0035, same redeploy | a KQL count by country and outcome with no identifier |
 | The final redeploy serves the frozen build | [`delivery`](../build/delivery.md#gate-g3-record), redeploy of 2026-10-05 | `GET /api/v1/health` returns `bundle_hash` `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed `2024Q4-eval-v8` run |
-| Judge access | [`judge-access`](../../openspec/changes/judge-access/tasks.md) | The link has no passwordless entry. The documented fixture passwords do not work. The judges receive one shared set of credentials in the submission email |
+| Judge access | [`judge-access`](../../openspec/changes/archive/2026-10-05-judge-access/tasks.md) | The link has no passwordless entry. The documented fixture passwords do not work. The judges receive one shared set of credentials in the submission email |
 | Deployment steps | [`deploy/azure/README.md`](../../deploy/azure/README.md) | reproducible script |
 
 The live revision is from 2026-10-05. It serves the frozen build. Its `/health` `bundle_hash` equals the served hash of the sealed `2024Q4-eval-v8` run, so the measured behavior is the served behavior ([decision 018](../build/decisions/018-evaluation-acceptance.md)).
