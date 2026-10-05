@@ -23,6 +23,8 @@ The brief asks for capacity limits, bounded retries, safe fallback and tool-fail
 - **Parallel confirmations:** N parallel confirmations of one candidate open exactly one case.
 - **Event-loop check:** find synchronous work in async routes (DuckDB, SQLite, model calls). Move it to a thread pool, or prove it does not block, with a measurement.
 - **Spend guard:** a daily model budget (`SENTINEL_LLM_DAILY_BUDGET_USD`). Above it, the keyword baseline answers, and the turn log marks `budget` as the route.
+- **Four small safeguards.** (1) A pending confirmation expires after five minutes. (2) A strict mode (`SENTINEL_GOLD_REQUIRED`) refuses to start when Gold is missing or too old; it is off on the public link, which uses the labelled mock. (3) Each audit record carries the hash of the one before, so a change in the log is visible. (4) `/health` shows one hash of the files that decide behavior.
+- **One data proof.** A test shows that an incremental load gives the same rows as a full load, row by row.
 - **Cleanup:** remove `anthropic` and `aiosqlite` from `sentinel-ai-core/pyproject.toml` if no module imports them.
 - **Documents:** four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`), the sizing page and the metrics catalog.
 
