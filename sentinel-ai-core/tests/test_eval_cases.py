@@ -48,6 +48,11 @@ def test_validation_split_is_carved_from_development_by_base() -> None:
     example_ids = set(json.loads(EXAMPLES.read_text(encoding="utf-8"))["ids"])
     example_cases = [c for c in cases if c.id in example_ids]
     assert example_cases and all(c.split == "development" for c in example_cases)
+    # The prompt-v3 examples are a full matrix that stays in development too.
+    v3_ids = set(json.loads(EXAMPLES.parent.joinpath("examples_v3.json").read_text(encoding="utf-8"))["ids"])
+    assert len(v3_ids) == 32, len(v3_ids)
+    v3_cases = [c for c in cases if c.id in v3_ids]
+    assert len(v3_cases) == 32 and all(c.split == "development" for c in v3_cases)
 
 
 def test_check_splits_rejects_a_base_in_two_splits() -> None:
@@ -78,7 +83,37 @@ def test_retired_held_out_cases_are_not_sealed_again() -> None:
 def test_both_locales_and_all_intents_present() -> None:
     cases = load_dir(CASES_DIR)
     assert {c.locale for c in cases} == {"es-419", "pt-BR"}
-    assert {c.expected_intent for c in cases} == {"charge", "missing", "out_of_scope", "person"}
+    assert {"charge", "missing", "out_of_scope", "person"} <= {c.expected_intent for c in cases}
+
+
+def test_v3_development_cases_cover_openers_status_subtypes_and_slots() -> None:
+    cases = [c for c in load_dir(CASES_DIR) if c.id.startswith("v3-")]
+    assert len(cases) == 60, len(cases)
+    assert all(c.split == "development" for c in cases)
+    assert {c.variant for c in cases} == {"es-MX", "es-CO", "es-AR", "pt-BR"}
+    assert {c.expected_subtype for c in cases} >= {"greeting", "loan", "balance"}
+    assert any(c.expected_intent == "status" for c in cases)
+    assert any((c.expected_slots or {}).get("amount") == 1000 for c in cases)
+    assert all(c.base_id is not None for c in cases)
+
+
+def test_v3_bases_stay_out_of_the_validation_split() -> None:
+    cases = load_dir(CASES_DIR) + load_dir(CASES_DIR / "sealed")
+    check_splits(cases)
+    v3_bases = {c.base_id for c in cases if c.id.startswith("v3-")}
+    val_bases = {base_of(c) for c in cases if c.split == "validation"}
+    assert v3_bases and not (v3_bases & val_bases)
+
+
+def test_v3_subtype_and_slot_fields_are_validated() -> None:
+    good = _body(split="development", base_id=None, variant=None)
+    assert validate_case({**good, "expected_subtype": "loan", "expected_intent": "out_of_scope"}, "test")
+    with pytest.raises(ValueError, match="subtype"):
+        validate_case({**good, "expected_subtype": "loan", "expected_intent": "missing"}, "test")
+    with pytest.raises(ValueError, match="subtype"):
+        validate_case({**good, "expected_subtype": "loan", "expected_intent": "charge"}, "test")
+    with pytest.raises(ValueError, match="amount"):
+        validate_case({**good, "expected_slots": {"amount": "mil"}}, "test")
 
 
 def test_labels_provenance_is_recorded() -> None:
