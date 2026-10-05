@@ -1,0 +1,104 @@
+{
+  "case_mix": {
+    "by_intent": {
+      "charge": 85,
+      "missing": 47,
+      "out_of_scope": 55,
+      "person": 33,
+      "status": 4
+    },
+    "by_split": {
+      "development": 198,
+      "validation": 26
+    },
+    "by_variant": {
+      "es-419": 29,
+      "es-AR": 45,
+      "es-CO": 45,
+      "es-MX": 45,
+      "pt-BR": 60
+    },
+    "n": 224
+  },
+  "cutoffs": {
+    "chosen_on": "validation",
+    "n": 24,
+    "rule": {
+      "note": "lowest cut-off acting at the eval-v7 v2 accuracy minus the 018 tolerance; highest cut-off abstaining under one half",
+      "t_abstain_max_accuracy": 0.5,
+      "t_act_min_accuracy": 0.9321
+    },
+    "t_abstain": 0.0,
+    "t_act": 1.0
+  },
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "calibration",
+  "max_tokens": 400,
+  "n": 224,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Confidences recorded once with log-probabilities; cut-offs chosen on the validation split (018 amendment).",
+    "Validation is descriptive: development was read by model selection and the prompt examples; eval-v8 remains the clean measurement."
+  ],
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "prompt_version": "v3",
+  "run_id": "2024Q4-calibration-v3",
+  "spend": {
+    "cap_usd": 0.45,
+    "capped": false,
+    "n": 182,
+    "spent_usd": 0.115591
+  },
+  "splits": {
+    "development": {
+      "accuracy": 0.9848,
+      "actions": {
+        "abstained": {
+          "n": 1,
+          "share": 0.0051
+        },
+        "acted": {
+          "n": 40,
+          "share": 0.202
+        },
+        "clarified": {
+          "n": 157,
+          "share": 0.7929
+        }
+      },
+      "bands": {
+        "0.95-1.00": {
+          "accuracy": 0.9898,
+          "n": 197
+        }
+      },
+      "n": 198,
+      "with_confidence": 197
+    },
+    "validation": {
+      "accuracy": 0.9231,
+      "actions": {
+        "abstained": {
+          "n": 2,
+          "share": 0.0769
+        },
+        "acted": {
+          "n": 7,
+          "share": 0.2692
+        },
+        "clarified": {
+          "n": 17,
+          "share": 0.6538
+        }
+      },
+      "bands": {
+        "0.95-1.00": {
+          "accuracy": 1.0,
+          "n": 24
+        }
+      },
+      "n": 26,
+      "with_confidence": 24
+    }
+  }
+}
