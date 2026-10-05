@@ -10,9 +10,9 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Decisions: [003](../..
 
 ## 1. The run
 
-- [ ] 1.1 Read the dictionary and the call table. Write the mapping from reasons for the call to candidate workflows as a table in the README of the run, and commit it before any number. Evidence: `evidence/problem/dev-v1/README.md`.
-- [ ] 1.2 Write `evidence/problem/dev-v1/measure_problem.py` with modes `reasons`, `demand`, `hours`, `missing`, `summary` and `verify`. Evidence: the script and a test of the helper functions on a small fixture.
-- [ ] 1.3 Run it on the development zone and freeze `summary.json` and `MANIFEST.md`. Evidence: `verify` prints OK on every line, and two runs of `summary` give the same file.
+- [x] 1.1 Read the dictionary and the call table. Write the mapping from reasons for the call to candidate workflows as a table in the README of the run, and commit it before any number. Evidence: `evidence/problem/dev-v1/README.md`.
+- [x] 1.2 Write `evidence/problem/dev-v1/measure_problem.py` with modes `reasons`, `demand`, `hours`, `missing`, `summary` and `verify`. Evidence: the script and a test of the helper functions on a small fixture.
+- [x] 1.3 Run it on the development zone and freeze `summary.json` and `MANIFEST.md`. Evidence: `verify` prints OK on every line, and two runs of `summary` give the same file.
 
 ## 2. The documents
 
