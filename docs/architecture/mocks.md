@@ -32,7 +32,7 @@ The brief does not ask for zero mocks. It asks that each mock has a documented c
 | Dispute policy | Local run and public link | The bank policy is not available | Team-written country files, marked `synthetic: true` ([021](../build/decisions/021-dispute-policy-sources.md)) | The policy that the bank approves |
 | Opening a dispute | Local run and public link | No bank dispute system exists to call | The case store records the case. No bank system receives it | The bank dispute system |
 | Secrets | Local run | A key vault adds no evidence | `.env`, ignored by git. The public link uses Container App secrets | Azure Key Vault |
-| Stand-in model (`DemoModel`) | Test suite only | A test must not depend on a live model | Three attack cases (A1, A2, A5) pass only because of this model. The adversarial summary counts them as `passes_on_mock` | None. The live router replaces it |
+| Stand-in model (`DemoModel`) | Test suite only | A test must not depend on a live model | Three attack cases (A1, A2, A5) pass only because of this model. The adversarial summary counts them as `passes_on_mock`. Those three cases also run against the real router model and pass ([real-model run](../../evidence/adversarial/20261005T204313Z/summary.json)) | None. The live router replaces it |
 
 ## What is not a mock
 
@@ -84,4 +84,5 @@ Each row of the mock table names its production backend. The steps are in the [p
 | The mock list | [what is real](what-is-real.md#components) and [demo architecture](demo-architecture.md#mocked-components) | The list matches. This page adds the opening of a dispute and the stand-in model. |
 | `gold_source` | `app/main.py` sets `application.state.gold_source`; the health endpoint reports it | `gold_source: mock` on the public link and when no DuckDB file is readable. |
 | Three `passes_on_mock` cases | [`adversarial/20261005T014816Z`](../../evidence/adversarial/20261005T014816Z/summary.json) `totals.passes_on_mock` | 3: A1, A2 and A5, all in `A_prompt_injection`. |
+| The three cases on the real model | [`adversarial/20261005T204313Z`](../../evidence/adversarial/20261005T204313Z/summary.json) `totals.unsafe_outcome_rate` | `0/3`. The three cases now also run on the real router model. |
 | The stand-in model | `app/ai/demo.py` `DemoModel` | Test suite only. The live router replaces it. |
