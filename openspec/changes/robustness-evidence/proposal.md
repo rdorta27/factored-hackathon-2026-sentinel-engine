@@ -18,23 +18,22 @@ The brief asks for capacity limits, bounded retries, safe fallback and tool-fail
 
 ## What Changes
 
-- **Load test:** a script drives `/api/v1/chat` with recorded model answers at increasing rates on one process. It records requests per second, p50 and p95, errors and 429 replies. A second run uses the live model with a small cap.
-- **Fault-injection run:** model timeout, model 5xx, invalid JSON, slow Gold, Gold error, case-store error. For each fault: the outcome, the added latency and the share of turns with a safe reply.
+- **Load test (the script here; the run moved to `post-freeze`):** a script drives `/api/v1/chat` with recorded model answers at increasing rates on one process. It records requests per second, p50 and p95, errors and 429 replies. A second run uses the live model with a small cap.
+- **Fault adapters (the frozen run moved to `post-freeze`):** model timeout, model 5xx, invalid JSON, slow Gold, Gold error, case-store error. For each fault: the outcome, the added latency and the share of turns with a safe reply.
 - **Parallel confirmations:** N parallel confirmations of one candidate open exactly one case.
 - **Event-loop check:** find synchronous work in async routes (DuckDB, SQLite, model calls). Move it to a thread pool, or prove it does not block, with a measurement.
 - **Spend guard:** a daily model budget (`SENTINEL_LLM_DAILY_BUDGET_USD`). Above it, the keyword baseline answers, and the turn log marks `budget` as the route.
 - **Four small safeguards.** (1) A pending confirmation expires after five minutes. (2) A strict mode (`SENTINEL_GOLD_REQUIRED`) refuses to start when Gold is missing or too old; it is off on the public link, which uses the labelled mock. (3) Each audit record carries the hash of the one before, so a change in the log is visible. (4) `/health` shows one hash of the files that decide behavior.
 - **One data proof.** A test shows that an incremental load gives the same rows as a full load, row by row.
 - **Cleanup:** remove `anthropic` and `aiosqlite` from `sentinel-ai-core/pyproject.toml` if no module imports them.
-- **Documents:** four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`), the sizing page and the metrics catalog.
+- **Documents (moved to `post-freeze`):** four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`), the sizing page and the metrics catalog.
 
 ## Capabilities
 
 ### New Capabilities
-- `capacity-evidence`: the load test and its frozen run.
 
 ### Modified Capabilities
-- `failure-tests`: the fault-injection run, parallel confirmations and the spend guard.
+- `failure-tests`: parallel confirmations, expiry, strict Gold, the audit chain and the spend guard. The fault and load runs moved to `post-freeze`.
 
 ## Impact
 

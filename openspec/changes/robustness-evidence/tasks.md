@@ -22,11 +22,6 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [016](../../../docs/bui
 - [x] 1.5 Add the load-test script with recorded answers and a container limit option. Evidence: `scripts/load_chat.py` and a dry run.
 - [x] 1.6 Remove unused dependencies from `pyproject.toml`. Evidence: a clean install and the full test suite.
 
-## 2. Runs (after the code freeze)
+## Moved to `post-freeze`
 
-- [ ] 2.1 Freeze the fault-injection run. Evidence: `evidence/robustness/<run-id>/summary.json`.
-- [ ] 2.2 Freeze the load run (recorded answers, 0.5 vCPU, 1 GiB) and the small live run. Evidence: `evidence/robustness/<run-id>/summary.json`.
-
-## 3. Documents
-
-- [ ] 3.1 Write the four rationale pages, and update the sizing page, the metrics catalog, the evidence index and REQ-0021, REQ-0026 and REQ-0053. Evidence: those files.
+The fault-injection run (old 2.1), the load run (2.2) and the documents (3.1) now live in the `post-freeze` change. They need frozen code. This plan closes when the code and its tests are merged.
