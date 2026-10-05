@@ -15,7 +15,7 @@ Order: gate, measure, runs, redeploy, close. A step reads the frozen output of t
 
 The measurement of `eval-v8`, its verdict, its reports and the error analysis moved to the `eval-v8-measure` change (old tasks 2.1, 2.2, 2.3, 2.4 and 2.6). That change runs before this one. This plan reads its verdict.
 
-- [ ] 2.5 Within the spend of input (b). Run the live timing mode of the resolution runner once on the frozen build, with the spend cap. Freeze it as `evidence/evaluation-runs/2024Q4-resolution-live-v1/` and add it to `evidence/README.md` (Simulation, live model call, mock store). Report p50 and p95 per call and per conversation, and cost per attempted case and per resolution. From `evidence-hardening` 2.4. Evidence: the run folder and the `/health` `bundle_hash`. Ref: REQ-0055.
+- [x] 2.5 Within the spend of input (b). Run the live timing mode of the resolution runner once on the frozen build, with the spend cap. Freeze it as `evidence/evaluation-runs/2024Q4-resolution-live-v1/` and add it to `evidence/README.md` (Simulation, live model call, mock store). Report p50 and p95 per call and per conversation, and cost per attempted case and per resolution. From `evidence-hardening` 2.4. Evidence: the run folder and the `/health` `bundle_hash`. Ref: REQ-0055.
 
 ## 3. Robustness runs (after the gate)
 
