@@ -59,7 +59,7 @@
       <div class="card"><span class="eyebrow">Valor alto</span><p>O sistema transfere com os fatos verificados.</p></div>
       <div class="card"><span class="eyebrow">Não fui eu</span><p>O sistema não julga fraude. Um atendente julga.</p></div>
     </div>
-    <p class="foot">Demo ao vivo: link no README. Os dados da demo são sintéticos.</p>
+    <p class="foot">Repositório: <code>github.com/rdorta27/factored-hackathon-2026-sentinel-engine</code> · Site: <code>rdorta27.github.io/factored-hackathon-2026-sentinel-engine</code> · Demo ao vivo: o link e as credenciais de teste estão no e-mail da entrega. Os dados da demo são sintéticos.</p>
   </div>
 </div>
 </section>
@@ -68,7 +68,12 @@
 <span class="eyebrow">3 · Como</span>
 <h1>A IA conversa. <span>As regras decidem.</span></h1>
 <div class="how"><img src="../diagrams/architecture-light.svg" alt="Arquitetura do Sentinel. O modelo rotula a intenção. O código mascara, decide, age e verifica. As partes estão marcadas como reais ou mock."></div>
-<p class="motto">O modelo só rotula a intenção. O código mascara, decide, age e verifica.</p>
+<div class="decisions" aria-label="Decisões técnicas principais">
+  <div><b>Política em código</b><span>A política, a sessão e a idempotência vivem no código, não no modelo. Decisão 005.</span></div>
+  <div><b>Mascarar primeiro</b><span>O código mascara os dados pessoais antes de qualquer chamada ao modelo. Decisão 004.</span></div>
+  <div><b>Um roteador pequeno</b><span>Um LLM com instruções rotula a intenção. Se falhar, uma linha de base de palavras-chave responde. Decisão 016.</span></div>
+  <div><b>Um só serviço</b><span>Um serviço FastAPI no Azure Container Apps. Decisões 005 e 019.</span></div>
+</div>
 </section>
 <section class="slide" id="s4" aria-label="Prova">
 <div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 4 / 6</span></div>
