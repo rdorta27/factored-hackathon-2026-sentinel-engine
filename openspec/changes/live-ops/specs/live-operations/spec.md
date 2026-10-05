@@ -17,17 +17,3 @@ The test workflow SHALL run `python3 -m eval.run verify` for every frozen run li
 
 - **WHEN** a change makes a listed run differ from its frozen summary
 - **THEN** the workflow fails
-
-### Requirement: The final redeploy is proved and queried
-
-After the final redeploy, a check SHALL confirm the served model and prompt version, the locale keys of the merged code, the demo personas and the three demo cases, and saved queries SHALL report turns, p50 and p95 latency, failed or timed-out steps, handoffs and cost per account country, outcome and language. Results SHALL be recorded as aggregates without identifiers. Traces to REQ-0035 (P0, Done), REQ-0050 (P1, In progress) and REQ-0052 (P0, In progress).
-
-#### Scenario: The served code is the merged code
-
-- **WHEN** the locale file is fetched after the redeploy
-- **THEN** it contains the keys added by the merged changes
-
-#### Scenario: Queries return per-country aggregates
-
-- **WHEN** the queries run after demo traffic
-- **THEN** they return one row per country, outcome and language with counts and latency percentiles, and no trace id or text

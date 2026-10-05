@@ -9,10 +9,6 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [019](../../../docs/bui
 
 - [ ] 1.3 Write `scripts/e2e_check.py`: one command that runs the three demo cases in es-419 and pt-BR, `scripts/felix_replay.py` and the phone screenshots against a base URL, and prints one pass or fail table. It reuses `scripts/sentinel_client.py`. Evidence: the script and a run against a local app.
 
-## 2. After the code freeze
+## Moved to `post-freeze`
 
-The code freeze is the merge of `flow-fixes`, `chat-start`, `bank-ui`, `trained-baseline`, the code of `robustness-evidence` and the served configuration of `router-v3`. `evaluation-final`, `ui-product` and `router-confidence` are already in `main`.
-
-- [ ] 2.0 Add `SENTINEL_BRAND_NAME`, `SENTINEL_BRAND_ACCENT`, `SENTINEL_LLM_DAILY_BUDGET_USD` and `SENTINEL_LLM_PROMPT_VERSION` (v3 only if it passes `eval-v8`), `SENTINEL_CHARGE_RANKER` (as decided before the freeze) to `deploy/azure/deploy.sh` and its README. Evidence: the script and a dry run.
-
-- [ ] 2.1 Redeploy once from `main`; check health, the new locale keys, the demo personas, the three demo cases in es-419 and pt-BR, the manual test of Felix (`scripts/felix_replay.py --base-url <link>`) and the phone layout remotely; save the KQL queries by country, outcome and language and record their aggregates; update REQ-0035, REQ-0050 evidence and the README deployment line. Run the end-to-end check (`scripts/e2e_check.py --base-url <link>`) before the video. Evidence: results without identifiers under REQ-0035 in `docs/requirements/delivery.md` and `deploy/azure/queries.kql`.
+The deploy variables (old 2.0) and the final redeploy with its checks (2.1) now live in the `post-freeze` change. They need frozen code and the verdict of `eval-v8`. This plan closes when tasks 1.1 to 1.3 are merged.

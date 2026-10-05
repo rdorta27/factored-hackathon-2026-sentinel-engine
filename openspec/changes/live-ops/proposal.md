@@ -8,12 +8,12 @@
 
 - **Session salt is required:** the deploy stops when `SENTINEL_SESSION_SALT` is missing instead of generating one.
 - **CI replays frozen runs:** every run that verifies offline is listed (`2024Q4-resolution-v1`, `2024Q4-resolution-v2` and `2024Q4-calibration-v1` now; later runs when they verify; not `2024Q4-eval-v7`, whose system block does not reproduce) and checked with `python3 -m eval.run verify`.
-- **Final redeploy for the video:** one redeploy from `main` after the work above merges, checked remotely (health, the new locale keys, the demo personas and the three demo cases), with saved KQL queries by country, outcome and language and their aggregates recorded without identifiers.
+- **Final redeploy:** moved to the `post-freeze` change, where it runs after the measurement and the runs.
 
 ## Capabilities
 
 ### New Capabilities
-- `live-operations`: the stable salt, the replayed runs and the post-redeploy proof.
+- `live-operations`: the stable salt and the replayed runs. The final redeploy moved to `post-freeze`.
 
 ### Modified Capabilities
 (none)
