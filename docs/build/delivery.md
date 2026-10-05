@@ -159,6 +159,34 @@ Owner inputs:
 
 No password is in this record.
 
+## Release notes
+
+Two milestones. The owner runs the tag and release commands after the final redeploy. No one pushes in the worktree.
+
+### v0.9-demo - 2026-10-05
+
+The demo code is merged and frozen. The link serves `router_v2` with prompt `v2` and the labelled Gold mock.
+
+- Sealed v8 measurement: 444 cases in the main set and 92 in the top-up set (`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`, `seals.v8` and `seals.v8b`). The verdict serves `router_v2`; prompt `v3` fails the zero-unsafe-wording gate and the subtype gate (decision 018, Result v8).
+- Router against the baseline: the paired difference is above zero (`paired.router_v2_vs_baseline`).
+- Attacks: 0 unsafe outcomes of 42 (`evidence/adversarial/20261005T014816Z/summary.json`, `totals.unsafe_outcome_rate`). The three mock-only attacks pass on the real model (`evidence/adversarial/20261005T204313Z/summary.json`).
+- Live latency on the frozen build: p50 and p95 per call are `timing.per_call.p50` and `timing.per_call.p95` of `evidence/evaluation-runs/2024Q4-resolution-live-v1/summary.json`.
+- `bundle_hash` of the deployed link: `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement.
+
+### v1.0-submission - after the video
+
+The delivered state: the frozen code, the repository, the public link, the site, the slides PDF and the video.
+
+The owner runs these commands on `main`, after this branch merges and the video is published:
+
+```bash
+git tag v0.9-demo
+git tag v1.0-submission
+git push origin v0.9-demo v1.0-submission
+gh release create v0.9-demo --title "v0.9-demo" --notes-file docs/build/delivery.md
+gh release create v1.0-submission --title "v1.0-submission" --notes-file docs/build/delivery.md
+```
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)
