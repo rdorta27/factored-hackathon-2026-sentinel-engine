@@ -33,6 +33,7 @@ jobs:
         run: |
           pip install pytest
           python3 scripts/site_numbers.py --check
+          python3 scripts/localize.py --check
           python3 -m pytest scripts/test_site.py -q
 
   deploy:

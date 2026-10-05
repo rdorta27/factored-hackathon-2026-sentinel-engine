@@ -9,14 +9,16 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="diagram.css">
+<!--site:alt--><link rel="alternate" hreflang="en" href="evidence.html"><link rel="alternate" hreflang="es" href="../es-la/diagrams/evidence.html"><link rel="alternate" hreflang="pt-BR" href="../pt-br/diagrams/evidence.html"><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="cases.html">Cases</a></nav>
-  </header>
+  <!--site:header--><header class="top">
+    <a class="logo" href="../index.html"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="../index.html">Home</a><a href="architecture.html">Architecture</a><a href="turn.html">One turn</a><a href="cases.html">Cases</a><a href="evidence.html" aria-current="page">Evidence</a><a href="../judges.html">For judges</a><a href="../slides/deck.html">Slides</a><a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">GitHub</a></nav>
+    <div class="lang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="evidence.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" href="../es-la/diagrams/evidence.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="../pt-br/diagrams/evidence.html" title="Português (Brasil)">PT-BR</a></div>
+  </header><!--/site:header-->
   <main id="main">
     <h1>Evidence explorer</h1>
     <p class="lead">Each bar shows its denominator, its type and the field of the frozen run that it reads. No number here is a production measurement.</p>
@@ -32,6 +34,14 @@
     </div>
     <p class="note">The runs are listed in the <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md">evidence index</a>. The types follow <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/what-is-real.md">what is real</a>.</p>
   </main>
+  <!--site:footer--><footer>
+    <a href="../index.html">Home</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
+    <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
+  </footer><!--/site:footer-->
 </div>
 <script src="evidence.js"></script>
 </body>

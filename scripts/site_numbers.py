@@ -254,13 +254,29 @@ def sync_markdown(numbers: dict, check: bool = False) -> list[Path]:
     return changed
 
 
-def slot_text(numbers: dict, kind: str, key: str) -> str:
+TYPE_NAMES = {
+    "es-la": {"Test suite": "Suite de pruebas", "Simulation": "Simulación", "Synthetic": "Sintético", "Projection": "Proyección"},
+    "pt-br": {"Test suite": "Suíte de testes", "Simulation": "Simulação", "Synthetic": "Sintético", "Projection": "Projeção"},
+}
+
+
+def loc(text: str, lang: str) -> str:
+    """Decimal comma and thousands point for Portuguese. English and Spanish keep the point."""
+    return text.translate(str.maketrans(",.", ".,")) if lang == "pt-br" else text
+
+
+def slot_text(numbers: dict, kind: str, key: str, lang: str = "en") -> str:
     entry = numbers[key]
     if kind == "num":
-        return entry["text"]
+        return loc(entry["text"], lang)
     if kind == "num-type":
-        return entry["type"]
-    return f"{int(entry['denominator']):,}"
+        return TYPE_NAMES.get(lang, {}).get(entry["type"], entry["type"])
+    return loc(f"{int(entry['denominator']):,}", lang)
+
+
+def page_lang(page: Path, site: Path) -> str:
+    first = page.relative_to(site).parts[0]
+    return first if first in ("es-la", "pt-br") else "en"
 
 
 def sync_pages(data: dict, site: Path = OUT.parent) -> list[Path]:
@@ -268,8 +284,9 @@ def sync_pages(data: dict, site: Path = OUT.parent) -> list[Path]:
     changed = []
     for page in sorted(site.rglob("*.html")):
         old = page.read_text()
+        lang = page_lang(page, site)
         new = SLOT.sub(
-            lambda m: m.group(1) + slot_text(data["numbers"], m.group(3), m.group(4)) + m.group(6),
+            lambda m: m.group(1) + slot_text(data["numbers"], m.group(3), m.group(4), lang) + m.group(6),
             old,
         )
         if new != old:
@@ -287,7 +304,7 @@ def main() -> int:
     if args.check:
         stale = not OUT.exists() or OUT.read_text() != text
         for page in OUT.parent.rglob("*.html"):
-            if SLOT.sub(lambda m: m.group(1) + slot_text(data["numbers"], m.group(3), m.group(4)) + m.group(6),
+            if SLOT.sub(lambda m: m.group(1) + slot_text(data["numbers"], m.group(3), m.group(4), page_lang(page, OUT.parent)) + m.group(6),
                         page.read_text()) != page.read_text():
                 print(f"stale number in {page.relative_to(ROOT)}")
                 stale = True

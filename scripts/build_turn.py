@@ -19,6 +19,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import build_architecture as ba  # noqa: E402
+import site_chrome  # noqa: E402
+import localize  # noqa: E402
 
 DIR = ba.DIR
 REPO = ba.load()["repo"]
@@ -155,10 +157,7 @@ def page() -> str:
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="cases.html">Cases</a><a href="evidence.html">Evidence</a></nav>
-  </header>
+  <!--site:header-->
   <main id="main">
     <h1>One chat turn</h1>
     <p class="lead">The customer writes one message. Seven steps follow. The model decides one of them. The code decides the rest.</p>
@@ -177,6 +176,7 @@ def page() -> str:
     </section>
     <p class="note">Each stop is a kind of reply: <span class="stop clarify">Clarify</span> asks the customer, <span class="stop refuse">Refuse</span> declines, <span class="stop handoff">Hand off</span> files a ticket for an advisor. See <a href="{REPO}/blob/main/docs/build/conversation.md">the conversation page</a>.</p>
   </main>
+  <!--site:footer-->
 </div>
 <script src="turn.js"></script>
 </body>
@@ -232,7 +232,7 @@ JS = """(function () {
 
 
 def outputs() -> dict[Path, str]:
-    return {DIR / "turn.html": page(), DIR / "turn.js": JS, DIR / "turn.css": CSS}
+    return {DIR / "turn.html": localize.en_page(page(), "diagrams/turn.html"), DIR / "turn.js": JS, DIR / "turn.css": CSS}
 
 
 def main() -> int:

@@ -61,11 +61,21 @@ Sections of `site/index.html`, or pages in `site/`. English, ASD-STE100.
 - [x] 5.4 "Reproduce": the commands to clone, run the tests and verify a frozen run offline. Evidence: `site/judges.html#reproduce`. `scripts/test_site.py` checks that `eval.run`, the run `2024Q4-resolution-v2`, the `dev` and `eval` extras and the attack suite exist, and that every repository link resolves.
 - [ ] 5.5 "Screenshots": the entry page and the chat on a phone, in Spanish and Portuguese, from `scripts/capture_ui_product.py`, taken after `demo-clarity`. Evidence: the images in `site/`.
 - [x] 5.6 "Responsible AI": what the model never receives, results by language and country with the small-sample warning, explanations with the rule id, and the attack results. Evidence: `site/judges.html#responsible`: what the model never receives, the attack results, results by language with the small-sample warning (series `language`, with the 95% range in the evidence explorer), explanations with the rule id.
-- [ ] 5.7 "Team": the three owners and their areas. Evidence: the section.
+- [x] 5.7 "Team": the three owners and their areas. Evidence: `site/index.html#team`: the three names, each with a link to the GitHub profile that the repository contributors list shows (`natalia-restrepo`, `rdorta27`, `FELIX-UCHUBANDA`). Names and links only, as the owner decided.
 - [x] 5.8 "Judge questions": three or four short answers (is it production, what is a mock, why is the ceiling 16 of 56). Evidence: `site/judges.html#questions` (five answers; the numbers come from `site/numbers.json`).
 - [x] 5.9 Page details: title, description, preview image, favicon, a 404 page, light and dark mode, keyboard focus, and no tracking. Evidence: `site/index.html` (description, Open Graph tags, `site/preview.png`), `site/favicon.svg`, `site/404.html`, light and dark mode, focus styles, no external request, 390 px test.
 
 The owner updates the site again after the release. The tag, the release link and the video enter then (`docs-followups-2`, group 7).
+
+## 6. Languages and navigation
+
+The owner asked for one navigation on every page and for the pitch in English, Spanish (Latin America, `es-LA`) and Portuguese (`pt-BR`). English is the source. The Spanish and Portuguese pages are translations of it. AGENTS.md keeps the repository documents in English: this group covers `site/` only, and only because a person asked for it.
+
+- [x] 6.1 One header, one footer and one language switch on every page (`scripts/site_chrome.py`). The current page and the current language are marked. Evidence: `test_navigation_is_the_same_on_every_page`.
+- [x] 6.2 A translation tool, `scripts/localize.py`, builds `site/es-la/` and `site/pt-br/` from the English pages. A text with no translation stops the build. Numbers use the decimal comma in Portuguese. Evidence: `python3 scripts/localize.py --check`.
+- [x] 6.3 The dictionaries `site/i18n/es-la.json` and `site/i18n/pt-br.json` (516 texts each). Demo lines stay in their own language. Evidence: `test_language_copies_are_current_and_complete`, `test_demo_lines_stay_in_their_own_language`.
+- [x] 6.4 Tests in the three languages: same structure, links and language links resolve, no external request, no horizontal scroll at 390 px, the switch keeps the page. Evidence: `test_all_languages_in_the_browser`.
+- [x] 6.5 One PDF of the slides for each language. Evidence: `python3 scripts/export_slides.py` writes three PDFs of six pages (gitignored).
 
 ## Moved to `post-freeze`
 

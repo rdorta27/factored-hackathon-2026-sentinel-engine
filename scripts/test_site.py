@@ -27,7 +27,7 @@ def test_each_number_slot_matches_numbers_json():
             slots += 1
             key = m.group(4)
             assert key in numbers, f"{page.name}: unknown number {key}"
-            expected = sn.slot_text(numbers, m.group(3), key)
+            expected = sn.slot_text(numbers, m.group(3), key, sn.page_lang(page, SITE))
             assert m.group(5) == expected, f"{page.name}: {key} shows {m.group(5)!r}, evidence says {expected!r}"
     assert slots > 0
 
@@ -72,7 +72,7 @@ def test_no_external_request():
 def test_page_details():
     for page in PAGES:
         html = page.read_text()
-        assert '<html lang="en">' in html and "<title>" in html, page.name
+        assert re.search(r'<html lang="(en|es|pt-BR)">', html) and "<title>" in html, page.name
         assert 'name="viewport"' in html, page.name
     home = (SITE / "index.html").read_text()
     assert 'name="description"' in home and 'rel="icon"' in home
@@ -359,4 +359,113 @@ def test_judges_page_in_the_browser():
         page.locator("summary").first.click()
         assert page.locator("details[open]").count() == 1
         assert all(u.startswith("file:") for u in requests), requests
+        browser.close()
+
+
+# --- languages: English, Spanish (es-LA) and Portuguese (pt-BR) ---
+
+import localize as lz  # noqa: E402
+import site_chrome as chrome  # noqa: E402
+
+LANGS = ["en", "es-la", "pt-br"]
+
+
+def lang_path(lang: str, page: str) -> Path:
+    return SITE / page if lang == "en" else SITE / lang / page
+
+
+def test_language_copies_are_current_and_complete():
+    outputs, translators = lz.build()
+    for lang, tr in translators.items():
+        assert not tr.missing, f"{lang}: missing {sorted(tr.missing)[:3]}"
+        assert not tr.errors, f"{lang}: {tr.errors[:2]}"
+    for path, text in outputs.items():
+        assert path.read_text() == text, f"{path.relative_to(SITE)} is stale: run scripts/localize.py"
+
+
+def test_every_page_exists_in_each_language_with_the_same_structure():
+    for page in lz.sources():
+        base = lang_path("en", page).read_text()
+        for lang in LANGS[1:]:
+            other = lang_path(lang, page).read_text()
+            for pattern in (r"<h[1-3]\b", r"data-num[\w-]*=", r'id="[^"]+"', r"<a ", r"<section\b"):
+                assert len(re.findall(pattern, base)) == len(re.findall(pattern, other)), (page, lang, pattern)
+
+
+def test_navigation_is_the_same_on_every_page():
+    for lang in LANGS:
+        navs = set()
+        for page in lz.sources():
+            if not page.endswith(".html") or page.startswith("slides/"):
+                continue
+            html = lang_path(lang, page).read_text()
+            nav = re.search(r'<nav aria-label="[^"]*">(.*?)</nav>', html, re.S).group(1)
+            labels = tuple(re.findall(r">([^<]+)</a>", nav))
+            navs.add(labels)
+            assert 'aria-current="page"' in nav, (lang, page)
+            assert html.count('aria-current="true"') == 1, (lang, page)
+            assert "<footer>" in html, (lang, page)
+        assert len(navs) == 1, (lang, navs)
+
+
+def test_language_links_and_alternates_resolve():
+    for lang in LANGS:
+        for page in lz.sources():
+            if not page.endswith(".html"):
+                continue
+            here = lang_path(lang, page)
+            html = here.read_text()
+            for target in re.findall(r'data-lang="[^"]+" href="([^"]+)"', html):
+                assert (here.parent / target).resolve().exists(), (lang, page, target)
+            for target in re.findall(r'rel="alternate" hreflang="[^"]+" href="([^"]+)"', html):
+                assert (here.parent / target).resolve().exists(), (lang, page, target)
+            # Every relative asset and page link resolves.
+            for target in re.findall(r'(?:href|src)="((?!https?:|mailto:|#|//)[^"#]+)', html):
+                assert (here.parent / target).resolve().exists(), (lang, page, target)
+
+
+def test_demo_lines_stay_in_their_own_language():
+    for lang in LANGS:
+        html = lang_path(lang, "diagrams/cases.html").read_text()
+        assert "Quiero hablar con un asesor." in html and "não reconheço uma cobrança" in html, lang
+        assert "Cafe Central" in lang_path(lang, "index.html").read_text()
+
+
+def test_portuguese_numbers_use_a_decimal_comma():
+    pt = lang_path("pt-br", "index.html").read_text()
+    en = lang_path("en", "index.html").read_text()
+    assert ">98,2%<" in pt and ">98.2%<" in en
+    assert ">79.191<" in pt and ">79,191<" in en
+    es = lang_path("es-la", "index.html").read_text()
+    assert ">98.2%<" in es and ">Simulación<" in es and ">Simulação<" in pt
+
+
+def test_all_languages_in_the_browser():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        for lang in LANGS:
+            for page in ("index.html", "judges.html", "diagrams/architecture.html", "diagrams/cases.html", "diagrams/evidence.html", "diagrams/turn.html", "slides/deck.html"):
+                for width in (1280, 390):
+                    p = browser.new_page(viewport={"width": width, "height": 800})
+                    errors, requests = [], []
+                    p.on("pageerror", lambda e: errors.append(str(e)))
+                    p.on("request", lambda r: requests.append(r.url))
+                    p.goto(lang_path(lang, page).as_uri())
+                    assert not errors, (lang, page, errors)
+                    assert all(u.startswith("file:") for u in requests), (lang, page, requests)
+                    if page != "slides/deck.html":
+                        assert not p.evaluate("document.documentElement.scrollWidth > innerWidth"), (lang, page, width)
+                    p.close()
+            # The switcher moves to the same page in the other language.
+            p = browser.new_page(viewport={"width": 1280, "height": 800})
+            p.goto(lang_path(lang, "diagrams/turn.html").as_uri())
+            other = "es-la" if lang != "es-la" else "pt-br"
+            p.click(f'.lang a[data-lang="{other}"]')
+            assert f"/{other}/diagrams/turn.html" in p.url, (lang, p.url)
+            p.close()
         browser.close()

@@ -8,10 +8,7 @@
   var hint = document.querySelector(".pick-hint");
   var segs = document.querySelectorAll("[data-view]");
   var note = document.getElementById("view-note");
-  var notes = {
-    demo: "The demo view shows what runs on the public link.",
-    prod: "The production view shows what replaces each part. A thick border marks a part that changes."
-  };
+  var notes = { demo: note.dataset.noteDemo, prod: note.dataset.noteProd };
 
   function select(id, focus) {
     nodes.forEach(function (n) { n.classList.toggle("sel", n.dataset.node === id); });

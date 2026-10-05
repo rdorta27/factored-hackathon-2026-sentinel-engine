@@ -18,6 +18,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import build_architecture as ba  # noqa: E402
+import site_chrome  # noqa: E402
+import localize  # noqa: E402
 
 DIR = ba.DIR
 REPO = ba.load()["repo"]
@@ -138,7 +140,7 @@ svg.arch .node{cursor:default}
 
 
 def case_panel(c) -> str:
-    rows = "".join(f"<li><b>{escape(t)}.</b> {escape(d)}</li>" for t, d in c["steps"])
+    rows = "".join(f"<li><b>{escape(t)}{'' if t.endswith('?') else '.'}</b> {escape(d)}</li>" for t, d in c["steps"])
     extra = ""
     if c["id"] == "person":
         fields = "".join(f"<dt><code>{escape(k)}</code></dt><dd>{escape(v)}</dd>" for k, v in PACKAGE)
@@ -153,7 +155,7 @@ def case_panel(c) -> str:
     return (
         f'<article class="detail case" id="c-{c["id"]}" data-case="{c["id"]}" role="tabpanel" aria-labelledby="t-{c["id"]}">'
         f'<h3>{escape(c["title"])}</h3><p>{escape(c["setup"])}</p>'
-        f'<blockquote lang="{"pt-BR" if "pt-BR" in c["lang"].split(",")[0] else "es"}">&ldquo;{escape(c["line"])}&rdquo;'
+        f'<blockquote><span lang="{"pt-BR" if "pt-BR" in c["lang"].split(",")[0] else "es"}">&ldquo;{escape(c["line"])}&rdquo;</span>'
         f'<small>{escape(c["lang"])}</small></blockquote>'
         f"<ol>{rows}</ol><p><b>Result.</b> {escape(c['end'])}</p>{extra}</article>"
     )
@@ -183,10 +185,7 @@ def page() -> str:
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="evidence.html">Evidence</a></nav>
-  </header>
+  <!--site:header-->
   <main id="main">
     <h1>Three cases, one decision map</h1>
     <p class="lead">The same steps run each time. The code decides where the turn goes. Select a case to light its route.</p>
@@ -199,6 +198,7 @@ def page() -> str:
     </section>
     <p class="note">The lines are the demo lines of the <a href="{REPO}/blob/main/sentinel-ai-core/eval/demo/replay.md">demo replay</a>. The data behind the demo is synthetic and the Gold store is a labelled mock. See <a href="{REPO}/blob/main/docs/architecture/what-is-real.md">what is real</a>.</p>
   </main>
+  <!--site:footer-->
 </div>
 <script type="application/json" id="routes">{json.dumps(routes)}</script>
 <script src="cases.js"></script>
@@ -219,7 +219,7 @@ JS = """(function () {
     svg.classList.add("focus");
     svg.querySelectorAll(".node").forEach(function (n) { n.classList.toggle("lit", lit.indexOf(n.dataset.node) >= 0); });
     svg.querySelectorAll("[data-e]").forEach(function (e) {
-      var p = e.dataset.e.split(">");
+      var p = e.dataset.e.split(":");
       e.classList.toggle("lit", lit.indexOf(p[0]) >= 0 && lit.indexOf(p[1]) >= 0 && lit.indexOf(p[1]) === lit.indexOf(p[0]) + 1);
     });
     tabs.forEach(function (t) {
@@ -248,7 +248,7 @@ JS = """(function () {
 
 
 def outputs() -> dict[Path, str]:
-    return {DIR / "cases.html": page(), DIR / "cases.js": JS}
+    return {DIR / "cases.html": localize.en_page(page(), "diagrams/cases.html"), DIR / "cases.js": JS}
 
 
 def main() -> int:

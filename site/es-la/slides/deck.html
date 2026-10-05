@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diapositivas de Sentinel</title>
+<meta name="description" content="Seis diapositivas: por qué, qué, cómo, prueba, tu marca, límites y hoja de ruta.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../slides/deck.css">
+<!--site:alt--><link rel="alternate" hreflang="en" href="../../slides/deck.html"><link rel="alternate" hreflang="es" href="deck.html"><link rel="alternate" hreflang="pt-BR" href="../../pt-br/slides/deck.html"><!--/site:alt-->
+</head>
+<body>
+<main class="deck">
+<section class="slide" id="s1" aria-label="Por qué">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 1 / 6</span></div>
+<span class="eyebrow">1 · Por qué</span>
+<h1>Un cliente ve un cargo que no reconoce. <span>¿Quién responde?</span></h1>
+<div class="cols">
+  <div class="col">
+    <h2>Dos cosas pueden salir mal</h2>
+    <div class="card"><p><b>Un chatbot puede inventar.</b> Puede afirmar un dato que no verificó. Puede decir que existe un caso cuando no existe.</p></div>
+    <div class="card"><p><b>Un asesor puede empezar de cero.</b> Un traspaso sin datos verificados obliga al cliente a repetir todo.</p></div>
+    <div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok" style="background:#fdeedd;color:#8a4a0b">&ldquo;No reconozco este cargo.&rdquo; Datos de demostración.</span></div>
+    <p class="foot">Usuarios: clientes de bancos en México, Colombia y Argentina, en español y portugués.</p>
+  </div>
+  <div class="col">
+    <h2>Qué dicen los datos</h2>
+    <div class="card"><span class="tag data" data-num-type="problem_dispute_calls">Sintético</span>
+      <span class="big" data-num="problem_dispute_calls">79,191</span>
+      <p>llamadas por disputas en la ventana de desarrollo, de <span data-num-den="problem_dispute_calls">464,791</span>.</p></div>
+    <div class="grid2">
+      <div class="card"><span class="big" data-num="problem_dispute_hours">390.8</span><p>horas de agente al mes en disputas</p></div>
+      <div class="card"><span class="big" data-num="problem_dispute_resolved">43.6%</span><p>de las llamadas por disputas terminan resueltas</p></div>
+    </div>
+    <p class="srcnote"><code>evidence/problem/dev-v1/summary.json</code> · <code>demand, hours, reasons</code>. El conjunto de datos es sintético.</p>
+  </div>
+</div>
+</section>
+<section class="slide" id="s2" aria-label="Qué">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 2 / 6</span></div>
+<span class="eyebrow">2 · Qué</span>
+<h1>Sentinel lo convierte en un caso verificado, <span>o en un asesor bien informado.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="panel"><span class="eyebrow">Dentro del banco</span>
+      <div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div>
+      <span class="ok">Dato verificado en tu cuenta</span><div class="fake" aria-hidden="true">Sí, abrir la disputa</div></div></div>
+    <ul>
+      <li>Español (es-MX, es-CO, es-AR) y portugués (pt-BR).</li>
+      <li>Abre una disputa solo cuando la política lo permite y el cliente confirma.</li>
+      <li>Dice que existe un caso solo después de volver a leer el caso.</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h2>Cuatro casos de demostración</h2>
+    <div class="grid2">
+      <div class="card"><span class="eyebrow">Normal</span><p>Un cargo, una confirmación, un número de caso.</p></div>
+      <div class="card"><span class="eyebrow">Ambiguo</span><p>Compras iguales. El sistema pregunta cuál.</p></div>
+      <div class="card"><span class="eyebrow">Monto alto</span><p>El sistema traspasa con los datos verificados.</p></div>
+      <div class="card"><span class="eyebrow">No fui yo</span><p>El sistema no juzga el fraude. Lo hace un asesor.</p></div>
+    </div>
+    <p class="foot">Demo en vivo: enlace en el README. Los datos de la demo son sintéticos.</p>
+  </div>
+</div>
+</section>
+<section class="slide" id="s3" aria-label="Cómo">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 3 / 6</span></div>
+<span class="eyebrow">3 · Cómo</span>
+<h1>La IA conversa. <span>Las reglas deciden.</span></h1>
+<div class="how"><img src="../diagrams/architecture-light.svg" alt="Arquitectura de Sentinel. El modelo etiqueta la intención. El código enmascara, decide, actúa y verifica. Las partes están marcadas como reales o mock."></div>
+<p class="motto">El modelo solo etiqueta la intención. El código enmascara, decide, actúa y verifica.</p>
+</section>
+<section class="slide" id="s4" aria-label="Prueba">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 4 / 6</span></div>
+<span class="eyebrow">4 · Prueba</span>
+<h1>No lo decimos. <span>Lo medimos.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="card"><span class="tag test" data-num-type="adv_attempted">Suite de pruebas</span>
+      <span class="big" data-num="adv_rate">0/42</span>
+      <p>ataques con un resultado inseguro, de <span data-num="adv_attempted">42</span> probados.</p></div>
+    <div class="grid2">
+      <div class="card"><span class="big" data-num="adv_blocked">38</span><p>de <span data-num-den="adv_blocked">42</span> detenidos por el código de producción</p></div>
+      <div class="card"><span class="big" data-num="adv_mock">3</span><p>de <span data-num-den="adv_mock">42</span> seguros solo con el modelo mock. Lo decimos.</p></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card"><span class="tag" data-num-type="intent_router">Simulación</span>
+      <span class="big" data-num="intent_router">98.2%</span>
+      <p>de exactitud de intención del enrutador LLM en <span data-num-den="intent_router">280</span> turnos reservados. La línea base de palabras clave logra <span data-num="intent_baseline">53.9%</span>.</p></div>
+    <div class="card"><span class="tag" data-num-type="ceil_resolved">Simulación</span>
+      <span class="big"><span data-num="ceil_resolved">16</span> <small>de <span data-num-den="ceil_resolved">16</span> casos resolubles resueltos</small></span>
+      <p>La política deja resolver <span data-num="ceil_resolvable">16</span> de <span data-num-den="ceil_resolvable">56</span> casos. Los demás necesitan un traspaso o una pregunta. <span data-num="res_unsafe">0/56</span> terminan de forma insegura. El enrutador suma <span data-num="res_net">0</span> casos resueltos sobre la línea base: la línea base llega al mismo techo.</p></div>
+  </div>
+</div>
+<p class="foot srcnote">Fuentes: <code>evidence/adversarial</code>, <code>evaluation-runs/2024Q4-eval-v7</code>, <code>evaluation-runs/2024Q4-resolution-v2</code> y <code>-gap-v1</code>. Una simulación no es una medición de producción.</p>
+</section>
+<section class="slide" id="s5" aria-label="Tu marca">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 5 / 6</span></div>
+<span class="eyebrow">5 · Tu marca</span>
+<h1>Tu marca. <span>Nuestra capa de confianza.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="stack">
+      <div class="panel" style="--b:#1f4fa3"><span class="eyebrow">Banco A</span><div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok">Dato verificado en tu cuenta</span><div class="fake" aria-hidden="true">Sí, abrir la disputa</div></div></div>
+      <div class="panel" style="--b:#0f7a55"><span class="eyebrow">Banco B</span><div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok">Dato verificado en tu cuenta</span><div class="fake" aria-hidden="true">Sí, abrir la disputa</div></div></div>
+    </div>
+    <p class="foot">Maqueta de dos marcas en la misma pantalla. Mismo código, misma política.</p>
+  </div>
+  <div class="col">
+    <ul>
+      <li>El nombre del banco y el color de acento vienen de dos variables de entorno, no del código. Un acento que no pasa la verificación de contraste vuelve al valor por defecto.</li>
+      <li>La capa de confianza no cambia: la misma política, las mismas verificaciones, la misma relectura.</li>
+      <li>El asesor recibe un paquete: la solicitud, los datos verificados, las acciones que el sistema intentó y la traza de cada paso.</li>
+      <li>El modelo nunca ve el id del cliente.</li>
+    </ul>
+  </div>
+</div>
+</section>
+<section class="slide" id="s6" aria-label="Límites y hoja de ruta">
+<div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 6 / 6</span></div>
+<span class="eyebrow">6 · Límites y hoja de ruta</span>
+<h1>Lo que no construimos, <span>y por qué.</span></h1>
+<div class="cols">
+  <div class="col lim">
+    <h2>Límites</h2>
+    <ul>
+      <li><b>Datos:</b> sintéticos, solo en español, tres países. Los casos en portugués los escribió un modelo.</li>
+      <li><b>Techo:</b> la política deja resolver <span data-num="ceil_resolvable">16</span> de <span data-num-den="ceil_resolvable">56</span> casos simulados (<span data-num-type="ceil_resolvable">Simulación</span>). El sistema resuelve todos ellos. No resuelve ninguno más.</li>
+      <li><b>Mocks:</b> almacén Gold, acceso y sesión, asesor, almacén de casos y valores de la política. Cada uno tiene un reemplazo en producción.</li>
+      <li><b>Números:</b> ninguno de estos números es una medición de producción.</li>
+    </ul>
+  </div>
+  <div class="col road">
+    <h2>Hoja de ruta</h2>
+    <ul>
+      <li><b>Customer 360:</b> el saldo no tiene una fecha de corte utilizable.</li>
+      <li><b>Investigación de un cargo:</b> necesita datos reales del banco.</li>
+      <li><b>Conjunto de retroalimentación:</b> resultados de los traspasos a asesores.</li>
+      <li><b>Asistente de gastos:</b> necesita saldos e historial.</li>
+      <li><b>Consulta de políticas:</b> necesita los documentos de política del banco.</li>
+      <li><b>Enrutamiento de traspasos:</b> por idioma y especialidad.</li>
+    </ul>
+    <p class="src">README.md#roadmap · docs/architecture/mocks.md</p>
+  </div>
+</div>
+<div class="mockrow">
+  <h2>Cada mock, en producción</h2>
+  <div class="chips">
+    <span><b>Almacén Gold</b> → Gold en Databricks</span> <span><b>Acceso</b> → proveedor de identidad del banco</span> <span><b>Vista del asesor</b> → asesor humano y CRM del banco</span> <span><b>Almacén de casos</b> → PostgreSQL</span> <span><b>Valores de la política</b> → política aprobada por el banco</span>
+  </div>
+</div>
+
+</section>
+</main>
+<nav class="hud" aria-label="Diapositivas">
+  <a href="../">Sitio</a>
+  <!--site:hudlang--><div class="hudlang" role="group" aria-label="Idioma" data-t="keep"><a lang="en" hreflang="en" data-lang="en" href="../../slides/deck.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" aria-current="true" href="deck.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="../../pt-br/slides/deck.html" title="Português (Brasil)">PT-BR</a></div><!--/site:hudlang-->
+  <button type="button" id="prev" aria-label="Diapositiva anterior">&larr;</button>
+  <span id="pos" style="color:#f1eefb;align-self:center;font:600 14px system-ui">1 / 6</span>
+  <button type="button" id="next" aria-label="Diapositiva siguiente">&rarr;</button>
+</nav>
+<script src="../../slides/deck.js"></script>
+</body>
+</html>

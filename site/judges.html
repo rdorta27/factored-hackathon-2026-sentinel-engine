@@ -22,14 +22,16 @@ details p { margin: 0 0 12px; color: var(--muted); }
 .langs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
 main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; }
 </style>
+<!--site:alt--><link rel="alternate" hreflang="en" href="judges.html"><link rel="alternate" hreflang="es" href="es-la/judges.html"><link rel="alternate" hreflang="pt-BR" href="pt-br/judges.html"><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="./"><img src="favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="./">Home</a><a href="diagrams/architecture.html">Architecture</a><a href="diagrams/evidence.html">Evidence</a></nav>
-  </header>
+  <!--site:header--><header class="top">
+    <a class="logo" href="index.html"><img src="favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="index.html">Home</a><a href="diagrams/architecture.html">Architecture</a><a href="diagrams/turn.html">One turn</a><a href="diagrams/cases.html">Cases</a><a href="diagrams/evidence.html">Evidence</a><a href="judges.html" aria-current="page">For judges</a><a href="slides/deck.html">Slides</a><a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">GitHub</a></nav>
+    <div class="lang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="judges.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" href="es-la/judges.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="pt-br/judges.html" title="Português (Brasil)">PT-BR</a></div>
+  </header><!--/site:header-->
   <main id="main">
     <h1>For judges</h1>
     <p class="lead">What a reviewer asks first: can it reach production, can I reproduce it, is the AI responsible, and what is real.</p>
@@ -127,11 +129,14 @@ python3 -m eval.run verify 2024Q4-resolution-v2</code></pre>
       <details><summary>Does the model decide?</summary><p>No. The model labels the intent. Code masks, looks up, decides, acts and reads the case back.</p></details>
     </section>
   </main>
-  <footer>
-    <a href="./">Home</a>
+  <!--site:footer--><footer>
+    <a href="index.html">Home</a>
+    <a href="diagrams/architecture.html">Architecture</a>
     <a href="diagrams/evidence.html">Evidence</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
     <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
-  </footer>
+  </footer><!--/site:footer-->
 </div>
 </body>
 </html>

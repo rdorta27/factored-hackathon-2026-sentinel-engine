@@ -20,6 +20,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 import site_numbers as sn  # noqa: E402
+import site_chrome  # noqa: E402
+import localize  # noqa: E402
 
 ROOT = sn.ROOT
 DIR = ROOT / "site" / "diagrams"
@@ -89,7 +91,7 @@ def svg_edges(data) -> str:
         ax, ay = x2 - 9 * math.cos(ang), y2 - 9 * math.sin(ang)
         px, py = -math.sin(ang) * 4.5, math.cos(ang) * 4.5
         cls = "edge dashed" if e.get("dashed") else "edge"
-        key = f'{e["from"]}>{e["to"]}'
+        key = f'{e["from"]}:{e["to"]}'
         out.append(f'<line class="{cls}" data-e="{key}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{ax:.1f}" y2="{ay:.1f}"/>')
         out.append(
             f'<polygon class="arrow" data-e="{key}" points="{x2:.1f},{y2:.1f} {ax + px:.1f},{ay + py:.1f} {ax - px:.1f},{ay - py:.1f}"/>'
@@ -226,10 +228,7 @@ def build_page(data) -> str:
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.svg">Static drawing (SVG)</a></nav>
-  </header>
+  <!--site:header-->
   <main id="main">
     <h1>How the parts fit</h1>
     <p class="lead">The model labels the intent. The code decides, acts and verifies. Select a part. Switch to the production view to see what replaces each mock.</p>
@@ -237,7 +236,7 @@ def build_page(data) -> str:
     <div class="switch" role="group" aria-label="View">
       <button type="button" class="seg on" data-view="demo" aria-pressed="true">Demo</button>
       <button type="button" class="seg" data-view="prod" aria-pressed="false">Production</button>
-      <span class="note" id="view-note">The demo view shows what runs on the public link.</span>
+      <span class="note" id="view-note" data-note-demo="The demo view shows what runs on the public link." data-note-prod="The production view shows what replaces each part. A thick border marks a part that changes.">The demo view shows what runs on the public link.</span>
     </div>
 
     <div class="scroller" tabindex="0" aria-label="Architecture drawing, scrolls sideways on a narrow screen">
@@ -258,8 +257,9 @@ def build_page(data) -> str:
       <p class="note pick-hint">Select a part of the drawing or a button above.</p>
 {details}
     </section>
-    <p class="note">Labels follow <a href="{repo}/blob/main/docs/architecture/what-is-real.md">what is real</a> and <a href="{repo}/blob/main/docs/architecture/mocks.md">mocks</a>. No number in this page is a production measurement.</p>
+    <p class="note">Labels follow <a href="{repo}/blob/main/docs/architecture/what-is-real.md">what is real</a> and <a href="{repo}/blob/main/docs/architecture/mocks.md">mocks</a>. No number in this page is a production measurement. <a href="architecture.svg">Static drawing (SVG)</a>.</p>
   </main>
+  <!--site:footer-->
 </div>
 <script src="architecture.js"></script>
 </body>
@@ -329,10 +329,7 @@ JS = """(function () {
   var hint = document.querySelector(".pick-hint");
   var segs = document.querySelectorAll("[data-view]");
   var note = document.getElementById("view-note");
-  var notes = {
-    demo: "The demo view shows what runs on the public link.",
-    prod: "The production view shows what replaces each part. A thick border marks a part that changes."
-  };
+  var notes = { demo: note.dataset.noteDemo, prod: note.dataset.noteProd };
 
   function select(id, focus) {
     nodes.forEach(function (n) { n.classList.toggle("sel", n.dataset.node === id); });
@@ -380,7 +377,7 @@ def outputs() -> dict[Path, str]:
     return {
         SVG: build_svg(data),
         SVG_LIGHT: build_svg(data, dark=False),
-        PAGE: build_page(data),
+        PAGE: localize.en_page(build_page(data), "diagrams/architecture.html"),
         DIR / "diagram.css": CSS,
         DIR / "architecture.js": JS,
     }

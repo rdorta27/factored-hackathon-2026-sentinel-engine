@@ -13,25 +13,16 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
+<!--site:alt--><link rel="alternate" hreflang="en" href="index.html"><link rel="alternate" hreflang="es" href="es-la/index.html"><link rel="alternate" hreflang="pt-BR" href="pt-br/index.html"><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="./">
-      <img src="favicon.svg" width="34" height="34" alt="">
-      Sentinel
-    </a>
-    <nav aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#proof">Results</a>
-      <a href="#explore">Explore</a>
-      <a href="judges.html">For judges</a>
-      <a href="#demo">Demo</a>
-      <a href="slides/deck.html">Slides</a>
-      <a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">View on GitHub</a>
-    </nav>
-  </header>
+  <!--site:header--><header class="top">
+    <a class="logo" href="index.html"><img src="favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="index.html" aria-current="page">Home</a><a href="diagrams/architecture.html">Architecture</a><a href="diagrams/turn.html">One turn</a><a href="diagrams/cases.html">Cases</a><a href="diagrams/evidence.html">Evidence</a><a href="judges.html">For judges</a><a href="slides/deck.html">Slides</a><a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">GitHub</a></nav>
+    <div class="lang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="index.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" href="es-la/index.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="pt-br/index.html" title="Português (Brasil)">PT-BR</a></div>
+  </header><!--/site:header-->
 
   <main id="main">
     <div class="hero">
@@ -56,6 +47,15 @@
         </div>
       </div>
     </div>
+
+    <ul class="toc" aria-label="On this page">
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#explore">Explore</a></li>
+      <li><a href="#proof">Results</a></li>
+      <li><a href="#demo">Demo</a></li>
+      <li><a href="#limits">Limits and roadmap</a></li>
+      <li><a href="#team">Team</a></li>
+    </ul>
 
     <section id="how" aria-labelledby="how-h">
       <h2 id="how-h">Five steps, each one checkable</h2>
@@ -164,14 +164,24 @@
         </div>
       </div>
     </section>
+    <section id="team" aria-labelledby="team-h">
+      <h2 id="team-h">Team</h2>
+      <ul class="team">
+        <li><a class="card" href="https://github.com/natalia-restrepo">Natalia Restrepo</a></li>
+        <li><a class="card" href="https://github.com/rdorta27">Rubén Dorta</a></li>
+        <li><a class="card" href="https://github.com/FELIX-UCHUBANDA">Félix Uchubanda</a></li>
+      </ul>
+    </section>
   </main>
 
-  <footer>
-    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/README.md">Architecture</a>
+  <!--site:footer--><footer>
+    <a href="index.html">Home</a>
+    <a href="diagrams/architecture.html">Architecture</a>
+    <a href="diagrams/evidence.html">Evidence</a>
     <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
-    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md">Evidence</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
     <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
-  </footer>
+  </footer><!--/site:footer-->
 </div>
 </body>
 </html>

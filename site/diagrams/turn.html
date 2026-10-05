@@ -10,14 +10,16 @@
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="diagram.css">
 <link rel="stylesheet" href="turn.css">
+<!--site:alt--><link rel="alternate" hreflang="en" href="turn.html"><link rel="alternate" hreflang="es" href="../es-la/diagrams/turn.html"><link rel="alternate" hreflang="pt-BR" href="../pt-br/diagrams/turn.html"><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="cases.html">Cases</a><a href="evidence.html">Evidence</a></nav>
-  </header>
+  <!--site:header--><header class="top">
+    <a class="logo" href="../index.html"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="../index.html">Home</a><a href="architecture.html">Architecture</a><a href="turn.html" aria-current="page">One turn</a><a href="cases.html">Cases</a><a href="evidence.html">Evidence</a><a href="../judges.html">For judges</a><a href="../slides/deck.html">Slides</a><a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">GitHub</a></nav>
+    <div class="lang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="turn.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" href="../es-la/diagrams/turn.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="../pt-br/diagrams/turn.html" title="Português (Brasil)">PT-BR</a></div>
+  </header><!--/site:header-->
   <main id="main">
     <h1>One chat turn</h1>
     <p class="lead">The customer writes one message. Seven steps follow. The model decides one of them. The code decides the rest.</p>
@@ -42,6 +44,14 @@
     </section>
     <p class="note">Each stop is a kind of reply: <span class="stop clarify">Clarify</span> asks the customer, <span class="stop refuse">Refuse</span> declines, <span class="stop handoff">Hand off</span> files a ticket for an advisor. See <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/conversation.md">the conversation page</a>.</p>
   </main>
+  <!--site:footer--><footer>
+    <a href="../index.html">Home</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
+    <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
+  </footer><!--/site:footer-->
 </div>
 <script src="turn.js"></script>
 </body>

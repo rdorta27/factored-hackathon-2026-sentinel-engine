@@ -31,13 +31,13 @@ Six slides, in English, as static HTML pages: [`site/slides/deck.html`](../../si
 | 5 | Your brand: the white label | [branding](../../sentinel-ai-core/app/branding.py) |
 | 6 | Limits and roadmap, with the mocks | [mocks](../architecture/mocks.md), [README roadmap](../../README.md#roadmap) |
 
-Build the PDF before the submission:
+Build the PDFs before the submission:
 
 ```bash
 python3 scripts/export_slides.py
 ```
 
-The PDF is `site/slides/sentinel-slides.pdf`. Git ignores it. It holds one page for each slide.
+The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides.es-la.pdf` and `sentinel-slides.pt-br.pdf`. Git ignores them. Each holds one page for each slide. Submit the English PDF.
 
 - The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
 - Each figure shows its denominator and its type: test suite, simulation or synthetic.
@@ -56,6 +56,8 @@ Mandatory, **3 minutes at most**. It shows the solution working and explains the
 7. Top results and limitations.
 
 ## Project site
+
+The site and the slides are in English, Spanish (`es-LA`) and Portuguese (`pt-BR`). English is the source and the submission language ([language](#language)). The other two languages are translations for readers. `python3 scripts/localize.py` builds them from the English pages. `site/i18n/` holds the dictionaries. The ASD-STE100 rule applies to the English text only.
 
 The static site is in `site/`. It holds plain HTML and CSS, with no build step. The workflow [`pages.yml`](../../.github/workflows/pages.yml) publishes it to GitHub Pages on each push to `main` that changes `site/`.
 

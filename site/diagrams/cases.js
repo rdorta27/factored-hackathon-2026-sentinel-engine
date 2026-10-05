@@ -10,7 +10,7 @@
     svg.classList.add("focus");
     svg.querySelectorAll(".node").forEach(function (n) { n.classList.toggle("lit", lit.indexOf(n.dataset.node) >= 0); });
     svg.querySelectorAll("[data-e]").forEach(function (e) {
-      var p = e.dataset.e.split(">");
+      var p = e.dataset.e.split(":");
       e.classList.toggle("lit", lit.indexOf(p[0]) >= 0 && lit.indexOf(p[1]) >= 0 && lit.indexOf(p[1]) === lit.indexOf(p[0]) + 1);
     });
     tabs.forEach(function (t) {

@@ -9,14 +9,16 @@
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../style.css">
 <link rel="stylesheet" href="diagram.css">
+<!--site:alt--><link rel="alternate" hreflang="en" href="architecture.html"><link rel="alternate" hreflang="es" href="../es-la/diagrams/architecture.html"><link rel="alternate" hreflang="pt-BR" href="../pt-br/diagrams/architecture.html"><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.svg">Static drawing (SVG)</a></nav>
-  </header>
+  <!--site:header--><header class="top">
+    <a class="logo" href="../index.html"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="../index.html">Home</a><a href="architecture.html" aria-current="page">Architecture</a><a href="turn.html">One turn</a><a href="cases.html">Cases</a><a href="evidence.html">Evidence</a><a href="../judges.html">For judges</a><a href="../slides/deck.html">Slides</a><a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">GitHub</a></nav>
+    <div class="lang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="architecture.html" title="English">EN</a><a lang="es" hreflang="es" data-lang="es-la" href="../es-la/diagrams/architecture.html" title="Español (Latinoamérica)">ES-LA</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="../pt-br/diagrams/architecture.html" title="Português (Brasil)">PT-BR</a></div>
+  </header><!--/site:header-->
   <main id="main">
     <h1>How the parts fit</h1>
     <p class="lead">The model labels the intent. The code decides, acts and verifies. Select a part. Switch to the production view to see what replaces each mock.</p>
@@ -24,7 +26,7 @@
     <div class="switch" role="group" aria-label="View">
       <button type="button" class="seg on" data-view="demo" aria-pressed="true">Demo</button>
       <button type="button" class="seg" data-view="prod" aria-pressed="false">Production</button>
-      <span class="note" id="view-note">The demo view shows what runs on the public link.</span>
+      <span class="note" id="view-note" data-note-demo="The demo view shows what runs on the public link." data-note-prod="The production view shows what replaces each part. A thick border marks a part that changes.">The demo view shows what runs on the public link.</span>
     </div>
 
     <div class="scroller" tabindex="0" aria-label="Architecture drawing, scrolls sideways on a narrow screen">
@@ -60,33 +62,33 @@ svg.arch .lg{font-size:12px;fill:var(--mu)}
 svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 </style>
 <rect class="bg" width="100%" height="100%" rx="12"/>
-<line class="edge" data-e="page>mask" x1="245.0" y1="89.0" x2="276.0" y2="89.0"/>
-<polygon class="arrow" data-e="page>mask" points="285.0,89.0 276.0,93.5 276.0,84.5"/>
-<line class="edge" data-e="mask>router" x1="395.0" y1="133.0" x2="395.0" y2="146.0"/>
-<polygon class="arrow" data-e="mask>router" points="395.0,155.0 390.5,146.0 399.5,146.0"/>
-<line class="edge" data-e="router>policy" x1="499.0" y1="155.0" x2="542.7" y2="136.5"/>
-<polygon class="arrow" data-e="router>policy" points="551.0,133.0 544.5,140.7 541.0,132.4"/>
-<line class="edge" data-e="policy>confirm" x1="655.0" y1="133.0" x2="655.0" y2="146.0"/>
-<polygon class="arrow" data-e="policy>confirm" points="655.0,155.0 650.5,146.0 659.5,146.0"/>
-<line class="edge" data-e="confirm>tools" x1="655.0" y1="243.0" x2="655.0" y2="256.0"/>
-<polygon class="arrow" data-e="confirm>tools" points="655.0,265.0 650.5,256.0 659.5,256.0"/>
-<line class="edge" data-e="tools>gold" x1="765.0" y1="309.0" x2="796.0" y2="309.0"/>
-<polygon class="arrow" data-e="tools>gold" points="805.0,309.0 796.0,313.5 796.0,304.5"/>
-<line class="edge" data-e="tools>cases" x1="759.0" y1="265.0" x2="802.7" y2="246.5"/>
-<polygon class="arrow" data-e="tools>cases" points="811.0,243.0 804.5,250.7 801.0,242.4"/>
-<line class="edge" data-e="cases>advisor" x1="915.0" y1="155.0" x2="915.0" y2="142.0"/>
-<polygon class="arrow" data-e="cases>advisor" points="915.0,133.0 919.5,142.0 910.5,142.0"/>
+<line class="edge" data-e="page:mask" x1="245.0" y1="89.0" x2="276.0" y2="89.0"/>
+<polygon class="arrow" data-e="page:mask" points="285.0,89.0 276.0,93.5 276.0,84.5"/>
+<line class="edge" data-e="mask:router" x1="395.0" y1="133.0" x2="395.0" y2="146.0"/>
+<polygon class="arrow" data-e="mask:router" points="395.0,155.0 390.5,146.0 399.5,146.0"/>
+<line class="edge" data-e="router:policy" x1="499.0" y1="155.0" x2="542.7" y2="136.5"/>
+<polygon class="arrow" data-e="router:policy" points="551.0,133.0 544.5,140.7 541.0,132.4"/>
+<line class="edge" data-e="policy:confirm" x1="655.0" y1="133.0" x2="655.0" y2="146.0"/>
+<polygon class="arrow" data-e="policy:confirm" points="655.0,155.0 650.5,146.0 659.5,146.0"/>
+<line class="edge" data-e="confirm:tools" x1="655.0" y1="243.0" x2="655.0" y2="256.0"/>
+<polygon class="arrow" data-e="confirm:tools" points="655.0,265.0 650.5,256.0 659.5,256.0"/>
+<line class="edge" data-e="tools:gold" x1="765.0" y1="309.0" x2="796.0" y2="309.0"/>
+<polygon class="arrow" data-e="tools:gold" points="805.0,309.0 796.0,313.5 796.0,304.5"/>
+<line class="edge" data-e="tools:cases" x1="759.0" y1="265.0" x2="802.7" y2="246.5"/>
+<polygon class="arrow" data-e="tools:cases" points="811.0,243.0 804.5,250.7 801.0,242.4"/>
+<line class="edge" data-e="cases:advisor" x1="915.0" y1="155.0" x2="915.0" y2="142.0"/>
+<polygon class="arrow" data-e="cases:advisor" points="915.0,133.0 919.5,142.0 910.5,142.0"/>
 <text class="elabel" x="922.0" y="148.0">ticket</text>
-<line class="edge dashed" data-e="policy>advisor" x1="765.0" y1="89.0" x2="796.0" y2="89.0"/>
-<polygon class="arrow" data-e="policy>advisor" points="805.0,89.0 796.0,93.5 796.0,84.5"/>
+<line class="edge dashed" data-e="policy:advisor" x1="765.0" y1="89.0" x2="796.0" y2="89.0"/>
+<polygon class="arrow" data-e="policy:advisor" points="805.0,89.0 796.0,93.5 796.0,84.5"/>
 <text class="elabel" x="785.0" y="83.0" text-anchor="middle">handoff</text>
-<line class="edge dashed" data-e="session>tools" x1="245.0" y1="309.0" x2="536.0" y2="309.0"/>
-<polygon class="arrow" data-e="session>tools" points="545.0,309.0 536.0,313.5 536.0,304.5"/>
+<line class="edge dashed" data-e="session:tools" x1="245.0" y1="309.0" x2="536.0" y2="309.0"/>
+<polygon class="arrow" data-e="session:tools" points="545.0,309.0 536.0,313.5 536.0,304.5"/>
 <text class="elabel" x="395.0" y="303.0" text-anchor="middle">session id</text>
-<line class="edge dashed" data-e="router>logs" x1="395.0" y1="243.0" x2="395.0" y2="376.0"/>
-<polygon class="arrow" data-e="router>logs" points="395.0,385.0 390.5,376.0 399.5,376.0"/>
-<line class="edge" data-e="pipeline>gold" x1="915.0" y1="385.0" x2="915.0" y2="362.0"/>
-<polygon class="arrow" data-e="pipeline>gold" points="915.0,353.0 919.5,362.0 910.5,362.0"/>
+<line class="edge dashed" data-e="router:logs" x1="395.0" y1="243.0" x2="395.0" y2="376.0"/>
+<polygon class="arrow" data-e="router:logs" points="395.0,385.0 390.5,376.0 399.5,376.0"/>
+<line class="edge" data-e="pipeline:gold" x1="915.0" y1="385.0" x2="915.0" y2="362.0"/>
+<polygon class="arrow" data-e="pipeline:gold" points="915.0,353.0 919.5,362.0 910.5,362.0"/>
 <g class="node real" transform="translate(30,50)" id="n-page" data-node="page" data-status="real" tabindex="0" role="button" aria-label="Customer page. Real. Code decides.">
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Customer page</text>
@@ -306,8 +308,16 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <p>Evidence: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-data-engine">sentinel-data-engine</a></p>
 </article>
     </section>
-    <p class="note">Labels follow <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/what-is-real.md">what is real</a> and <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">mocks</a>. No number in this page is a production measurement.</p>
+    <p class="note">Labels follow <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/what-is-real.md">what is real</a> and <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">mocks</a>. No number in this page is a production measurement. <a href="architecture.svg">Static drawing (SVG)</a>.</p>
   </main>
+  <!--site:footer--><footer>
+    <a href="../index.html">Home</a>
+    <a href="architecture.html">Architecture</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
+    <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
+  </footer><!--/site:footer-->
 </div>
 <script src="architecture.js"></script>
 </body>

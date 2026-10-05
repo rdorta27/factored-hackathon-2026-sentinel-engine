@@ -18,6 +18,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 import build_architecture as ba  # noqa: E402
 import site_numbers as sn  # noqa: E402
+import site_chrome  # noqa: E402
+import localize  # noqa: E402
 
 DIR = ba.DIR
 REPO = ba.load()["repo"]
@@ -93,10 +95,7 @@ def page() -> str:
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
-    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="cases.html">Cases</a></nav>
-  </header>
+  <!--site:header-->
   <main id="main">
     <h1>Evidence explorer</h1>
     <p class="lead">Each bar shows its denominator, its type and the field of the frozen run that it reads. No number here is a production measurement.</p>
@@ -106,6 +105,7 @@ def page() -> str:
     </div>
     <p class="note">The runs are listed in the <a href="{REPO}/blob/main/evidence/README.md">evidence index</a>. The types follow <a href="{REPO}/blob/main/docs/architecture/what-is-real.md">what is real</a>.</p>
   </main>
+  <!--site:footer-->
 </div>
 <script src="evidence.js"></script>
 </body>
@@ -142,7 +142,7 @@ JS = """(function () {
 
 
 def outputs() -> dict[Path, str]:
-    return {DIR / "evidence.html": page(), DIR / "evidence.js": JS}
+    return {DIR / "evidence.html": localize.en_page(page(), "diagrams/evidence.html"), DIR / "evidence.js": JS}
 
 
 def main() -> int:
