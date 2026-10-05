@@ -104,8 +104,9 @@ State how many disputes a day appear in the data. State the capacity that the pr
 - The latency targets use the router latency that [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) measures.
 - [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) measures the busy-day load: `demand.account_or_payment_inquiry.busy_day_p95` = 292 and `demand.transaction_dispute.busy_day_p95` = 145. The highest days are 332 and 169.
 - The event peaks stay projections.
+- The load run [`20261005T211031Z`](../../evidence/robustness/20261005T211031Z/summary.json) measures `/api/v1/chat` on one replica with recorded answers. At the deployed limits (0.5 vCPU, 1 GiB) the container reaches about 5 requests a second; the p95 rises to 918 ms at the target 20. The host reaches 17.51 requests a second. The small live run reaches 0.66 requests a second at the target 2. See [capacity and latency](../rationale/capacity-and-latency.md).
 
-Limit: no load test of `/api/v1/chat` exists yet. The requests per second of one replica are not measured.
+Limit: the load run uses a laptop or a local container, not the cloud replica. The live part is small. The event peaks stay projections.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics
