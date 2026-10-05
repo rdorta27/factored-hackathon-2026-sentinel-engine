@@ -235,6 +235,8 @@ function startThread() {
 }
 
 let simulatedData = false;
+/* The one-click personas are on: the chat then offers example prompts. */
+let demoAvailable = false;
 
 function show(id) {
   // An old login error must not wait on screen for the next visit.
@@ -1013,6 +1015,7 @@ document.getElementById("locale-group").addEventListener("click", (event) => {
 async function loadDemoEntry() {
   const response = await fetch("/api/v1/auth/demo");
   const available = response.ok;
+  demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
   document.getElementById("password-login").open = !available;
 }
