@@ -223,7 +223,7 @@ Points 4 and 8 depend on the model and stay out of scope for this change.
 | Point | What Felix tested | Result | Detail |
 |---|---|---|---|
 | 1 | After a handoff, the same ticket and a changing reason | PASA | a new charge continues; the filed reference and reason stay fixed |
-| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-B6EF2275); no new case |
+| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-B4E0DF71); no new case |
 | 3 | A correction with the box open is ignored | PASA | the box moved from TXN-1001 to TXN-1006 |
 | 4 | A loan request enters the dispute flow | out of scope (router-v3) | depends on the model |
 | 5 | A box opens for a charge with an open dispute | PASA | no box and no second case |
