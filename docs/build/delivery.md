@@ -47,6 +47,17 @@ Mandatory, **3 minutes at most**. It shows the solution working and explains the
 6. Key architecture decisions (from [decisions](decisions/)).
 7. Top results and limitations.
 
+## Project site
+
+The static site is in `site/`. It holds plain HTML and CSS, with no build step. The workflow [`pages.yml`](../../.github/workflows/pages.yml) publishes it to GitHub Pages on each push to `main` that changes `site/`.
+
+| Item | Detail |
+|---|---|
+| Numbers | `python3 scripts/site_numbers.py` writes `site/numbers.json` and the number slots of each page from the frozen `summary.json` runs |
+| Check | `python3 scripts/site_numbers.py --check` and `python3 -m pytest scripts/test_site.py -q` fail when a number differs from the evidence |
+| Owner action | Open Settings, Pages. Set Source to GitHub Actions. Run the `pages` workflow once |
+| Status | Site and workflow written. The first green run waits for the owner action |
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)

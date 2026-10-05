@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel Engine</title>
+<meta name="description" content="Sentinel is the trust layer for bank customer-service AI. It turns an unrecognized charge into a verified case, or a well-informed advisor, in Spanish and Portuguese.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./">
+      <img src="favicon.svg" width="34" height="34" alt="">
+      Sentinel
+    </a>
+    <nav aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#proof">Results</a>
+      <a href="#demo">Demo</a>
+      <a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">View on GitHub</a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <div class="hero">
+      <div>
+        <span class="eyebrow">Hackathon · es-419 · pt-BR</span>
+        <h1>The AI converses. <span>The rules decide.</span></h1>
+        <p class="lead">Sentinel handles "I do not recognize this charge" in Spanish and Portuguese. It acts only when the policy allows it. It never invents a fact.</p>
+        <div class="row">
+          <a class="btn" href="#demo">Try the demo</a>
+          <a class="btn alt" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/README.md">Read the architecture</a>
+        </div>
+      </div>
+      <div>
+        <div class="panel">
+          <span class="eyebrow">Inside the bank</span>
+          <div class="mini">
+            <div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div>
+            <span class="ok">Fact verified on your account</span>
+            <div class="fake-btn" aria-hidden="true">Yes, open the dispute</div>
+          </div>
+          <p class="note">The customer screen takes the bank brand. The product is the trust layer below it.</p>
+        </div>
+      </div>
+    </div>
+
+    <section id="how" aria-labelledby="how-h">
+      <h2 id="how-h">Five steps, each one checkable</h2>
+      <div class="grid">
+        <div class="card"><span class="step">1</span><h3>Understand</h3><p>A language model reads the request and labels the intent.</p></div>
+        <div class="card"><span class="step">2</span><h3>Look up</h3><p>The code reads the real charges of the session account. The model sees no customer id.</p></div>
+        <div class="card"><span class="step">3</span><h3>Decide</h3><p>The policy engine, in code, allows, refuses or hands off.</p></div>
+        <div class="card"><span class="step">4</span><h3>Verify</h3><p>The code checks that the case exists before it says so.</p></div>
+        <div class="card"><span class="step">5</span><h3>Hand off</h3><p>For fraud or a high amount, an advisor gets the verified facts.</p></div>
+      </div>
+    </section>
+
+    <section id="proof" aria-labelledby="proof-h">
+      <h2 id="proof-h">Results, with their type</h2>
+      <p class="note">Each number comes from a frozen <code>summary.json</code> through <code>site/numbers.json</code>. The label tells what kind of number it is. A simulation is not a production measurement. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/what-is-real.md">What is real</a>.</p>
+      <div class="grid">
+        <div class="card">
+          <span class="tag test" data-num-type="adv_attempted">Test suite</span>
+          <span class="big"><span data-num="adv_rate">0/42</span></span>
+          <p>attacks with an unsafe outcome, of <span data-num="adv_attempted">42</span> tried.</p>
+          <span class="src">evidence/adversarial · totals.unsafe_outcome_rate</span>
+        </div>
+        <div class="card">
+          <span class="tag test" data-num-type="adv_blocked">Test suite</span>
+          <span class="big" data-num="adv_blocked">38</span>
+          <p>of <span data-num-den="adv_blocked">42</span> attacks stopped by production code.</p>
+          <span class="src">totals.blocked_verified</span>
+        </div>
+        <div class="card">
+          <span class="tag test" data-num-type="adv_mock">Test suite</span>
+          <span class="big" data-num="adv_mock">3</span>
+          <p>of <span data-num-den="adv_mock">42</span> are safe only with the mock model. We say so.</p>
+          <span class="src">totals.passes_on_mock</span>
+        </div>
+        <div class="card">
+          <span class="tag" data-num-type="intent_router">Simulation</span>
+          <span class="big" data-num="intent_router">98.2%</span>
+          <p>intent accuracy of the LLM router on <span data-num-den="intent_router">280</span> held-out turns. The keyword baseline scores <span data-num="intent_baseline">53.9%</span>.</p>
+          <span class="src">evaluation-runs/2024Q4-eval-v7 · breakdown.overall.accuracy</span>
+        </div>
+        <div class="card">
+          <span class="tag" data-num-type="res_resolved">Simulation</span>
+          <span class="big"><span data-num="res_resolved">16</span> of <span data-num-den="res_resolved">56</span></span>
+          <p>cases end in a safe resolution. The other cases need a person or more facts. The router gains <span data-num="res_net">0</span> net cases over the baseline here. <span data-num="res_unsafe">0/56</span> end unsafe.</p>
+          <span class="src">evaluation-runs/2024Q4-resolution-v2 · system.router_v2</span>
+        </div>
+        <div class="card">
+          <span class="tag data" data-num-type="problem_dispute_calls">Synthetic</span>
+          <span class="big" data-num="problem_dispute_calls">79,191</span>
+          <p>dispute calls in the development window, of <span data-num-den="problem_dispute_calls">464,791</span>. They use <span data-num="problem_dispute_hours">390.8</span> agent hours a month. Only <span data-num="problem_dispute_resolved">43.6%</span> end resolved.</p>
+          <span class="src">problem/dev-v1 · demand, hours, reasons</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="demo" aria-labelledby="demo-h">
+      <h2 id="demo-h">Four cases to try</h2>
+      <p class="note">The customer replies in es-MX, es-CO, es-AR or pt-BR. The data behind the demo is synthetic and the Gold store is a labelled mock.</p>
+      <div class="grid">
+        <div class="card"><span class="eyebrow">Normal case</span><p>One charge, one confirmation, one verified case number.</p></div>
+        <div class="card"><span class="eyebrow">Ambiguous case</span><p>Several equal purchases. The system asks which one before it acts.</p></div>
+        <div class="card"><span class="eyebrow">High amount</span><p>The system does not act alone. It hands off with the verified facts.</p></div>
+        <div class="card"><span class="eyebrow">Not me</span><p>The system does not decide on fraud. It hands off to an advisor.</p></div>
+      </div>
+      <div class="row">
+        <a class="btn" href="https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io">Open the live demo</a>
+        <a class="btn alt" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/README.md">Architecture</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/requirements/requirements.md">Requirements</a>
+    <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md">Evidence</a>
+    <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
+  </footer>
+</div>
+</body>
+</html>
