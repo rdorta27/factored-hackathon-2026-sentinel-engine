@@ -140,6 +140,15 @@ env_vars=(
 	# Judge credentials: hashes on the share, no one-click entry on the link.
 	SENTINEL_USERS_PATH="$MOUNT_PATH/users.json"
 	SENTINEL_DEMO_PERSONAS=0
+	# White label. The accent is the bank blue of decision 006.
+	SENTINEL_BRAND_NAME="Sentinel"
+	SENTINEL_BRAND_ACCENT="#1f4fa3"
+	# Serve the prompt that the v8 verdict chose (decision 018).
+	SENTINEL_LLM_PROMPT_VERSION=v2
+	# A small daily cap protects the public link (REQ-0026, REQ-0055).
+	SENTINEL_LLM_DAILY_BUDGET_USD=5
+	# The learned charge selector stays off (decision 025).
+	SENTINEL_CHARGE_RANKER=off
 )
 secrets=("session-salt=$salt")
 llm_key="$(env_value SENTINEL_LLM_API_KEY)"
@@ -147,8 +156,10 @@ if [[ -n "$llm_key" ]]; then
 	secrets+=("llm-api-key=$llm_key")
 	env_vars+=(SENTINEL_LLM_API_KEY=secretref:llm-api-key)
 fi
+# SENTINEL_LLM_CUTOFFS stays unset on purpose: the v3 cut-offs make the router
+# ask for clarification in about 80% of turns (evidence-hardening 4.4).
 for name in SENTINEL_LLM_BASE_URL SENTINEL_LLM_CHEAP_MODEL SENTINEL_LLM_STRONG_MODEL \
-	SENTINEL_LLM_DEFAULT_MODEL SENTINEL_LLM_PROMPT_VERSION SENTINEL_LLM_ROUTE_RULE \
+	SENTINEL_LLM_DEFAULT_MODEL SENTINEL_LLM_ROUTE_RULE \
 	SENTINEL_LLM_REASONING_EFFORT SENTINEL_LLM_MAX_TOKENS SENTINEL_LLM_TIMEOUT_S SENTINEL_LLM_MAX_RETRIES; do
 	value="$(env_value "$name")"
 	[[ -n "$value" ]] && env_vars+=("$name=$value")
