@@ -33,7 +33,7 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `component.paired.*`, `component.versions.<version>.breakdown.*` |
 | How many cases does the system resolve safely? | [`evaluation-runs/2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.<version>.*` |
 | What are the confidence cut-offs? | [`evaluation-runs/2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | `cutoffs.t_act`, `cutoffs.t_abstain` |
-| Does the system resist attacks? | [`adversarial/20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
+| Does the system resist attacks? | [`adversarial/20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
 | What does monitoring by country show? | [`monitoring/2024Q4-resolution-v2-replay`](monitoring/2024Q4-resolution-v2-replay/summary.json) | `groups.<country>.<language>.*` |
 | What does the ROI projection use? | [`roi/2023-2026-callcenter-v1`](roi/2023-2026-callcenter-v1/summary.json) | `transactional_calls.*` |
 | Can the data support a charge investigation? | [`customer-360/dev-v1`](customer-360/dev-v1/README.md) and [`customer-360/dev-signals-v1`](customer-360/dev-signals-v1/README.md) | `balance.safe_to_show`, `complaints.charge_linkable`, `investigation.has_signal` |
@@ -81,6 +81,9 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-resolution-v1`](evaluation-runs/2024Q4-resolution-v1/summary.json) | resolution | Superseded | First multi-turn run that can resolve a case: 56 cases in 14 situations ([022](../docs/build/decisions/022-resolution-acceptance.md)) | matches | REQ-0055 |
 | [`2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | resolution | **Current** | The same set after the chat-loop change, with breakdown by variant and country | matches | REQ-0055, REQ-0024 |
 | [`2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | calibration | **Current** | Confidence cut-offs on the validation split (n = 26, descriptive) | matches | REQ-0002, REQ-0016 |
+| [`2024Q4-select-v3`](evaluation-runs/2024Q4-select-v3/summary.json), [`2024Q4-select-v3c`](evaluation-runs/2024Q4-select-v3c/summary.json) | selection | Superseded | Prompt v3 on development: 8 examples, then the refined prompt. Kept for the iteration history. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-select-v3d`](evaluation-runs/2024Q4-select-v3d/summary.json) | selection | **Current (v3)** | Prompt v3 on development (198 cases, 32-example matrix): kind 0.9899, subtype 1.0, 94 drafts with 0 rejected. Offline replay of v3c with the kind-key confidence fix. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | not checked | REQ-0002, REQ-0016 |
 
 ## Adversarial
 
@@ -88,7 +91,8 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 
 | Run | Status | Attempted | Unsafe | No defense yet |
 |---|---|---|---|---|
-| [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | `20261002T195516Z` | Superseded | 42 | 0/42 | 3 |
 | `20261002T120107Z`, `20261001T222341Z` | Superseded | 36 | 0/36 | 3 |
 | `20261001T215949Z`, `20261001T130342Z` | Superseded | 36 | 0/36 | 4 |

@@ -47,6 +47,7 @@ from app.schemas.chat import (
     ChatInput,
     ChatReply,
     Clarification,
+    ClarificationValues,
     ConfirmationDisplay,
     ConfirmBox,
     ConversationTurn,
@@ -322,12 +323,18 @@ def _to_reply(
         shown = [
             item for item in state.candidates if item.candidate_id not in state.rejected_ids
         ][:4]
+        searched = output.explanation_values.get("searched_date")
         return Clarification(
-            message_key="charge.not_found" if output.reason == "charge.not_found" else "clarifyWhichCharge",
+            message_key=(
+                "charge.notFoundDate"
+                if searched
+                else ("charge.not_found" if output.reason == "charge.not_found" else "clarifyWhichCharge")
+            ),
             missing="transaction",
             candidates=[
                 candidate_view(item, session.country, ref_date) for item in shown
             ],
+            values=ClarificationValues(searched_date=searched),
         )
     if kind in (OutcomeKind.EXPLAIN, OutcomeKind.OFFER):
         return TextReply(message_key=_TEXT_KEYS.get(output.reason or "", "greetingHelp"))
@@ -417,7 +424,11 @@ def rate_limited(request: Request, session: Session) -> JSONResponse | None:
         return None
     trace_id: str = getattr(request.state, "trace_id", None) or secrets.token_hex(8)
     request.app.state.audit.emit("rate_limited", trace_id)
-    return JSONResponse(status_code=429, content={"detail": "Too many requests"})
+    # The body carries the trace id so the error bubble can show the reference.
+    return JSONResponse(
+        status_code=429,
+        content={"detail": "Too many requests", "trace_id": trace_id},
+    )
 
 
 def open_turn(request: Request, session: Session) -> TurnContext:
@@ -710,8 +721,13 @@ def finish_turn(
             new_ticket = True
         else:
             # Already handed off: the advisor has the case, so repeated turns do
-            # not file another ticket and keep pointing at the first one.
-            reply = reply.model_copy(update={"reference": turn.state.handoff_reference})
+            # not file another ticket and keep pointing at the first one. The
+            # filed reason is fixed, so a later turn never rewrites it.
+            filed = request.app.state.cases.get(turn.state.handoff_reference)
+            update = {"reference": turn.state.handoff_reference}
+            if filed is not None and filed.reason_key:
+                update["reason_key"] = filed.reason_key
+            reply = reply.model_copy(update=update)
     request.app.state.conversation_store.save(turn.token, stored)
     if new_ticket:
         _save_ticket(request, turn, reply)  # type: ignore[arg-type]

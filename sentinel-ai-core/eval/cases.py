@@ -12,9 +12,13 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from app.ai.port import SUBTYPE_MISSING, SUBTYPE_OUT_OF_SCOPE
+
 LOCALES = ("es-419", "pt-BR")
 COUNTRIES = ("MX", "CO", "AR")
-INTENTS = ("charge", "missing", "out_of_scope", "person")
+INTENTS = ("charge", "status", "missing", "out_of_scope", "person")
+SUBTYPES = tuple(sorted(SUBTYPE_MISSING | SUBTYPE_OUT_OF_SCOPE))
+SLOT_KEYS = ("merchant_words", "amount", "date_phrase", "twice")
 SPLITS = ("development", "validation", "held_out")
 FAULTS = ("none", "gold_unavailable", "expired_session", "tool_failure")
 KNOWN_TAGS = ("edge", "adversarial", "noisy")
@@ -61,6 +65,10 @@ class Case:
     base_id: str | None = None
     variant: str | None = None
     perturbation: str | None = None
+    # Contract v3 labels: the subtype and the slot hints. Both stay None on
+    # the v7 cases, so the old harness reads them unchanged.
+    expected_subtype: str | None = None
+    expected_slots: dict | None = None
 
     @property
     def message(self) -> str:
@@ -110,6 +118,34 @@ def validate_case(body: dict, source: str) -> Case:
     turns = body["turns"]
     if not isinstance(turns, list) or not all(isinstance(t, str) and t.strip() for t in turns):
         raise ValueError(f"case {case_id} needs non-empty string turns")
+    subtype = body.get("expected_subtype") or None
+    if subtype is not None:
+        if subtype not in SUBTYPES:
+            raise ValueError(f"case {case_id} has unknown subtype {subtype!r}")
+        if body["expected_intent"] == "missing" and subtype not in SUBTYPE_MISSING:
+            raise ValueError(f"case {case_id} pairs intent missing with subtype {subtype!r}")
+        if body["expected_intent"] == "out_of_scope" and subtype not in SUBTYPE_OUT_OF_SCOPE:
+            raise ValueError(f"case {case_id} pairs intent out_of_scope with subtype {subtype!r}")
+        if body["expected_intent"] not in ("missing", "out_of_scope"):
+            raise ValueError(f"case {case_id} pairs intent {body['expected_intent']!r} with a subtype")
+    slots = body.get("expected_slots") or None
+    if slots is not None:
+        if not isinstance(slots, dict):
+            raise ValueError(f"case {case_id} needs expected_slots as an object")
+        for key in slots:
+            if key not in SLOT_KEYS:
+                raise ValueError(f"case {case_id} has unknown slot {key!r}")
+        merchant_words = slots.get("merchant_words")
+        if merchant_words is not None and not (isinstance(merchant_words, str) and merchant_words.strip()):
+            raise ValueError(f"case {case_id} needs merchant_words as a non-empty string")
+        amount = slots.get("amount")
+        if amount is not None and (isinstance(amount, bool) or not isinstance(amount, (int, float)) or amount < 0):
+            raise ValueError(f"case {case_id} needs amount as a non-negative number")
+        date_phrase = slots.get("date_phrase")
+        if date_phrase is not None and not (isinstance(date_phrase, str) and date_phrase.strip()):
+            raise ValueError(f"case {case_id} needs date_phrase as a non-empty string")
+        if "twice" in slots and not isinstance(slots["twice"], bool):
+            raise ValueError(f"case {case_id} needs twice as a boolean")
     return Case(
         id=str(body["id"]),
         locale=str(body["locale"]),
@@ -129,6 +165,8 @@ def validate_case(body: dict, source: str) -> Case:
         base_id=base_id,
         variant=variant,
         perturbation=perturbation,
+        expected_subtype=subtype,
+        expected_slots=dict(slots) if slots is not None else None,
     )
 
 
@@ -210,7 +248,9 @@ __all__ = [
     "LOCALES",
     "PERTURBATIONS",
     "RESOLUTION_FILE",
+    "SLOT_KEYS",
     "SPLITS",
+    "SUBTYPES",
     "VARIANTS",
     "Case",
     "LabelProvenance",

@@ -24,7 +24,7 @@ from collections import Counter
 from pathlib import Path
 
 from app.ai.demo import DemoModel
-from app.ai.llm import ROUTE_RULES, PromptedLLMRouter, RouterConfig
+from app.ai.llm import ROUTE_RULES, SYSTEM_PROMPT_V3, PromptedLLMRouter, RouterConfig
 from app.ai.prices import PRICE_SOURCE, PRICES
 from app.ai.recording import RecordingTransport
 from app.ai.transport import HttpTransport, InvalidReply, ModelUnavailable
@@ -215,7 +215,7 @@ def select(
     return summary
 
 
-def _router(rec: RecordingTransport, prompt_version: str, examples=()) -> PromptedLLMRouter:  # type: ignore[no-untyped-def]
+def _router(rec: RecordingTransport, prompt_version: str, examples=(), system_prompt: str | None = None) -> PromptedLLMRouter:  # type: ignore[no-untyped-def]
     cheap = os.environ.get("SENTINEL_LLM_CHEAP_MODEL", "")
     strong = os.environ.get("SENTINEL_LLM_STRONG_MODEL", "")
     if not cheap or not strong:
@@ -228,6 +228,8 @@ def _router(rec: RecordingTransport, prompt_version: str, examples=()) -> Prompt
         examples=examples,
         route_rule=os.environ.get("SENTINEL_LLM_ROUTE_RULE", "heuristic") or "heuristic",
     )
+    if system_prompt is not None:
+        config.system_prompt = system_prompt
     return PromptedLLMRouter(rec, config)
 
 
@@ -338,20 +340,36 @@ def calibrate(
     record: bool = False,
     cap_usd: float = DEFAULT_CAP_USD,
     freeze: bool = True,
+    prompt: str = PROMPT_VERSION_WITH_EXAMPLES,
 ) -> dict:
-    """Fit confidences on development, choose the cut-offs on validation."""
+    """Fit confidences on development, choose the cut-offs on validation.
+
+    ``prompt`` is "v2" or "v3": same code and rule, versioned examples and
+    recordings. The v2 path is unchanged.
+    """
+    from eval.examples import build_examples_v3
+
     cases = load_dir(CASES_DIR)
     check_splits(cases)
     development = [c for c in cases if c.split == "development"]
     validation = [c for c in cases if c.split == "validation"]
     if not validation:
         raise SystemExit("no validation cases; run the split carve first (018 amendment)")
-    if not EXAMPLES_PATH.is_file():
-        raise SystemExit(f"write the development example ids for v2 to {EXAMPLES_PATH} before calibrating")
-    examples = build_examples(development, json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"])
+    if prompt == "v3":
+        spec = json.loads((HERE / "examples_v3.json").read_text(encoding="utf-8"))
+        examples = build_examples_v3(development, spec["ids"], spec.get("drafts"))
+        recordings = HERE / "recordings" / "calibration-v3"
+        system_prompt: str | None = SYSTEM_PROMPT_V3
+    else:
+        if not EXAMPLES_PATH.is_file():
+            raise SystemExit(f"write the development example ids for v2 to {EXAMPLES_PATH} before calibrating")
+        examples = build_examples(development, json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"])
+        recordings = CALIBRATION_RECORDINGS_DIR
+        system_prompt = None
     live, api_key = live_transport(record, cap_usd)
-    rec = RecordingTransport(CALIBRATION_RECORDINGS_DIR, PROMPT_VERSION_WITH_EXAMPLES, live, record=record, api_key=api_key)
-    router = _router(rec, PROMPT_VERSION_WITH_EXAMPLES, examples)
+    max_tokens = int(os.environ.get("SENTINEL_LLM_MAX_TOKENS", "200") or 200)
+    rec = RecordingTransport(recordings, prompt, live, record=record, api_key=api_key)
+    router = _router(rec, prompt, examples, system_prompt)
     rows = _confidence_rows(development + validation, router)
     dev_rows = [row for row in rows if row["split"] == "development"]
     val_rows = [row for row in rows if row["split"] == "validation"]
@@ -361,6 +379,8 @@ def calibrate(
         "run_id": run_id,
         "kind": "calibration",
         "eval_version": EVAL_VERSION,
+        "prompt_version": prompt,
+        "max_tokens": max_tokens,
         "n": len(rows),
         "case_mix": _mix(development + validation),
         "splits": {
@@ -685,6 +705,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
     parser.add_argument("--strong", action="append", default=[], help="extra strong candidate (select only)")
+    parser.add_argument("--prompt", default="v2", help="prompt version for calibrate (v2 or v3)")
     args = parser.parse_args(argv)
     if args.command == "select":
         summary = select(args.run_id, args.record, args.cap, extra_strong=tuple(args.strong))
@@ -696,7 +717,7 @@ def main(argv: list[str] | None = None) -> None:
         summary = resolution(args.run_id, args.record, args.cap)
         print(f"[resolution] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     elif args.command == "calibrate":
-        summary = calibrate(args.run_id, args.record, args.cap)
+        summary = calibrate(args.run_id, args.record, args.cap, prompt=args.prompt)
         print(f"[calibrate] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     else:
         same = verify(args.run_id)

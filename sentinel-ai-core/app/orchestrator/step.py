@@ -270,6 +270,84 @@ def _explanation(state: ConversationState, ports: Ports) -> TurnOutput:
     )
 
 
+# A dispute-status question combines a case word with a status word. It is a
+# deterministic check in code, like the extraction refusal, so it runs before
+# the model and never opens a case (REQ-0003, REQ-0006).
+_STATUS_MARKERS = (
+    "ya abri", "ya abrí", "en que va", "en qué va", "estado de", "estado del",
+    "estado da", "status", "andamento", "como va", "cómo va", "como está",
+    "como esta", "já abri", "ja abri",
+)
+_CASE_WORDS = (
+    "disputa", "reclamo", "caso", "contestação", "contestacao", "reclamação",
+    "reclamacao", "disputas", "reclamos", "casos",
+)
+
+
+def _is_dispute_status_question(text: str) -> bool:
+    lowered = text.lower()
+    has_marker = any(marker in lowered for marker in _STATUS_MARKERS)
+    has_case = any(word in lowered for word in _CASE_WORDS)
+    return has_marker and has_case
+
+
+def _dispute_status(state: ConversationState, ports: Ports) -> TurnOutput:
+    """Answer a dispute-status question from the case store. Never opens a case."""
+    find = getattr(ports.tools, "disputes", None)
+    rows = find() if callable(find) else []
+    if not rows:
+        _emit(ports, state.language.value, step="decide", policy_rule="dispute.status.none")
+        return TurnOutput(
+            kind=OutcomeKind.EXPLANATION,
+            language=state.language,
+            explanation_key="dispute.none",
+        )
+    row = rows[0]
+    _emit(ports, state.language.value, step="decide", policy_rule="dispute.status")
+    return TurnOutput(
+        kind=OutcomeKind.EXPLANATION,
+        language=state.language,
+        explanation_key="dispute.status",
+        explanation_values={"case_id": row.case_id, "case_status": row.status},
+    )
+
+
+def _correction_target(turn: TextInput, state: ConversationState, ports: Ports) -> Candidate | None:
+    """A charge that the message grounds, different from the open box.
+
+    With the box open, a correction ("no, el de 320") must close it and ground
+    the new charge. The parsers run here; the normal loop then shows the new box.
+    """
+    pending = state.pending_confirmation
+    if pending is None:
+        return None
+    try:
+        candidates = ports.tools.lookup_transactions()
+    except GoldTimeout:
+        return None
+    today = _today(ports)
+    facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
+    result = ground(facts, candidates)
+    if result.match is not None and result.match.candidate_id != pending.candidate_id:
+        return result.match
+    soft = extract_soft(turn.text, today, [item.merchant for item in candidates])
+    narrowed = narrow_candidates(facts, soft, candidates, today)
+    if narrowed.stated and len(narrowed.candidates) == 1:
+        only = narrowed.candidates[0]
+        if only.candidate_id != pending.candidate_id:
+            return only
+    return None
+
+
+def _searched_date(facts, soft) -> str | None:  # type: ignore[no-untyped-def]
+    """The single date the customer named, for the "no match" clarification."""
+    if facts.date_iso:
+        return facts.date_iso
+    if len(soft.dates) == 1:
+        return next(iter(soft.dates))
+    return None
+
+
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
     state.turns.append(turn.text)
     if len(state.turns) > MAX_TURNS:
@@ -282,15 +360,22 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
     if refuse_extraction(turn.text, merchants):
         state.language = _message_language(turn.text, state.language)
         return _extraction_refusal(state, ports)
+    if _is_dispute_status_question(turn.text):
+        state.language = _message_language(turn.text, state.language)
+        return _dispute_status(state, ports)
     if is_injection(turn.text):
         state.language = _message_language(turn.text, state.language)
         _emit(ports, state.language.value, step="decide", policy_rule="injection_suspected")
     if state.pending_confirmation is not None:
-        # The box swallows everything except a person request. The model is not
-        # consulted here for anything else, so a failure cannot change this.
+        # The box swallows everything except a person request or a correction
+        # that grounds another charge. The model is not consulted here for
+        # anything else, so a failure cannot change this.
         if _model_says_person(turn.text, state, ports) is True:
             return _person_request(state, ports)
-        return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language, text=turn.text)
+        if _correction_target(turn, state, ports) is None:
+            return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language, text=turn.text)
+        # A correction: close the box and let the normal loop ground the new charge.
+        state.pending_confirmation = None
     started = perf_counter()
     understood = None
     for _ in range(UNDERSTAND_RETRIES + 1):
@@ -379,10 +464,12 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         state.candidates = [
             item for item in ranked if item.candidate_id not in state.rejected_ids
         ][:4]
+        searched = _searched_date(facts, soft)
         return TurnOutput(
             kind=OutcomeKind.QUESTION,
             language=state.language,
             reason="charge.not_found" if narrowed.not_found else None,
+            explanation_values={"searched_date": searched} if searched else {},
         )
     # Repair: new facts re-anchor to this charge; any previously shown charge
     # that is not the match is superseded and joins the rejected list.
