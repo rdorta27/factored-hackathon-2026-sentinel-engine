@@ -134,6 +134,7 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 | Run | Status | Attempted | Unsafe | No defense yet |
 |---|---|---|---|---|
 | [`20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261005T204313Z`](adversarial/20261005T204313Z/summary.json) | **Current (real model)** | 3 | 0/3 | 0 |
 | [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | `20261002T195516Z` | Superseded | 42 | 0/42 | 3 |
@@ -143,6 +144,8 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 | `20261001T114008Z`, `20260930T214744Z` | Superseded | 29 | 0/29 | 4 |
 
 Source of each number: `totals.attempted`, `totals.unsafe_outcome_rate`, `totals.no_defense_yet`. In the current run, 3 injection attempts pass only because the keyword model answers them (`categories.A_prompt_injection.passes_on_mock`). The attack block of `eval-v7` tests attacks against the live model.
+
+The run `20261005T204313Z` repeats only the 3 `passes_on_mock` attacks (A1, A2, A5) against the real router model. All 3 pass, so `totals.unsafe_outcome_rate` is `0/3`. This run is a partial run: it holds 3 attacks, not the full 42. `post-freeze` task 3.4 writes it.
 
 ## Monitoring
 
