@@ -261,10 +261,10 @@ function renderReply(body) {
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);
   } else if (body.kind === "explanation") {
-    thread.append(el("div", "msg msg-bot", explanationText(body)));
+    thread.append(el("div", "msg msg-bot", body.text ? body.text : explanationText(body)));
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
-    box.append(el("strong", "", fillTemplate(t(body.message_key), body.values)));
+    box.append(el("strong", "", body.text ? body.text : fillTemplate(t(body.message_key), body.values)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
@@ -279,7 +279,7 @@ function renderReply(body) {
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
   } else {
-    thread.append(el("div", "msg msg-bot", t(body.message_key)));
+    thread.append(el("div", "msg msg-bot", body.text ? body.text : t(body.message_key)));
   }
   renderSteps(thread, body);
 }

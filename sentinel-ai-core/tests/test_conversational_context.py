@@ -105,9 +105,10 @@ def test_model_receives_prior_turns_and_digest() -> None:
 def test_third_clarification_hands_off() -> None:
     state = ConversationState(language=Language.ES_419)
     ports = _ports(VagueModel())
-    assert step(TextInput("hola"), state, ports).kind is OutcomeKind.QUESTION
-    assert step(TextInput("hola?"), state, ports).kind is OutcomeKind.QUESTION
-    third = step(TextInput("hola!"), state, ports)
+    # A greeting is now an opener (`chat-start`), so vague turns stay vague.
+    assert step(TextInput("mmm"), state, ports).kind is OutcomeKind.QUESTION
+    assert step(TextInput("no se"), state, ports).kind is OutcomeKind.QUESTION
+    third = step(TextInput("que hago"), state, ports)
     assert third.kind is OutcomeKind.HANDOFF
     assert third.reason == "fields.missing"
     assert state.clarification_count == 2
@@ -157,7 +158,7 @@ def test_phase_is_derived_and_reported() -> None:
     assert phase_of(ConversationState(language=Language.ES_419)) is Phase.COLLECTING
     state = ConversationState(language=Language.ES_419)
     ports = _ports(VagueModel())
-    output = step(TextInput("hola"), state, ports)
+    output = step(TextInput("no se"), state, ports)
     assert phase_of(state, output) is Phase.CLARIFYING
     assert phase_of(
         state,

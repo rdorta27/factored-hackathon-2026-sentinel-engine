@@ -77,7 +77,7 @@ def names_a_charge(message: str, merchants: list[str], reference_year: int) -> b
     is removed before reading an amount.
     """
     facts = extract_facts(message, reference_year, merchants)
-    if facts.merchant or facts.date_iso:
+    if facts.merchant or facts.date_iso or facts.month:
         return True
     without_window = _WINDOW_PHRASE.sub(" ", normalize_text(message))
     return extract_facts(without_window, reference_year, []).amount is not None
