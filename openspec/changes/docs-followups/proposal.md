@@ -27,7 +27,7 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 - **Spec.** Add the missing scenario to `flow-fixes`: after two requests for an advisor, a request about another charge continues the normal flow.
 - **Citations.** A script lists each cited status that differs from `docs/requirements/requirements.md`, and the fix updates them.
 - **Archive.** Archive the three finished plans when the owner asks, so the main specs include their rules.
-- **Plain English.** Rewrite the five requirement files, `metrics.md`, `sizing_capacity.md`, `security.md`, `conversation.md` and `data_inventory.md` in ASD-STE100. The other pages stay out of scope.
+- **Plain English.** Rewrite the five requirement files, `metrics.md`, `sizing-capacity.md`, `security.md`, `conversation.md` and `data_inventory.md` in ASD-STE100. The other pages stay out of scope.
 - **Evidence index.** Add each new run to `evidence/README.md` as it lands, with its status and data type.
 - **Branch list.** List the merged remote branches. The owner deletes them.
 - **Cleanup.** Remove `sentinel-login/`, rewrite the references to it, record the removal in decision 009, and add a link check to the CI workflow.
