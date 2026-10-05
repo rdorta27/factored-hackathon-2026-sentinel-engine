@@ -23,6 +23,26 @@ from eval.per_intent import per_intent_intervals
 UNAVAILABLE = "unavailable"
 
 
+def _draft_rows(cases: list[Case], drafts: list) -> list[dict]:  # type: ignore[no-untyped-def]
+    """Draft plus its validation against the verified slots (eval-v8)."""
+    from app.ai.drafts import DraftFacts, validate_draft
+
+    rows = []
+    for case, draft in zip(cases, drafts):
+        if draft is None:
+            rows.append({"id": case.id, "draft": None, "draft_ok": None, "draft_reason": None})
+            continue
+        slots = case.expected_slots or {}
+        facts = DraftFacts(
+            merchant=slots.get("merchant_words"),
+            amount=str(slots.get("amount")) if slots.get("amount") is not None else None,
+            date=slots.get("date_phrase"),
+        )
+        ok, reason = validate_draft(draft, facts, case.locale)
+        rows.append({"id": case.id, "draft": draft, "draft_ok": ok, "draft_reason": reason})
+    return rows
+
+
 @dataclass
 class Version:
     model: object
@@ -32,22 +52,24 @@ class Version:
     repeat_ids: frozenset[str] = field(default_factory=frozenset)
 
 
-def _call(model, case: Case, transport=None) -> tuple[str, float, float, str, str]:  # type: ignore[no-untyped-def]
+def _call(model, case: Case, transport=None) -> tuple:  # type: ignore[no-untyped-def]
+    """One understanding call plus the v3 fields (subtype, slots, draft)."""
     started = perf_counter()
     try:
         result = model.understand(case.message, list(case.turns))
     except InvalidReply:
-        intent, cost = INVALID, 0.0
+        intent, cost, subtype, slots, draft = INVALID, 0.0, None, None, None
     except ModelUnavailable:
-        intent, cost = UNAVAILABLE, 0.0
+        intent, cost, subtype, slots, draft = UNAVAILABLE, 0.0, None, None, None
     else:
         intent, cost = result.kind.value, float(result.cost_usd)
+        subtype, slots, draft = result.subtype, result.slots, result.reply_draft
     info = model.describe()
     latency_ms = (perf_counter() - started) * 1000
     recorded = getattr(transport, "last_latency_ms", None)
     if recorded:
         latency_ms = recorded
-    return intent, latency_ms, cost, info.model, info.route
+    return intent, latency_ms, cost, info.model, info.route, subtype, slots, draft
 
 
 def run_version(cases: list[Case], version: Version) -> dict:
@@ -75,6 +97,10 @@ def run_version(cases: list[Case], version: Version) -> dict:
     pairs = [(case.expected_intent, p) for case, p in zip(cases, predicted)]
     info = version.model.describe()
     config = getattr(version.model, "_config", None)
+    predicted_subtypes = [row[5] for row in first]
+    predicted_slots = [row[6] for row in first]
+    predicted_drafts = [row[7] for row in first]
+    draft_rows = _draft_rows(cases, predicted_drafts)
     return {
         "n": len(cases),
         "predicted": predicted,
@@ -91,7 +117,37 @@ def run_version(cases: list[Case], version: Version) -> dict:
         "models": {"n": len(cases), "count": dict(sorted(Counter(row[3] for row in first).items()))},
         "prompt_version": info.prompt_version,
         "example_ids": list(getattr(config, "example_ids", ()) or ()),
+        # eval-v8 additions: subtype, slots, drafts and unsafe wording.
+        "subtype": metrics.subtype_accuracy(cases, predicted_subtypes),
+        "slots": metrics.slot_precision(
+            [c.expected_slots for c in cases], predicted_slots
+        ),
+        "drafts": metrics.rejected_draft_rate(draft_rows),
+        "unsafe_wording": metrics.unsafe_wording(draft_rows),
     }
+
+
+def with_high_risk_repeats(
+    versions: dict[str, Version], cases: list[Case], repetitions: int = 3
+) -> dict[str, Version]:
+    """Three recorded passes over the high-risk subset (eval-v8).
+
+    Attacks and must-handoff cases get ``repetitions`` passes. The baseline
+    keeps one pass: it has no recorded repetitions.
+    """
+    risky = metrics.high_risk_ids(cases)
+    out = {}
+    for name, version in versions.items():
+        if name == "baseline":
+            out[name] = version
+            continue
+        out[name] = Version(
+            model=version.model,
+            transport=version.transport,
+            repetitions=repetitions,
+            repeat_ids=frozenset(version.repeat_ids | risky) if version.repeat_ids else risky,
+        )
+    return out
 
 
 def run_versions(cases: list[Case], versions: dict[str, Version], reference: str = "baseline") -> dict:
@@ -115,4 +171,4 @@ def run_versions(cases: list[Case], versions: dict[str, Version], reference: str
     }
 
 
-__all__ = ["UNAVAILABLE", "Version", "run_version", "run_versions"]
+__all__ = ["UNAVAILABLE", "Version", "run_version", "run_versions", "with_high_risk_repeats"]

@@ -16,7 +16,10 @@ EVAL_VERSION = "2026-09-30+runner-v1"
 
 METRIC_KEYS = frozenset(
     {"accuracy", "share", "rate", "precision", "recall", "f1", "agreement", "mean",
-     "count", "resolved", "passed", "automated", "contained", "total"}
+     "count", "resolved", "passed", "automated", "contained", "total",
+     "correct", "returned", "rejected", "matched", "resolvable", "attempted",
+     "ceiling_share", "achieved_share", "gap", "unnecessary", "conversations",
+     "score"}
 )
 
 
@@ -281,6 +284,33 @@ def render_measurement(summary: dict) -> str:
             for intent, stats in block["breakdown"]["by_intent"].items()
         ]
         lines.append(f"- {name}: " + "; ".join(parts))
+    lines += ["", "## v8 metrics by version", ""]
+    for name, block in versions.items():
+        subtype = block.get("subtype", {})
+        slots = block.get("slots", {})
+        drafts = block.get("drafts", {})
+        wording = block.get("unsafe_wording", {})
+        lines.append(
+            f"- {name}: subtype accuracy {subtype.get('accuracy')} "
+            f"({subtype.get('correct')}/{subtype.get('n')}); "
+            f"slot precision {slots.get('precision')} "
+            f"({slots.get('correct')}/{slots.get('returned')}); "
+            f"rejected drafts {drafts.get('rejected')}/{drafts.get('returned')} "
+            f"(rate {drafts.get('rate')}); "
+            f"unsafe wording {wording.get('rate')}"
+            + (f" ({', '.join(wording.get('cases', []))})" if wording.get("cases") else "")
+        )
+    lines += ["", "## By language and country (kind accuracy)", ""]
+    for name, block in versions.items():
+        breakdown = block.get("breakdown", {})
+        locales = breakdown.get("by_locale", {})
+        countries = breakdown.get("by_country", {})
+        if locales:
+            parts = [f"{loc} {stats['accuracy']} (n={stats['n']})" for loc, stats in sorted(locales.items())]
+            lines.append(f"- {name} by language: " + "; ".join(parts))
+        if countries:
+            parts = [f"{cty} {stats['accuracy']} (n={stats['n']})" for cty, stats in sorted(countries.items())]
+            lines.append(f"- {name} by country: " + "; ".join(parts))
     lines += ["", "## Stability", ""]
     for name, block in versions.items():
         stability = block["stability"]
@@ -301,12 +331,33 @@ def render_measurement(summary: dict) -> str:
     )
     for name, system in summary["system"].items():
         unsafe = system["unsafe_outcomes"]
+        unnecessary = system.get("unnecessary_handoff_rate", {})
+        match = system.get("system_outcome_match", {})
+        ceiling = system.get("resolution_ceiling", {})
+        conv = system.get("latency_per_conversation", {})
         lines.append(
             f"- {name}: unsafe {unsafe['rate']}"
             + (f" ({', '.join(unsafe['cases'])})" if unsafe["cases"] else "")
             + f"; missed transfers {len(system['escalation_quality']['missed_transfers'])}"
+            f"; unnecessary handoffs {unnecessary.get('unnecessary', 0)}/{unnecessary.get('n', 0)} "
+            f"(rate {unnecessary.get('rate')})"
+            f"; outcome match {match.get('matched', 0)}/{match.get('n', 0)} "
+            f"(share {match.get('share')})"
+            f"; ceiling {ceiling.get('resolved', 0)} of {ceiling.get('resolvable', 0)} "
+            f"resolvable of {ceiling.get('attempted', 0)} (gap {ceiling.get('gap')})"
+            f"; latency per conversation p50/p95 ms {conv.get('p50')}/{conv.get('p95')}"
             f"; cost per resolution {system['cost_usd']['per_resolution']}"
         )
+    checklist = summary.get("handoff_checklist")
+    if checklist:
+        lines += ["", f"## Handoff checklist (n={checklist['n']}, mean {checklist['mean']})", ""]
+        for item in checklist.get("items", []):
+            lines.append(f"- {item['id']}: score {item['score']} (missing: {', '.join(item['missing']) or 'none'})")
+    repeats = summary.get("high_risk_repeats")
+    if repeats:
+        lines += ["", f"## High-risk repeats (3 passes, n={repeats.get('n')})", ""]
+        for name, block in repeats.get("versions", {}).items():
+            lines.append(f"- {name}: agreement {block.get('stability', {}).get('agreement')} (n={block.get('n')})")
     spend = summary["spend"]
     lines += [
         "",
