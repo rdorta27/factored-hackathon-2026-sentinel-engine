@@ -1,3 +1,7 @@
+## Purpose
+
+Fixes the visible behavior of the chat page while a turn runs and when the language changes, so one click starts one turn and the thread speaks the language of the customer.
+
 ## ADDED Requirements
 
 ### Requirement: One click starts one turn
