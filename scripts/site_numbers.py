@@ -265,7 +265,7 @@ def sync_markdown(numbers: dict, check: bool = False) -> list[Path]:
 
 
 TYPE_NAMES = {
-    "es-la": {"Test suite": "Suite de pruebas", "Simulation": "Simulación", "Synthetic": "Sintético", "Projection": "Proyección"},
+    "es-419": {"Test suite": "Suite de pruebas", "Simulation": "Simulación", "Synthetic": "Sintético", "Projection": "Proyección"},
     "pt-br": {"Test suite": "Suíte de testes", "Simulation": "Simulação", "Synthetic": "Sintético", "Projection": "Projeção"},
 }
 
@@ -286,7 +286,7 @@ def slot_text(numbers: dict, kind: str, key: str, lang: str = "en") -> str:
 
 def page_lang(page: Path, site: Path) -> str:
     first = page.relative_to(site).parts[0]
-    return first if first in ("es-la", "pt-br") else "en"
+    return first if first in ("es-419", "pt-br") else "en"
 
 
 def sync_pages(data: dict, site: Path = OUT.parent) -> list[Path]:

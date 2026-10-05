@@ -72,7 +72,7 @@ def test_no_external_request():
 def test_page_details():
     for page in PAGES:
         html = page.read_text()
-        assert re.search(r'<html lang="(en|es|pt-BR)">', html) and "<title>" in html, page.name
+        assert re.search(r'<html lang="(en|es-419|pt-BR)">', html) and "<title>" in html, page.name
         assert 'name="viewport"' in html, page.name
     home = (SITE / "index.html").read_text()
     assert 'name="description"' in home and 'rel="icon"' in home
@@ -365,12 +365,12 @@ def test_judges_page_in_the_browser():
         browser.close()
 
 
-# --- languages: English, Spanish (es-LA) and Portuguese (pt-BR) ---
+# --- languages: English, Spanish (es-419) and Portuguese (pt-BR) ---
 
 import localize as lz  # noqa: E402
 import site_chrome as chrome  # noqa: E402
 
-LANGS = ["en", "es-la", "pt-br"]
+LANGS = ["en", "es-419", "pt-br"]
 
 
 def lang_path(lang: str, page: str) -> Path:
@@ -439,7 +439,7 @@ def test_portuguese_numbers_use_a_decimal_comma():
     en = lang_path("en", "index.html").read_text()
     assert ">98,2%<" in pt and ">98.2%<" in en
     assert ">79.191<" in pt and ">79,191<" in en
-    es = lang_path("es-la", "index.html").read_text()
+    es = lang_path("es-419", "index.html").read_text()
     assert ">98.2%<" in es and ">Simulación<" in es and ">Simulação<" in pt
 
 
@@ -467,7 +467,7 @@ def test_all_languages_in_the_browser():
             # The switcher moves to the same page in the other language.
             p = browser.new_page(viewport={"width": 1280, "height": 800})
             p.goto(lang_path(lang, "diagrams/turn.html").as_uri())
-            other = "es-la" if lang != "es-la" else "pt-br"
+            other = "es-419" if lang != "es-419" else "pt-br"
             p.click(f'.lang a[data-lang="{other}"]')
             assert f"/{other}/diagrams/turn.html" in p.url, (lang, p.url)
             p.close()
@@ -490,15 +490,15 @@ def test_browser_language_is_the_default_and_the_choice_is_kept():
             page.goto(home)
             return ctx, page
 
-        for locale, expected in (("es-MX", "/es-la/index.html"), ("es-CO", "/es-la/index.html"), ("pt-BR", "/pt-br/index.html"), ("en-US", "/site/index.html"), ("fr-FR", "/site/index.html")):
+        for locale, expected in (("es-MX", "/es-419/index.html"), ("es-CO", "/es-419/index.html"), ("pt-BR", "/pt-br/index.html"), ("en-US", "/site/index.html"), ("fr-FR", "/site/index.html")):
             ctx, page = open_home(locale)
             assert page.url.endswith(expected), (locale, page.url)
             ctx.close()
         # A Spanish page that someone opens directly stays in Spanish.
         ctx = browser.new_context(locale="en-US")
         page = ctx.new_page()
-        page.goto((SITE / "es-la" / "index.html").as_uri())
-        assert page.url.endswith("/es-la/index.html")
+        page.goto((SITE / "es-419" / "index.html").as_uri())
+        assert page.url.endswith("/es-419/index.html")
         # The visitor changes the language. The choice stays for the next visit.
         page.click('.lang a[data-lang="pt-br"]')
         assert page.url.endswith("/pt-br/index.html")
@@ -513,7 +513,7 @@ def test_browser_language_is_the_default_and_the_choice_is_kept():
         ctx = browser.new_context(locale="es-MX")
         page = ctx.new_page()
         page.goto(home)
-        assert page.url.endswith("/es-la/index.html")
+        assert page.url.endswith("/es-419/index.html")
         page.click('.lang a[data-lang="en"]')
         page.goto(home)
         assert page.url.endswith("/site/index.html")

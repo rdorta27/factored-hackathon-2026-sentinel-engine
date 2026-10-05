@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Spanish (es-LA) and Portuguese (pt-BR) copies of the site from the English pages.
+"""Build the Spanish (es-419) and Portuguese (pt-BR) copies of the site from the English pages.
 
 English is the source. Each text unit of an English page is looked up in
 site/i18n/<lang>.json. A unit is a block of text with its inline tags, for
@@ -10,7 +10,7 @@ may move them. A unit with no translation stops the build.
 
     python3 scripts/localize.py              # expand the shared header, write the copies
     python3 scripts/localize.py --check      # exit 1 if a file is stale or a text is missing
-    python3 scripts/localize.py --missing es-la   # print the keys with no translation
+    python3 scripts/localize.py --missing es-419   # print the keys with no translation
 """
 
 from __future__ import annotations

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Export the slides to a PDF with headless Chromium (1280x720, six pages).
 
-    python3 scripts/export_slides.py                 # English, Spanish (es-LA) and Portuguese (pt-BR)
-    python3 scripts/export_slides.py --lang es-la    # one language
+    python3 scripts/export_slides.py                 # English, Spanish (es-419) and Portuguese (pt-BR)
+    python3 scripts/export_slides.py --lang es-419    # one language
 
-The PDFs are site/slides/sentinel-slides.pdf, sentinel-slides.es-la.pdf and sentinel-slides.pt-br.pdf.
+The PDFs are site/slides/sentinel-slides.pdf, sentinel-slides.es-419.pdf and sentinel-slides.pt-br.pdf.
 
 The PDF is gitignored (*.pdf). Build it before you submit.
 """
@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
-LANGS = {"en": "", "es-la": "es-la", "pt-br": "pt-br"}
+LANGS = {"en": "", "es-419": "es-419", "pt-br": "pt-br"}
 
 
 def chromium() -> str:

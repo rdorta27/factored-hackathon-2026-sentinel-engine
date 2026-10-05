@@ -2,7 +2,7 @@
 """Find text that leaves its box, on every page of the site in every language.
 
     python3 scripts/audit_overflow.py            # print the findings, exit 1 if any
-    python3 scripts/audit_overflow.py --lang es-la --page diagrams/architecture.html
+    python3 scripts/audit_overflow.py --lang es-419 --page diagrams/architecture.html
 
 It checks HTML boxes (a child wider than its parent, a box with clipped text),
 SVG labels (a text wider than its node) and slides (content below or beside the
@@ -20,7 +20,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import localize as lz  # noqa: E402
 
 SITE = lz.SITE
-LANGS = ["en", "es-la", "pt-br"]
+LANGS = ["en", "es-419", "pt-br"]
 
 JS = r"""
 () => {

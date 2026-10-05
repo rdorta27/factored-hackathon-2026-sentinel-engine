@@ -15,9 +15,9 @@ REPO = "https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine"
 
 # (directory, label, name in its own language, value of the html lang attribute)
 LANGS = [
-    ("en", "EN", "English", "en"),
-    ("es-la", "ES-LA", "Español (Latinoamérica)", "es"),
-    ("pt-br", "PT-BR", "Português (Brasil)", "pt-BR"),
+    ("en", "English (US)", "English (United States)", "en"),
+    ("es-419", "Español (LA)", "Español (Latinoamérica)", "es-419"),
+    ("pt-br", "Português (BR)", "Português (Brasil)", "pt-BR"),
 ]
 LANG_DIRS = [d for d, *_ in LANGS if d != "en"]
 
