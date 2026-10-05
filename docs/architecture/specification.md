@@ -137,7 +137,7 @@ A failure ends in a safe answer or a handoff, never in an unverified claim (REQ-
 ## Language and locale
 
 - The reply language follows the customer (`es-419` or `pt-BR`). The currency follows the account. Amounts are in the original currency of the charge (REQ-0041).
-- The assistant understands and explains local acronyms and terms ([glossary](../understand/glossary/), REQ-0044).
+- The assistant understands and explains local acronyms and terms ([glossary](../glossary/), REQ-0044).
 - The country (MX, CO, AR) is configuration, not code (REQ-0049). The dataset has no Portuguese text, so the `pt-BR` cases are team-generated and have that label (REQ-0012, REQ-0013).
 
 ## Conversation state
@@ -238,7 +238,7 @@ REQ-0056. Where we use AI and where we do not.
 
 ## Path to production
 
-REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code. [Mocked components](demo-architecture.md#mocked-components) and [what is real](what-is-real.md) list the mocks. This table lists only what must change, or what we must decide, before operation. The [sizing and capacity specification](../sizing_capacity.md) gives the volumes, the prototype capacity and the scaling plan (REQ-0053).
+REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code. [Mocked components](demo-architecture.md#mocked-components) and [what is real](what-is-real.md) list the mocks. This table lists only what must change, or what we must decide, before operation. The [sizing and capacity specification](../sizing-capacity.md) gives the volumes, the prototype capacity and the scaling plan (REQ-0053).
 
 | Area | Work before production |
 |---|---|

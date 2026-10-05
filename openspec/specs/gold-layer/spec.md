@@ -8,7 +8,7 @@ Gives the backend one read seam for transaction eligibility that serves invented
 
 ### Requirement: Denormalized Gold read seam
 
-The system SHALL read transaction eligibility through a single seam returning denormalized rows with transaction date, status, refunded and prior-dispute flags, and an as-of freshness mark. Every read SHALL return its as-of mark alongside the data. Traces to REQ-0039 (P0, Pending) and REQ-0032 (P1, Pending).
+The system SHALL read transaction eligibility through a single seam returning denormalized rows with transaction date, status, refunded and prior-dispute flags, and an as-of freshness mark. Every read SHALL return its as-of mark alongside the data. Traces to REQ-0039 (P0, Done) and REQ-0032 (P1, Done).
 
 #### Scenario: Eligibility read carries freshness
 
@@ -22,7 +22,7 @@ The system SHALL read transaction eligibility through a single seam returning de
 
 ### Requirement: Mock labeled, real deferred
 
-The system SHALL read Gold through the `GoldTransactions` seam with two interchangeable adapters: a DuckDB adapter over the PII-free view `v_service_dispute_eligible_transactions`, used when the view answers a probe at startup, and the in-memory mock otherwise. `SENTINEL_GOLD_SOURCE` (`auto`, `mock`, `duckdb`) SHALL select the adapter, and `GET /api/v1/health` SHALL report which one is active. Confirmations SHALL keep `source=mock` while the dispute store is in memory. Traces to REQ-0032 (P1, In progress), REQ-0028 (P0, In progress), and REQ-0015 (P0, In progress).
+The system SHALL read Gold through the `GoldTransactions` seam with two interchangeable adapters: a DuckDB adapter over the PII-free view `v_service_dispute_eligible_transactions`, used when the view answers a probe at startup, and the in-memory mock otherwise. `SENTINEL_GOLD_SOURCE` (`auto`, `mock`, `duckdb`) SHALL select the adapter, and `GET /api/v1/health` SHALL report which one is active. Confirmations SHALL keep `source=mock` while the dispute store is in memory. Traces to REQ-0032 (P1, Done), REQ-0028 (P0, Done), and REQ-0015 (P0, Done).
 
 #### Scenario: Mock source is visible
 
@@ -36,7 +36,7 @@ The system SHALL read Gold through the `GoldTransactions` seam with two intercha
 
 ### Requirement: Per-customer isolation on reads
 
-Gold reads SHALL filter by the session customer; a customer SHALL never see another customer's rows. Traces to REQ-0007 (P0, Pending) and REQ-0047 (P0, Pending).
+Gold reads SHALL filter by the session customer; a customer SHALL never see another customer's rows. Traces to REQ-0007 (P0, Done) and REQ-0047 (P0, Done).
 
 #### Scenario: Cross-customer reference is invisible
 
@@ -45,7 +45,7 @@ Gold reads SHALL filter by the session customer; a customer SHALL never see anot
 
 ### Requirement: Per-country demo customers
 
-The Gold mock SHALL provide coherent customers for Mexico, Colombia, and Argentina, the only account countries in the dataset (data dictionary, `customers.country`). Each customer's transactions SHALL be denominated in the currency of the product they belong to: the country's local currency, or USD for a USD product. Rows SHALL be dated relative to the configured reference date. For each demo country, the mock SHALL include at least one charge above each configured fraud-score threshold and one above each configured high-amount threshold, so every rule can be shown. Traces to REQ-0041 (P0, Done), REQ-0049 (P2, Done), REQ-0032 (P1, Done) and REQ-0006 (P0, In progress).
+The Gold mock SHALL provide coherent customers for Mexico, Colombia, and Argentina, the only account countries in the dataset (data dictionary, `customers.country`). Each customer's transactions SHALL be denominated in the currency of the product they belong to: the country's local currency, or USD for a USD product. Rows SHALL be dated relative to the configured reference date. For each demo country, the mock SHALL include at least one charge above each configured fraud-score threshold and one above each configured high-amount threshold, so every rule can be shown. Traces to REQ-0041 (P0, Done), REQ-0049 (P2, Done), REQ-0032 (P1, Done) and REQ-0006 (P0, Done).
 
 #### Scenario: Each country reads its own currency
 
@@ -64,7 +64,7 @@ The Gold mock SHALL provide coherent customers for Mexico, Colombia, and Argenti
 
 ### Requirement: Transaction listing for the interface
 
-The seam SHALL support listing every transaction of one session customer, ordered by date, so the interface can show the transaction panel and offer candidates. Traces to REQ-0042 (P1, Pending) and REQ-0003 (P0, Pending).
+The seam SHALL support listing every transaction of one session customer, ordered by date, so the interface can show the transaction panel and offer candidates. Traces to REQ-0042 (P1, Done) and REQ-0003 (P0, Done).
 
 #### Scenario: Listing stays inside the session customer
 
@@ -73,7 +73,7 @@ The seam SHALL support listing every transaction of one session customer, ordere
 
 ### Requirement: Session listing endpoint
 
-The app SHALL expose `GET /api/v1/transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, and the as-of mark; each row SHALL have the same shape as a chat candidate: reference, date, amount, currency, merchant, status, `eligible`, and `ineligibleKey`. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, In progress), REQ-0032 (P1, In progress), REQ-0039 (P0, In progress), and REQ-0047 (P0, In progress).
+The app SHALL expose `GET /api/v1/transactions` for the signed-in customer. The response SHALL contain only that customer's rows, ordered by date, and the as-of mark; each row SHALL have the same shape as a chat candidate: reference, date, amount, currency, merchant, status, `eligible`, and `ineligibleKey`. The request SHALL NOT accept a customer identifier. A row belonging to another customer SHALL NOT appear. The read-seam operations that take a customer identifier SHALL keep those signatures. Traces to REQ-0042 (P1, Done), REQ-0032 (P1, Done), REQ-0039 (P0, Done), and REQ-0047 (P0, Done).
 
 #### Scenario: Listing stays inside the session
 
@@ -97,7 +97,7 @@ The app SHALL expose `GET /api/v1/transactions` for the signed-in customer. The 
 
 ### Requirement: Rows carry the fraud score
 
-Every Gold row SHALL carry the transaction's `fraud_score` (or empty when the source has none) from both the mock and the DuckDB source, and the candidate the policy engine reads SHALL carry it unchanged. The score SHALL NOT be shown to the customer or sent to the model. `is_fraud` SHALL NOT be read, since it is a label known only after investigation. Traces to REQ-0006 (P0, In progress), REQ-0047 (P0, In progress) and REQ-0017 (P0, In progress).
+Every Gold row SHALL carry the transaction's `fraud_score` (or empty when the source has none) from both the mock and the DuckDB source, and the candidate the policy engine reads SHALL carry it unchanged. The score SHALL NOT be shown to the customer or sent to the model. `is_fraud` SHALL NOT be read, since it is a label known only after investigation. Traces to REQ-0006 (P0, Done), REQ-0047 (P0, Done) and REQ-0017 (P0, Done).
 
 #### Scenario: Score reaches the engine
 
@@ -111,7 +111,7 @@ Every Gold row SHALL carry the transaction's `fraud_score` (or empty when the so
 
 ### Requirement: The Gold file is chosen explicitly
 
-The DuckDB Gold file SHALL be taken from `SENTINEL_GOLD_DUCKDB` when set, otherwise from one path fixed relative to the repository, and SHALL NOT depend on the folder the process was started from. When `SENTINEL_GOLD_SOURCE` is `mock`, no file SHALL be read. The chosen source SHALL be reported by `GET /api/v1/health`. Traces to REQ-0015 (P0, In progress), REQ-0028 (P0, Done) and REQ-0032 (P1, Done).
+The DuckDB Gold file SHALL be taken from `SENTINEL_GOLD_DUCKDB` when set, otherwise from one path fixed relative to the repository, and SHALL NOT depend on the folder the process was started from. When `SENTINEL_GOLD_SOURCE` is `mock`, no file SHALL be read. The chosen source SHALL be reported by `GET /api/v1/health`. Traces to REQ-0015 (P0, Done), REQ-0028 (P0, Done) and REQ-0032 (P1, Done).
 
 #### Scenario: Same result from any folder
 
@@ -134,7 +134,7 @@ The DuckDB adapter SHALL NOT return a row dated after the configured reference d
 
 ### Requirement: Local users for real customers stay out of the repository
 
-The repository SHALL provide a script that writes a users file for real Gold customers (login, customer id, country, role, salted password hash) to a path ignored by git, choosing customers with a recent approved charge per country and customers that trigger each handoff rule. The script SHALL print counts only and SHALL NOT write identifiers, rows or the data location to any tracked file. Traces to REQ-0034 (P0, Done), REQ-0009 (P0, In progress) and REQ-0031 (P0, Done).
+The repository SHALL provide a script that writes a users file for real Gold customers (login, customer id, country, role, salted password hash) to a path ignored by git, choosing customers with a recent approved charge per country and customers that trigger each handoff rule. The script SHALL print counts only and SHALL NOT write identifiers, rows or the data location to any tracked file. Traces to REQ-0034 (P0, Done), REQ-0009 (P0, Done) and REQ-0031 (P0, Done).
 
 #### Scenario: Counts only
 
@@ -148,7 +148,7 @@ The repository SHALL provide a script that writes a users file for real Gold cus
 
 ### Requirement: Real-data evidence has no rows
 
-Evidence of a run on real Gold SHALL contain only the source label and outcomes per scenario and language, never a row, a customer id, a transaction id or the data location. Traces to REQ-0034 (P0, Done) and REQ-0009 (P0, In progress).
+Evidence of a run on real Gold SHALL contain only the source label and outcomes per scenario and language, never a row, a customer id, a transaction id or the data location. Traces to REQ-0034 (P0, Done) and REQ-0009 (P0, Done).
 
 #### Scenario: Evidence holds no identifiers
 

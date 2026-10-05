@@ -213,17 +213,17 @@ on the mock.
   second each: this is staging, not a measure of time. Open: the wording of
   the system answers belongs to `flow-fixes` and `chat-start`.
 
-<!-- felix-replay:start -->
-## Felix replay (automated)
+<!-- manual-test-replay:start -->
+## Manual test replay (automated)
 
-Run: `python3 scripts/felix_replay.py --base-url http://127.0.0.1:8002`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per point, and one clean temporary SQLite file per point.
+Run: `python3 scripts/manual_test_replay.py --base-url http://127.0.0.1:8002`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per point, and one clean temporary SQLite file per point.
 The script repeats the ten points of the manual test of Felix on 2026-10-04.
 Points 4 and 8 depend on the model and stay out of scope for this change.
 
 | Point | What Felix tested | Result | Detail |
 |---|---|---|---|
 | 1 | After a handoff, the same ticket and a changing reason | PASA | a new charge continues; the filed reference and reason stay fixed |
-| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-E815978F); no new case |
+| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-B4E0DF71); no new case |
 | 3 | A correction with the box open is ignored | PASA | the box moved from TXN-1001 to TXN-1006 |
 | 4 | A loan request enters the dispute flow | out of scope (router-v3) | depends on the model |
 | 5 | A box opens for a charge with an open dispute | PASA | no box and no second case |
@@ -233,7 +233,86 @@ Points 4 and 8 depend on the model and stay out of scope for this change.
 | 9 | A date with no match gives no clear answer | PASA | the clarification names 2026-06-16 |
 | 10 | The page is not responsive | PASA | the viewport meta tag and a responsive media query are served |
 
-<!-- felix-replay:end -->
+<!-- manual-test-replay:end -->
+
+### Proof behind points 6 and 10 (2026-10-05)
+
+The script checks only part of points 6 and 10. This table adds the proof that each point needs. The script does not write it.
+
+| Point | Status | Proof |
+|---|---|---|
+| 6 | passed (chat-start) | The direct question "¿Por qué no puedo reclamar el de enero?" returns `explanation.window.expired` in the four variants CT-11 (es-MX, es-CO, es-AR, pt-BR). The model was real. See the chat transcripts below |
+| 10 | passed (bank-ui) | The phone screenshots at 390×844 in `docs/build/screenshots/ui-product/` (for example `chat-es-MX-phone.png`) show the thread at full width, with no sideways scroll. MT-10 records the review of the owner on a phone |
+
+<!-- chat-transcripts:start -->
+## Chat transcripts (automated)
+
+Run: `python3 scripts/chat_transcripts.py --base-url http://127.0.0.1:8004`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per case, the real model.
+
+44 conversations, 0 findings.
+
+| Case | Variant | Customer | Reply |
+|---|---|---|---|
+| CT-01-es-MX | es-MX | Hola, buenos días | ¡Hola! ¿En qué te ayudo hoy? |
+| CT-01-es-CO | es-CO | Buenos días, ¿cómo están? | ¡Hola! ¿En qué te puedo colaborar hoy? |
+| CT-01-es-AR | es-AR | Hola, ¿cómo andás? | ¡Hola! ¿En qué te ayudo hoy? |
+| CT-01-pt-BR | pt-BR | Olá, bom dia | Olá! Como posso ajudar hoje? |
+| CT-02-es-MX | es-MX | Muchas gracias por tu ayuda | ¡De nada! ¿Te ayudo en algo más? |
+| CT-02-es-CO | es-CO | Gracias, muy amable | ¡Con gusto! ¿Necesitas algo más? |
+| CT-02-es-AR | es-AR | Gracias, genio | ¡De nada! ¿Te doy una mano con algo más? |
+| CT-02-pt-BR | pt-BR | Obrigado pela ajuda | De nada! Precisa de mais alguma coisa? |
+| CT-03-es-MX | es-MX | ¿Eres un bot o una persona? | Soy un asistente del banco, ¿en qué te ayudo? |
+| CT-03-es-CO | es-CO | ¿Usted es un robot? | Soy un asistente del banco, ¿en qué te colaboro? |
+| CT-03-es-AR | es-AR | ¿Sos un bot? | Soy un asistente del banco, ¿en qué te ayudo? |
+| CT-03-pt-BR | pt-BR | Você é um robô ou uma pessoa? | Sou um assistente do banco, como posso ajudar? |
+| CT-04-es-MX | es-MX | ¿En qué puedes ayudarme? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitas? |
+| CT-04-es-CO | es-CO | ¿Qué puedes hacer? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitas? |
+| CT-04-es-AR | es-AR | ¿Para qué servís? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitás? |
+| CT-04-pt-BR | pt-BR | O que você faz? | opener.help |
+| CT-05-es-MX | es-MX | Adiós, hasta luego | ¡Hasta luego! Que tengas un buen día. |
+| CT-05-es-CO | es-CO | Chau, hasta pronto | ¡Hasta pronto! Que tengas un buen día. |
+| CT-05-es-AR | es-AR | Nos vemos, chau | ¡Chau! Que tengas un buen día. |
+| CT-05-pt-BR | pt-BR | Tchau, até logo | Tchau! Qualquer coisa, estou à disposição. |
+| CT-06-es-MX | es-MX | Hola, no reconozco el cargo de Cafe Central | confirmCharge |
+| CT-06-es-CO | es-CO | Buenos días, no reconozco un cargo en Cafe Central | confirmCharge |
+| CT-06-es-AR | es-AR | Hola, no reconozco el consumo de Cafe Central | confirmCharge |
+| CT-06-pt-BR | pt-BR | Olá, não reconheço a cobrança da Cafe Central | confirmCharge |
+| CT-07-es-MX | es-MX | Quiero ver el estado de mi último cargo | Reviso el estado de tu cargo y te lo muestro. |
+| CT-07-es-CO | es-CO | ¿En qué estado está mi último cobro? | Reviso el estado de tu cobro y te lo muestro. |
+| CT-07-es-AR | es-AR | ¿Cómo va el estado de mi último consumo? | Reviso el estado de tu consumo y te lo muestro. |
+| CT-07-pt-BR | pt-BR | Quero ver o estado da minha última cobrança | Vou verificar o estado da sua cobrança e te mostro. |
+| CT-08-es-MX | es-MX | Quiero un préstamo personal | Te explico qué puedo hacer por tu préstamo. |
+| CT-08-es-CO | es-CO | Necesito un préstamo de libre inversión | Te explico qué opciones de préstamo tenemos. |
+| CT-08-es-AR | es-AR | Quiero pedir un préstamo | Te explico qué puedo hacer por tu préstamo. |
+| CT-08-pt-BR | pt-BR | Quero um empréstimo pessoal | Vou explicar o que posso fazer pelo seu empréstimo. |
+| CT-09-es-MX | es-MX | ¿Cuánta plata tengo en mi cuenta? | Te digo cómo consultar tu saldo en la app. |
+| CT-09-es-CO | es-CO | ¿Cuál es el saldo de mi cuenta? | Te muestro cómo consultar tu saldo en la app. |
+| CT-09-es-AR | es-AR | ¿Cuánta guita tengo disponible? | Te digo cómo ver tu saldo en la app. |
+| CT-09-pt-BR | pt-BR | Quanto dinheiro eu tenho na conta? | Vou te mostrar como consultar seu saldo no aplicativo. |
+| CT-10-es-MX | es-MX | Hay un cobro de mil pesos que no reconozco | confirmCharge |
+| CT-10-es-CO | es-CO | No reconozco un cobro de mil pesos | confirmCharge |
+| CT-10-es-AR | es-AR | No reconozco un consumo de mil pesos | confirmCharge |
+| CT-10-pt-BR | pt-BR | Não reconheço uma cobrança de mil reais | confirmCharge |
+| CT-11-es-MX | es-MX | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-es-CO | es-CO | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-es-AR | es-AR | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-pt-BR | pt-BR | Por que não posso contestar a de janeiro? | explanation.window.expired |
+
+No finding. Every case matched its expected kind and key.
+
+### Review notes (G2)
+
+Reviewer: an agent, at the request of the owner. The owner did not read the report.
+
+| Point | Result |
+|---|---|
+| Kind and key of each case | 44 of 44 match |
+| Handoff on an opener | None |
+| Language of each draft | Matches the variant |
+| Loan replies (CT-08) | The wording "Te explico qué puedo hacer por tu préstamo" promises more than the bot does. Follow-up: tighten the draft rule. |
+| Report cells `opener.help` and `confirmCharge` | The cell shows a key, because the reply has no draft. The page shows the locale text. |
+
+<!-- chat-transcripts:end -->
 
 ## How to add an entry
 

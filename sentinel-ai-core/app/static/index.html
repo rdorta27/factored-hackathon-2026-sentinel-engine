@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="/ui/brand.css">
 <script src="/ui/app.js" defer></script>
 </head>
-<body>
+<body data-loading>
 <div class="chat app">
   <header class="chat-header">
     <span class="chat-badge" data-testid="brand-mark" role="img" aria-label="Sentinel mark"><svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5 20 6v6c0 5-3.5 8.2-8 9.5C7.5 20.2 4 17 4 12V6l8-3.5Z"/><ellipse cx="12" cy="11.5" rx="3.6" ry="2.4"/><circle cx="12" cy="11.5" r="1" fill="currentColor" stroke="none"/></svg></span>
@@ -23,7 +23,6 @@
     <p class="chat-sub session-context" id="session-context" data-testid="session-context" hidden></p>
     <p class="demo-chip" id="reference-date" data-testid="reference-date" hidden></p>
     <div class="topbar-controls">
-      <button id="agent" class="theme-toggle" type="button" data-i18n="agentButton" hidden>Talk to an agent</button>
       <button id="logout" class="theme-toggle" type="button" data-i18n="logoutButton" hidden>Log out</button>
       <div id="locale-group" role="group" aria-label="Language">
         <button type="button" class="theme-toggle locale-button" data-locale="es-419" data-testid="locale-button" aria-pressed="true" aria-label="Español · Latinoamérica" title="Español · Latinoamérica"><svg class="flag" width="24" height="16" viewBox="0 0 24 16" aria-hidden="true"><circle cx="12" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5.5 8h13M12 1.5c-3 3-3 10 0 13M12 1.5c3 3 3 10 0 13" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
@@ -37,7 +36,7 @@
   </header>
   <div id="demo-banner" class="msg msg-audit" data-testid="demo-banner" hidden>
     <strong data-i18n="demoBannerTitle">Demo · simulated data</strong>
-    <p class="chat-sub" data-i18n="demoBannerText">Test access needs no password</p>
+    <p class="chat-sub" data-i18n="demoBannerText">Simulated data. In production, the bank verifies identity.</p>
   </div>
   <main>
     <section id="view-login" class="entry">
@@ -80,8 +79,26 @@
           </button>
           </div>
         </div>
-        <details id="password-login">
-          <summary data-i18n="passwordLoginLink">Use user and password</summary>
+        <details id="judge-guide" class="judge-guide" data-testid="judge-guide">
+          <summary class="chat-title" data-i18n="judgeGuideTitle">Guide for the judge</summary>
+          <div class="judge-guide-body">
+            <p class="chat-sub" data-i18n="judgeGuideIntro"></p>
+            <h3 class="chat-title" data-i18n="judgeGuideCasesTitle"></h3>
+            <ol class="promise-list">
+              <li data-i18n="judgeGuideCaseNormal"></li>
+              <li data-i18n="judgeGuideCaseAmbiguous"></li>
+              <li data-i18n="judgeGuideCasePerson"></li>
+            </ol>
+            <h3 class="chat-title" data-i18n="judgeGuideSimTitle"></h3>
+            <ul class="promise-list">
+              <li data-i18n="judgeGuideSimGold"></li>
+              <li data-i18n="judgeGuideSimLogin"></li>
+              <li data-i18n="judgeGuideSimAdvisor"></li>
+              <li data-i18n="judgeGuideSimPolicy"></li>
+            </ul>
+          </div>
+        </details>
+        <div id="password-login">
           <form id="login-form" class="login-form">
             <h2 class="chat-title" data-i18n="loginTitle">Test login</h2>
             <label>
@@ -90,12 +107,15 @@
             </label>
             <label>
               <span data-i18n="passwordLabel">Password</span>
-              <input id="login-pass" type="password" autocomplete="current-password" required>
+              <span class="pass-field">
+                <input id="login-pass" type="password" autocomplete="current-password" required>
+                <button type="button" id="toggle-pass" class="theme-toggle" aria-controls="login-pass" aria-pressed="false" data-testid="toggle-pass" data-i18n="showPassword">Show</button>
+              </span>
             </label>
             <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
             <p id="login-error" class="chat-sub" role="alert"></p>
           </form>
-        </details>
+        </div>
       </div>
     </section>
     <section id="view-chat" hidden>
@@ -113,9 +133,10 @@
         </aside>
         <div class="chat-thread-col">
           <div id="thread" class="chat-thread" aria-live="polite"></div>
-          <p id="demo-hint" class="chat-sub" data-i18n="demoHint" hidden>Quick test</p>
+          <p id="demo-hint" class="chat-sub" data-i18n="demoHint" hidden>Try an example</p>
           <div id="demo-prompts" class="chat-candidates" role="group" aria-label="Demo" hidden></div>
           <p class="chat-sub" id="chat-help" data-i18n="chatHelp"></p>
+          <button id="agent" class="theme-toggle chat-agent" type="button" data-i18n="agentButton" hidden>Talk to an agent</button>
           <form id="chat-form" class="chat-input">
             <input id="chat-input" maxlength="2000" required>
             <button type="submit" data-i18n="sendButton">Send</button>
@@ -132,13 +153,17 @@
       </div>
     </section>
     <section id="view-queue" hidden>
-      <div id="queue-list">
-        <h3 class="chat-title" data-i18n="queueTitle">Escalated cases</h3>
+      <div id="queue-list" class="chat-panel">
+        <div class="queue-head">
+          <h3 class="chat-title"><span data-i18n="queueTitle">Escalated cases</span> <span id="queue-count" class="pill pill-neutral" data-testid="queue-count"></span></h3>
+          <button type="button" id="queue-refresh" class="theme-toggle" data-testid="queue-refresh" data-i18n="q_refresh">Refresh</button>
+        </div>
         <div id="queue" class="tx-list"></div>
       </div>
-      <div id="queue-detail" data-testid="queue-detail" hidden></div>
+      <div id="queue-detail" class="chat-panel" data-testid="queue-detail" aria-live="polite"></div>
     </section>
   </main>
+  <footer id="build-info" class="chat-sub build-info" data-testid="build-info" hidden></footer>
 </div>
 </body>
 </html>

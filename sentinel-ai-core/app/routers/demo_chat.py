@@ -335,14 +335,19 @@ def _to_reply(
                 candidate_view(item, session.country, ref_date) for item in shown
             ],
             values=ClarificationValues(searched_date=searched),
+            text=output.text or None,
         )
     if kind in (OutcomeKind.EXPLAIN, OutcomeKind.OFFER):
-        return TextReply(message_key=_TEXT_KEYS.get(output.reason or "", "greetingHelp"))
+        return TextReply(
+            message_key=output.message_key or _TEXT_KEYS.get(output.reason or "", "greetingHelp"),
+            text=output.text or None,
+        )
     if kind is OutcomeKind.EXPLANATION:
         return Explanation(
             message_key=output.explanation_key or "explanation.none",
             rule_id=output.reason,
             values=ExplanationValues(**output.explanation_values),
+            text=output.text or None,
         )
     if kind is OutcomeKind.CONFIRM_BOX and output.candidate is not None:
         return ConfirmBox(
@@ -560,6 +565,22 @@ def run_turn(turn: TurnContext, turn_input: TextInput | CandidateIdInput) -> tup
     return output, reply
 
 
+def _filed_handoff(request: Request, turn: TurnContext, reply: Handoff) -> CaseRow | None:
+    """The ticket already filed for this customer on the same charge, if any.
+
+    The conversation keeps its own ticket, but a new session starts empty. The
+    case store outlives the session, so it decides whether the charge is already
+    with an advisor. A handoff that names no charge never matches.
+    """
+    facts = reply.package.verified_facts
+    if facts is None or not facts.transaction_id:
+        return None
+    for case in request.app.state.cases.for_customer(turn.session.customer_id):
+        if case.kind == "handoff" and case.transaction_id == facts.transaction_id:
+            return case
+    return None
+
+
 def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
     facts = reply.package.verified_facts
     request.app.state.cases.add(
@@ -588,6 +609,8 @@ _CUSTOMER_PHRASES = {
     "selected_unknown_charge": "selected a charge not in their account",
     "asked_for_person": "asked for a person",
     "asked_why": "asked why a decision was made",
+    "asked_status": "asked for a charge status",
+    "small_talk": "made small talk",
     "out_of_scope": "asked for something outside disputes",
     "not_understood": "sent a message the system could not understand",
 }
@@ -614,6 +637,10 @@ def _turn_entry(
         customer = "out_of_scope"
     elif reason == "model_unavailable":
         customer = "not_understood"
+    elif reason and reason.startswith("opener."):
+        customer = "small_talk"
+    elif reason == "charge.status":
+        customer = "asked_status"
     elif isinstance(reply, Explanation):
         customer = "asked_why"
     elif isinstance(reply, Clarification):
@@ -717,8 +744,18 @@ def finish_turn(
     new_ticket = False
     if isinstance(reply, Handoff):
         if turn.state.handoff_reference is None:
-            turn.state.handoff_reference = reply.reference
-            new_ticket = True
+            filed = _filed_handoff(request, turn, reply)
+            if filed is not None:
+                # The charge already has a ticket from an earlier session: point at
+                # it and keep its reason, so one charge never files two tickets.
+                turn.state.handoff_reference = filed.case_id
+                update = {"reference": filed.case_id}
+                if filed.reason_key:
+                    update["reason_key"] = filed.reason_key
+                reply = reply.model_copy(update=update)
+            else:
+                turn.state.handoff_reference = reply.reference
+                new_ticket = True
         else:
             # Already handed off: the advisor has the case, so repeated turns do
             # not file another ticket and keep pointing at the first one. The

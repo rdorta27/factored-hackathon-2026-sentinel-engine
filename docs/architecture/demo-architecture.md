@@ -178,7 +178,7 @@ The same repository and folders as the target. The team plan gives the owners an
 - Static masking in Silver and a token vault ([decision 004](../build/decisions/004-pii-lifecycle.md)). Code masks free customer text at the API boundary before the model. The masking is not reversible, because no demo tool needs the original value.
 - A separate web app, an admin panel, advisor actions (claim, change of state), a proof-of-work card, a charge pause or an SLA timer. The advisor has a read-only ticket view ([009](../build/decisions/009-demo-ui-and-advisor-view.md)).
 - Balances, products, cards and credit: out of the scope of the flow ([decision 008](../build/decisions/008-account-inquiry-scope.md)). The data also cannot support them ([investigation data support](../rationale/investigation-data-support.md)).
-- Brazil as a market: `pt-BR` is a test language. Accounts exist only in México, Colombia and Argentina ([dataset assumptions](../understand/dataset.md#assumptions)).
+- Brazil as a market: `pt-BR` is a test language. Accounts exist only in México, Colombia and Argentina ([dataset assumptions](../data/dataset.md#assumptions)).
 
 ## References
 

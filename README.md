@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Sentinel Engine
@@ -10,7 +10,7 @@ Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (
 
 Sentinel Engine is a customer-service assistant for transaction disputes at a bank in México, Colombia and Argentina. It is a prototype. The [requirements coverage](#requirements-coverage) below gives the status of each requirement.
 
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. It runs on Azure Container Apps with labelled mock data and `router_v2` (a prompted GLM 5.3 Flash). The keyword baseline answers a turn when the model fails. One replica runs until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). The live revision is from 2026-10-03. It keeps its state on an Azure Files share. It does not have PRs #55 to #57 yet; the final redeploy comes before the video.
+**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. It runs on Azure Container Apps with labelled mock data and `router_v2` (a prompted GLM 5.3 Flash). The keyword baseline answers a turn when the model fails. One replica runs until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). The live revision is from 2026-10-03. It keeps its state on an Azure Files share. It does not include the pull requests that merged after PR #52 (commit `9664d9d`). The final redeploy comes before the video.
 
 **Start here:** [what is real and what is not](docs/architecture/what-is-real.md) · [evidence index](evidence/README.md) · [rationale](docs/rationale/README.md) · [metrics report](docs/build/metrics-report.md)
 
@@ -32,7 +32,45 @@ The system has two layers and a human in the loop:
   - Before the model call, code refuses a request to reveal the prompt and records injection attempts. Code narrows the list of charges with the words of the customer. A "why?" gets its answer from the stored policy decision.
 - **Human in the loop:** each handoff becomes a ticket with the reason, a summary of the conversation, the verified facts and every action that the system tried. The advisor reads it in a read-only view of the same page, with the trace of each step.
 
-The submission runs the same code with documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user and a synthetic policy. The [what is real](docs/architecture/what-is-real.md) page lists each mock, each data source and the type of each number.
+The submission runs the same code with documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user and a synthetic policy. The [mocks](docs/architecture/mocks.md) page explains each mock and why the public link keeps the Gold mock. The [what is real](docs/architecture/what-is-real.md) page lists each mock, each data source and the type of each number.
+
+## Demo and production
+
+The same code runs in the demo and in production. These parts differ:
+
+| Part | Demo (this repository and the public link) | Production |
+|---|---|---|
+| Gold data | A labelled mock store, or the PII-free DuckDB view of the pipeline when you run it locally with the data file | Gold on Azure Databricks |
+| Identity | Test users with a password. The public link has no passwordless entry. The credentials come in the submission email | The identity provider of the bank |
+| Advisor | A demo advisor user with a read-only view | A human advisor. Tickets go to the CRM of the bank through a queue |
+| Case store | SQLite | PostgreSQL |
+| Dispute policy | Team-written files marked `synthetic: true` | The policy that the bank approves |
+| Opening a dispute | The case store records the case. No bank system receives it | The dispute system of the bank |
+
+The [mocks](docs/architecture/mocks.md) page explains each mock and its limit. The [what is real](docs/architecture/what-is-real.md) page labels each part.
+
+**Which Gold does a local run use?** `SENTINEL_GOLD_SOURCE` has three values:
+
+- `mock`: the labelled mock store. The test users `CUST-0001`, `CUST-0002` and `CUST-0003` exist only here.
+- `duckdb`: the real Gold file. Its customers have other ids (`CLI-…`).
+- `auto` (the default): `duckdb` when the data file is present, `mock` otherwise.
+
+If the data file is on your machine and you keep `auto`, a test user finds no charges. The page shows an empty list of recent charges, and the chat can only offer an advisor. For the demo, set `SENTINEL_GOLD_SOURCE=mock`. `GET /api/v1/health` shows the active source in `gold_source`.
+
+## What the assistant resolves
+
+The assistant handles the **intake and triage** of a transaction dispute. It does not decide the outcome of the dispute and it does not move money.
+
+| Step | What the code does |
+|---|---|
+| Understand | Labels the intent. Masks personal data before the model call |
+| Find | Looks up the charges of the logged-in customer in Gold and narrows them with the words of the customer |
+| Decide | The policy engine checks the status of the charge, the dispute window, a prior dispute, the fraud rule and the amount rule |
+| Confirm | Shows the charge in a confirm box. The assistant never opens a dispute without the confirmation of the customer |
+| Act and verify | Opens the case once (idempotent) and reads it back before it says that the case exists |
+| Hand off | Files a ticket for an advisor with the request, the verified facts, the actions, the evidence and the open questions |
+
+The system files a handoff ticket on its own when a rule asks for it: the customer insists on a person, says that the charge is not theirs, a fraud or high-amount rule fires, required fields are missing, or the third question has no answer. The advisor view is read-only. The decision on the dispute belongs to the bank. A **safe automated resolution** in the metrics means that an eligible case ends in a verified case with no person. A correct handoff or refusal does not count as resolved. It counts under escalation quality.
 
 ## Headline results
 
@@ -45,7 +83,7 @@ All numbers are **simulation** on team-written cases, not production measurement
 | Safe automated resolution, mock store (n = 56) | 16 | 16 | [resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json): `system.<version>.safe_resolution.resolved` |
 | Unsafe outcomes, resolution set | 0/56 | 0/56 | `system.<version>.unsafe_outcomes.rate` |
 | Cost per successful resolution (USD) | 0 | 0.000561 | `system.<version>.cost_usd.per_resolution` |
-| Unsafe outcomes, adversarial suite | 0/42 | | [adversarial](evidence/adversarial/20261002T222323Z/summary.json): `totals.unsafe_outcome_rate` |
+| Unsafe outcomes, adversarial suite | 0/42 | | [adversarial](evidence/adversarial/20261005T014816Z/summary.json): `totals.unsafe_outcome_rate` |
 
 The [metrics report](docs/build/metrics-report.md) gives the intervals, the breakdown by language and country, and the limits.
 
@@ -69,13 +107,20 @@ Without a model, the service uses the keyword baseline. To use the measured rout
 
 To publish to Azure, read [`deploy/azure/README.md`](deploy/azure/README.md).
 
-Open `http://localhost:8000/ui` and log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for tests only.
+Open `http://localhost:8000/ui`. For the demo, start the service with the labelled mock store (see [Demo and production](#demo-and-production)):
+
+```bash
+cd sentinel-ai-core
+SENTINEL_GOLD_SOURCE=mock SENTINEL_REFERENCE_DATE=2026-06-17 uvicorn app.main:app
+```
+
+Log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for local runs and tests. The public link uses the credentials of the submission email.
 
 To see the advisor side, start the service with the demo roles. Log in as `ADV-0001` (password `Advisor-001`) after a customer asks for a person two times:
 
 ```bash
 cd sentinel-ai-core
-SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
+SENTINEL_GOLD_SOURCE=mock SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
 ```
 
 The state is in `sentinel-ai-core/var/sentinel.db` (gitignored). Delete it for a clean demo.
@@ -98,9 +143,9 @@ pip install -e ".[dev]"
 python3 -m pytest -q
 ```
 
-[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs both on each push and pull request.
+[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs both suites on each push and pull request. It also checks the relative links of the Markdown files and the requirement status that the specs cite.
 
-To replay a frozen evaluation run offline, read the [evidence index](evidence/README.md#evaluation-runs). On 2026-10-04, `2024Q4-resolution-v1`, `2024Q4-resolution-v2` and `2024Q4-calibration-v1` matched their frozen summaries. The system block of `2024Q4-eval-v7` does not reproduce, for the reason in the [metrics report](docs/build/metrics-report.md#9-reproduction).
+To replay a frozen evaluation run offline, read the [evidence index](evidence/README.md#evaluation-runs). On 2026-10-05, `2024Q4-resolution-v1`, `2024Q4-resolution-v2` and `2024Q4-train-v1` matched their frozen summaries. `2024Q4-eval-v7`, `2024Q4-calibration-v1` and `2024Q4-calibration-v3` differ from them. The system block of `2024Q4-eval-v7` does not reproduce, for the reason in the [metrics report](docs/build/metrics-report.md#9-reproduction). The cause of the other two differences is not yet confirmed. The index gives the result for each run.
 
 The data pipeline is in [`sentinel-data-engine/`](sentinel-data-engine/README.md). Sync the raw tables from the organizer bucket into `data/raw/` with the credentials in its `.env`. Then build `data/gold_bank.duckdb` with one command (both gitignored; see its quickstart). The [inventory](docs/data_inventory.md) lists the data sources.
 
@@ -115,7 +160,7 @@ The data pipeline is in [`sentinel-data-engine/`](sentinel-data-engine/README.md
 
 | Status | Requirements |
 |---|---|
-| **Done** | **Conversation and safety:** REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person · REQ-0048 decision order. **Demo:** REQ-0009 normal case · REQ-0010 ambiguous case · REQ-0011 human case · REQ-0012 Spanish and Portuguese · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. **ML:** REQ-0016 learned component against baseline ([eval-v7](evidence/evaluation-runs/2024Q4-eval-v7/summary.json)) · REQ-0017 valid labels, sealed and measured once · REQ-0019 experiment tracking · REQ-0020 same held-out set. **Metrics and analysis:** REQ-0014 flow analysis · REQ-0022 metrics with n · REQ-0024 breakdown by variant and country · REQ-0050 country monitoring · REQ-0053 sizing · REQ-0055 outcome metrics ([resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)) · REQ-0057 ROI as a projection. **Operations:** REQ-0021 failure tests ([adversarial](evidence/adversarial/20261002T222323Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0028 reproducible setup · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0047 no personal data to the model · REQ-0049 country as configuration. **Data:** REQ-0015 pipeline with contracts · REQ-0018 incremental processing · REQ-0031 sources labelled by origin · REQ-0054 no external data. **Delivery:** REQ-0034 clean repository · REQ-0035 live link |
+| **Done** | **Conversation and safety:** REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person · REQ-0048 decision order. **Demo:** REQ-0009 normal case · REQ-0010 ambiguous case · REQ-0011 human case · REQ-0012 Spanish and Portuguese · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. **ML:** REQ-0016 learned component against baseline ([eval-v7](evidence/evaluation-runs/2024Q4-eval-v7/summary.json)) · REQ-0017 valid labels, sealed and measured once · REQ-0019 experiment tracking · REQ-0020 same held-out set. **Metrics and analysis:** REQ-0014 flow analysis · REQ-0022 metrics with n · REQ-0024 breakdown by variant and country · REQ-0050 country monitoring · REQ-0053 sizing · REQ-0055 outcome metrics ([resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)) · REQ-0057 ROI as a projection. **Operations:** REQ-0021 failure tests ([adversarial](evidence/adversarial/20261005T014816Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0028 reproducible setup · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0047 no personal data to the model · REQ-0049 country as configuration. **Data:** REQ-0015 pipeline with contracts · REQ-0018 incremental processing · REQ-0031 sources labelled by origin · REQ-0054 no external data. **Delivery:** REQ-0034 clean repository · REQ-0035 live link |
 | **In progress** | REQ-0013 and REQ-0030 limits on the slides and a README roadmap · REQ-0051 language check · REQ-0052 path to production (alerts by country) · REQ-0056 trade-offs in the presentation |
 | **Pending** | REQ-0036 slides · REQ-0037 video · optional: REQ-0023 LLM judge (not used), REQ-0044 local terms, REQ-0045 app-error context, REQ-0046 handoff routing |
 
@@ -123,22 +168,38 @@ The [requirements](docs/requirements/requirements.md#status-by-priority) page gi
 
 ## Limitations
 
-What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing_capacity.md) gives the capacity limits.
+What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-capacity.md) gives the capacity limits.
 
+- **Mocks:** the submission runs documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user, a synthetic policy, a stand-in model in the test suite, and a labelled Gold mock on the public link. Each mock keeps the production contract, so production replaces a backend, not code. The [mocks](docs/architecture/mocks.md) page gives the reason, the limit and the production backend of each one.
+- **Charge not yet in Gold:** a charge that has not reached Gold is treated as not found. The assistant names what it searched and shows the charges that it can verify. After repeated questions with no match it files a handoff. It does **not** open a case marked as pending verification, which the [conversation rules](docs/build/conversation.md#when-data-is-not-up-to-date) describe as the target behavior. The Gold of the pipeline hides the charges dated after the reference date (`as_of`). The labelled mock does not.
 - **Data:** synthetic and in Spanish only. Accounts are only in México, Colombia and Argentina, and Mexican accounts are only in USD. The data cannot support a charge investigation: the balance has no usable as-of date, complaints cannot be tied to a charge, blocked products have no transactions, and no customer signal adds to `fraud_score` ([investigation data support](docs/rationale/investigation-data-support.md)). A `fraud_score` above 30 is always fraud, which is an artefact of the data generator. Real Gold runs locally only. The public link uses the labelled mock.
 - **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not the rule of a bank. One 90-day window serves the three countries. The sources disagree: Argentina counts 30 days from the receipt of the statement, and we found no fixed window for Colombia. The engine cannot express a different window start per country, provisional credit or a response time ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer states that the rule is a demonstration policy.
 - **Languages:** the Portuguese (`pt-BR`) cases are model-written. No native speaker reviewed them, and the variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). A second model back-translated the three demo lines. A Colombian teammate accepted the es-CO lines. A model, not a speaker, checked the Mexican and Argentine lines. The dataset transcripts are two Spanish templates, not customer language ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)).
-- **Model:** the measured router is more accurate than the keyword baseline on the sealed set ([eval-v7](evidence/evaluation-runs/2024Q4-eval-v7/summary.json), [metrics report](docs/build/metrics-report.md)). A turn that falls back to the baseline has the accuracy of the baseline, and the turn log marks it. The model classifies a greeting alone as out of scope; the sealed set has no such case. The chat answers it with an offer and hands off on the third such turn in a row. The confidence cut-offs ([calibration-v1](evidence/evaluation-runs/2024Q4-calibration-v1/summary.json)) are descriptive (validation n = 26) and off by default.
+- **Site translations:** the Spanish and Portuguese copies of the pitch site and the slides (`site/es-419/`, `site/pt-br/`) are model-written translations of the English pages. No native speaker reviewed them. English is the reference.
+- **Model:** the measured router is more accurate than the keyword baseline on the sealed set ([eval-v7](evidence/evaluation-runs/2024Q4-eval-v7/summary.json), [metrics report](docs/build/metrics-report.md)). A turn that falls back to the baseline has the accuracy of the baseline, and the turn log marks it. The model classifies a greeting alone as out of scope; the sealed set has no such case. The chat answers it with an offer and hands off on the third such turn in a row. The confidence cut-offs ([calibration-v1](evidence/evaluation-runs/2024Q4-calibration-v1/summary.json)) are descriptive (validation n = 26) and off by default. The learned charge selector ([test-v1](evidence/charge-ranker/test-v1/summary.json), [025](docs/build/decisions/025-charge-selector.md)) stays off in the demo, because it fails the serving rule.
 - **State:** SQLite and one replica. Login-attempt and write-rate counters are per process. PostgreSQL is the path to more than one instance.
 - **Privacy:** code masks free customer text by pattern before the model call. It does not detect personal data outside those patterns.
-- **Safety evidence:** 42 attacks with `0/42` unsafe outcomes ([adversarial run](evidence/adversarial/20261002T222323Z/summary.json)). Three injection attempts pass only because the stand-in model is the keyword baseline. The attack block of `eval-v7` tests attacks against the live model. Zero unsafe outcomes on a small set does not prove zero risk.
+- **Safety evidence:** 42 attacks with `0/42` unsafe outcomes ([adversarial run](evidence/adversarial/20261005T014816Z/summary.json)). Three injection attempts pass only because the stand-in model is the keyword baseline. The attack block of `eval-v7` tests attacks against the live model. Zero unsafe outcomes on a small set does not prove zero risk.
 - **Resolution:** a simulation over the mock store only. [`2024Q4-resolution-v2`](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) resolves the same eligible cases for the baseline and `router_v2`, with no unsafe outcome and no missed handoff. It is not a field resolution rate: the set uses only the charges in the mock store, and it has no pending charge ([022](docs/build/decisions/022-resolution-acceptance.md)).
 - **Capacity:** no load test of `/api/v1/chat` exists. The requests per second of one replica are not measured.
 - **Monitoring and ROI:** country monitoring uses a replayed, simulated workload ([evidence](evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)). No field log exists. The ROI is a break-even projection with an assumed advisor cost, not a measured saving ([roi](docs/build/roi.md)).
 
+## Roadmap
+
+What the team did not build, and why. Each row cites its evidence (REQ-0030, REQ-0056). None of these is in the submission.
+
+| Item | What it would do | Why we did not build it | Evidence |
+|---|---|---|---|
+| Customer 360 | Show balances and account history next to a charge | The balance has no usable as-of date. A complaint cannot be tied to a charge. | [`customer-360/dev-v1`](evidence/customer-360/dev-v1/summary.json): `balance.safe_to_show`, `balance.asof_usable`, `complaints.charge_linkable` |
+| Investigation of a charge | Say that a charge is unusual for this customer | No customer signal predicts fraud in the synthetic data. It needs real bank data. | [`customer-360/dev-signals-v1`](evidence/customer-360/dev-signals-v1/summary.json): `investigation.has_signal`; [investigation data support](docs/rationale/investigation-data-support.md) |
+| Feedback dataset | Keep the outcome that an advisor gives to each handoff, to train a model later | The dataset cannot train a dispute model. The system has no live traffic yet. | [`flows/2024Q4-v3`](evidence/flows/2024Q4-v3/summary.json): `disputes.cnr_learnable`, `disputes.esc_learnable` |
+| Spending assistant | Answer questions about the spending of the customer | It needs balances and history. The data does not support them. | [`customer-360/dev-v1`](evidence/customer-360/dev-v1/summary.json): `balance.safe_to_show` |
+| Policy retrieval | Read the dispute policy from the documents of the bank | The policy stays in code. The sources disagree and we have no bank document. | [policy sources](docs/rationale/policy-sources.md); the plan for the measure is in [metrics](docs/build/metrics.md) |
+| Handoff routing | Send a handoff to an advisor with the right language and specialty | Not started. The demo has one advisor view. | [REQ-0046](docs/requirements/frontend-backend.md#req-0046) |
+
 ## Reading guide
 
-1. **[The challenge](docs/understand/overview.md):** what we must build, how the judges score it and what we submit.
+1. **[The challenge](docs/overview.md):** what we must build, how the judges score it and what we submit.
 2. **[Architecture](docs/architecture/README.md):** the target system, the demo with its mocks, and the specification.
 3. **[What is real](docs/architecture/what-is-real.md):** real, mock, synthetic, team-generated, simulation or projection, for each part.
 4. **[Flow selection](docs/build/flows/03-flow-selection.md):** why transaction disputes, with data and reproducible measurements.
@@ -153,7 +214,6 @@ The [documentation index](docs/README.md) covers everything else.
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) on Delta Lake. DuckDB locally. The Databricks mode is implemented and not deployed. 13 LATAM Bank tables, about 19 M records. |
 | [`sentinel-ai-core/`](sentinel-ai-core/) | The service: FastAPI with one API under `/api/v1`, the policy engine, the orchestrator and the chat UI. State in SQLite. A DuckDB Gold adapter with a fallback to the labelled mock. The served `router_v2` with a baseline fallback. The evaluation harness (`eval/`): development cases, the sealed held-out set and the multi-turn resolution set. Owners are in [team/plan.md](team/plan.md#folders). |
-| [`sentinel-login/`](sentinel-login/README.md) | The original demo page, kept as a reference. It is not a backend and the service does not serve it ([009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | [`docs/`](docs/README.md) | Architecture, the challenge and the data, requirements, rationale, design rules, decisions and delivery |
 | [`evidence/`](evidence/README.md) | Frozen, reproducible runs. The index gives the status and data type of each run. |
 | [`deploy/azure/`](deploy/azure/README.md) | The deployment script and its notes |

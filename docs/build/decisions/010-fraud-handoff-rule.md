@@ -20,7 +20,7 @@ The policy engine had a suspected-fraud rule that never fired, for three reasons
 - The fraud score never reached the candidate.
 - Nothing reported the "it was not me" claim of the customer.
 
-The brief asks the system to know when not to act, and to keep policy outside the model text (REQ-0006, REQ-0007, REQ-0033). The dataset has no bank policy. Currency belongs to the product, not to the country ([dataset assumptions](../../understand/dataset.md#assumptions)).
+The brief asks the system to know when not to act, and to keep policy outside the model text (REQ-0006, REQ-0007, REQ-0033). The dataset has no bank policy. Currency belongs to the product, not to the country ([dataset assumptions](../../data/dataset.md#assumptions)).
 
 ## Options
 

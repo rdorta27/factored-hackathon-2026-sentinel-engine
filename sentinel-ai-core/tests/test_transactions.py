@@ -197,6 +197,8 @@ def test_case_state_adds_no_personal_field() -> None:
     assert set(row) == {
         "reference", "amount", "currency", "merchant", "date", "status",
         "eligible", "ineligibleKey", "case_state",
+        # Case and window facts of a closed charge: a case id and policy dates, nothing personal.
+        "case_id", "window_days", "last_eligible_date",
     }
     assert api.get("/api/v1/transactions").json()["cases"] == []
 

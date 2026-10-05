@@ -6,7 +6,7 @@ Every chat answer is exactly one variant: ``text``, ``clarification``,
 ``error`` (spec ``chat``).
 Replies carry raw values and translation keys, never authored prose; the
 client renders the keys in its locale. Shapes follow the former
-``sentinel-login`` chat contract (backend removed by decision 009), trimmed to
+chat contract of the removed mock backend (decision 009), trimmed to
 the spec: no priority, service-level date, queue status or receipt on a
 confirmation.
 
@@ -75,6 +75,11 @@ class CandidateTransaction(BaseModel):
     eligible: bool
     ineligibleKey: Optional[str] = Field(default=None, max_length=64)
     case_state: Optional[str] = Field(default=None, max_length=24)
+    # Verified facts behind a closed charge, for its information card. The page
+    # shows them and never derives them: the case of this charge, or the window.
+    case_id: Optional[str] = Field(default=None, max_length=64)
+    window_days: Optional[int] = Field(default=None, ge=0)
+    last_eligible_date: Optional[str] = Field(default=None, max_length=32)
 
 
 class ProductView(BaseModel):
@@ -116,6 +121,9 @@ class TextReply(BaseModel):
 
     kind: Literal["text"] = "text"
     message_key: str = Field(min_length=1, max_length=64)
+    # Validated model words for a turn that does not decide. The client shows
+    # it in place of the message key when present (decision 024).
+    text: Optional[str] = Field(default=None, max_length=280)
     steps: list[str] = Field(default_factory=list, max_length=8)
 
 
@@ -135,6 +143,7 @@ class Clarification(BaseModel):
     missing: str = Field(min_length=1, max_length=200)
     candidates: list[CandidateTransaction] = Field(default_factory=list, max_length=4)
     values: ClarificationValues = Field(default_factory=ClarificationValues)
+    text: Optional[str] = Field(default=None, max_length=280)
     steps: list[str] = Field(default_factory=list, max_length=8)
 
 
@@ -166,6 +175,11 @@ class ExplanationValues(BaseModel):
     # Dispute-status reply: the case reference and its status, from the case store.
     case_id: Optional[str] = Field(default=None, max_length=64)
     case_status: Optional[str] = Field(default=None, max_length=32)
+    # Charge-status reply: the verified charge the customer asked about.
+    merchant: Optional[str] = Field(default=None, max_length=200)
+    amount: Optional[str] = Field(default=None, max_length=64)
+    status: Optional[str] = Field(default=None, max_length=32)
+    eligible: Optional[bool] = None
 
 
 class Explanation(BaseModel):
@@ -177,6 +191,7 @@ class Explanation(BaseModel):
     message_key: str = Field(min_length=1, max_length=64)
     rule_id: Optional[str] = Field(default=None, max_length=64)
     values: ExplanationValues = Field(default_factory=ExplanationValues)
+    text: Optional[str] = Field(default=None, max_length=280)
     steps: list[str] = Field(default_factory=list, max_length=8)
 
 

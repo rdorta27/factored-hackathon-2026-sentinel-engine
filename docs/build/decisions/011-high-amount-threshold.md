@@ -16,7 +16,7 @@ Closes pending decision 26. Rationale for the presentation: [policy thresholds](
 
 A high-value dispute has more financial and reputational risk. A person must review it (REQ-0006). The threshold was null.
 
-Currency belongs to the product. Colombian and Argentine customers have local and USD accounts. In the dataset, every Mexican account is in USD ([dataset assumptions](../../understand/dataset.md#assumptions)). One value per country in one currency would skip every charge in the other currency.
+Currency belongs to the product. Colombian and Argentine customers have local and USD accounts. In the dataset, every Mexican account is in USD ([dataset assumptions](../../data/dataset.md#assumptions)). One value per country in one currency would skip every charge in the other currency.
 
 ## Options
 

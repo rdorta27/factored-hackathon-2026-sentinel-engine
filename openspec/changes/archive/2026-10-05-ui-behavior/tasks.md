@@ -1,0 +1,47 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
+# Tasks
+
+Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/build/decisions/006-frontend.md). Paths are under `sentinel-ai-core/app/static/` unless stated. Group 1 also touches the backend (see the design). Do not rename an id, a `data-testid` or an i18n key. Never push or open a pull request.
+
+Runs before gate G3. Merge after `live-ops`, because `scripts/e2e_check.py` checks elements of this page.
+
+## 1. Fixes and page changes
+
+- [x] 1.1 Lock all send controls while a turn runs, so a double click sends one turn. Evidence: `app.js`.
+- [x] 1.2 Redraw the thread after each locale load and keep only the last locale request, so the welcome of a persona shows in its language. Evidence: `app.js`.
+- [x] 1.3 Disable the candidate chips of closed turns. Evidence: `app.js`, `styles.css`.
+- [x] 1.4 Skip the step staging when the panel is not visible and cut the pause to 500 ms. Evidence: `app.js`.
+- [x] 1.5 Scroll to the newest message and focus the input after a turn. Evidence: `app.js`.
+- [x] 1.6 Add a placeholder and an `aria-label` to the chat input. Evidence: `index.html`.
+- [x] 1.7 Show the reason of a disabled charge as text. Evidence: `app.js`, `styles.css`.
+- [x] 1.8 Hide raw i18n keys until the first locale loads, and clear old login errors. Evidence: `app.js`.
+- [x] 1.9 Show country and language names in the advisor view and fetch the ticket and the trace in parallel. Evidence: `app.js`.
+- [x] 1.10 Keep the view in the URL hash (`#/`, `#/chat`, `#/queue`, `#/queue/ID`) and resume a live session on reload. Evidence: `app.js`, `tests/test_ui_behavior.py`.
+- [x] 1.11 Show the advisor list and the case side by side, with the tabs summary, trace and JSON. The JSON leaves out `customer_id`. Evidence: `app.js`, `styles.css`, `tests/test_ui_behavior.py`.
+- [x] 1.12 File one handoff ticket for each charge across sessions, and mark a charge that an advisor holds as not eligible. Evidence: `app/routers/demo_chat.py`, `tests/test_handoffs_api.py`.
+- [x] 1.13 Add `case_id`, `window_days` and `last_eligible_date` to a closed charge, and open an information card when the customer taps a closed charge or a claim. Evidence: `app/routers/demo_transactions.py`, `app.js`, `tests/test_transactions.py`.
+- [x] 1.14 Keep the password form visible and add a show and hide button. Evidence: `index.html`, `app.js`.
+- [x] 1.15 Say what a handoff did before its card, and show the demo persona or the user name in the session line. Evidence: `app.js`.
+- [x] 1.16 Show an error line when the network drops a turn. Evidence: `app.js`, `tests/test_ui_behavior.py`.
+
+## 2. Tests
+
+- [x] 2.1 Test that a double click on "send" sends one turn, and that the controls unlock when the turn fails or times out. Evidence: `tests/test_ui_behavior.py`, with a Chromium run against a local app.
+- [x] 2.2 Test that the thread redraws after a locale load, that only the last locale request counts, and that raw keys stay hidden until the first load. Evidence: `tests/test_ui_behavior.py`.
+- [x] 2.3 Test that the chips of a closed turn are disabled, and that the advisor view shows names. Evidence: `tests/test_ui_behavior.py`.
+
+## 3. Merge and checks
+
+- [x] 3.1 Merge `origin/main` into this branch and resolve the conflict in `app.js` by hand. Keep the changes of `demo-clarity` and `judge-access` (the example buttons, the build line, the judge guide, the simulated-data notice and the empty-account messages). Evidence: merge commit `d1dc382`. It kept the example buttons, the build line, the judge guide, the simulated-data notice and the empty-account messages.
+- [x] 3.2 Run the full suite, the phone check at 390 px and `scripts/e2e_check.py` against a local app. Evidence: 944 tests pass and 2 skip. `scripts/e2e_check.py` passes all eight checks, with the phone layout at 390 px.
+- [x] 3.3 Show the owner the entry page and the chat at 390 px before the merge. Evidence: the owner saw and approved the screens on 2026-10-05.
+
+## 4. Requirements and team
+
+- [x] 4.1 Update the card of REQ-0038 with the new evidence. Change a status only where the evidence exists. Evidence: `docs/requirements/frontend-backend.md`, REQ-0038.
+- [x] 4.2 Update `team/tasks.md`. Evidence: `team/tasks.md`, row 12.

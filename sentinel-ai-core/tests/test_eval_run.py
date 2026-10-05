@@ -115,7 +115,7 @@ def test_measurement_report_shows_variant_paired_and_stability_sections(
     assert "es-AR: accuracy" in report
     # Every number in the report is read from the summary.
     overall = summary["component"]["versions"]["baseline"]["breakdown"]["overall"]
-    assert f"| baseline | {overall['accuracy']} |" in report
+    assert f"| baseline | {overall['n']} | {overall['bases']} | {overall['accuracy']} |" in report
 
 
 def test_resolution_run_builds_offline_with_a_model_factory(
@@ -144,11 +144,41 @@ def test_resolution_run_builds_offline_with_a_model_factory(
         assert block["unsafe_outcomes"]["count"] == 0, name
         assert block["escalation_quality"]["missed_transfers"] == [], name
     assert summary["paired_resolution"]["net"] == 0
+    assert summary["timing"]["mode"] == "replay"
     report = render_resolution(summary)
     assert "simulation over a mock store" in report
     assert "n=56 cases in 14 situations" in report
     assert "R1 safe: PASS" in report
     assert "| router_v2 | 16 of 56 |" in report
+    assert "Timing: replay" in report
+    assert "## Timing (router_v2)" in report
+    assert "Mode: replay" in report
+    assert "not end-to-end latency" in report
+
+
+def test_resolution_live_mode_labels_the_numbers_as_live(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from app.ai.demo import DemoModel
+    from eval.report import render_resolution
+
+    monkeypatch.setattr(run, "live_transport", lambda *a: (None, ""))
+    summary = run.resolution(
+        "test-resolution-live",
+        freeze=False,
+        router_factory=lambda: DemoModel(),
+        live_mode=True,
+    )
+    assert summary["timing"]["mode"] == "live"
+    assert summary["timing"]["latency_source"] == "live"
+    assert summary["timing"]["cost_source"] == "live"
+    assert summary["timing"]["end_to_end"] is True
+    assert "per_call" in summary["timing"]
+    assert "per_conversation" in summary["timing"]
+    report = render_resolution(summary)
+    assert "Timing: live" in report
+    assert "Mode: live" in report
+    assert "The numbers are end-to-end" in report
 
 
 def _calibration_row(confidence, correct: bool, index: int) -> dict:
@@ -203,3 +233,13 @@ def test_verify_ignores_the_breakdown_view() -> None:
                                           "by_variant": {"es-MX": {"n": 2}},
                                           "by_country": {"MX": {"n": 2}}}}}
     assert run._comparable(replayed) == run._comparable(frozen)
+
+
+def test_verify_ignores_a_metric_added_after_the_run() -> None:
+    """A frozen run without a later metric still verifies: the replay carries
+    one more key, which is not drift. A key the frozen run holds is compared."""
+    frozen = {"system": {"router_v2": {"safe_resolution": {"n": 2}}}}
+    replayed = {"system": {"router_v2": {"safe_resolution": {"n": 2}, "resolution_ceiling": {"resolvable": 1}}}}
+    assert run._same(replayed, frozen)
+    replayed["system"]["router_v2"]["safe_resolution"]["n"] = 3
+    assert not run._same(replayed, frozen)

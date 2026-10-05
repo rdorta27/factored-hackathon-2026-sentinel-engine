@@ -5,6 +5,7 @@ Usage from ``sentinel-ai-core/`` (load ``.env`` first, see README)::
     python3 -m eval.run select 2024Q4-select-v1 [--record]
     python3 -m eval.run measure 2024Q4-eval-v7 [--record]
     python3 -m eval.run verify 2024Q4-eval-v7
+    python3 -m eval.run train 2024Q4-train-v1
 
 ``select`` reads the development split only and fails on a held-out case.
 ``measure`` checks the seal hash and ``measured.json``, runs the baseline and
@@ -570,12 +571,18 @@ def resolution(
     freeze: bool = True,
     router_factory=None,  # type: ignore[no-untyped-def]
     recordings_dir: Path | str | None = None,
+    live_mode: bool = False,
 ) -> dict:
     """Measure safe resolution over the multi-turn resolution set (decision 022).
 
     Baseline and ``router_v2`` replay the same cases, session, store and reference
     date. The router's answers are recorded once under the spend cap and replayed
     offline afterwards; ``router_factory`` is for tests only.
+
+    ``live_mode`` is the live timing mode (evidence-hardening 2.1): every router
+    call is a new live call under the spend cap, recorded in a fresh folder for
+    this run. The summary labels the latency and the cost as live. Without it the
+    run replays committed recordings and labels the numbers as replay.
     """
     cases = load_cases(RESOLUTION_PATH)
     check_splits(cases)
@@ -583,13 +590,26 @@ def resolution(
     if not EXAMPLES_PATH.is_file():
         raise SystemExit(f"write the development example ids for v2 to {EXAMPLES_PATH} before running")
     examples = build_examples(development, json.loads(EXAMPLES_PATH.read_text(encoding="utf-8"))["ids"])
+    if live_mode:
+        record = True
     live, api_key = live_transport(record, cap_usd)
-    rec_dir = Path(recordings_dir) if recordings_dir is not None else RESOLUTION_RECORDINGS_DIR
-    rec = RecordingTransport(rec_dir, PROMPT_VERSION_WITH_EXAMPLES, live, record=record, api_key=api_key)
+    if live_mode:
+        rec_dir = HERE / "recordings" / run_id
+    else:
+        rec_dir = Path(recordings_dir) if recordings_dir is not None else RESOLUTION_RECORDINGS_DIR
+    rec = RecordingTransport(
+        rec_dir,
+        PROMPT_VERSION_WITH_EXAMPLES,
+        live,
+        record=record,
+        api_key=api_key,
+        force_live=live_mode,
+    )
     if router_factory is None:
         router_factory = lambda: _router(rec, PROMPT_VERSION_WITH_EXAMPLES, examples)  # noqa: E731
-    baseline_turns = run_system(cases, rec_dir, DemoModel)
-    router_turns = run_system(cases, rec_dir, router_factory)
+    timing = "live" if live_mode else "replay"
+    baseline_turns = run_system(cases, rec_dir, DemoModel, timing=timing)
+    router_turns = run_system(cases, rec_dir, router_factory, timing=timing)
     system = {
         "baseline": metrics.system_metrics(baseline_turns),
         "router_v2": metrics.system_metrics(router_turns),
@@ -605,12 +625,25 @@ def resolution(
         "kind": "resolution",
         "eval_version": EVAL_VERSION,
         "n": len(cases),
+        "bases": len(situations),
         "situations": {"n": len(situations), "ids": situations},
         "case_mix": _resolution_mix(cases),
         "system": system,
         "paired_resolution": paired_block,
         "spend": _spend(live),
         "prices": PRICE_SOURCE,
+        "timing": {
+            "mode": timing,
+            "latency_source": timing,
+            "cost_source": timing,
+            "end_to_end": live_mode,
+            "per_call": metrics.timing_metrics(router_turns)["per_call"],
+            "per_conversation": metrics.timing_metrics(router_turns)["per_conversation"],
+            "cost": {
+                "per_attempted": system["router_v2"]["cost_usd"]["per_attempted"],
+                "per_resolution": system["router_v2"]["cost_usd"]["per_resolution"],
+            },
+        },
         "measured_commit": _head_commit(),
         "notes": [
             SIMULATION_NOTE,
@@ -628,7 +661,9 @@ def resolution(
 
 def _strip(node):  # type: ignore[no-untyped-def]
     if isinstance(node, dict):
-        return {k: _strip(v) for k, v in node.items() if k != "latency_ms"}
+        # per_intent and bases were added after 2024Q4-eval-v7 (covered by unit
+        # tests), so frozen runs without them still verify.
+        return {k: _strip(v) for k, v in node.items() if k not in ("latency_ms", "per_intent", "bases")}
     if isinstance(node, list):
         return [_strip(v) for v in node]
     return node
@@ -643,6 +678,7 @@ def _comparable(summary: dict) -> dict:
     body = json.loads(json.dumps(summary, sort_keys=True))
     body.pop("spend", None)
     body.pop("measured_commit", None)
+    body.pop("timing", None)
     system = body.get("system")
     if isinstance(system, dict):
         for block in system.values():
@@ -652,21 +688,45 @@ def _comparable(summary: dict) -> dict:
     return _strip(body)
 
 
+def _align(node, reference):  # type: ignore[no-untyped-def]
+    """Drop the keys that the frozen summary does not hold.
+
+    A metric added after a run was frozen makes the replay carry one more key.
+    That is not drift, so it does not count as a difference. A key that the
+    frozen summary holds stays, and its value is still compared.
+    """
+    if isinstance(node, dict) and isinstance(reference, dict):
+        return {key: _align(value, reference[key]) for key, value in node.items() if key in reference}
+    if isinstance(node, list) and isinstance(reference, list) and len(node) == len(reference):
+        return [_align(value, reference[index]) for index, value in enumerate(node)]
+    return node
+
+
+def _same(replayed: dict, frozen: dict) -> bool:
+    """Compare a replay with its frozen summary, ignoring additive keys."""
+    comparable = _comparable(frozen)
+    return _align(_comparable(replayed), comparable) == comparable
+
+
 def verify(run_id: str) -> bool:
     """Recompute a frozen run from recordings, offline, and compare."""
     frozen_path = REPO_ROOT / "evidence" / "evaluation-runs" / run_id / "summary.json"
     frozen = json.loads(frozen_path.read_text(encoding="utf-8"))
+    if frozen.get("kind") == "training":
+        from eval import train as training
+
+        return training.verify(run_id)
     if frozen.get("kind") == "resolution":
         replayed = resolution(run_id, record=False, freeze=False)
-        return _comparable(replayed) == _comparable(frozen)
+        return _same(replayed, frozen)
     if frozen.get("kind") == "calibration":
         replayed = calibrate(run_id, record=False, freeze=False)
-        return _comparable(replayed) == _comparable(frozen)
+        return _same(replayed, frozen)
     seal_record = verify_seal(SEALED_DIR, SEAL_PATH)
     if frozen.get("seal", {}).get("hash") != seal_record["hash"]:
         raise SystemExit("the sealed set differs from the one this run measured")
     replayed = _held_out_summary(run_id, record=False, cap_usd=DEFAULT_CAP_USD, seal_record=seal_record)
-    return _comparable(replayed) == _comparable(frozen)
+    return _same(replayed, frozen)
 
 
 def _selection_report(summary: dict) -> str:
@@ -700,9 +760,10 @@ def _measurement_report(summary: dict) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Router evaluation: select on development, measure once.")
-    parser.add_argument("command", choices=("select", "measure", "verify", "resolution", "calibrate"))
+    parser.add_argument("command", choices=("select", "measure", "verify", "resolution", "calibrate", "train"))
     parser.add_argument("run_id")
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
+    parser.add_argument("--live", action="store_true", help="resolution only: live timing mode, every call is live")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
     parser.add_argument("--strong", action="append", default=[], help="extra strong candidate (select only)")
     parser.add_argument("--prompt", default="v2", help="prompt version for calibrate (v2 or v3)")
@@ -714,8 +775,13 @@ def main(argv: list[str] | None = None) -> None:
         summary = measure(args.run_id, args.record, args.cap)
         print(f"[measure] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
     elif args.command == "resolution":
-        summary = resolution(args.run_id, args.record, args.cap)
+        summary = resolution(args.run_id, args.record, args.cap, live_mode=args.live)
         print(f"[resolution] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
+    elif args.command == "train":
+        from eval import train as training
+
+        summary = training.train(args.run_id)
+        print(f"[train] froze {args.run_id}, validation accuracy {summary['validation']['selected']['accuracy']}")
     elif args.command == "calibrate":
         summary = calibrate(args.run_id, args.record, args.cap, prompt=args.prompt)
         print(f"[calibrate] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")

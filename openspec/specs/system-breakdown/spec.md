@@ -1,13 +1,13 @@
 # system-breakdown Specification
 
 ## Purpose
-TBD - created by archiving change evaluation-final. Update Purpose after archive.
+Define how a system run reports its outcomes by language variant and by account country. The spec also covers the country monitoring that reads the turn log. It states that the customer segment is declared and never invented.
 
 ## Requirements
 
 ### Requirement: System outcomes are reported per language and country
 
-Every new system run SHALL report its mandatory outcome metrics for the whole run and for each language variant and each account country present, each with its n. A group whose interval is wider than ±10 points SHALL be labelled descriptive; a group with no attempted case SHALL report its rates as not defined. Group counts SHALL add up to the run totals. Frozen runs SHALL NOT be recomputed. Traces to REQ-0024 (P1, Done), REQ-0055 (P0, In progress) and REQ-0022 (P0, Done).
+Every new system run SHALL report its mandatory outcome metrics for the whole run and for each language variant and each account country present, each with its n. A group whose interval is wider than ±10 points SHALL be labelled descriptive; a group with no attempted case SHALL report its rates as not defined. Group counts SHALL add up to the run totals. Frozen runs SHALL NOT be recomputed. Traces to REQ-0024 (P1, Done), REQ-0055 (P0, Done) and REQ-0022 (P0, Done).
 
 #### Scenario: Each group carries its n
 

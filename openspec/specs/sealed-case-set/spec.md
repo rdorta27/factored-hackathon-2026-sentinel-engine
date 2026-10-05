@@ -8,7 +8,7 @@ Defines how the evaluation cases are written, sized, reviewed and sealed, so the
 
 ### Requirement: Base situations rendered in four variants
 
-Each held-out and development case SHALL derive from a base situation with a stable `base_id`. A base situation fixes the intent, amount, merchant and expected outcome. It SHALL be rendered in four variants: es-MX, es-CO, es-AR and pt-BR. The Spanish variants SHALL use the vocabulary of their country glossary, and the pt-BR variant SHALL be a customer of a MX, CO or AR account writing in Portuguese (decision 017). Traces to REQ-0012 (P0, In progress), REQ-0024 (P1, In progress) and REQ-0044 (P1, Pending).
+Each held-out and development case SHALL derive from a base situation with a stable `base_id`. A base situation fixes the intent, amount, merchant and expected outcome. It SHALL be rendered in four variants: es-MX, es-CO, es-AR and pt-BR. The Spanish variants SHALL use the vocabulary of their country glossary, and the pt-BR variant SHALL be a customer of a MX, CO or AR account writing in Portuguese (decision 017). Traces to REQ-0012 (P0, Done), REQ-0024 (P1, Done) and REQ-0044 (P1, Pending).
 
 #### Scenario: One base, four renderings
 
@@ -22,7 +22,7 @@ Each held-out and development case SHALL derive from a base situation with a sta
 
 ### Requirement: Set sizes support each decision
 
-The held-out set SHALL hold at least 70 base situations (280 cases), with at least 25 cases per intent and ambiguous wording included on purpose. The development set SHALL hold at least 30 base situations (120 cases). The noisy block SHALL hold at least 50 twins of held-out cases carrying one declared perturbation each (date ±3 days, amount ±15%, truncated name, self-correction). The attack block SHALL hold at least 75 cases, including prompt injection in pt-BR. Each size and the margin it supports SHALL be stated in the report. Traces to REQ-0016 (P0, In progress), REQ-0022 (P0, In progress) and REQ-0021 (P0, Done).
+The held-out set SHALL hold at least 70 base situations (280 cases), with at least 25 cases per intent and ambiguous wording included on purpose. The development set SHALL hold at least 30 base situations (120 cases). The noisy block SHALL hold at least 50 twins of held-out cases carrying one declared perturbation each (date ±3 days, amount ±15%, truncated name, self-correction). The attack block SHALL hold at least 75 cases, including prompt injection in pt-BR. Each size and the margin it supports SHALL be stated in the report. Traces to REQ-0016 (P0, Done), REQ-0022 (P0, Done) and REQ-0021 (P0, Done).
 
 #### Scenario: Undersized set is refused
 
@@ -45,7 +45,7 @@ Every variant not written directly by the team SHALL be back-translated to Spani
 
 ### Requirement: Held-out set is sealed before measuring
 
-The held-out set SHALL be sealed by recording a content hash and the authoring date in a committed seal record before any model or baseline is measured on it. After sealing, no held-out case SHALL be edited, added or removed. Held-out cases SHALL NOT be used as prompt examples, for model selection or for route tuning. The held-out cases SHALL NOT be written by the person who tunes the prompt. Traces to REQ-0017 (P0, In progress) and REQ-0020 (P0, In progress).
+The held-out set SHALL be sealed by recording a content hash and the authoring date in a committed seal record before any model or baseline is measured on it. After sealing, no held-out case SHALL be edited, added or removed. Held-out cases SHALL NOT be used as prompt examples, for model selection or for route tuning. The held-out cases SHALL NOT be written by the person who tunes the prompt. Traces to REQ-0017 (P0, Done) and REQ-0020 (P0, Done).
 
 #### Scenario: Edited sealed set is detected
 
@@ -59,9 +59,28 @@ The held-out set SHALL be sealed by recording a content hash and the authoring d
 
 ### Requirement: Earlier held-out cases are retired
 
-The 10 held-out cases measured in runs `2024Q4-eval-v1` to `v6` SHALL move to the development split and SHALL NOT appear in the new sealed set. Traces to REQ-0017 (P0, In progress).
+The 10 held-out cases measured in runs `2024Q4-eval-v1` to `v6` SHALL move to the development split and SHALL NOT appear in the new sealed set. Traces to REQ-0017 (P0, Done).
 
 #### Scenario: A measured case is not sealed again
 
 - **WHEN** the new held-out set is sealed
 - **THEN** none of its texts or ids matches a case measured in an earlier run
+
+### Requirement: A second sealed set covers openers, subtypes and slots
+
+A new held-out set for `2024Q4-eval-v8` SHALL be written by an author who has not seen prompt v3, its examples or the 018 amendment. Its intent block SHALL hold the v7 categories, openers, status questions, out-of-scope subtypes and slot cases in the four variants, with the expected kind, subtype and slots. Its multi-turn block SHALL name the charge to select, whether to confirm and the expected end (a verified case number, a refusal or a handoff). The set SHALL be reviewed and back-translated as in v7, and SHALL be sealed under a new hash before any v3 call on it. The v7 entry of `measured.json` SHALL stay unchanged. Traces to REQ-0017 (P0, Done), REQ-0020 (P0, Done), REQ-0012 (P0, Done) and REQ-0055 (P0, Done); decision 018.
+
+#### Scenario: Openers and slots are in the set
+
+- **WHEN** the new set is counted
+- **THEN** it holds opener, status, out-of-scope subtype and slot cases in each variant
+
+#### Scenario: The author was isolated
+
+- **WHEN** the provenance of the set is read
+- **THEN** it states that the author could not read the prompt, the examples or the amendment
+
+#### Scenario: Measured once
+
+- **WHEN** a second measurement of the new hash is attempted
+- **THEN** the runner refuses it

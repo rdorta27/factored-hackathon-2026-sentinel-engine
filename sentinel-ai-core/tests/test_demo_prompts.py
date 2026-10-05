@@ -60,6 +60,28 @@ def test_demo_templates_exist_in_every_locale(locale: str) -> None:
     assert missing == [], f"{locale} missing demo keys: {missing}"
 
 
+def test_the_person_chip_never_stands_alone() -> None:
+    """An account with no charge and no repeated merchant shows no chips.
+
+    A local run against the real Gold file has no fixture charges. The lone
+    "talk to a person" button opened a handoff ticket on every click, so the
+    person chip now needs a data-driven chip next to it.
+    """
+    start = APP_JS.index("function renderDemoPrompts")
+    end = APP_JS.index("/* Advisor view")
+    block = APP_JS[start:end]
+    assert "if (prompts.length) prompts.push(t(\"demoPerson\"))" in block
+    assert "const showExamples = demoAvailable && prompts.length > 0" in block
+
+
+def test_the_old_demo_hint_is_gone_from_every_locale() -> None:
+    """The Spanish regionals override `demoHint`, so the rename covers them too."""
+    for locale in LOCALES:
+        strings = json.loads((I18N_DIR / f"{locale}.json").read_text(encoding="utf-8"))
+        assert strings.get("demoHint") != "Prueba rápida", locale
+        assert strings.get("demoHint"), locale
+
+
 def test_templates_use_placeholders_not_fixture_values() -> None:
     """No hardcoded amount, merchant or date: they come from the customer."""
     for locale in LOCALES:
@@ -257,7 +279,22 @@ def test_chips_only_for_supported_flows() -> None:
     block = APP_JS[start:end]
     assert "if (charge)" in block and "if (merchant)" in block
     assert 'prompts.push(t("demoPerson"))' in block
-    assert "box.hidden = prompts.length === 0" in block
+    assert "box.hidden = !showExamples" in block
+
+
+def test_example_chips_show_only_when_the_demo_is_available() -> None:
+    """The chips and their label follow the demo banner's `demoAvailable` flag.
+
+    A bank deployment (demo auth off) opens the password form and shows no
+    example buttons. The label and the chips share the one condition, so they
+    always appear and disappear together.
+    """
+    start = APP_JS.index("function renderDemoPrompts")
+    end = APP_JS.index("/* Advisor view")
+    block = APP_JS[start:end]
+    assert "const showExamples = demoAvailable && prompts.length > 0" in block
+    assert "box.hidden = !showExamples" in block
+    assert 'document.getElementById("demo-hint").hidden = !showExamples' in block
 
 
 def test_app_does_not_post_chat_while_building_the_chips() -> None:
