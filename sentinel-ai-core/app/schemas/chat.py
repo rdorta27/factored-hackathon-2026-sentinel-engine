@@ -74,6 +74,30 @@ class CandidateTransaction(BaseModel):
     status: str = Field(min_length=1, max_length=16)
     eligible: bool
     ineligibleKey: Optional[str] = Field(default=None, max_length=64)
+    case_state: Optional[str] = Field(default=None, max_length=24)
+
+
+class ProductView(BaseModel):
+    """Masked product for the header: a type key and the last four digits."""
+
+    model_config = StrictModel
+
+    kind: str = Field(pattern=r"^(debit|credit)_card$")
+    last4: str = Field(pattern=r"^\d{4}$")
+    synthetic: bool = True
+
+
+class OwnCase(BaseModel):
+    """One case of the session customer for the "Mis reclamos" panel."""
+
+    model_config = StrictModel
+
+    case_id: str = Field(min_length=1, max_length=64)
+    case_state: str = Field(pattern=r"^(in_review|with_advisor)$")
+    merchant: Optional[str] = Field(default=None, max_length=200)
+    amount: Optional[str] = Field(default=None, max_length=64)
+    currency: Optional[str] = Field(default=None, max_length=8)
+    date: Optional[str] = Field(default=None, max_length=32)
 
 
 class TransactionList(BaseModel):
@@ -83,6 +107,8 @@ class TransactionList(BaseModel):
 
     as_of: str = Field(min_length=1, max_length=32)
     transactions: list[CandidateTransaction]
+    product: Optional[ProductView] = None
+    cases: list[OwnCase] = Field(default_factory=list)
 
 
 class TextReply(BaseModel):

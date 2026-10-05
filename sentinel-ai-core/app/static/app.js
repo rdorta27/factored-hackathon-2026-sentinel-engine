@@ -57,6 +57,9 @@ function setLocale(locale) {
   document.querySelectorAll("#locale-group [data-locale]").forEach((button) => {
     button.setAttribute("aria-pressed", String(button.getAttribute("data-locale") === locale));
   });
+  const active = document.querySelector(`#locale-group [data-locale="${locale}"]`);
+  const current = document.getElementById("locale-current");
+  if (active && current) current.textContent = active.getAttribute("aria-label");
 }
 
 /* The selector's own value, exactly as the API accepts it. */
@@ -88,6 +91,23 @@ function explanationText(body) {
   return text;
 }
 
+/* White label: the bank name comes from the service configuration. Under
+   another name the tagline says who protects the conversation. */
+let brand = { name: "Sentinel", customized: false };
+
+function applyBrand() {
+  document.getElementById("brand-name").textContent = brand.name;
+  document.title = brand.name;
+  document.getElementById("brand-tagline").setAttribute("data-i18n", brand.customized ? "protectedBy" : "purposeLine");
+  document.getElementById("brand-tagline").textContent = t(brand.customized ? "protectedBy" : "purposeLine");
+}
+
+async function loadBrand() {
+  const response = await fetch("/ui/brand.json");
+  if (response.ok) brand = await response.json();
+  applyBrand();
+}
+
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
@@ -96,6 +116,14 @@ async function loadLocale(locale) {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
+  applyBrand();
+  // A customer session repaints its header and charges in the new language.
+  if (lastTransactions && !document.getElementById("view-chat").hidden) {
+    renderSessionContext(lastTransactions);
+    paintCharges(lastTransactions);
+    renderDemoPrompts(lastTransactions.transactions);
+    renderThread();
+  }
 }
 
 async function api(path, options) {
@@ -109,14 +137,62 @@ async function api(path, options) {
 }
 
 function clearThread() {
+  threadLog = [];
   document.getElementById("thread").textContent = "";
+  document.getElementById("steps-side").textContent = "";
+  document.getElementById("transactions").textContent = "";
+  document.getElementById("cases").textContent = "";
+  lastTransactions = null;
 }
+
+/* The thread is a log of what happened. Changing the language draws it again, so
+   cards, steps and labels follow the new language. The customer's own words stay
+   as they typed them. */
+let threadLog = [];
+
+function logEntry(entry) {
+  threadLog.push(entry);
+  drawEntry(entry);
+  return entry;
+}
+
+function drawEntry(entry) {
+  const thread = document.getElementById("thread");
+  if (entry.type === "user") thread.append(el("div", "msg msg-user", entry.text));
+  else if (entry.type === "charge") thread.append(el("div", "msg msg-user", humanStatement(entry.candidate)));
+  else if (entry.type === "welcome") thread.append(el("div", "msg msg-bot", t("welcome")));
+  else if (entry.type === "error") drawError(entry.body, entry.status);
+  else if (entry.type === "reply") drawReply(entry.body, entry);
+}
+
+function renderThread() {
+  document.getElementById("thread").textContent = "";
+  threadLog.forEach(drawEntry);
+  const last = [...threadLog].reverse().find((entry) => entry.type === "reply" && entry.body.steps);
+  if (last) renderSteps(last.body, false);
+}
+
+function startThread() {
+  clearThread();
+  logEntry({ type: "welcome" });
+}
+
+let demoAvailable = false;
 
 function show(id) {
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
   document.getElementById("logout").hidden = id === "view-login";
+  document.getElementById("agent").hidden = id !== "view-chat";
+  // The demo banner is for the entry; a customer session has the data-date chip.
+  document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
+  // The session line and the data date belong to a customer session only.
+  if (id !== "view-chat") {
+    document.getElementById("session-context").hidden = true;
+    document.getElementById("reference-date").hidden = true;
+    closeDrawers();
+  }
 }
 
 /* The session country picks the starting language; the selector can change it. */
@@ -151,19 +227,29 @@ function receiptCharge(tx) {
 }
 
 function addBubble(text) {
-  document.getElementById("thread").append(el("div", "msg msg-user", text));
+  logEntry({ type: "user", text });
 }
 
 function renderError(body, status) {
+  logEntry({ type: "error", body, status });
+}
+
+function drawError(body, status) {
   const key = status === 429 ? "tooManyRequests" : "errorGeneric";
   const trace = body && body.trace_id ? ` (${body.trace_id})` : "";
   document.getElementById("thread").append(el("div", "msg msg-audit", `${t(key)}${trace}`));
 }
 
+/* Reply kinds that write to the case store, so the charge states change. */
+const CASE_CHANGING = new Set(["case_confirmation", "handoff"]);
+
 async function postChat(payload) {
   // A new turn closes any open confirmation: an old "Confirmar" must not fire.
   document.querySelectorAll(".chat-confirm button").forEach((button) => {
     button.disabled = true;
+  });
+  threadLog.forEach((entry) => {
+    entry.closed = true;
   });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
   document.getElementById("thread").append(typing);
@@ -180,14 +266,15 @@ async function postChat(payload) {
       renderError(body, response.status);
       return;
     }
-    renderReply(body);
+    await renderReply(body);
+    if (CASE_CHANGING.has(body.kind)) await refreshCharges();
   } finally {
     typing.remove();
   }
 }
 
 function selectCandidate(candidate) {
-  addBubble(humanStatement(candidate));
+  logEntry({ type: "charge", candidate });
   postChat({ selected_reference: candidate.reference });
 }
 
@@ -207,18 +294,70 @@ function renderCandidates(box, candidates) {
   box.append(chips);
 }
 
-/* "Cómo lo resolví": the ordered steps of this turn, in plain language.
+/* "Qué revisamos": the ordered steps of the last turn, in the left column.
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
-function renderSteps(thread, body) {
-  if (!body.steps || !body.steps.length) return;
-  const panel = el("div", "msg msg-audit steps-panel");
-  panel.setAttribute("data-testid", "steps-panel");
-  panel.append(el("p", "chat-sub", t("howIResolved")));
-  const list = el("ol", "steps-list");
-  body.steps.forEach((key) => list.append(el("li", "", t(key))));
-  panel.append(list);
-  thread.append(panel);
+const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
+const STEP_PAUSE_MS = 1000;
+let stepTimers = [];
+let stepResolve = null;
+
+function stepItem(key, index, state) {
+  const hand = HAND_STEPS.has(key) ? " step-hand" : "";
+  const item = el("li", `step-item step-${state}${hand}`);
+  item.append(el("span", "step-dot", state === "done" ? String(index + 1) : ""));
+  const text = el("div", "step-text");
+  text.append(el("span", "step-title", t(key)));
+  const hint = `stepHint.${key.replace(/^step\./, "")}`;
+  if (strings[hint]) text.append(el("span", "chat-sub step-hint", t(hint)));
+  item.append(text);
+  return item;
+}
+
+/* The reply carries the finished record of the turn. The page replays it one step
+   at a time: every step starts waiting, the current one shows a spinner, and each
+   turns to done after a pause. The pause is staging to follow the record, not a
+   measure of the time each step took. The promise settles when the last step is done. */
+function renderSteps(body, animate = true) {
+  const list = document.getElementById("steps-side");
+  if (!body.steps || !body.steps.length) return Promise.resolve();
+  list.setAttribute("data-testid", "steps-panel");
+  stepTimers.forEach(clearTimeout);
+  stepTimers = [];
+  // A turn that was still running gives way to this one.
+  if (stepResolve) stepResolve();
+  stepResolve = null;
+  list.textContent = "";
+  const staged = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!staged) {
+    body.steps.forEach((key, index) => list.append(stepItem(key, index, "done")));
+    list.setAttribute("aria-busy", "false");
+    return Promise.resolve();
+  }
+  list.setAttribute("aria-busy", "true");
+  const items = body.steps.map((key, index) => {
+    const item = stepItem(key, index, index === 0 ? "active" : "waiting");
+    list.append(item);
+    return item;
+  });
+  return new Promise((resolve) => {
+    stepResolve = resolve;
+    body.steps.forEach((key, index) => {
+      stepTimers.push(
+        setTimeout(() => {
+          items[index].replaceWith((items[index] = stepItem(key, index, "done")));
+          if (index + 1 < items.length) {
+            const next = stepItem(body.steps[index + 1], index + 1, "active");
+            items[index + 1].replaceWith(next);
+            items[index + 1] = next;
+          } else {
+            list.setAttribute("aria-busy", "false");
+            resolve();
+          }
+        }, (index + 1) * STEP_PAUSE_MS)
+      );
+    });
+  });
 }
 
 /* Neutral transaction status: the dataset status only, never a fraud signal. */
@@ -233,7 +372,73 @@ function statusLabel(status) {
   return t(STATUS_KEYS[status] || "txStatusApproved");
 }
 
-function renderReply(body) {
+/* A translated label for a code from the handoff package. A code the page
+   does not know shows nothing, never the raw code. */
+function codeLabel(prefix, code) {
+  return strings[`${prefix}.${code}`] || "";
+}
+
+function cardField(labelKey, value) {
+  const box = el("div", "card-field");
+  box.append(el("span", "card-label", t(labelKey)), el("span", "chat-sub", value));
+  return box;
+}
+
+/* The handoff card in the thread: what the advisor receives and why.
+   Every value is a verified fact, a step key or a code the page translates. */
+function handoffCard(body) {
+  const pkg = body.package || {};
+  const card = el("div", "msg msg-audit handoff-card");
+  card.setAttribute("data-testid", "handoff-card");
+  const head = el("div", "handoff-head");
+  head.append(el("span", "pill pill-warn", t("handoffCardTitle")));
+  head.append(el("span", "handoff-ref", `${t("field_reference")}: ${body.reference}`));
+  card.append(head);
+  const grid = el("div", "card-grid");
+  const request = codeLabel("handoffRequest", pkg.request);
+  if (request) grid.append(cardField("handoffRequest", request));
+  const facts = pkg.verified_facts;
+  if (facts) {
+    const parts = [facts.merchant, formatAmount(Number(facts.amount).toFixed(2), facts.currency), formatDate(facts.transaction_date)];
+    grid.append(cardField("handoffFacts", parts.filter(Boolean).join(" · ")));
+  }
+  const actions = (body.steps || []).filter((key) => key !== "step.understood").map((key) => t(key));
+  if (actions.length) grid.append(cardField("handoffActions", actions.join(" · ")));
+  grid.append(cardField("handoffReason", t(body.reason_key)));
+  const said = [...new Set((pkg.conversation || []).map((turn) => codeLabel("handoffSaid", turn.customer)))].filter(Boolean);
+  if (said.length) grid.append(cardField("handoffSaid", said.join(" · ")));
+  const pending = (pkg.open_questions || []).map((code) => codeLabel("handoffOpen", code)).filter(Boolean);
+  if (pending.length) grid.append(cardField("handoffPending", pending.join(" · ")));
+  card.append(grid);
+  if (body.estimated_date) {
+    card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
+  }
+  return card;
+}
+
+/* "Por qué decidí esto": the rule behind a refusal, with the verified dates. */
+function whyCard(body) {
+  const values = body.values;
+  if (!values || !values.window_days) return null;
+  const card = el("div", "msg msg-audit why-card");
+  card.setAttribute("data-testid", "why-card");
+  card.append(el("strong", "", t("whyCardTitle")));
+  card.append(el("p", "", fillTemplate(t("whyWindow"), values)));
+  const grid = el("div", "card-grid");
+  if (values.charge_date) grid.append(cardField("whyChargeDate", formatDate(values.charge_date)));
+  if (values.last_eligible_date) grid.append(cardField("whyLastDay", formatDate(values.last_eligible_date)));
+  card.append(grid);
+  return card;
+}
+
+/* The steps run first and the answer follows, so the customer sees the work
+   before the result. */
+async function renderReply(body) {
+  await renderSteps(body, true);
+  logEntry({ type: "reply", body, closed: false });
+}
+
+function drawReply(body, entry) {
   const thread = document.getElementById("thread");
   if (body.kind === "confirm_box") {
     const box = el("div", "chat-confirm");
@@ -242,9 +447,11 @@ function renderReply(body) {
     box.append(el("p", "", humanStatement(item)));
     const button = el("button", "", t("confirmButton"));
     button.type = "button";
+    button.disabled = Boolean(entry && entry.closed);
     button.addEventListener("click", () => {
       // One confirmation per box: the button turns off as soon as it is used.
       button.disabled = true;
+      if (entry) entry.closed = true;
       postChat({ selected_reference: item.reference });
     });
     box.append(button);
@@ -262,26 +469,108 @@ function renderReply(body) {
     thread.append(card);
   } else if (body.kind === "explanation") {
     thread.append(el("div", "msg msg-bot", body.text ? body.text : explanationText(body)));
+    const why = whyCard(body);
+    if (why) thread.append(why);
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
     box.append(el("strong", "", body.text ? body.text : fillTemplate(t(body.message_key), body.values)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
-    const card = el("div", "msg msg-audit");
-    card.append(el("h3", "chat-title", t("handoffTitle")));
-    card.append(el("p", "", `${t("field_reference")}: ${body.reference}`));
-    card.append(el("p", "", `${t("field_reason")}: ${t(body.reason_key)}`));
-    if (body.estimated_date) {
-      card.append(el("p", "chat-sub", `${t("field_eta")}: ${formatDate(body.estimated_date)}`));
-    }
-    thread.append(card);
+    thread.append(handoffCard(body));
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
   } else {
     thread.append(el("div", "msg msg-bot", body.text ? body.text : t(body.message_key)));
   }
-  renderSteps(thread, body);
+}
+
+/* The pill of a charge. The state comes from the server; the page only
+   chooses a word and a tone. A charge the policy rejects by status shows
+   the dataset status, as before. */
+const STATE_TONES = {
+  eligible: "info",
+  in_review: "info",
+  with_advisor: "warn",
+  already_disputed: "neutral",
+  outside_window: "neutral",
+  not_disputable: "neutral",
+};
+
+function stateLabel(tx) {
+  if (tx.case_state && tx.case_state !== "not_disputable") return t(`state.${tx.case_state}`);
+  return statusLabel(tx.status);
+}
+
+function renderCharge(tx) {
+  const item = el("button", `candidate tx-card${tx.case_state === "in_review" ? " tx-active" : ""}`);
+  item.type = "button";
+  item.setAttribute("data-testid", "tx-card");
+  item.setAttribute("data-case-state", tx.case_state || "");
+  const top = el("span", "tx-line");
+  top.append(el("strong", "", tx.merchant));
+  top.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
+  const bottom = el("span", "tx-line");
+  bottom.append(el("span", "chat-sub", formatDate(tx.date)));
+  bottom.append(el("span", `pill pill-${STATE_TONES[tx.case_state] || "neutral"} tx-status`, stateLabel(tx)));
+  item.append(top, bottom);
+  if (!tx.eligible) {
+    item.disabled = true;
+    item.setAttribute("aria-disabled", "true");
+    item.title = t(tx.ineligibleKey || "candidateOutOfWindow");
+  } else {
+    item.addEventListener("click", () => {
+      closeDrawers();
+      selectCandidate(tx);
+    });
+  }
+  return item;
+}
+
+/* The header line of a session: the masked product when the data has one,
+   then country and language. Without a product the line has no type and no digits. */
+function renderSessionContext(payload) {
+  const parts = [];
+  if (payload.product) parts.push(`${t(`product.${payload.product.kind}`)} •••• ${payload.product.last4}`);
+  if (sessionCountry) parts.push(t(`country.${sessionCountry}`));
+  parts.push(t(`lang.${currentLocale}`));
+  const line = document.getElementById("session-context");
+  line.textContent = parts.join(" · ");
+  line.hidden = false;
+  const chip = document.getElementById("reference-date");
+  chip.textContent = fill(t("dataAsOf"), { date: formatDate(payload.as_of) });
+  chip.hidden = false;
+}
+
+let lastTransactions = null;
+
+/* "Mis reclamos": the cases of this customer, from the case store. */
+function renderCases(cases) {
+  const box = document.getElementById("cases");
+  box.textContent = "";
+  if (!cases.length) {
+    box.append(el("p", "chat-sub", t("casesEmpty")));
+    return;
+  }
+  cases.forEach((item) => {
+    const card = el("div", "case-card");
+    card.setAttribute("data-testid", "case-card");
+    const top = el("span", "tx-line");
+    top.append(el("strong", "case-id", item.case_id));
+    top.append(el("span", `pill pill-${STATE_TONES[item.case_state] || "neutral"}`, t(`state.${item.case_state}`)));
+    card.append(top);
+    const what = [item.merchant, item.amount ? formatAmount(item.amount, item.currency) : "", item.date ? formatDate(item.date) : ""];
+    card.append(el("span", "chat-sub", what.filter(Boolean).join(" · ")));
+    box.append(card);
+  });
+}
+
+function paintCharges(payload) {
+  lastTransactions = payload;
+  renderCases(payload.cases || []);
+  const box = document.getElementById("transactions");
+  box.textContent = "";
+  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
 }
 
 async function loadTransactions() {
@@ -291,26 +580,44 @@ async function loadTransactions() {
     renderError(payload, response.status);
     return;
   }
-  document.getElementById("reference-date").textContent = `${t("field_referenceDate")}: ${formatDate(payload.as_of)}`;
-  const box = document.getElementById("transactions");
-  box.textContent = "";
-  payload.transactions.forEach((tx) => {
-    const item = el("button", "candidate");
-    item.type = "button";
-    item.append(el("strong", "", formatAmount(maskValue(tx.amount), tx.currency)));
-    item.append(el("span", "chat-sub", ` ${tx.merchant}`));
-    item.append(el("span", "chat-sub", ` (${formatDate(tx.date)})`));
-    item.append(el("span", "chat-sub tx-status", ` · ${t("field_state")}: ${statusLabel(tx.status)}`));
-    if (!tx.eligible) {
-      item.disabled = true;
-      item.append(el("span", "chat-sub", ` ${t(tx.ineligibleKey || "candidateOutOfWindow")}`));
-    } else {
-      item.addEventListener("click", () => selectCandidate(tx));
-    }
-    box.append(item);
-  });
+  renderSessionContext(payload);
+  paintCharges(payload);
   renderDemoPrompts(payload.transactions);
 }
+
+/* Charges change when a reply opens a case or a handoff ticket. */
+async function refreshCharges() {
+  const response = await api("/api/v1/transactions");
+  if (!response.ok) return;
+  const payload = await response.json().catch(() => null);
+  if (!payload) return;
+  paintCharges(payload);
+}
+
+/* Side panels: columns on a wide screen, a drawer behind a button on a phone. */
+function closeDrawers() {
+  document.querySelectorAll(".side-panel.drawer-open").forEach((panel) => panel.classList.remove("drawer-open"));
+  document.querySelectorAll("[data-drawer]").forEach((button) => button.setAttribute("aria-expanded", "false"));
+}
+
+function toggleDrawer(button) {
+  const panel = document.getElementById(button.getAttribute("data-drawer"));
+  const open = !panel.classList.contains("drawer-open");
+  closeDrawers();
+  panel.classList.toggle("drawer-open", open);
+  button.setAttribute("aria-expanded", String(open));
+}
+
+document.querySelectorAll("[data-drawer]").forEach((button) => {
+  button.addEventListener("click", () => toggleDrawer(button));
+});
+document.querySelectorAll("[data-close-drawer]").forEach((button) => {
+  button.addEventListener("click", closeDrawers);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") closeDrawers();
+});
+
 /* Demo prompts: built from the customer's own charges, never hardcoded.
    Normal picks the newest charge in the account's own currency that the backend
    marks eligible, using only the listing. Eligibility already carries the
@@ -366,6 +673,8 @@ function renderDemoPrompts(transactions) {
     );
   }
   if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
+  const blocked = rows.find((tx) => tx.case_state === "outside_window" && tx.currency === localCurrency());
+  if (blocked) prompts.push(fill(t("demoWhy"), { merchant: blocked.merchant }));
   prompts.push(t("demoPerson"));
 
   prompts.forEach((phrase) => {
@@ -378,6 +687,7 @@ function renderDemoPrompts(transactions) {
     box.append(chip);
   });
   box.hidden = prompts.length === 0;
+  document.getElementById("demo-hint").hidden = prompts.length === 0;
 }
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
@@ -438,16 +748,31 @@ function traceBlock(trace) {
   return card;
 }
 
+/* The conversation of the ticket as translated lines: what the customer did and
+   what the system answered. The server sends codes, never the customer's words. */
+function turnsBlock(turns) {
+  const box = el("div", "");
+  box.append(el("p", "", t("q_summary")));
+  const list = el("ol", "chat-sub");
+  turns.forEach((turn) => {
+    const said = codeLabel("handoffSaid", turn.customer);
+    const answered = codeLabel("turnSystem", turn.system);
+    list.append(el("li", "", [said, answered].filter(Boolean).join(" → ")));
+  });
+  box.append(list);
+  return box;
+}
+
 function packageBlock(pkg) {
   const card = el("div", "msg msg-audit");
   card.append(el("h4", "chat-title", t("q_package")));
-  card.append(field("q_summary", pkg.summary));
+  card.append(turnsBlock(pkg.conversation || []));
   const facts = pkg.verified_facts;
   if (facts) {
     card.append(
       field(
         "q_transaction",
-        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)}) · ${facts.transaction_id}`
+        `${facts.merchant} - ${formatAmount(Number(facts.amount).toFixed(2), facts.currency)} (${formatDate(facts.transaction_date)})`
       )
     );
   }
@@ -458,7 +783,8 @@ function packageBlock(pkg) {
   });
   card.append(el("p", "", t("q_actions")));
   card.append(actions);
-  card.append(field("q_openQuestions", pkg.open_questions.join(", ")));
+  const pending = pkg.open_questions.map((code) => codeLabel("handoffOpen", code)).filter(Boolean);
+  card.append(field("q_openQuestions", pending.join(", ")));
   return card;
 }
 
@@ -475,8 +801,9 @@ async function openTicket(caseId) {
   back.setAttribute("data-testid", "queue-back");
   back.addEventListener("click", loadQueue);
   detail.append(back);
-  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${ticket.status}`));
-  detail.append(field("q_customer", `${ticket.customer_id} · ${t("q_country")}: ${ticket.country}`));
+  detail.append(el("h3", "chat-title", `${ticket.case_id} · ${codeLabel("ticketStatus", ticket.status) || ticket.status}`));
+  // No customer identifier on the screen: the advisor gets facts, not an id.
+  detail.append(field("q_country", `${ticket.country} · ${t("q_language")}: ${ticket.package.language}`));
   detail.append(field("q_reason", t(ticket.reason_key)));
   detail.append(packageBlock(ticket.package));
   detail.append(traceBlock(trace));
@@ -504,7 +831,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     loadQueue();
     return;
   }
-  clearThread();
+  startThread();
   show("view-chat");
   await loadContext();
   await loadTransactions();
@@ -544,6 +871,7 @@ document.getElementById("locale-group").addEventListener("click", (event) => {
 async function loadDemoEntry() {
   const response = await fetch("/api/v1/auth/demo");
   const available = response.ok;
+  demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
   document.getElementById("demo-banner").hidden = !available;
   document.getElementById("password-login").open = !available;
@@ -556,7 +884,7 @@ async function demoLogin(persona) {
     return;
   }
   const { locale } = await response.json();
-  clearThread();
+  startThread();
   show("view-chat");
   await loadContext();
   if (locale) await loadLocale(locale);
@@ -569,4 +897,5 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
 });
 
 loadLocale("es-419");
+loadBrand();
 loadDemoEntry();
