@@ -1,0 +1,44 @@
+{
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "cutoff_diagnosis",
+  "kind_accuracy": {
+    "no_cutoffs": {
+      "kind_accuracy": 0.9899,
+      "n": 198
+    },
+    "t_act_1_0": {
+      "kind_accuracy": 0.5404,
+      "n": 198
+    },
+    "t_act_unrounded": {
+      "kind_accuracy": 0.7778,
+      "n": 198,
+      "t_act": 0.9999845600455524
+    }
+  },
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Replay of the committed recordings of calibration-v3 and rehearsal-v8: no live call.",
+    "The raw cut-off is 0.99998456; round(t_act, 2) makes it 1.0. The confidence of v3 is saturated near 1.",
+    "A cut-off near 1 removes correct answers and not errors. The cut-offs stay off and the rule stays unchanged (decision 018)."
+  ],
+  "run_id": "2024Q4-cutoff-diagnosis-v1",
+  "source_runs": [
+    "2024Q4-calibration-v3",
+    "2024Q4-rehearsal-v8"
+  ],
+  "validation": {
+    "lowest_threshold_raw": 0.9999845600455524,
+    "lowest_threshold_rounded": 1.0,
+    "n": 26,
+    "rule": {
+      "t_act_min_accuracy": 0.9321
+    },
+    "with_confidence": 24,
+    "without_confidence": 2,
+    "without_confidence_ids": [
+      "dev-fault-03",
+      "dv-b13-es-CO"
+    ]
+  }
+}
