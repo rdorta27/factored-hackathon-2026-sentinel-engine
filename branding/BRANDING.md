@@ -1,7 +1,7 @@
 # Sentinel Engine branding
 
 Source of truth for slides, docs and the one-page chat (decision 006).
-Palette: violet `#6d4aff` + rose `#ff4f8b` on warm white, with a dark variant.
+Palette: bank blue `#1f4fa3` on cool white, with a dark variant. Violet `#6d4aff` and rose `#ff4f8b` stay as the Sentinel mark (`--sentinel-violet`, `--sentinel-rose`) and are not the accent of the customer interface.
 Typography: Newsreader (titles) + Source Sans 3 (body) + Source Code Pro (mono).
 
 ## Files
