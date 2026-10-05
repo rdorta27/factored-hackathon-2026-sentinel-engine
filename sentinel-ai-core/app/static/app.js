@@ -178,6 +178,7 @@ async function api(path, options) {
   const response = await fetch(path, options);
   if (response.status === 401) {
     sessionRole = null;
+    sessionLabel = null;
     replaceRoute("/");
     clearThread();
     show("view-login");
@@ -605,6 +606,12 @@ function drawReply(body, entry) {
     renderCandidates(box, body.candidates, Boolean(entry && entry.closed));
     thread.append(box);
   } else if (body.kind === "handoff") {
+    // Say what happened first, in plain words, then show the detail card.
+    // The ticket number (HO-…) is customer-facing, like under field_reference.
+    const ticket = fill(t("handoffLead"), { reference: body.reference });
+    const lead = el("div", "msg msg-bot", [ticket, t(body.reason_key), t("handoffNext")].join(" "));
+    lead.setAttribute("data-testid", "handoff-lead");
+    thread.append(lead);
     thread.append(handoffCard(body));
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
@@ -666,8 +673,29 @@ function renderCharge(tx) {
 
 /* The header line of a session: the masked product when the data has one,
    then country and language. Without a product the line has no type and no digits. */
+/* Who this session is, for the header. A demo persona shows its name; a
+   password login shows the user name the person typed. Nothing comes from the
+   server, so no identifier reaches the page through the API. The label rides
+   in the history entry, so a reload of the tab keeps it without any storage. */
+const PERSONA_KEYS = {
+  normal: "personaNormal",
+  ambiguous: "personaAmbiguous",
+  "high-amount": "personaHighAmount",
+  "not-me": "personaNotMe",
+};
+let sessionLabel = null;
+
+function sessionLabelText() {
+  if (!sessionLabel) return "";
+  if (sessionLabel.persona) return `${t("sessionDemo")}: ${t(PERSONA_KEYS[sessionLabel.persona] || "")}`;
+  if (sessionLabel.user) return `${t("sessionUser")}: ${sessionLabel.user}`;
+  return "";
+}
+
 function renderSessionContext(payload) {
   const parts = [];
+  const who = sessionLabelText();
+  if (who) parts.push(who);
   if (payload.product) parts.push(`${t(`product.${payload.product.kind}`)} •••• ${payload.product.last4}`);
   if (sessionCountry) parts.push(t(`country.${sessionCountry}`));
   parts.push(t(`lang.${currentLocale}`));
@@ -1174,7 +1202,7 @@ function navigate(path) {
 
 /* Same entry, new URL: for the moves the Back button must not undo (login, logout). */
 function replaceRoute(path) {
-  history.replaceState(null, "", `#${path}`);
+  history.replaceState(sessionLabel ? { sessionLabel } : null, "", `#${path}`);
 }
 
 async function applyRoute() {
@@ -1221,6 +1249,7 @@ async function resumeSession() {
     return;
   }
   const me = await response.json();
+  sessionLabel = (history.state && history.state.sessionLabel) || null;
   await enterSession(me.role);
 }
 
@@ -1239,6 +1268,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     return;
   }
   const { role } = await response.json();
+  sessionLabel = role === "customer" ? { user: document.getElementById("login-user").value.trim() } : null;
   resetPassword();
   await enterSession(role);
 });
@@ -1288,6 +1318,7 @@ document.getElementById("logout").addEventListener("click", async () => {
   document.getElementById("login-error").textContent = "";
   resetPassword();
   sessionRole = null;
+  sessionLabel = null;
   replaceRoute("/");
 });
 
@@ -1326,6 +1357,7 @@ async function demoLogin(persona) {
   }
   const { locale } = await response.json();
   sessionRole = "customer";
+  sessionLabel = { persona };
   replaceRoute("/chat");
   startThread();
   show("view-chat");
