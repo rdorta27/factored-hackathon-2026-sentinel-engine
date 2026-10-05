@@ -137,14 +137,24 @@ async function loadBuildInfo() {
   }
 }
 
+/* Two quick clicks on the selector: only the last request may paint. */
+let localeRequest = 0;
+
 async function loadLocale(locale) {
+  const request = ++localeRequest;
   const response = await fetch(`/i18n/${locale}`);
-  strings = await response.json();
+  if (!response.ok) return;
+  const loaded = await response.json();
+  if (request !== localeRequest) return;
+  strings = loaded;
+  document.body.removeAttribute("data-loading");
   setLocale(locale);
   document.documentElement.lang = locale;
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
+  document.getElementById("chat-input").placeholder = t("chatPlaceholder");
+  document.getElementById("chat-input").setAttribute("aria-label", t("chatPlaceholder"));
   applyBrand();
   renderBuildInfo();
   // A customer session repaints its header and charges in the new language.
@@ -152,8 +162,10 @@ async function loadLocale(locale) {
     renderSessionContext(lastTransactions);
     paintCharges(lastTransactions);
     renderDemoPrompts(lastTransactions.transactions);
-    renderThread();
   }
+  // The thread follows the language too, even before the charges arrive
+  // (the welcome of a demo persona is drawn before its locale loads).
+  if (!document.getElementById("view-chat").hidden) renderThread();
 }
 
 async function api(path, options) {
@@ -184,6 +196,7 @@ let threadLog = [];
 function logEntry(entry) {
   threadLog.push(entry);
   drawEntry(entry);
+  scrollToEnd();
   return entry;
 }
 
@@ -199,8 +212,21 @@ function drawEntry(entry) {
 function renderThread() {
   document.getElementById("thread").textContent = "";
   threadLog.forEach(drawEntry);
+  // A turn in flight keeps its typing line and its running steps.
+  if (typingNode) {
+    typingNode.textContent = t("typingLabel");
+    document.getElementById("thread").append(typingNode);
+    return;
+  }
   const last = [...threadLog].reverse().find((entry) => entry.type === "reply" && entry.body.steps);
   if (last) renderSteps(last.body, false);
+}
+
+/* Keep the newest message in view. */
+function scrollToEnd() {
+  const thread = document.getElementById("thread");
+  const last = thread.lastElementChild;
+  if (last) last.scrollIntoView({ block: "end", behavior: "smooth" });
 }
 
 function startThread() {
@@ -211,6 +237,8 @@ function startThread() {
 let simulatedData = false;
 
 function show(id) {
+  // An old login error must not wait on screen for the next visit.
+  if (id !== "view-login") document.getElementById("login-error").textContent = "";
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
@@ -275,16 +303,39 @@ function drawError(body, status) {
 /* Reply kinds that write to the case store, so the charge states change. */
 const CASE_CHANGING = new Set(["case_confirmation", "handoff"]);
 
+/* One turn at a time: while a turn runs, every control that sends a turn is
+   off, so a double click or an impatient tap cannot send it twice. */
+let typingNode = null;
+
+function isBusy() {
+  return typingNode !== null;
+}
+
+function setBusy(busy) {
+  document.getElementById("view-chat").setAttribute("aria-busy", String(busy));
+  document.querySelectorAll("#chat-form input, #chat-form button, #agent").forEach((control) => {
+    control.disabled = busy;
+  });
+  document.querySelectorAll("#demo-prompts button, #transactions button[data-eligible]").forEach((control) => {
+    control.disabled = busy;
+  });
+}
+
 async function postChat(payload) {
-  // A new turn closes any open confirmation: an old "Confirmar" must not fire.
-  document.querySelectorAll(".chat-confirm button").forEach((button) => {
-    button.disabled = true;
+  if (isBusy()) return;
+  // A new turn closes any open confirmation and any open list of candidates:
+  // an old "Confirmar" or an old chip must not fire.
+  document.querySelectorAll(".chat-confirm button, .chat-candidates .candidate").forEach((button) => {
+    if (!button.closest("#demo-prompts")) button.disabled = true;
   });
   threadLog.forEach((entry) => {
     entry.closed = true;
   });
   const typing = el("div", "msg msg-audit", t("typingLabel"));
+  typingNode = typing;
+  setBusy(true);
   document.getElementById("thread").append(typing);
+  scrollToEnd();
   try {
     const response = await api("/api/v1/chat", {
       method: "POST",
@@ -302,20 +353,27 @@ async function postChat(payload) {
     if (CASE_CHANGING.has(body.kind)) await refreshCharges();
   } finally {
     typing.remove();
+    typingNode = null;
+    setBusy(false);
+    const input = document.getElementById("chat-input");
+    if (!document.getElementById("view-chat").hidden) input.focus({ preventScroll: true });
   }
 }
 
 function selectCandidate(candidate) {
+  if (isBusy()) return;
   logEntry({ type: "charge", candidate });
   postChat({ selected_reference: candidate.reference });
 }
 
-function renderCandidates(box, candidates) {
+function renderCandidates(box, candidates, closed = false) {
   const chips = el("div", "chat-candidates");
   (candidates || []).forEach((candidate) => {
     const chip = el("button", "candidate", humanStatement(candidate));
     chip.type = "button";
-    if (!candidate.eligible) {
+    if (closed) {
+      chip.disabled = true;
+    } else if (!candidate.eligible) {
       chip.disabled = true;
       chip.append(el("span", "chat-sub", ` ${t(candidate.ineligibleKey || "candidateOutOfWindow")}`));
     } else {
@@ -330,7 +388,7 @@ function renderCandidates(box, candidates) {
    The keys come from the reply; the page only translates them, so no rule
    id, model or threshold ever reaches the screen. */
 const HAND_STEPS = new Set(["step.handedOff", "step.refused"]);
-const STEP_PAUSE_MS = 1000;
+const STEP_PAUSE_MS = 500;
 let stepTimers = [];
 let stepResolve = null;
 
@@ -360,7 +418,10 @@ function renderSteps(body, animate = true) {
   if (stepResolve) stepResolve();
   stepResolve = null;
   list.textContent = "";
-  const staged = animate && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // No staging when nobody can watch it: reduced motion, or the panel is a
+  // closed drawer on a phone. Then the answer shows at once.
+  const visible = list.offsetParent !== null;
+  const staged = animate && visible && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (!staged) {
     body.steps.forEach((key, index) => list.append(stepItem(key, index, "done")));
     list.setAttribute("aria-busy", "false");
@@ -506,7 +567,7 @@ function drawReply(body, entry) {
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
     box.append(el("strong", "", body.text ? body.text : fillTemplate(t(body.message_key), body.values)));
-    renderCandidates(box, body.candidates);
+    renderCandidates(box, body.candidates, Boolean(entry && entry.closed));
     thread.append(box);
   } else if (body.kind === "handoff") {
     thread.append(handoffCard(body));
@@ -549,8 +610,13 @@ function renderCharge(tx) {
   if (!tx.eligible) {
     item.disabled = true;
     item.setAttribute("aria-disabled", "true");
-    item.title = t(tx.ineligibleKey || "candidateOutOfWindow");
+    // A tooltip does not show on a touch screen, so the reason is also text.
+    const reason = t(tx.ineligibleKey || "candidateOutOfWindow");
+    item.title = reason;
+    item.append(el("span", "chat-sub tx-reason", reason));
   } else {
+    item.setAttribute("data-eligible", "");
+    item.disabled = isBusy();
     item.addEventListener("click", () => {
       closeDrawers();
       selectCandidate(tx);
@@ -740,7 +806,9 @@ function renderDemoPrompts(transactions) {
   prompts.forEach((phrase) => {
     const chip = el("button", "candidate", phrase);
     chip.type = "button";
+    chip.disabled = isBusy();
     chip.addEventListener("click", () => {
+      if (isBusy()) return;
       addBubble(phrase);
       postChat({ message: phrase });
     });
@@ -754,6 +822,15 @@ function renderDemoPrompts(transactions) {
 /* Advisor view: escalated tickets, newest first. The list shows why each case
    came (reason, country, language, age); the detail is read-only and adds the
    handoff package and the trace of the turn that filed it. */
+/* Country and language codes as words; an unknown code shows as it is. */
+function countryName(code) {
+  return strings[`country.${code}`] || code;
+}
+
+function languageName(code) {
+  return strings[`lang.${code}`] || code;
+}
+
 function ticketRow(ticket) {
   const row = el("button", "candidate queue-row");
   row.type = "button";
@@ -761,8 +838,8 @@ function ticketRow(ticket) {
   row.setAttribute("data-case-id", ticket.case_id);
   row.append(el("strong", "", ticket.case_id));
   row.append(el("span", "chat-sub", ` · ${t("q_reason")}: ${t(ticket.reason_key)}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${ticket.country}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${ticket.package.language}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${countryName(ticket.country)}`));
+  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${languageName(ticket.package.language)}`));
   row.append(el("span", "chat-sub", ` · ${t("q_created")}: ${formatDate(ticket.created_at)}`));
   row.addEventListener("click", () => openTicket(ticket.case_id));
   return row;
@@ -851,10 +928,12 @@ function packageBlock(pkg) {
 
 async function openTicket(caseId) {
   const detail = document.getElementById("queue-detail");
-  const response = await api(`/api/v1/handoffs/${caseId}`);
+  const [response, traceResponse] = await Promise.all([
+    api(`/api/v1/handoffs/${caseId}`),
+    api(`/api/v1/handoffs/${caseId}/trace`),
+  ]);
   if (!response.ok) return;
   const ticket = await response.json();
-  const traceResponse = await api(`/api/v1/handoffs/${caseId}/trace`);
   const trace = traceResponse.ok ? await traceResponse.json() : { available: false, steps: [] };
   detail.textContent = "";
   const back = el("button", "theme-toggle", t("q_back"));
@@ -864,7 +943,7 @@ async function openTicket(caseId) {
   detail.append(back);
   detail.append(el("h3", "chat-title", `${ticket.case_id} · ${codeLabel("ticketStatus", ticket.status) || ticket.status}`));
   // No customer identifier on the screen: the advisor gets facts, not an id.
-  detail.append(field("q_country", `${ticket.country} · ${t("q_language")}: ${ticket.package.language}`));
+  detail.append(field("q_country", `${countryName(ticket.country)} · ${t("q_language")}: ${languageName(ticket.package.language)}`));
   detail.append(field("q_reason", t(ticket.reason_key)));
   detail.append(packageBlock(ticket.package));
   detail.append(traceBlock(trace));
@@ -902,13 +981,14 @@ document.getElementById("chat-form").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = document.getElementById("chat-input");
   const value = input.value.trim();
-  if (!value) return;
+  if (!value || isBusy()) return;
   addBubble(value);
   postChat({ message: value });
   input.value = "";
 });
 
 document.getElementById("agent").addEventListener("click", () => {
+  if (isBusy()) return;
   const message = t("agentMessage");
   addBubble(t("agentButton"));
   postChat({ message });
@@ -918,6 +998,7 @@ document.getElementById("logout").addEventListener("click", async () => {
   await fetch("/api/v1/auth/logout", { method: "POST" });
   clearThread();
   show("view-login");
+  document.getElementById("login-error").textContent = "";
 });
 
 document.getElementById("locale-group").addEventListener("click", (event) => {

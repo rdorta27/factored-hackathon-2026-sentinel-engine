@@ -618,3 +618,13 @@ main {
     order: -1;
   }
 }
+
+/* Hide the raw i18n keys until the first language file arrives. */
+body[data-loading] main {
+  visibility: hidden;
+}
+
+.tx-reason {
+  display: block;
+  text-align: start;
+}
