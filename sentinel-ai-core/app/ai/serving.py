@@ -15,6 +15,7 @@ import os
 import threading
 from pathlib import Path
 
+from app.ai.budget import BUDGET_ROUTE, BudgetGuard, budget_from_env
 from app.ai.demo import DemoModel
 from app.ai.llm import SYSTEM_PROMPT_V3, Cutoffs, Example, PromptedLLMRouter, RouterConfig
 from app.ai.port import ModelInfo, ModelPort, UnderstandResult
@@ -44,11 +45,16 @@ DEFAULT_REASONING_EFFORT = "low"
 
 
 class FallbackModel:
-    """Answer with the primary model; on ModelUnavailable answer the turn with the fallback."""
+    """Answer with the primary model; on ModelUnavailable answer the turn with the fallback.
 
-    def __init__(self, primary: ModelPort, fallback: ModelPort) -> None:
+    With a budget guard, a spent day answers with the fallback too, and the
+    turn log marks ``budget`` as the route instead of ``fallback``.
+    """
+
+    def __init__(self, primary: ModelPort, fallback: ModelPort, budget: BudgetGuard | None = None) -> None:
         self._primary = primary
         self._fallback = fallback
+        self._budget = budget
         # Per thread, like the router: the answer of this request's last call.
         self._state = threading.local()
 
@@ -56,20 +62,30 @@ class FallbackModel:
         last = getattr(self._state, "last", self._primary)
         info = last.describe()
         if last is self._fallback:
+            if getattr(self._state, "capped", False):
+                return ModelInfo(model=info.model, route=BUDGET_ROUTE, prompt_version=info.prompt_version)
             return ModelInfo(model=info.model, route="fallback", prompt_version=info.prompt_version)
         return info
 
     def understand(
         self, message: str, turns: list[str], context: dict | None = None
     ) -> UnderstandResult:
+        if self._budget is not None and self._budget.exhausted():
+            self._state.last = self._fallback
+            self._state.capped = True
+            return self._fallback.understand(message, turns, context=context)
         try:
             result = self._primary.understand(message, turns, context=context)
         except ModelUnavailable as exc:
             # Class and message only: the transport never puts the key in either.
             log.warning("model unavailable, baseline answers this turn: %s: %s", type(exc).__name__, exc)
             self._state.last = self._fallback
+            self._state.capped = False
             return self._fallback.understand(message, turns, context=context)
         self._state.last = self._primary
+        self._state.capped = False
+        if self._budget is not None:
+            self._budget.record(result.cost_usd)
         return result
 
     def classify(self, message: str) -> str:
@@ -147,4 +163,6 @@ def model_from_env(transport: ModelTransport | None = None) -> ModelPort:
             max_tokens=int(os.environ.get("SENTINEL_LLM_MAX_TOKENS") or DEFAULT_MAX_TOKENS),
             reasoning_effort=os.environ.get("SENTINEL_LLM_REASONING_EFFORT") or DEFAULT_REASONING_EFFORT,
         )
-    return FallbackModel(PromptedLLMRouter(transport, config), DemoModel())
+    return FallbackModel(
+        PromptedLLMRouter(transport, config), DemoModel(), BudgetGuard(budget_from_env())
+    )

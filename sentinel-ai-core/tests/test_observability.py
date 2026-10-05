@@ -195,16 +195,20 @@ def test_stdout_line_matches_the_file_and_omits_customer_id(tmp_path, monkeypatc
 
 def test_stdout_is_off_when_unset(tmp_path, monkeypatch, capsys) -> None:
     from app.observability import Recorder
+    from app.observability.chain import GENESIS, chain_record
 
     monkeypatch.delenv("SENTINEL_LOG_STDOUT", raising=False)
     recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
     recorder.emit(_valid())
     assert capsys.readouterr().out == ""
-    assert (tmp_path / "turns.jsonl").read_text(encoding="utf-8").strip() == _valid().to_json()
+    assert (tmp_path / "turns.jsonl").read_text(encoding="utf-8").strip() == chain_record(
+        _valid(), GENESIS
+    ).to_json()
 
 
 def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.observability import Recorder
+    from app.observability.chain import GENESIS, chain_record
 
     recorder = Recorder(path=tmp_path / "turns.jsonl", salt="test-salt")
     first = _valid(trace_id="0" * 16)
@@ -212,8 +216,10 @@ def test_writer_round_trips_both_sinks(tmp_path) -> None:  # type: ignore[no-unt
     recorder.emit(first)
     recorder.emit(second)
 
-    assert recorder.records == [first, second]
-    assert recorder.records_for("0" * 16) == [first]
+    chained_first = chain_record(first, GENESIS)
+    chained_second = chain_record(second, chained_first.record_hash)
+    assert recorder.records == [chained_first, chained_second]
+    assert recorder.records_for("0" * 16) == [chained_first]
     lines = (tmp_path / "turns.jsonl").read_text(encoding="utf-8").splitlines()
     assert [json.loads(line)["trace_id"] for line in lines] == ["0" * 16, "f" * 16]
 

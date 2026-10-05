@@ -6,6 +6,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.ai import serving
+from app.ai.budget import BUDGET_ROUTE, BudgetGuard
 from app.ai.demo import DemoModel
 from app.ai.llm import PromptedLLMRouter
 from app.ai.serving import FallbackModel, model_from_env
@@ -212,3 +213,43 @@ def test_prompt_v3_is_served_only_behind_the_v3_flag(monkeypatch: pytest.MonkeyP
     assert config.system_prompt != SYSTEM_PROMPT
     monkeypatch.setenv("SENTINEL_LLM_PROMPT_VERSION", "v2")
     assert serving.router_config().system_prompt == SYSTEM_PROMPT
+
+
+CHARGE_REPLY = '{"intent": "charge", "language": "es-419", "amount": null, "not_mine": false}'
+
+
+@pytest.mark.parametrize("raw", ["", "not-a-number", "0", "-2"])
+def test_invalid_budget_stays_off(monkeypatch: pytest.MonkeyPatch, raw: str) -> None:
+    monkeypatch.setenv("SENTINEL_LLM_DAILY_BUDGET_USD", raw)
+    assert serving.budget_from_env() is None
+
+
+def test_model_calls_accumulate_spend(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    transport = ScriptedTransport(CHARGE_REPLY)
+    guard = BudgetGuard(10.0, tmp_path / "spend.db", day="2024-10-04")
+    model = FallbackModel(PromptedLLMRouter(transport, serving.RouterConfig()), DemoModel(), guard)
+    model.understand("hola", [])
+    assert guard.spent_usd() == pytest.approx(0.0001)
+    assert model.describe().route != BUDGET_ROUTE
+
+
+def test_reached_budget_answers_with_baseline_and_marks_the_route(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    transport = ScriptedTransport(CHARGE_REPLY)
+    guard = BudgetGuard(0.00005, tmp_path / "spend.db", day="2024-10-04")
+    guard.record(0.0001)
+    model = FallbackModel(PromptedLLMRouter(transport, serving.RouterConfig()), DemoModel(), guard)
+    result = model.understand("no reconozco un cargo", [])
+    assert transport.calls == [], "a capped day makes no model call"
+    assert result.kind.value == "charge"
+    info = model.describe()
+    assert (info.route, info.model) == (BUDGET_ROUTE, "keyword-baseline")
+
+
+def test_spend_total_survives_a_restart(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    path = tmp_path / "spend.db"
+    BudgetGuard(1.0, path, day="2024-10-04").record(0.02)
+    fresh = BudgetGuard(1.0, path, day="2024-10-04")
+    assert fresh.spent_usd() == pytest.approx(0.02)
+    assert not fresh.exhausted()
+    fresh.record(0.99)
+    assert BudgetGuard(1.0, path, day="2024-10-04").exhausted()
