@@ -138,7 +138,7 @@ What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-ca
 
 ## Reading guide
 
-1. **[The challenge](docs/understand/overview.md):** what we must build, how the judges score it and what we submit.
+1. **[The challenge](docs/overview.md):** what we must build, how the judges score it and what we submit.
 2. **[Architecture](docs/architecture/README.md):** the target system, the demo with its mocks, and the specification.
 3. **[What is real](docs/architecture/what-is-real.md):** real, mock, synthetic, team-generated, simulation or projection, for each part.
 4. **[Flow selection](docs/build/flows/03-flow-selection.md):** why transaction disputes, with data and reproducible measurements.
