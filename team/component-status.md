@@ -1,12 +1,12 @@
 # Component status
 
-Where the build stands on Fri 10/2, after PR #50: the same components as the [System Architecture](../docs/architecture/system-architecture.md), painted by status. Evidence per item lives in [tasks](tasks.md) and the [requirements](../docs/requirements/requirements.md).
+Where the build stands on Mon 10/5, after PR #67: the same components as the [System Architecture](../docs/architecture/system-architecture.md), painted by status. Evidence per item lives in [tasks](tasks.md) and the [requirements](../docs/requirements/requirements.md).
 
 Legend: green = implemented and tested · amber = partial (works behind a mock, offline only, or not run on real data) · red = missing.
 
 ```mermaid
 flowchart TB
-    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>confirm box"]
+    client(["Customer"]) --> chat["Chat page · POST /api/v1/chat<br/>bank shell, confirm box"]
     client --> dapi["Disputes API<br/>preview → create · list"]
     chat --> session["Session and conversation state<br/>SQLite, retention on logout/expiry"]
     dapi --> session
@@ -24,7 +24,7 @@ flowchart TB
         handoff["handoff"]
     end
     subgraph brain["Understanding"]
-        learned["router_v2 served ·<br/>baseline fallback"]
+        learned["router_v2 served ·<br/>baseline fallback<br/>prompt v3 and charge selector off"]
     end
 
     orch --> policy
@@ -36,31 +36,44 @@ flowchart TB
     handoff --> cases
     cases --> aview["Advisor view<br/>GET /api/v1/handoffs"]
     orch -.-> logs[("Structured logs<br/>traces, latency, cost")]
-    evalr["Evaluation runner<br/>eval-v7 · resolution-v1"] -.-> chat
+    evalr["Evaluation runner<br/>eval-v7 · resolution-v2 · v8 rehearsal"] -.-> chat
     evalr -.-> logs
     tests["Adversarial set<br/>42 attacks, 0/42 unsafe<br/>none without defence"] -.-> chat
     tests -.-> dapi
     tests -.-> aview
-    s3[("S3 raw data")] --> pipeline["Bronze → Silver → Gold<br/>end-to-end run, report not generated in full"]
+    s3[("S3 raw data")] --> pipeline["Bronze → Silver → Gold<br/>end-to-end run, report generated"]
     pipeline --> gold
-    deploy["Public deployment<br/>router_v2 live, image before PRs #49–#50"] -.-> chat
+    deploy["Public deployment<br/>router_v2 live, revision of 10/3<br/>without the PRs after #52"] -.-> chat
 
     classDef done fill:#d9f5e3,stroke:#1f9d55,stroke-width:2px,color:#12351f
     classDef partial fill:#fff3d6,stroke:#b7791f,stroke-width:2px,color:#4a3200
     classDef missing fill:#ffe3e3,stroke:#d33f3f,stroke-width:2px,color:#4a1111
     classDef ext fill:#ffffff,stroke:#a09cb5,stroke-width:1px,color:#3d3a4f
-    class chat,dapi,session,orch,policy,config,lookup,open,verify,handoff,cases,aview,logs,evalr,tests,learned,gold done
-    class pipeline,deploy partial
+    class chat,dapi,session,orch,policy,config,lookup,open,verify,handoff,cases,aview,logs,evalr,tests,learned,gold,pipeline done
+    class deploy partial
     class s3 done
     class client ext
 ```
 
 ## Reading it
 
-- **Done (18):** the full demo path on one app and one API under `/api/v1`: chat and the two-step disputes API, password session with roles, conversation state in SQLite deleted on logout or expiry, the loop and the policy engine with synthetic fraud and high-amount thresholds per account country and currency ([010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md)), the four tools with read-back verification, handoff tickets and the read-only advisor view, the structured log, free-text masking; understanding (router_v2 served with a baseline fallback, measured in `2024Q4-eval-v7`; narrowing by what the customer said, the "why?" answer, the prompt-extraction refusal and the injection record in code, PRs #42 and #49); Gold (the app reads the PII-free view from the DuckDB file locally, PR #50); the evaluation (`2024Q4-eval-v7`, `2024Q4-resolution-v1`) and the [latest adversarial run](../evidence/adversarial/20261002T222323Z/summary.json) (42 attacks, `0/42` unsafe, none left without defence).
-- **Partial (2):** the pipeline (end to end with incremental tests and Silver columns restored in PR #44, but the quality report's drop, orphan, late-arrival and null sections are written by hand and the next run overwrites them: `quality-report`); the public deployment (router_v2 is live, but the image predates PRs #49 and #50 and state is on the ephemeral disk: redeploy and `runtime-and-ci`).
-- **Missing (0).** Small talk is still classified out of scope (`router-v3`); system outcomes per language and country and app monitoring are `evaluation-final`.
+- **Done (19):** the full demo path on one app and one API under `/api/v1`.
+  - Chat and the two-step disputes API, password session with roles, and conversation state in SQLite deleted on logout or expiry.
+  - The loop and the policy engine with synthetic fraud and high-amount thresholds per account country and currency ([010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md)).
+  - The four tools with read-back verification, handoff tickets and the read-only advisor view, the structured log and free-text masking.
+  - The bank interface: bank shell, charge states, the "Mis reclamos" panel, the phone layout and the white label (`bank-ui`).
+  - Understanding: `router_v2` served with a baseline fallback, measured in `2024Q4-eval-v7`. The chat answers greetings, thanks and "are you a bot?", and the model writes a draft only on turns that do not decide ([024](../docs/build/decisions/024-model-wording.md), `chat-start`). Code narrows the charge list, answers the "why?" and refuses prompt extraction.
+  - Gold: the app reads the PII-free view from the DuckDB file locally.
+  - The pipeline: the quality report is generated by the runner (`quality-report`).
+  - The evaluation: `2024Q4-eval-v7`, `2024Q4-resolution-v2`, the calibration runs, the trained baseline (`train-v1`) and the v8 rehearsal and ablation. See the [evidence index](../evidence/README.md).
+  - The [latest adversarial run](../evidence/adversarial/20261005T014816Z/summary.json): 42 attacks, `0/42` unsafe, none left without defence.
+  - Robustness code from `robustness-evidence`: the health route, the audit chain, the spend cap and the fault injection. The runs that measure it wait for the code freeze. None is in `evidence/` yet.
+- **Partial (1):** the public deployment. `router_v2` is live and the state is on an Azure Files share, but the revision is from 10/3 (commit `9664d9d`, PR #52) and does not include the pull requests after it. The final redeploy comes before the video.
+- **Off on purpose:** prompt v3 (`SENTINEL_LLM_PROMPT_VERSION=v3`) stays off until the v8 measurement approves it. The confidence cut-offs (`SENTINEL_LLM_CUTOFFS`) and the charge selector (`SENTINEL_CHARGE_RANKER`, [025](../docs/build/decisions/025-charge-selector.md)) are also off by default.
+- **Missing (0).**
 
 ## What unblocks what
 
-Merged and archived: `dispute-answers`, `resolution-eval`, `chat-loop`, `real-gold`. Open changes, each on its own branch: `runtime-and-ci` (in progress), `quality-report` (Natalia), `ui-product`, `evaluation-final` (unblocked by `chat-loop`), then `router-v3`.
+Merged and archived: `dispute-answers`, `resolution-eval`, `chat-loop`, `real-gold`, `runtime-and-ci`, `quality-report`, `ui-product`, `evaluation-final`, `flow-fixes`, `router-v3`, `bank-ui`, `chat-start`, `problem-evidence`, `trained-baseline`, `charge-ranker` and `robustness-evidence`. Open changes: `eval-v8` and `docs-followups`.
+
+After the code freeze, three things remain: the single v8 measurement with its verdict, the robustness runs and the final redeploy. Their plan is not in this repository.

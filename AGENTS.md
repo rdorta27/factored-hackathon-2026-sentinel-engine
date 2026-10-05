@@ -54,7 +54,7 @@ grep -rl '^style: ASD-STE100' --include=*.md . | grep -v AGENTS.md
 - Write new documentation in English and in ASD-STE100. When you edit a page, rewrite the parts that you change in ASD-STE100.
 - Do **not** add Spanish files under `docs/` or `team/` unless a person asks for it.
 - Do **not** write new documentation in Portuguese. The system answers in Spanish and Portuguese. Our own writing stays in English.
-- Keep banking terms, acronyms and dialogue examples in Spanish or Portuguese in the original. Give an English explanation the first time. The locale vocabulary is in [`docs/understand/glossary/`](docs/understand/glossary/).
+- Keep banking terms, acronyms and dialogue examples in Spanish or Portuguese in the original. Give an English explanation the first time. The locale vocabulary is in [`docs/glossary/`](docs/glossary/).
 - Write locales as BCP 47 tags: `en-US`, `es-MX`, `es-CO`, `es-AR`, `pt-BR`. For Spanish in the three countries, use `es-419` (Latin American Spanish). Do not write `ES` or `PT` alone.
 
 ## Layout
@@ -63,7 +63,7 @@ grep -rl '^style: ASD-STE100' --include=*.md . | grep -v AGENTS.md
 |---|---|
 | [`docs/architecture/`](docs/architecture/) | System Architecture, Demo Architecture, their specification, and [what is real](docs/architecture/what-is-real.md) (real, mock, synthetic, team-generated, simulation, projection) |
 | [`docs/rationale/`](docs/rationale/README.md) | Why each choice, with an evidence table and the slide sentence |
-| [`docs/understand/`](docs/understand/) | The challenge and the data in one read. [`reference/`](docs/understand/reference/) holds the official data dictionary. |
+| [`docs/overview.md`](docs/overview.md), [`docs/data/`](docs/data/), [`docs/glossary/`](docs/glossary/) | The challenge overview, the dataset page with the [official data dictionary](docs/data/reference/), and the glossary of the locales |
 | [`docs/requirements/`](docs/requirements/) | Requirements. [`requirements.md`](docs/requirements/requirements.md) is the index (sources, status, dependencies). One file per type holds the cards with description and evidence. |
 | [`docs/build/`](docs/build/) | Areas, design rules, decisions, metrics and delivery |
 | [`team/`](team/) | Plan, tasks and pending decisions |
@@ -72,7 +72,6 @@ grep -rl '^style: ASD-STE100' --include=*.md . | grep -v AGENTS.md
 | [`scripts/`](scripts/) | Repository scripts. `render_flow_measurements.py` generates the flow measurements page and can verify it against a new run. |
 | [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Owner: Natalia. |
 | [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop, policy engine, the page (customer chat and advisor view) and the API under `/api/v1`. Owners are in [team/plan.md](team/plan.md#folders). |
-| [`sentinel-login/`](sentinel-login/) | The original demo page, kept as a reference. It is not a backend, and the service does not serve it ([009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 A new person reads the pages in the order of [`docs/README.md`](docs/README.md).
@@ -89,7 +88,7 @@ Accepted decisions that the code must follow:
 
 ## Rules
 
-- **No secrets and no data in the repository.** The repository is public. Credentials are in `.env` (gitignored). Teammates share them by direct message. Never commit the hackathon datasets (`data/` is gitignored). The one exception is the official data dictionary in [`docs/understand/reference/`](docs/understand/reference/): schema, not rows.
+- **No secrets and no data in the repository.** The repository is public. Credentials are in `.env` (gitignored). Teammates share them by direct message. Never commit the hackathon datasets (`data/` is gitignored). The one exception is the official data dictionary in [`docs/data/reference/`](docs/data/reference/): schema, not rows.
 - **Commit messages** follow Conventional Commits with a mandatory body of two blocks. [`.githooks/commit-msg`](.githooks/commit-msg) enforces this. Activate it once per clone: `git config core.hooksPath .githooks`.
 - **Decisions:** product and technique decisions go to [`docs/build/decisions/`](docs/build/decisions/), one file each, from the template. Team decisions go to [`team/plan.md`](team/plan.md). List the requirements that a decision cites in [`docs/requirements/requirements.md`](docs/requirements/requirements.md).
 - **Label what is real.** Each component, data source and number is real, mock, synthetic, team-generated, simulation or projection, as [what is real](docs/architecture/what-is-real.md) defines. Never show a simulation or a projection as a production measurement.

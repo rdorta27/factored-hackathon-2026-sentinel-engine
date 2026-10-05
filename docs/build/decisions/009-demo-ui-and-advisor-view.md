@@ -28,7 +28,7 @@ The brief asks to "provide the human agent with the request, verified facts, act
 
 Option 3. One process, one page, one API:
 
-- Login is always `POST /api/v1/auth/login` with `login` and a password. `SENTINEL_DEMO_AUTH=1` enables the documented false advisor credential. Without it, only customers exist. No login by customer number alone (brief: "a customer number alone does not prove identity"; REQ-0027).
+- Login is always `POST /api/v1/auth/login` with `login` and a password. `SENTINEL_DEMO_AUTH=1` enables the documented false advisor credential. Without it, only customers exist. No login by customer number alone (brief: "a customer number alone does not prove identity"; REQ-0027). *Updated 10/5:* the public link sets `SENTINEL_DEMO_PERSONAS=0`, so the one-click entry answers 404. The link reads the judge users file at `SENTINEL_USERS_PATH`, and the judges use the credentials of the submission email. The documented fixture passwords do not work on the link ([`judge-access`](../../../openspec/changes/judge-access/tasks.md)).
 - The advisor reads escalated tickets at `GET /api/v1/handoffs` and `GET /api/v1/handoffs/{id}`, role `advisor` only. A ticket shows the reason, the verified facts, a summary of the conversation, the actions attempted, the open questions, and the customer id and country. No names, no profile. A customer gets 403 and an `access_denied` audit record.
 - The customer endpoints (chat, transactions, disputes) require the role `customer`.
 - The admin panel and audit views stay out. REQ-0038 excludes dashboards, and the structured log covers REQ-0025 and REQ-0029.
@@ -42,4 +42,5 @@ This does not contradict [006](006-frontend.md). The frontend is still one page 
 - The advisor view is read-only: no claim and no change of state. The old queue actions of `sentinel-login` are not migrated.
 - The login path moves from `/api/v1/session/*` to `/api/v1/auth/*`. The tests, the eval runner and the docs follow.
 - Open: routing by language and specialty (REQ-0046), the admin panel, and the removal of the reference page in `sentinel-login/` when nobody uses it.
+- *Updated 10/5:* the `sentinel-login/` folder is removed. Nothing served it, imported it or tested it, and it confused readers of the repository (REQ-0034). The history stays in Git and in `openspec/changes/archive/`.
 - *Updated 10/4:* PR #57 adds the product interface and the advisor trace of each step (REQ-0029, REQ-0038). Screens: [`docs/build/screenshots/ui-product/`](../screenshots/ui-product/).

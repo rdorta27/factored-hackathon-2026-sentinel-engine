@@ -8,7 +8,7 @@ Turns dispute creation into a deterministic, policy-gated operation whose respon
 
 ### Requirement: Configurable reference date
 
-The system SHALL use one configurable reference date as its notion of "today" for the dispute window, SHALL display that date to the customer, and SHALL evaluate the window against it rather than the wall clock. The value SHALL come from the `SENTINEL_REFERENCE_DATE` environment variable with the default recorded in the chat capability. Traces to REQ-0039 (P0, Pending) and REQ-0048 (P0, Pending).
+The system SHALL use one configurable reference date as its notion of "today" for the dispute window, SHALL display that date to the customer, and SHALL evaluate the window against it rather than the wall clock. The value SHALL come from the `SENTINEL_REFERENCE_DATE` environment variable with the default recorded in the chat capability. Traces to REQ-0039 (P0, Done) and REQ-0048 (P0, Done).
 
 #### Scenario: Reference date is visible
 
@@ -27,7 +27,7 @@ The system SHALL use one configurable reference date as its notion of "today" fo
 
 ### Requirement: Currency from the account
 
-The system SHALL take every amount and its currency from the account or transaction record, NEVER from the customer's language or country of browsing. Language SHALL affect only how a value is formatted for display. Traces to REQ-0041 (P0, Pending).
+The system SHALL take every amount and its currency from the account or transaction record, NEVER from the customer's language or country of browsing. Language SHALL affect only how a value is formatted for display. Traces to REQ-0041 (P0, Done).
 
 #### Scenario: Same amount, different formatting
 
@@ -41,7 +41,7 @@ The system SHALL take every amount and its currency from the account or transact
 
 ### Requirement: Chat delegates creation
 
-`POST /chat` SHALL NOT invent transaction facts; it SHALL resolve the transaction through the Gold seam and create cases only through the disputes service. Traces to REQ-0003 (P0, Pending) and REQ-0006 (P0, Pending).
+`POST /chat` SHALL NOT invent transaction facts; it SHALL resolve the transaction through the Gold seam and create cases only through the disputes service. Traces to REQ-0003 (P0, Done) and REQ-0006 (P0, Done).
 
 #### Scenario: Chat confirmation matches the created case
 
@@ -50,7 +50,7 @@ The system SHALL take every amount and its currency from the account or transact
 
 ### Requirement: Two-step dispute API
 
-The system SHALL expose `POST /api/v1/disputes/preview` and `POST /api/v1/disputes` for the session customer. The preview SHALL take a charge reference and an optional reason (at most 300 characters), SHALL run the same orchestrator step and policy as the chat, and SHALL return a `confirm_box`, a `text` explanation or a `handoff` without writing. The create SHALL open a dispute only for the charge whose preview is pending, SHALL return `case_confirmation` only after read-back (201), and SHALL return 409 when no preview is pending for that charge. The reason SHALL be stored with the case and SHALL NOT be logged or returned. Bodies SHALL reject any other field, including `customer_id` and `confirmation_token`. Traces to REQ-0004 (P0, In progress), REQ-0005 (P0, Done), REQ-0006 (P0, In progress), and REQ-0033 (P0, Done).
+The system SHALL expose `POST /api/v1/disputes/preview` and `POST /api/v1/disputes` for the session customer. The preview SHALL take a charge reference and an optional reason (at most 300 characters), SHALL run the same orchestrator step and policy as the chat, and SHALL return a `confirm_box`, a `text` explanation or a `handoff` without writing. The create SHALL open a dispute only for the charge whose preview is pending, SHALL return `case_confirmation` only after read-back (201), and SHALL return 409 when no preview is pending for that charge. The reason SHALL be stored with the case and SHALL NOT be logged or returned. Bodies SHALL reject any other field, including `customer_id` and `confirmation_token`. Traces to REQ-0004 (P0, Done), REQ-0005 (P0, Done), REQ-0006 (P0, Done), and REQ-0033 (P0, Done).
 
 #### Scenario: Preview never writes
 
@@ -74,7 +74,7 @@ The system SHALL expose `POST /api/v1/disputes/preview` and `POST /api/v1/disput
 
 ### Requirement: Dispute case listing
 
-The system SHALL expose `GET /api/v1/disputes` and `GET /api/v1/disputes/{case_id}` returning the session customer's cases: disputes and handoff tickets, newest first, each with case id, kind, status (dataset complaints vocabulary: Open, Escalated), transaction facts when known, reason key and creation time. The response SHALL NOT contain `customer_id`, the customer's reason or the advisor package. Another customer's case SHALL be a 404 indistinguishable from a missing one. A `customer_id` query parameter SHALL be rejected. Traces to REQ-0003 (P0, In progress), REQ-0007 (P0, In progress), and REQ-0047 (P0, In progress).
+The system SHALL expose `GET /api/v1/disputes` and `GET /api/v1/disputes/{case_id}` returning the session customer's cases: disputes and handoff tickets, newest first, each with case id, kind, status (dataset complaints vocabulary: Open, Escalated), transaction facts when known, reason key and creation time. The response SHALL NOT contain `customer_id`, the customer's reason or the advisor package. Another customer's case SHALL be a 404 indistinguishable from a missing one. A `customer_id` query parameter SHALL be rejected. Traces to REQ-0003 (P0, Done), REQ-0007 (P0, Done), and REQ-0047 (P0, Done).
 
 #### Scenario: Customer sees own cases
 

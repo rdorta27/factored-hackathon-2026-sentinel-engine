@@ -6,7 +6,7 @@ The four workflows the hackathon offers, what each must demonstrate, and how the
 2. [Flow measurements](02-flow-measurements.md): exact results of the measurement script.
 3. [Flow selection](03-flow-selection.md): what the results mean and why the flow was chosen ([decision 003](../decisions/003-disputes-flow.md)).
 
-**Sources:** the hackathon brief (*Factored AI & Data Hackathon 2026*, section Scope), the kickoff (slide *Task selection*), the [dataset](../../understand/dataset.md) and the data dictionary. **Related:** [requirements](../../requirements/requirements.md), [ML](../areas/ml.md).
+**Sources:** the hackathon brief (*Factored AI & Data Hackathon 2026*, section Scope), the kickoff (slide *Task selection*), the [dataset](../../data/dataset.md) and the data dictionary. **Related:** [requirements](../../requirements/requirements.md), [ML](../areas/ml.md).
 
 ## The brief
 

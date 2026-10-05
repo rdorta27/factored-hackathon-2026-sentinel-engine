@@ -1,6 +1,12 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Requirements: Data and ML
 
-Data preparation, sources and freshness, and the learned component with its labels, splits and tracking. Back to the [requirements index](requirements.md), which holds the sources, the classification, the status counts and the dependency chains.
+This page covers the data preparation, the sources and their freshness. It also covers the learned component, with its labels, splits and tracking. The [requirements index](requirements.md) holds the sources, the classification, the status counts and the dependency chains.
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -18,7 +24,7 @@ Data preparation, sources and freshness, and the learned component with its labe
 <a id="req-0015"></a>
 ### REQ-0015 · Repeatable pipeline with contracts
 
-A data preparation pipeline (Bronze, Silver, Gold) that runs the same way every time, enforces column contracts, checks quality, records lineage and freshness, and handles the dataset's declared issues: about 2% duplicates, 5% nulls and orphaned records.
+Build a data preparation pipeline (Bronze, Silver, Gold) that runs the same way every time. The pipeline enforces column contracts, checks quality and records lineage and freshness. It handles the issues that the dataset declares: about 2% duplicates, 5% nulls and orphaned records.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
@@ -26,50 +32,68 @@ A data preparation pipeline (Bronze, Silver, Gold) that runs the same way every 
 
 **Depends on:** [REQ-0031](#req-0031). The pipeline ingests approved, labeled data.
 
-**Evidence:** Proven by: the pipeline ran end to end on the full dataset into `data/gold_bank.duckdb`, with the [data quality & medallion audit report](../../sentinel-data-engine/data_quality_report.md). The report documents: null rates (0.00% across all mandatory fields), Bronze→Silver volume drop and justification (~11.5% drop explained by deduplication, quarantine, orphan filtering, and Bronze I/O aggregation), 40,515 country-name normalizations, 100% referential integrity, 373,443 eligible disputes (8.4%), and PII-free Gold service view verified against ADR 023. The `fraud_score` range constraint was corrected to 0–100 (per the data dictionary) eliminating false quarantines; the fix is verified by the full test suite (32/32 passing).
+**Evidence:** Proven by a full run of the pipeline on the whole dataset into `data/gold_bank.duckdb`. The [data quality and medallion audit report](../../sentinel-data-engine/data_quality_report.md) documents the run:
+
+- Null rates: 0.00% across all mandatory fields.
+- Bronze to Silver volume drop: about 11.5%. Deduplication, quarantine, orphan filtering and Bronze I/O aggregation explain it.
+- 40,515 country-name normalizations.
+- 100% referential integrity.
+- 373,443 eligible disputes (8.4%).
+- A Gold service view with no PII, verified against ADR 023.
+
+The team corrected the `fraud_score` range constraint to 0–100, as the data dictionary says. The correction removed false quarantines. The data-engine test suite verifies it (32 of 32 tests passed when the fix landed; 40 tests pass on 2026-10-05).
 
 <a id="req-0016"></a>
 ### REQ-0016 · Learned component vs baseline
 
-At least one learned component evaluated against a simpler baseline on held-out cases. A prompted LLM counts if it is defined, evaluated and justified (help channel, 9/28). Ours is the prompted router against a keyword baseline.
+Evaluate at least one learned component against a simpler baseline on held-out cases. A prompted LLM counts if the team defines, evaluates and justifies it (help channel, 9/28). Our component is the prompted router. The baseline uses keywords.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12 · Help channel (9/28)
 
-**Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). Comparison needs valid labels and a shared held-out.
+**Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). The comparison needs valid labels and a shared held-out set.
 
-**Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md). The router also reports a confidence per label; the two cut-offs were calibrated on the development + validation split and frozen in [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive), behind `SENTINEL_LLM_CUTOFFS` and handed to router-v3 for the `eval-v8` measurement.
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It compares the prompted router (GLM 5.3 Flash, prompt v2) with the keyword baseline on the same 280 sealed held-out cases. The team measured once. The net result is +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]). D5 in [018](../build/decisions/018-evaluation-acceptance.md) judges the result.
 
-A second learned component, the charge selector, has exact labels from real transactions: [`charge-ranker/test-v1`](../../evidence/charge-ranker/test-v1/summary.json) compares it with the rules on a customer-disjoint, later test split (`configurations.<name>.all.*`, [025](../build/decisions/025-charge-selector.md)). It stays off in the demo, because it fails the serving rule.
+The router also reports a confidence for each label. The team calibrated the two cut-offs on the development and validation split. [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) freezes them (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive). The variable `SENTINEL_LLM_CUTOFFS` switches them on. The `eval-v8` measurement uses them through router-v3.
 
-A stronger opponent is trained and frozen: TF-IDF on character n-grams and a logistic regression, trained on development and tuned on validation in [`evidence/evaluation-runs/2024Q4-train-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) (`splits`, `model.regularization_c`, `validation.selected`, `model.sha256`; [007](../build/decisions/007-learned-component.md)). The sealed comparison with the router is the work of `eval-v8`.
+A second learned component is the charge selector. It has exact labels from real transactions. [`charge-ranker/test-v1`](../../evidence/charge-ranker/test-v1/summary.json) compares it with the rules on a later test split. No customer is in both the test split and another split (`configurations.<name>.all.*`, [025](../build/decisions/025-charge-selector.md)). It stays off in the demo, because it fails the serving rule.
 
-Missing: nothing for the brief; the cases are model-written simulation, a limit stated in [018](../build/decisions/018-evaluation-acceptance.md).
+The team also trained and froze a stronger opponent: TF-IDF on character n-grams and a logistic regression. It trains on development and the team tunes it on validation. See [`evidence/evaluation-runs/2024Q4-train-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) (`splits`, `model.regularization_c`, `validation.selected`, `model.sha256`; [007](../build/decisions/007-learned-component.md)). The plan `eval-v8` does the sealed comparison with the router.
+
+Missing: nothing for the brief. The cases are a model-written simulation. [018](../build/decisions/018-evaluation-acceptance.md) states this limit.
 
 <a id="req-0017"></a>
 ### REQ-0017 · Valid labels, no leakage
 
-Labels must be trustworthy and the evaluation must not see information from the future or from training. Metrics, thresholds and splits must be justified.
+The labels must be trustworthy. The evaluation must not see information from the future or from training. Justify the metrics, the thresholds and the splits.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: What your solution should demonstrate 4 · Kickoff p. 12
 
-**Depends on:** [REQ-0015](#req-0015). Labels come from the pipeline output.
+**Depends on:** [REQ-0015](#req-0015). The labels come from the pipeline output.
 
-**Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json). The charge selector adds splits by customer and by date, with the frozen counts and hashes in [`charge-ranker/data-v1`](../../evidence/charge-ranker/data-v1/summary.json) (`checks.customers_in_two_splits` = 0, `checks.test_only_families_outside_test` = 0). The labels are exact: each description comes from one known transaction.
+**Evidence:** Proven by:
 
-The written justification of metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
+- The 2024Q4 window with the held-out cut 2025-07-01. The code enforces the cut (`evidence/evaluation/method.md`).
+- The leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`.
+- Development and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+- Splits of the charge selector by customer and by date. [`charge-ranker/data-v1`](../../evidence/charge-ranker/data-v1/summary.json) holds the frozen counts and hashes (`checks.customers_in_two_splits` = 0, `checks.test_only_families_outside_test` = 0).
 
-The router's held-out set was sealed by hash before measuring and measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`); the earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)). The resolution set resamples its 14 base situations for every interval ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)), so the four variants of one situation never count as four independent cases.
+The labels are exact. Each description comes from one known transaction.
 
-Stated limit, not missing work: the router cases are model-written simulation with no native-speaker review ([018](../build/decisions/018-evaluation-acceptance.md)); the label universe itself is frozen data evidence, and a field label check stays future work.
+The written justification of the metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
+
+The team sealed the router held-out set by hash before it measured. The team measured once (`sentinel-ai-core/eval/cases/seal.json`, `eval/measured.json`). The earlier 10 held-out cases moved to development ([018](../build/decisions/018-evaluation-acceptance.md)). The resolution set resamples its 14 base situations for each interval ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)). For this reason, the four variants of one situation never count as four independent cases.
+
+Stated limit, not missing work: the router cases are a model-written simulation. No native speaker reviewed them ([018](../build/decisions/018-evaluation-acceptance.md)). The label universe is frozen data evidence. A field check of the labels stays future work.
 
 <a id="req-0018"></a>
 ### REQ-0018 · Real incremental processing
 
-Show the pipeline updates correctly when data arrives late, is duplicated or changes schema. The data is static, so the brief accepts a clearly labeled test fixture as proof.
+Show that the pipeline updates correctly when data arrives late, arrives twice or changes schema. The data is static. The brief accepts a clearly labeled test fixture as proof.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
@@ -77,86 +101,103 @@ Show the pipeline updates correctly when data arrives late, is duplicated or cha
 
 **Depends on:** [REQ-0015](#req-0015). Incremental processing extends the pipeline.
 
-**Evidence:** Proven by: a labeled two-batch fixture covering a late arrival, an exact duplicate and a new column, with Silver and Gold checked after each batch (`sentinel-data-engine/tests/test_incremental_fixture.py`).
+**Evidence:** Proven by a labeled two-batch fixture. It covers a late arrival, an exact duplicate and a new column. The test checks Silver and Gold after each batch (`sentinel-data-engine/tests/test_incremental_fixture.py`).
 
 <a id="req-0019"></a>
 ### REQ-0019 · Experiment tracking
 
-Record which model, prompt version, parameters and metrics produced each result, so any run can be traced and repeated.
+Record the model, the prompt version, the parameters and the metrics that produced each result. Then anyone can trace and repeat a run.
 
 **Priority:** P1 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Kickoff p. 20
 
-**Depends on:** [REQ-0016](#req-0016). Tracks the learned component's versions.
+**Depends on:** [REQ-0016](#req-0016). The page tracks the versions of the learned component.
 
-**Evidence:** Proven by: router `describe` plus tokens and cost on the `understand` record (`tests/test_ai_router.py`); model, route, prompt and label provenance per run in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json); the served app records the model, route (`fallback` when the baseline answered) and prompt version of each turn (`tests/test_model_serving.py`). Each evaluation run is one write-once folder ([013](../build/decisions/013-experiment-tracking.md)) that names its models, route, prompt version, prices and spend: [`2024Q4-select-v2`](../../evidence/evaluation-runs/2024Q4-select-v2/summary.json) (`candidates.<model>`), [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.models`, `prices`, `spend`) and [`2024Q4-calibration-v1`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs`). The training run [`2024Q4-train-v1`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) records the split ids, the parameter, the scikit-learn version and the model hash (`model`, `splits`); `eval.run verify` trains again and compares ([013](../build/decisions/013-experiment-tracking.md)). The public link was checked remotely on 2026-10-02 and 2026-10-03 ([REQ-0035](delivery.md#req-0035)). The [evidence index](../../evidence/README.md#evaluation-runs) lists every run and its status.
+**Evidence:** Proven by:
 
-The frozen runs are the tracking record; no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
+- The router `describe` output, with tokens and cost, on the `understand` record (`tests/test_ai_router.py`).
+- The model, route and prompt provenance and the label provenance of each run, in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+- The served app. It records the model, the route and the prompt version of each turn. The route is `fallback` when the baseline answered (`tests/test_model_serving.py`).
+- One write-once folder for each evaluation run ([013](../build/decisions/013-experiment-tracking.md)). The folder names the models, the route, the prompt version, the prices and the spend:
+  - [`2024Q4-select-v2`](../../evidence/evaluation-runs/2024Q4-select-v2/summary.json) (`candidates.<model>`),
+  - [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.models`, `prices`, `spend`),
+  - [`2024Q4-calibration-v1`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs`).
+- The training run [`2024Q4-train-v1`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json). It records the split ids, the parameter, the scikit-learn version and the model hash (`model`, `splits`). The command `eval.run verify` trains again and compares ([013](../build/decisions/013-experiment-tracking.md)).
+- The remote checks of the public link on 2026-10-02 and 2026-10-03 ([REQ-0035](delivery.md#req-0035)).
+- The [evidence index](../../evidence/README.md#evaluation-runs). It lists each run and its status.
 
-Missing: the live models' parameters, recorded in the run that measures [016](../build/decisions/016-router-models.md).
+The frozen runs are the tracking record. The team uses no extra tool ([013](../build/decisions/013-experiment-tracking.md)).
+
+Missing: the parameters of the live models. The run that measures [016](../build/decisions/016-router-models.md) records them.
 
 <a id="req-0020"></a>
 ### REQ-0020 · Same held-out for baseline and system
 
-Compare the baseline and the system on exactly the same held-out cases, and make that set resemble the real distribution.
+Compare the baseline and the system on exactly the same held-out cases. Make that set resemble the real distribution.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Machine Learning · **Area:** ml
 
 **Source:** Problem statement: Evaluation evidence · Kickoff p. 12
 
-**Depends on:** [REQ-0017](#req-0017). Held-out built on valid labels.
+**Depends on:** [REQ-0017](#req-0017). The held-out set uses valid labels.
 
-**Evidence:** Proven by: baseline, router v1 and router v2 on the identical 280 sealed cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.case_ids`); the case mix and its model-written origin are declared in [018](../build/decisions/018-evaluation-acceptance.md).
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.case_ids`). It runs the baseline, router v1 and router v2 on the same 280 sealed cases. The team measured once. [018](../build/decisions/018-evaluation-acceptance.md) declares the case mix and its model-written origin.
 
-Missing: nothing for the brief; the mix is a designed simulation (70 bases by 4 variants, at least 25 per intent), stated as a limit in [018](../build/decisions/018-evaluation-acceptance.md).
+Missing: nothing for the brief. The mix is a designed simulation (70 bases by 4 variants, at least 25 per intent). [018](../build/decisions/018-evaluation-acceptance.md) states this as a limit.
 
 <a id="req-0023"></a>
 ### REQ-0023 · Validated LLM judge, if used
 
-Only applies if a model judges the answers: its rubric must be documented and checked on a sample against human or deterministic judgments.
+This applies only if a model judges the answers. The team must document its rubric. The team must check the rubric on a sample against human judgments or deterministic judgments.
 
 **Priority:** P2 · **Status:** Pending · **Criterion:** Machine Learning · **Area:** ml · **Flow:** If applicable
 
 **Source:** Problem statement: Evaluation evidence
 
-**Depends on:** [REQ-0016](#req-0016). Only applies to an LLM component being judged.
+**Depends on:** [REQ-0016](#req-0016). This applies only to an LLM component that a model judges.
 
-**Evidence:** Not used so far: answers are judged by deterministic checks. Close as not applicable if that holds.
+**Evidence:** Not used so far. Deterministic checks judge the answers. Close the requirement as not applicable if that stays true.
+
+Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): a 20-label check by a person. The sample is prepared in `eval/review/human-check-v1.md` (task 3.3). It checks label quality. It is not an LLM judge, so this requirement stays not applicable.
 
 <a id="req-0031"></a>
 ### REQ-0031 · Approved data, labeled by origin
 
-Use only organizer-approved data and label every input as real, de-identified, synthetic or team-generated. The organizer's dataset is fully synthetic (dataset summary: "no real customer information is included").
+Use only data that the organizers approved. Label each input as real, de-identified, synthetic or team-generated. The organizer dataset is fully synthetic. The dataset summary says: "no real customer information is included".
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data
 
 **Source:** Problem statement: Data and execution boundaries
 
-**Evidence:** Proven by: the [source inventory](../data_inventory.md): every input labeled by origin (organizer synthetic dataset, team-written fixtures and evaluation cases), with no external or real customer data. The [what is real](../architecture/what-is-real.md) page labels every component, data source and number as real, mock, synthetic, team-generated, simulation or projection, and the [evidence index](../../evidence/README.md) labels every run the same way.
+**Evidence:** Proven by:
+
+- The [source inventory](../data_inventory.md). It labels each input by origin (organizer synthetic dataset, team-written fixtures and evaluation cases). It lists no external data and no real customer data.
+- The [what is real](../architecture/what-is-real.md) page. It labels each component, data source and number as real, mock, synthetic, team-generated, simulation or projection.
+- The [evidence index](../../evidence/README.md). It labels each run the same way.
 
 <a id="req-0039"></a>
 ### REQ-0039 · Declare data freshness
 
-Every answer about data says how current it is ("updated through ...") and never claims anything newer. The dataset ends on 2026-06-17.
+Each answer about data says how current the data is ("updated through ..."). The answer never claims anything newer. The dataset ends on 2026-06-17.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** AI Engineering / Data Engineering · **Area:** ai, data
 
 **Source:** Own: [conversation](../build/conversation.md#when-data-is-not-up-to-date) · Dataset summary (data ends 2026-06-17)
 
-**Depends on:** [REQ-0015](#req-0015). Freshness comes from the pipeline's as-of date.
+**Depends on:** [REQ-0015](#req-0015). The freshness comes from the as-of date of the pipeline.
 
-**Evidence:** Proven by: `as_of` on the listing and `referenceDate` on every confirmation, from one configurable reference date (`test_screen_and_engine_share_the_default_reference_date`, `tests/test_contract.py`).
+**Evidence:** Proven by `as_of` on the listing and `referenceDate` on each confirmation. Both come from one configurable reference date (`test_screen_and_engine_share_the_default_reference_date`, `tests/test_contract.py`).
 
 <a id="req-0054"></a>
 ### REQ-0054 · Justified external data
 
-External data is allowed only if justified: source, license, why it is needed, no personal data, and labeled as external.
+The team may use external data only with a justification. The justification gives the source, the license and the reason for the need. The data has no personal data. The team labels it as external.
 
 **Priority:** P1 · **Status:** Done · **Criterion:** Data Engineering · **Area:** data, ml
 
 **Source:** Help channel (9/28)
 
-**Depends on:** [REQ-0031](#req-0031). Same source inventory.
+**Depends on:** [REQ-0031](#req-0031). It uses the same source inventory.
 
-**Evidence:** Proven by: no external data is used, declared in the [source inventory](../data_inventory.md) (section 3.3).
+**Evidence:** Proven by the fact that the system uses no external data. The [source inventory](../data_inventory.md) declares this (section 3.3).

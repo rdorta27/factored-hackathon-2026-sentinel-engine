@@ -3,8 +3,11 @@ name: tests
 # Both suites, on every push and pull request, with no model keys, cloud
 # credentials or data, and without writing evidence (REQ-0028, REQ-0021).
 # A run is listed under replayable only when `python3 -m eval.run verify`
-# reproduces it offline. 2024Q4-eval-v7 stays out until resolution-eval is
-# merged: its system block does not reproduce (docs/build/metrics-report.md).
+# reproduces it offline. 2024Q4-eval-v7 stays out: its system block does not
+# reproduce (docs/build/metrics-report.md). 2024Q4-calibration-v1 stays out:
+# its development cases changed after the run (evidence/README.md). The
+# eval-v8 and robustness runs do not exist yet; the post-freeze change adds
+# them after the code freezes.
 
 on:
   push:
@@ -19,6 +22,11 @@ env:
 jobs:
   ai-core:
     runs-on: ubuntu-latest
+    env:
+      # The replay of the resolution runs rebuilds the summary, which names the
+      # model of 016. These are model names, not keys.
+      SENTINEL_LLM_CHEAP_MODEL: accounts/fireworks/models/glm-5p3-flash
+      SENTINEL_LLM_STRONG_MODEL: accounts/fireworks/models/glm-5p3-flash
     defaults:
       run:
         working-directory: sentinel-ai-core
@@ -40,7 +48,11 @@ jobs:
       - name: Verify replayable runs
         run: |
           # Add a run id here only after it replays offline.
-          runs=()
+          runs=(
+            2024Q4-resolution-v1
+            2024Q4-resolution-v2
+            2024Q4-train-v1
+          )
           if [ "${#runs[@]}" -eq 0 ]; then
             echo "no replayable runs listed"
             exit 0
@@ -68,3 +80,18 @@ jobs:
 
       - name: Test
         run: python -m pytest -q
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check relative links
+        run: python3 scripts/check_links.py
+
+      - name: Check cited requirement status
+        run: python3 scripts/check_spec_citations.py

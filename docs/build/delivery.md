@@ -1,6 +1,6 @@
 # Delivery
 
-Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables).
+Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../overview.md#deliverables).
 
 ## Language
 
@@ -14,29 +14,38 @@ Everything, working material included, is written in **English from the first dr
 | Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Mon 10/5 (internal deadline) |
 | Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
 | `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
+| ASD-STE100 header on each Markdown page | English | In progress | Rubén | 76 of 221 pages on 2026-10-05, counted with the command in [AGENTS.md](../../AGENTS.md#asd-ste100) |
 
 We update it at each review, not at the end. Statuses: Pending, In progress, Done.
 
 ## Presentation
 
-4 to 6 slides.
+Six slides, in English, as static HTML pages: [`site/slides/deck.html`](../../site/slides/deck.html) (1280×720). Open the page in a browser. The arrow keys move between slides and `f` opens full screen. Each number comes from `site/numbers.json` with its type.
 
 | # | Slide | Source |
 |---|---|---|
-| 1 | Problem and chosen flow, backed by data | [flow selection](flows/03-flow-selection.md), [decisions](decisions/) |
-| 2 | Architecture (core principle and layers) | [architecture](../architecture/README.md), [decisions](decisions/) |
-| 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
-| 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
-| 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production), [data assumptions](../rationale/data-assumptions.md) |
+| 1 | Why: the problem and its data | [problem and demand](../rationale/problem-and-demand.md), [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) |
+| 2 | What: the product and the four demo cases | [product](../product.md), [demo replay](../../sentinel-ai-core/eval/demo/replay.md) |
+| 3 | How: "The AI converses. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
+| 4 | Proof: results and 0 unsafe outcomes | [evidence index](../../evidence/README.md), [metrics](metrics.md) |
+| 5 | Your brand: the white label | [branding](../../sentinel-ai-core/app/branding.py) |
+| 6 | Limits and roadmap, with the mocks | [mocks](../architecture/mocks.md), [README roadmap](../../README.md#roadmap) |
+
+Build the PDFs before the submission:
+
+```bash
+python3 scripts/export_slides.py
+```
+
+The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides.es-419.pdf` and `sentinel-slides.pt-br.pdf`. Git ignores them. Each holds one page for each slide. Submit the English PDF.
 
 - The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
-- We show the 3 top metrics: safe resolution, unsafe outcomes, cost.
-- Each figure with n and measurement type (offline, simulation, projection).
-- We include failures and limitations; hiding them counts against us.
+- Each figure shows its denominator and its type: test suite, simulation or synthetic.
+- We include failures and limitations. Hiding them counts against us.
 
 ## Video pitch
 
-Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions.
+Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions. The full script, Why → What → How, with the shot list, is in [video script](video-script.md).
 
 1. The problem, in one sentence and with one data point.
 2. Demo of the **normal case** (es-419; type the es-MX line in [replay](../../sentinel-ai-core/eval/demo/replay.md)).
@@ -45,6 +54,50 @@ Mandatory, **3 minutes at most**. It shows the solution working and explains the
 5. A prompt injection attempt that fails.
 6. Key architecture decisions (from [decisions](decisions/)).
 7. Top results and limitations.
+
+## Project site
+
+The site and the slides are in English, Spanish (Latin America, `es-419`) and Portuguese (`pt-BR`). English is the source and the submission language ([language](#language)). The other two languages are translations for readers. `python3 scripts/localize.py` builds them from the English pages. `site/i18n/` holds the dictionaries. The ASD-STE100 rule applies to the English text only.
+
+The static site is in `site/`. It holds plain HTML and CSS, with no build step. The workflow [`pages.yml`](../../.github/workflows/pages.yml) publishes it to GitHub Pages on each push to `main` that changes `site/`.
+
+| Item | Detail |
+|---|---|
+| Numbers | `python3 scripts/site_numbers.py` writes `site/numbers.json` and the number slots of each page from the frozen `summary.json` runs |
+| Check | `python3 scripts/site_numbers.py --check` and `python3 -m pytest scripts/test_site.py -q` fail when a number differs from the evidence |
+| Rebuild the copies | After any change to the English text or to `site/numbers.json`, run `python3 scripts/site_numbers.py`, then `python3 scripts/localize.py`, then `python3 scripts/export_slides.py`. Run `python3 scripts/localize.py --check` to see if a copy is stale |
+| Link for the judges | Use `https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en`. It opens English whatever the language of the browser, and the browser keeps the choice. Without `?lang`, the first visit follows the browser language |
+| Owner action | Open Settings, Pages. Set Source to GitHub Actions. Run the `pages` workflow once |
+| Status | Site and workflow written. The first green run waits for the owner action |
+
+## Submission email
+
+The owner sends this email with the submission. Fill in each placeholder. Do
+not put a password in the slides or the video.
+
+- **Repository:** `<repository URL>`
+- **Live link:** `<link>`
+- **Slides:** `<slides URL or file>`
+- **Video:** `<video URL>`
+
+### Credentials
+
+All judges use the same set. The cases share state between judges.
+
+| Login | Role | Country | Password |
+|---|---|---|---|
+| `CUST-0001` | customer | MX | `<password>` |
+| `CUST-0002` | customer | CO | `<password>` |
+| `CUST-0003` | customer | AR | `<password>` |
+| `ADV-0001` | advisor | MX | `<password>` |
+
+- The plain passwords are in `deploy/judge-users/passwords.csv` on the owner's
+  machine. Git ignores the file. The users file on the link holds salted hashes
+  only.
+- Lockout rule: after 5 failed logins for one login id or one address, the
+  login answers HTTP 429. The lock lasts 15 minutes.
+- The public link has no one-click entry. The documented fixture passwords do
+  not work on the link.
 
 ## Pending
 

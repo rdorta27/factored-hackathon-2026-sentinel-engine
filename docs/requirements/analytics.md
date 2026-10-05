@@ -1,6 +1,12 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Requirements: Analytics
 
-Analysis that justifies the flow and the metrics that prove the system works. Back to the [requirements index](requirements.md), which holds the sources, the classification, the status counts and the dependency chains.
+This page holds the analysis that justifies the flow. It also holds the metrics that prove that the system works. The [requirements index](requirements.md) holds the sources, the classification, the status counts and the dependency chains.
 
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
@@ -15,7 +21,7 @@ Analysis that justifies the flow and the metrics that prove the system works. Ba
 <a id="req-0014"></a>
 ### REQ-0014 · Data-backed problem
 
-Use the dataset to show the chosen flow matters: contact reasons, demand, data quality and operational constraints, in a reproducible analysis.
+Use the dataset to show that the chosen flow matters. Show the contact reasons, the demand, the data quality and the operational constraints. Make the analysis reproducible.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
@@ -23,42 +29,52 @@ Use the dataset to show the chosen flow matters: contact reasons, demand, data q
 
 **Depends on:** [REQ-0031](data-ml.md#req-0031). The analysis uses approved, labeled data.
 
-**Evidence:** Proven by: the reproducible [flow measurements](../build/flows/02-flow-measurements.md) and [flow selection](../build/flows/03-flow-selection.md); and the problem run [`evidence/problem/dev-v1`](../../evidence/problem/dev-v1/README.md): first-contact resolution by reason, calls a day by workflow (mean, busy day and highest day), agent hours a month and missing values on the development zone, with a reason-to-workflow mapping committed before the first number.
+**Evidence:** Proven by:
+
+- The reproducible [flow measurements](../build/flows/02-flow-measurements.md) and the [flow selection](../build/flows/03-flow-selection.md).
+- The problem run [`evidence/problem/dev-v1`](../../evidence/problem/dev-v1/README.md). It holds these values for the development zone: first-contact resolution by reason, calls a day by workflow (mean, busy day and highest day), agent hours a month and missing values.
+- The reason-to-workflow mapping of that run. The team committed it before the first number.
 
 <a id="req-0022"></a>
 ### REQ-0022 · Metrics with n, mix and variability
 
-Every reported metric states how many cases it covers, their mix, the versions used and how much it varies between runs, and failures are included rather than hidden.
+Each reported metric states how many cases it covers, the mix of the cases, the versions used and the variation between runs. The report includes the failures. It does not hide them.
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: What your solution should demonstrate 5; Evaluation evidence
 
-**Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055). Reports the held-out metrics with n and failures.
+**Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055). The page reports the held-out metrics with n and failures.
 
-**Evidence:** Proven by: n, case mix, model and prompt versions, failures, base-level 95% intervals and stability over 3 recorded repetitions on 100 cases in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.router_v2.stability`).
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It holds n, the case mix, the model and prompt versions, the failures and the base-level 95% intervals. It also holds the stability over 3 recorded repetitions on 100 cases (`component.versions.router_v2.stability`).
 
 Missing: nothing for the router component.
+
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): each summary reports the number of bases next to the number of cases (`bases` in `eval/metrics.py` and `eval/intervals.py`), and the intervals resample by base. The reports show both numbers. The gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) and the cut-off run [`2024Q4-cutoff-diagnosis-v1`](../../evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json) carry their `bases`. Remaining: the 20-label human check (task 3.3, sample prepared in `eval/review/human-check-v1.md`) and the three repeats of the final measurement (task 3.5, post-freeze).
 
 <a id="req-0024"></a>
 ### REQ-0024 · Breakdown by language, country and segment
 
-Compare outcomes by language, country and authorized customer segment (the `segment` column of `customers`: Premium, Plus, Basic, Student), investigate disparities and state small-sample limits. Offline results, simulations and projections are labeled separately.
+Compare the outcomes by language, by country and by authorized customer segment. The segment is the `segment` column of `customers`: Premium, Plus, Basic and Student. Investigate the disparities. State the limits of small samples. Label offline results, simulations and projections separately.
 
 **Priority:** P1 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: Evaluation evidence
 
-**Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022). Breakdown of the reported metrics by language and country.
+**Depends on:** [REQ-0012](frontend-backend.md#req-0012), [REQ-0022](#req-0022). The page breaks down the reported metrics by language and country.
 
-**Evidence:** Proven by: (1) accuracy per variant (es-MX, es-CO, es-AR, pt-BR) and per intent with intervals and a paired per-variant loss in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.breakdown`, `variant_losses`); (2) the [segment and multi-currency dispute breakdown report](../reports/req_0024_segment_breakdown_report.md) covering transaction volume, eligibility rate, and monetary exposure by segment (Basic, Plus, Premium, Student) and by country/currency (MXN, COP, ARS, USD), backed by `v_service_dispute_eligible_transactions` in `sentinel-data-engine/data/gold_bank.duckdb`; (3) the system's own outcomes broken down per language variant and per account country with n and situation-level 95% intervals in [`evidence/evaluation-runs/2024Q4-resolution-v2/summary.json`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (`system.<version>.by_variant`, `by_country`), every group labelled descriptive, reported in the [metrics report](../build/metrics-report.md).
+**Evidence:** Proven by three items:
 
-System outcomes are not broken down by customer segment: the resolution cases carry no customer record, so there is no segment to group by; the segment figures in (2) are dataset context, not a measurement of how the system answers each segment.
+1. Accuracy per variant (es-MX, es-CO, es-AR, pt-BR) and per intent, with intervals and a paired loss per variant. The source is [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.versions.<version>.breakdown`, `variant_losses`).
+2. The [segment and multi-currency dispute breakdown report](../reports/req_0024_segment_breakdown_report.md). It covers transaction volume, eligibility rate and monetary exposure. It groups them by segment (Basic, Plus, Premium, Student) and by country and currency (MXN, COP, ARS, USD). The view `v_service_dispute_eligible_transactions` in `sentinel-data-engine/data/gold_bank.duckdb` backs it.
+3. The system outcomes per language variant and per account country, with n and situation-level 95% intervals. The source is [`evidence/evaluation-runs/2024Q4-resolution-v2/summary.json`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (`system.<version>.by_variant`, `by_country`). Each group has the label "descriptive". The [metrics report](../build/metrics-report.md) shows them.
+
+The system outcomes have no breakdown by customer segment. The resolution cases carry no customer record, so there is no segment to group by. The segment figures in item 2 are dataset context. They do not measure how the system answers each segment.
 
 <a id="req-0050"></a>
 ### REQ-0050 · Monitoring by country
 
-Monitor latency, failures, escalations and complaints per country.
+Monitor latency, failures, escalations and complaints for each country.
 
 **Priority:** P1 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
@@ -66,12 +82,15 @@ Monitor latency, failures, escalations and complaints per country.
 
 **Depends on:** [REQ-0024](#req-0024), [REQ-0025](non-functional.md#req-0025). Country monitoring reads the logs and the breakdown.
 
-**Evidence:** Proven by: the [country log analytics report](../reports/req_0050_country_logs_report.md) covering digital event volumes (11.9M across México, Colombia, Argentina), call center interaction counts and sentiment scores by country and channel, and customer satisfaction survey averages — all sourced from `bronze_digital_events`, `silver_call_center_interactions`, and `silver_satisfaction_surveys` in `sentinel-data-engine/data/gold_bank.duckdb`; beside the dataset report, the system's own monitoring: `sentinel-ai-core/eval/monitor.py` aggregates the app turn log per country and language (turns, p50/p95 latency, failed or timed-out steps, escalations, handoffs, fallback turns, cost; aggregates only, write-once), frozen for the simulated replay workload in [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) (256 turns, 888 records) and reported in the [metrics report](../build/metrics-report.md).
+**Evidence:** Proven by two sources.
+
+1. The [country log analytics report](../reports/req_0050_country_logs_report.md). It covers the digital event volumes (11.9M across México, Colombia and Argentina), the call center interaction counts and sentiment scores by country and channel, and the customer satisfaction survey averages. The sources are `bronze_digital_events`, `silver_call_center_interactions` and `silver_satisfaction_surveys` in `sentinel-data-engine/data/gold_bank.duckdb`.
+2. The monitoring of the system itself. The script `sentinel-ai-core/eval/monitor.py` aggregates the app turn log for each country and language. It reports turns, p50 and p95 latency, failed or timed-out steps, escalations, handoffs, fallback turns and cost. It keeps aggregates only and is write-once. The run [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) freezes the result for the simulated replay workload (256 turns, 888 records). The [metrics report](../build/metrics-report.md) shows it.
 
 <a id="req-0053"></a>
 ### REQ-0053 · Sizing and its limits
 
-How many disputes per day appear in the data, what capacity the prototype is designed for, and what changes at real volume (help channel, 9/28).
+State how many disputes a day appear in the data. State the capacity that the prototype is designed for. State what changes at real volume (help channel, 9/28).
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
@@ -79,34 +98,68 @@ How many disputes per day appear in the data, what capacity the prototype is des
 
 **Depends on:** [REQ-0014](#req-0014). Sizing uses the dispute volumes from the analysis.
 
-**Evidence:** Proven by: the [sizing and capacity specification](../sizing-capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume. The latency targets use the router latency measured in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The busy-day load is measured in [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json): `demand.account_or_payment_inquiry.busy_day_p95` = 292 and `demand.transaction_dispute.busy_day_p95` = 145, with the highest days 332 and 169; the event peaks stay projections. Limit: no load test of `/api/v1/chat` exists yet, so the requests per second of one replica are not measured.
+**Evidence:** Proven by the [sizing and capacity specification](../sizing-capacity.md). It gives the dispute volume and the daily load from the data. It gives the prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume.
+
+- The latency targets use the router latency that [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) measures.
+- [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) measures the busy-day load: `demand.account_or_payment_inquiry.busy_day_p95` = 292 and `demand.transaction_dispute.busy_day_p95` = 145. The highest days are 332 and 169.
+- The event peaks stay projections.
+
+Limit: no load test of `/api/v1/chat` exists yet. The requests per second of one replica are not measured.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics
 
-Report the brief's outcome metrics: safe automated resolution (plus the share attempted), containment, escalation quality (missed and unnecessary transfers), unsafe outcomes with counts and denominators, p50/p95 latency, and cost per attempted case and per successful resolution ("not defined" if there are none).
+Report the outcome metrics that the brief requires:
+
+- safe automated resolution, and the share attempted,
+- containment,
+- escalation quality (missed and unnecessary transfers),
+- unsafe outcomes, with counts and denominators,
+- p50 and p95 latency,
+- cost per attempted case and cost per successful resolution ("not defined" if there is none).
 
 **Priority:** P0 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis, ml
 
 **Source:** Problem statement: Evaluation evidence; What your solution should demonstrate 5 · Kickoff p. 12
 
-**Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025). Metrics on the held-out, latency and cost from the logs.
+**Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0025](non-functional.md#req-0025). The metrics come from the held-out set. Latency and cost come from the logs.
 
-**Evidence:** Proven by: the [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json), with every mandatory metric and its denominator (section 6); the final resolution run [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (with [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) beside it) measures safe automated resolution over 56 cases in 14 situations on the final loop (16 of 56 for both versions, 0 unsafe, 0 missed transfers, cost per resolution USD 0.000561 for `router_v2`), carries the per-variant and per-country breakdown with n, situation-level intervals and the descriptive label, and verifies offline; the router reports tokens and cost per turn (`tests/test_ai_router.py`).
+**Evidence:** Proven by:
 
-Stated limits, not missing work: the resolution rate is a simulation over a mock store, not a field resolution rate; the pending status is not covered (no `Pending` row in the mock store). The system block of `eval-v7` does not replay offline (report section 9); the resolution runs do.
+- The [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It gives each mandatory metric with its denominator (section 6).
+- The final resolution run [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json), with [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) beside it. It measures safe automated resolution over 56 cases in 14 situations on the final loop. Both versions resolve 16 of 56 cases, with 0 unsafe outcomes and 0 missed transfers. The cost per resolution is USD 0.000561 for `router_v2`. The run has the breakdown by variant and by country, with n, situation-level intervals and the label "descriptive". It verifies offline.
+- The router reports tokens and cost for each turn (`tests/test_ai_router.py`).
+
+Stated limits, not missing work:
+
+- The resolution rate is a simulation over a mock store. It is not a field resolution rate.
+- The pending status is not covered. The mock store has no `Pending` row.
+- The system block of `eval-v7` does not replay offline (report section 9). The resolution runs do.
+
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) states the ceiling of safe resolution (16 of 56) and the cases where the baseline and the router differ (0). The live timing rehearsal [`2024Q4-resolution-live-dev-v1`](../../evidence/evaluation-runs/2024Q4-resolution-live-dev-v1/summary.json) measures p50/p95 latency per model call and per conversation, and cost per attempted case and per resolution, from live model calls under a USD 1 cap. Remaining: the live run on the frozen build (task 2.4, post-freeze). Until then the latency of `resolution-v2` comes from a replay, and the report labels it as a replay.
 
 <a id="req-0057"></a>
 ### REQ-0057 · Business outcomes and ROI
 
-The intended customer and business outcomes, with cost-per-resolution ROI against the baseline. Projected savings are labeled as projections.
+State the intended customer outcomes and business outcomes. Give the ROI as a cost per resolution against the baseline. Label projected savings as projections.
 
 **Priority:** P1 · **Status:** Done · **Criterion:** Data Analytics · **Area:** analysis
 
 **Source:** Problem statement: introduction; What your solution should demonstrate 1 · Kickoff p. 13
 
-**Depends on:** [REQ-0055](#req-0055). ROI uses cost per resolution.
+**Depends on:** [REQ-0055](#req-0055). The ROI uses the cost per resolution.
 
-**Evidence:** Proven by, as a projection, never a measured saving: [ROI](../build/roi.md) gives the break-even safe-resolution rate (0.21% to 2.99% over the assumed advisor-hour range of USD 5 to 25 and the estimated infrastructure of USD 20 to 60 a month) with every input labelled by origin, the sensitivity table, and the measured simulated rate beside it (16 of 56 = 0.2857, simulation over the mock store); the call-center aggregates behind it are frozen in [`evidence/roi/2023-2026-callcenter-v1/summary.json`](../../evidence/roi/2023-2026-callcenter-v1/summary.json) (240,056 transactional calls, 3.68-minute mean handle time, 0.9151 first-contact resolution, 0.0993 escalation, aggregates only, write-once with verify); the measured costs come from [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (USD 0.00016 per attempted case, USD 0.000561 per resolution for `router_v2`).
+**Evidence:** Proven by the following items. The result is a projection. It is never a measured saving.
 
-Stated on the page, not claimed: no measured saving, no price on an unsafe outcome, no saving from better handoffs, and no field resolution rate; the data does not separate dispute calls from other transactional calls, so the projection bounds the flow.
+- [ROI](../build/roi.md) gives the break-even safe-resolution rate: 0.21% to 2.99%. The range uses an assumed advisor-hour cost of USD 5 to 25 and an estimated infrastructure cost of USD 20 to 60 a month. Each input has a label for its origin. The page also has the sensitivity table and the measured simulated rate (16 of 56 = 0.2857, a simulation over the mock store).
+- [`evidence/roi/2023-2026-callcenter-v1/summary.json`](../../evidence/roi/2023-2026-callcenter-v1/summary.json) freezes the call-center aggregates behind it: 240,056 transactional calls, 3.68-minute mean handle time, 0.9151 first-contact resolution and 0.0993 escalation. It keeps aggregates only. It is write-once and has a verify step.
+- [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) gives the measured costs: USD 0.00016 per attempted case and USD 0.000561 per resolution for `router_v2`.
+
+The page states these limits and does not claim more:
+
+- no measured saving,
+- no price on an unsafe outcome,
+- no saving from better handoffs,
+- no field resolution rate.
+
+The data does not separate dispute calls from other transactional calls. For this reason, the projection bounds the flow.

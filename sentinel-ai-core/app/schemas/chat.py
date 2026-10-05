@@ -6,7 +6,7 @@ Every chat answer is exactly one variant: ``text``, ``clarification``,
 ``error`` (spec ``chat``).
 Replies carry raw values and translation keys, never authored prose; the
 client renders the keys in its locale. Shapes follow the former
-``sentinel-login`` chat contract (backend removed by decision 009), trimmed to
+chat contract of the removed mock backend (decision 009), trimmed to
 the spec: no priority, service-level date, queue status or receipt on a
 confirmation.
 
@@ -75,6 +75,11 @@ class CandidateTransaction(BaseModel):
     eligible: bool
     ineligibleKey: Optional[str] = Field(default=None, max_length=64)
     case_state: Optional[str] = Field(default=None, max_length=24)
+    # Verified facts behind a closed charge, for its information card. The page
+    # shows them and never derives them: the case of this charge, or the window.
+    case_id: Optional[str] = Field(default=None, max_length=64)
+    window_days: Optional[int] = Field(default=None, ge=0)
+    last_eligible_date: Optional[str] = Field(default=None, max_length=32)
 
 
 class ProductView(BaseModel):

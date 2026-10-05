@@ -1,7 +1,6 @@
 # Sentinel AI Core
 
-This package is the only submission server. `sentinel-login/` stays in the
-repository as a reference and is not the server to start for the demo.
+This package is the only submission server.
 
 ## Run
 
@@ -19,7 +18,10 @@ reads `SENTINEL_REFERENCE_DATE` once at startup. Default: `2026-06-17`.
 SENTINEL_REFERENCE_DATE=2026-06-17 python3 -m uvicorn app.main:app --port 8000
 ```
 
-## Demo credentials (false, test-only)
+## Demo credentials (local runs, false)
+
+These credentials are for local runs and tests. The public link uses the
+credentials of the submission email. No password is in the repository.
 
 | Login | Password | Country |
 |---|---|---|
@@ -33,13 +35,19 @@ no login by customer number alone. Do not send `customer_id` in the body.
 Customers land on the chat; the advisor lands on the escalated tickets
 (`GET /api/v1/handoffs`, role `advisor` only).
 
+The fixture users exist only in the labelled mock. A local run reads the real
+Gold file when it exists, so these logins have no charges. Set
+`SENTINEL_GOLD_SOURCE=mock` for the demo.
+
 ## Demo entry (evaluators only)
 
 With `SENTINEL_DEMO_AUTH=1` the login page offers four one-click personas
 (normal in es-MX, ambiguous in pt-BR on the Mexican account, high amount in
-es-CO, "not me" in es-AR) under a banner stating the data is simulated and
-needs no password: `POST /api/v1/auth/demo/{persona}`. Without the flag the
-route answers 404 and the user-and-password form is the only entry.
+es-CO, "not me" in es-AR) under a banner stating the data is simulated:
+`POST /api/v1/auth/demo/{persona}`. Without the flag the route answers 404 and
+the user-and-password form is the only entry. The public link sets
+`SENTINEL_DEMO_PERSONAS=0`, so the one-click entry answers 404 and the judges
+use the credentials of the submission email.
 
 Limitation: a persona id alone proves nothing about identity. One-click
 sign-in is a demo shortcut for evaluators, never an authentication method;

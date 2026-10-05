@@ -234,15 +234,14 @@ flowchart TB
     repo --> docs["docs/ · team/ · openspec/"]
     repo --> evidence["evidence/<br/>frozen measurement and evaluation runs"]
     repo --> branding["branding/<br/>styles for chat, docs, slides"]
-    repo --> login["sentinel-login/<br/>original page, reference only"]
 
     classDef comp fill:#f1edff,stroke:#6d4aff,stroke-width:2px,color:#1a1530
     classDef store fill:#fbfaff,stroke:#3d8bff,stroke-width:2px,color:#1a1530
-    class data,core,docs,evidence,branding,login comp
+    class data,core,docs,evidence,branding comp
     class repo store
 ```
 
-Two code folders. `sentinel-login/` keeps only the original page as a reference. Components are folders, not services: there is no second HTTP service for the model and no separate web package. The team plan gives the owners and the progress per folder.
+Two code folders. Components are folders, not services: there is no second HTTP service for the model and no separate web package. The team plan gives the owners and the progress per folder.
 
 ## References
 

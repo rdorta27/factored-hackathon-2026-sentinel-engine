@@ -8,7 +8,7 @@ Stops a dispute from being opened or reported until the customer confirms and th
 
 ### Requirement: Confirm box before any write
 
-When policy allows a dispute, the loop SHALL show the selected candidate (amount, currency, merchant, date) and stop. It SHALL NOT issue a `confirmation_token` or call the open-dispute tool on that turn. An exact match and a structured selection SHALL end in that box when policy allows, and SHALL NOT open a dispute on the selection turn. Traces to REQ-0006 (P0, In progress) and REQ-0043 (P1, Pending).
+When policy allows a dispute, the loop SHALL show the selected candidate (amount, currency, merchant, date) and stop. It SHALL NOT issue a `confirmation_token` or call the open-dispute tool on that turn. An exact match and a structured selection SHALL end in that box when policy allows, and SHALL NOT open a dispute on the selection turn. Traces to REQ-0006 (P0, Done) and REQ-0043 (P1, Done).
 
 #### Scenario: Approved charge waits for the button
 - **WHEN** the selected charge is Approved, inside the filing window, and no stop rule applies
@@ -23,7 +23,7 @@ When policy allows a dispute, the loop SHALL show the selected candidate (amount
 - **THEN** the turn does not open a dispute
 
 ### Requirement: Token authorizes the confirmation turn
-On the confirmation turn the loop SHALL issue one single-use `confirmation_token` bound to the session, the candidate, and the action, and SHALL pass it to the open-dispute tool. The model SHALL NOT see, create, or forward the token. The token SHALL NOT appear in the chat request or the chat response. A candidate id that was not shown SHALL be rejected without a write. A structured selection while no box is pending SHALL NOT issue a token. Traces to REQ-0006 (P0, In progress) and REQ-0047 (P0, Pending).
+On the confirmation turn the loop SHALL issue one single-use `confirmation_token` bound to the session, the candidate, and the action, and SHALL pass it to the open-dispute tool. The model SHALL NOT see, create, or forward the token. The token SHALL NOT appear in the chat request or the chat response. A candidate id that was not shown SHALL be rejected without a write. A structured selection while no box is pending SHALL NOT issue a token. Traces to REQ-0006 (P0, Done) and REQ-0047 (P0, Done).
 
 #### Scenario: Matching candidate id opens once
 - **WHEN** the structured candidate id matches the pending confirmation
@@ -38,7 +38,7 @@ On the confirmation turn the loop SHALL issue one single-use `confirmation_token
 - **THEN** the loop does not issue a token and does not call the open-dispute tool
 
 ### Requirement: Same key, bounded read-back
-The idempotency key SHALL be derived from session, candidate, and action, not from the request trace. A retry with that key SHALL return the existing dispute. The loop SHALL read the dispute back and SHALL retry a failed write or read-back at most three times with the same key. A case number SHALL be reported only when the read-back finds the record. Otherwise the loop SHALL hand off and record the attempt count, with no case number. Traces to REQ-0005 (P0, Pending), REQ-0008 (P0, In progress), and REQ-0026 (P1, Pending).
+The idempotency key SHALL be derived from session, candidate, and action, not from the request trace. A retry with that key SHALL return the existing dispute. The loop SHALL read the dispute back and SHALL retry a failed write or read-back at most three times with the same key. A case number SHALL be reported only when the read-back finds the record. Otherwise the loop SHALL hand off and record the attempt count, with no case number. Traces to REQ-0005 (P0, Done), REQ-0008 (P0, Done), and REQ-0026 (P1, Done).
 
 #### Scenario: Read-back succeeds
 - **WHEN** the open-dispute call returns and a later lookup finds the record within three attempts
