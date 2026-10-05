@@ -94,6 +94,7 @@ The team delivers the repository as public, with the name `factored-hackathon-20
 - The team never committed dataset rows. No commit has a `.csv`, `.parquet`, `.duckdb` or database blob, or a `data/` or `raw/` folder.
 - `.gitignore` covers `data/`, `.env` and the local data formats.
 - `.github/workflows/gitleaks.yml` scans the commits that each push and pull request adds. It catches a new secret when the secret enters the repository.
+- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) states the rule for each person: no secret, no password, no dataset row and no bucket name in a commit.
 
 The review and its blind spot are in [security](../build/security.md#history-review-req-0034-101).
 
@@ -172,6 +173,7 @@ Write the README, the slides, the video script, `docs/` and `team/` in English. 
 - Every file under `docs/` and `team/` is in English.
 - `AGENTS.md` requires simplified technical English (ASD-STE100) for all documentation.
 - The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
+- The new pages [`CHANGELOG.md`](../../CHANGELOG.md) and [`CONTRIBUTING.md`](../../CONTRIBUTING.md) are in English, in ASD-STE100.
 
 Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
 

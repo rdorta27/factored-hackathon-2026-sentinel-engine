@@ -14,8 +14,8 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Decisions: [002](../..
 
 ## 1. Practice (can start now)
 
-- [ ] 1.1 Write `CHANGELOG.md` with one entry per merged pull request (from #42 to the last one) and the milestones. Evidence: the file.
-- [ ] 1.2 Write `CONTRIBUTING.md`: branches, small pull requests, commit rules, the plan flow, the evidence rules. Link it from the README. Evidence: the file and the README link.
+- [x] 1.1 Write `CHANGELOG.md` with one entry per merged pull request (from #42 to the last one) and the milestones. Evidence: the file.
+- [x] 1.2 Write `CONTRIBUTING.md`: branches, small pull requests, commit rules, the plan flow, the evidence rules. Evidence: the file. The owner asked for no README link, so the README keeps its "For agents" pointer only.
 
 ## 2. Tags and release notes
 
@@ -24,8 +24,8 @@ The release notes and the tag commands need the final numbers. They moved to `po
 
 ## 3. Submission
 
-- [ ] 3.1 Write the submission checklist in `docs/build/delivery.md`: repository name, deployed link, site link, slides PDF, video, email address, the credentials block of the email (use the template of `judge-access` 3.3, never a real password), Pages setting, secret scan, green test run. Each row has an owner and a proof. Evidence: the table.
-- [ ] 3.2 Write the freeze procedure (it must exist before gate G3, `post-freeze` task 1.1): what must be merged, the order of the last checks and the rule of no change after the last check. Evidence: the section.
+- [x] 3.1 Write the submission checklist in `docs/build/delivery.md`: repository name, deployed link, site link, slides PDF, video, email address, the credentials block of the email (use the template of `judge-access` 3.3, never a real password), Pages setting, secret scan, green test run. Each row has an owner and a proof. Evidence: the table.
+- [x] 3.2 Write the freeze procedure (it must exist before gate G3, `post-freeze` task 1.1): what must be merged, the order of the last checks and the rule of no change after the last check. Evidence: the section.
 
 ## Moved to `post-freeze`
 

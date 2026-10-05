@@ -99,6 +99,41 @@ All judges use the same set. The cases share state between judges.
 - The public link has no one-click entry. The documented fixture passwords do
   not work on the link.
 
+## Submission checklist
+
+Each row has one owner and one proof. A row stays pending until its proof exists. The checklist is [REQ-0034](../requirements/delivery.md#req-0034), [REQ-0035](../requirements/delivery.md#req-0035), [REQ-0036](../requirements/delivery.md#req-0036), [REQ-0037](../requirements/delivery.md#req-0037) and [REQ-0051](../requirements/delivery.md#req-0051).
+
+| Item | Owner | Proof | Status |
+|---|---|---|---|
+| Repository | Rubén | The public repository and its [README](../../README.md) | Done |
+| Deployed link | Rubén | A response from the live link | Pending |
+| Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run | Pending |
+| Slides PDF | Rubén | `python3 scripts/export_slides.py` writes `site/slides/sentinel-slides.pdf` | Pending |
+| Video | Rubén | The video, 3 minutes at most | Pending |
+| Submission email | Rubén | The email to `hackathon.admin@factored.ai`, with the [credentials block](#credentials) | Pending |
+| Credentials block | Rubén | The [credentials](#credentials) table, with no real password | Done |
+| GitHub Pages | Rubén | Settings, Pages, Source is GitHub Actions | Pending |
+| Secret scan | Rubén | The `scan` job in CI | Done |
+| Green tests | Rubén | `python3 -m pytest -q` from `sentinel-ai-core/` | Done |
+
+## Freeze procedure
+
+This procedure comes before gate G3. `post-freeze` task 1.1 reads it. The code freeze starts when all the code plans are merged. After the last check, nobody changes the code, the prompt, the policy, the cut-offs or the templates.
+
+Merge before the freeze:
+
+- Every code plan, `bank-ui` included.
+- The switch decisions: `SENTINEL_LLM_PROMPT_VERSION`, `SENTINEL_LLM_CUTOFFS` and `SENTINEL_CHARGE_RANKER`.
+
+Run the last checks in this order:
+
+1. `python3 scripts/e2e_check.py`
+2. `python3 scripts/e2e_check.py --access-check`
+3. `python3 -m pytest -q` from `sentinel-ai-core/`
+4. The secret scan in CI
+
+The rule: after the last check, nobody changes the code. A change restarts the procedure.
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)
