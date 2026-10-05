@@ -62,8 +62,9 @@ class SessionService:
     def login_demo(self, login: str, ip: str, trace_id: str) -> Session:
         """One-click demo sign-in: no password, customers only.
 
-        The router gates this behind ``SENTINEL_DEMO_AUTH=1`` and a visible
-        banner; an id alone proves nothing about identity (README limitation).
+        The router gates this behind ``SENTINEL_DEMO_PERSONAS`` (unset follows
+        ``SENTINEL_DEMO_AUTH``) and a visible banner; an id alone proves nothing
+        about identity (README limitation).
         """
         user = self._users.get_by_login(login)
         if user is None or user.role != "customer":

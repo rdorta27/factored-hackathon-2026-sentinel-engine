@@ -91,6 +91,22 @@ def test_demo_entry_has_banner_personas_and_named_languages() -> None:
     assert "/api/v1/auth/demo" in APP_JS
 
 
+def test_simulated_data_notice_follows_gold_not_the_one_click_entry() -> None:
+    import json
+
+    assert 'id="demo-banner"' in INDEX
+    assert 'data-testid="demo-banner"' in INDEX
+    assert "/api/v1/health" in APP_JS
+    assert "simulatedData" in APP_JS
+    # The entry route no longer controls the banner.
+    block = APP_JS[APP_JS.index("async function loadDemoEntry") : APP_JS.index("async function loadDataNotice")]
+    assert "demo-banner" not in block
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        text = strings["demoBannerText"].lower()
+        assert "contrase" not in text and "senha" not in text and "password" not in text, (name, text)
+
+
 def test_resolution_panel_renders_the_closed_steps() -> None:
     assert "renderSteps" in APP_JS
     assert 'data-testid", "steps-panel"' in APP_JS

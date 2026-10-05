@@ -177,7 +177,7 @@ function startThread() {
   logEntry({ type: "welcome" });
 }
 
-let demoAvailable = false;
+let simulatedData = false;
 
 function show(id) {
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
@@ -185,8 +185,8 @@ function show(id) {
   });
   document.getElementById("logout").hidden = id === "view-login";
   document.getElementById("agent").hidden = id !== "view-chat";
-  // The demo banner is for the entry; a customer session has the data-date chip.
-  document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
+  // The "simulated data" banner follows Gold, not the one-click entry.
+  document.getElementById("demo-banner").hidden = id !== "view-login" || !simulatedData;
   // The session line and the data date belong to a customer session only.
   if (id !== "view-chat") {
     document.getElementById("session-context").hidden = true;
@@ -871,10 +871,18 @@ document.getElementById("locale-group").addEventListener("click", (event) => {
 async function loadDemoEntry() {
   const response = await fetch("/api/v1/auth/demo");
   const available = response.ok;
-  demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
-  document.getElementById("demo-banner").hidden = !available;
   document.getElementById("password-login").open = !available;
+}
+
+/* The "simulated data" notice follows Gold, not the one-click entry. It shows
+   on the entry page whenever Gold is a mock, with or without the personas. */
+async function loadDataNotice() {
+  const response = await fetch("/api/v1/health");
+  if (!response.ok) return;
+  const body = await response.json().catch(() => ({}));
+  simulatedData = body.gold_source === "mock";
+  document.getElementById("demo-banner").hidden = !simulatedData || document.getElementById("view-login").hidden;
 }
 
 async function demoLogin(persona) {
@@ -899,3 +907,4 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
 loadLocale("es-419");
 loadBrand();
 loadDemoEntry();
+loadDataNotice();
