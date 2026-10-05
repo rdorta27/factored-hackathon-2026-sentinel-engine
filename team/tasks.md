@@ -61,7 +61,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
 | 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Done: `silver_transactions` keeps `amount_usd` |
 | 8 | Move the pages of `docs/understand/` to `docs/overview.md`, `docs/data/` and `docs/glossary/`, fix the links, update `AGENTS.md` and remove the folder ([plan](../openspec/changes/docs-followups/tasks.md), group 6) | REQ-0034 | Unassigned | After the other plans merge | — | Done: pages moved, links fixed, `scripts/check_links.py` clean ([decision 30](pending-decisions.md#decided)) |
-| 9 | Demo clarity ([plan](../openspec/changes/demo-clarity/tasks.md)): rename the example buttons, show them only in demo mode, add a build line and a guide for the judge, with no change to the chat | REQ-0038 | Unassigned | Before gate G3 | Phone captures and the slides | Done: label, build line and judge guide; screens refreshed. Group 6 (empty account and long lists) is open |
+| 9 | Demo clarity ([plan](../openspec/changes/demo-clarity/tasks.md)): rename the example buttons, show them only in demo mode, add a build line and a guide for the judge, with no change to the chat | REQ-0038 | Unassigned | Before gate G3 | Phone captures and the slides | Done: label, build line, judge guide and the empty-account fixes; screens refreshed |
 
 ### Low: only if time remains (P2) or to confirm and close
 

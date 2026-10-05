@@ -32,3 +32,23 @@ The change SHALL keep each existing element id, `data-testid` and i18n key. Trac
 
 - **WHEN** the UI tests, the phone captures at 390 px and `scripts/e2e_check.py` run
 - **THEN** they pass
+
+### Requirement: The page handles an account without charges
+
+The page SHALL show a message in the charges panel when the account has no charges. The example buttons and their label SHALL show only when a charge or a repeated merchant exists. The person button SHALL NOT show alone. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: Empty account
+
+- **WHEN** the account has no charges
+- **THEN** the charges panel shows the empty message
+- **AND** the page hides the example buttons and their label
+
+### Requirement: The claims panel pages a long list
+
+The page SHALL show the five most recent claims and one control for the rest. The API SHALL NOT change. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: More than five claims
+
+- **WHEN** the account has more than five claims
+- **THEN** the panel shows five cards and a "Show all" control with the total
+- **AND** the control shows every claim
