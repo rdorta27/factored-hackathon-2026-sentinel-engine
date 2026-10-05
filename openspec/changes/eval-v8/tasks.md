@@ -19,11 +19,11 @@ Depends on `router-v3` (contract v3: task 1.1; development cases: task 2.1), `tr
 
 ## 2. Sealed set
 
-- [ ] 2.1 An isolated author writes the intent block, in four variants, from the definitions of the contract only. Evidence: `eval/cases/` and provenance in `eval/review/`.
-- [ ] 2.2 An isolated author writes the multi-turn block from the policy outcomes and the chat spec scenarios only. Evidence: the same.
-- [ ] 2.5 An isolated author writes the attack block and the noisy twins in four variants, from the attack categories of the adversarial suite and the label definitions only. Evidence: `eval/cases/` and provenance in `eval/review/`.
-- [ ] 2.3 Review and back-translate all four blocks as in `eval-v7`; fix or drop drifting cases before the seal. Evidence: `eval/review/` notes.
-- [ ] 2.4 Seal the set under a new hash, leaving the v7 entry unchanged. Evidence: `eval/cases/seal.json` and a test that the v7 hash is unchanged.
+- [x] 2.1 An isolated author writes the intent block, in four variants, from the definitions of the contract only. Evidence: `eval/cases/` and provenance in `eval/review/`.
+- [x] 2.2 An isolated author writes the multi-turn block from the policy outcomes and the chat spec scenarios only. Evidence: the same.
+- [x] 2.5 An isolated author writes the attack block and the noisy twins in four variants, from the attack categories of the adversarial suite and the label definitions only. Evidence: `eval/cases/` and provenance in `eval/review/`.
+- [x] 2.3 Review and back-translate all four blocks as in `eval-v7`; fix or drop drifting cases before the seal. Evidence: `eval/review/` notes.
+- [x] 2.4 Seal the set under a new hash, leaving the v7 entry unchanged. Evidence: `eval/cases/seal.json` and a test that the v7 hash is unchanged.
 
 ## 3. Rehearsal
 
