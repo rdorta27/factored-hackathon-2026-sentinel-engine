@@ -134,6 +134,31 @@ Run the last checks in this order:
 
 The rule: after the last check, nobody changes the code. A change restarts the procedure.
 
+## Gate G3 record
+
+The owner confirmed the freeze on 2026-10-05. This record closes `post-freeze` task 1.1.
+
+| Item | Value |
+|---|---|
+| Branch | `feat/post-freeze` |
+| Freeze commit | `f18be6a` |
+| Measured commit (sealed run) | `8ee4575` |
+| `bundle_hash` of `/health` | `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2` |
+| Local end-to-end check | Pass, `post-freeze` task 1.2 |
+
+The `bundle_hash` of the local `/health` equals the served hash of the sealed run `2024Q4-eval-v8` (decision 018). The measured behavior is the served behavior.
+
+Owner inputs:
+
+| Input | Answer |
+|---|---|
+| (a) Freeze confirmation | Yes, the code is frozen |
+| (b) Spend allowed for live model calls | USD 1 |
+| (c) OK for `az` and the redeploy, and the subscription | Yes; `Azure subscription 1` (`dd53bd4a-c46b-453e-8b07-352facf6d5ad`) |
+| (d) Judge sheet and users file | `deploy/judge-users/passwords.csv` and `deploy/judge-users/users.json` (generated, gitignored) |
+
+No password is in this record.
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)
