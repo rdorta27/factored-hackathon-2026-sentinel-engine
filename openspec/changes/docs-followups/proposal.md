@@ -16,6 +16,7 @@ Several documents drifted while the code moved. A check of `origin/main` on 2026
 - Three finished plans (`flow-fixes`, `router-v3`, `bank-ui`) are still in `openspec/changes/`.
 - 38 pages in `docs/` and `team/` are not yet in simplified technical English.
 - Seven remote branches are merged and no longer needed.
+- The `sentinel-login/` folder is a reference page that nothing serves. Eight files still name it.
 
 Evaluators read these pages first. A wrong "passed" or an old status costs trust, and the brief gives weight to honest limits.
 
@@ -28,11 +29,13 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 - **Plain English.** Rewrite the five requirement files, `metrics.md`, `sizing_capacity.md`, `security.md`, `conversation.md` and `data_inventory.md` in ASD-STE100. The other pages stay out of scope.
 - **Evidence index.** Add each new run to `evidence/README.md` as it lands, with its status and data type.
 - **Branch list.** List the merged remote branches. The owner deletes them.
+- **Cleanup.** Remove `sentinel-login/`, rewrite the references to it, record the removal in decision 009, and add a link check to the CI workflow.
 
 ## Capabilities
 
 ### New Capabilities
 - `evidence-index`: the rule that every frozen run is listed with its status and data type.
+- `repo-cleanup`: no unused reference app and no dead link.
 
 ### Modified Capabilities
 (none)
@@ -40,9 +43,10 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 ## Impact
 
 - `team/chat-manual-tests.md`, `openspec/specs/` and `openspec/changes/`, `docs/requirements/`, `docs/build/`, `evidence/README.md`.
-- No code changes.
+- No application code changes. One comment in `sentinel-ai-core/app/schemas/chat.py` changes. `sentinel-login/` is removed.
 
 ## Non-goals
 
+- Deleting archived OpenSpec changes that name `sentinel-login`.
 - Rewriting all 38 pages. Only the pages that the evaluators read first.
 - Deleting remote branches or pushing. The owner does both.
