@@ -18,7 +18,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [016](../../../docs/bui
 - [x] 1.8 Add the strict Gold mode with a maximum age. Off by default. Evidence: a test that the app refuses to start when Gold is missing in strict mode, and starts with the mock when the mode is off.
 - [x] 1.9 Chain the audit records: each record holds the hash of the previous one, and a check finds a changed or removed record. Evidence: `tests/test_audit_chain.py`.
 - [x] 1.10 Add `bundle_hash` to `/health`: one hash of the policy files, the prompt examples and the cut-offs. Evidence: `tests/test_health.py`.
-- [ ] 1.11 In `sentinel-data-engine/tests`, add a test that an incremental load gives the same rows as a full load, row by row. Evidence: the test.
+- [x] 1.11 In `sentinel-data-engine/tests`, add a test that an incremental load gives the same rows as a full load, row by row. Evidence: the test.
 - [ ] 1.5 Add the load-test script with recorded answers and a container limit option. Evidence: `scripts/load_chat.py` and a dry run.
 - [x] 1.6 Remove unused dependencies from `pyproject.toml`. Evidence: a clean install and the full test suite.
 
