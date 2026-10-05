@@ -26,7 +26,7 @@ last_reviewed: 2026-10-04
 7. **Merge `flow-fixes` first.** It extends `ExplanationValues` and `Clarification` with optional fields in `app/schemas/chat.py`. This change adds `text` beside them and does not change an existing field.
 8. **Reuse the `explanation` kind for status and why.** The charge-status reply and the why-for-a-named-charge reply carry verified values (merchant, amount, date, status) in the existing values object, which the page already fills. No new reply kind.
 9. **No HTML.** Only locale keys. `bank-ui` owns the page.
-10. **Python.** If `python3 -m pytest` does not find pytest, use the full interpreter path in `.local/final-push/02-sesiones.md`. Run `uvicorn` on port 8004.
+10. **Python.** If `python3 -m pytest` does not find pytest, use the full path of the Python interpreter. Run `uvicorn` on port 8004.
 
 ## End-to-end seams (2026-10-04)
 

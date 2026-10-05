@@ -23,6 +23,6 @@ last_reviewed: 2026-10-04
 6. **The 429 `trace_id` is in `flow-fixes`.** This change does not touch the body of the rate-limit reply; its tests only read it.
 7. **Reuse the HTTP helpers.** `flow-fixes` writes `scripts/felix_replay.py` with a small HTTP client for a running app. The load script and the fault runner reuse that client once `flow-fixes` is merged.
 8. **Spend guard after `router-v3`.** Both change `app/ai/serving.py`. Merge `router-v3` first.
-9. **Do not commit `uv.lock`.** Use the full interpreter path in `.local/final-push/02-sesiones.md` if `pytest` is not found.
+9. **Do not commit `uv.lock`.** Use the full path of the Python interpreter if `pytest` is not found.
 
 10. **Merge after `chat-start`.** The five-minute expiry changes the confirm box in `app/orchestrator/`, which `chat-start` also changes. Rebase on `chat-start` before the merge.

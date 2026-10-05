@@ -28,4 +28,4 @@ last_reviewed: 2026-10-04
 ## Tools (2026-10-04)
 
 6. **Slides do not need claude.ai.** The canvas can be read only through Claude. The slides live in the repository as static pages, so Claude Code and OpenCode can both edit them, and GitHub Pages can also serve them.
-7. **Design source.** Read `.local/final-push/design/` (HTML copy and README with tokens), not the canvas link.
+7. **Design source.** Read the local design copy (HTML and README with tokens, not in the repository), not the canvas link.
