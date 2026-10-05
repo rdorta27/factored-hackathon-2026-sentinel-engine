@@ -9,7 +9,7 @@ Order: gate, measure, runs, redeploy, close. A step reads the frozen output of t
 ## 1. Gate (G3)
 
 - [ ] 1.1 Check that the code is frozen and collect the four inputs of the owner. First check that these plans are merged: `flow-fixes`, `router-v3`, `chat-start`, `bank-ui`, `trained-baseline`, `charge-ranker`, `robustness-evidence` (code), `eval-v8` (rules, seal, rehearsal), `eval-v8-measure` (the measurement and its verdict), `evidence-hardening`, `demo-clarity`, `judge-access`, `live-ops` and `release` (the freeze procedure of `release` 3.2 exists). `pitch-site` and `docs-followups-2` are documents and do not block the gate. Then ask the owner for: (a) the confirmation that the code is frozen; (b) the total spend allowed for live model calls in tasks 2.5 and 3.4; (c) the OK to run `az` and redeploy the public link in section 4, and the Azure subscription to use; (d) the path of the judge sheet, to set `SENTINEL_E2E_CREDENTIALS_FILE`, and the path of the judge users file. Record the freeze commit, the `bundle_hash` of `/health` and the four answers (never a password) in `docs/build/delivery.md`. From `eval-v8` 4.1. Evidence: `git log` and the record. Ref: decision 018, ml area.
-- [ ] 1.2 Run `python3 scripts/e2e_check.py --base-url http://127.0.0.1:8000` against the local service (it starts a clean local app when the URL is loopback). Evidence: the pass table in the commit body. Ref: decision 019.
+- [x] 1.2 Run `python3 scripts/e2e_check.py --base-url http://127.0.0.1:8000` against the local service (it starts a clean local app when the URL is loopback). Evidence: the pass table in the commit body. Ref: decision 019.
 
 ## 2. Live evidence (after the gate)
 
