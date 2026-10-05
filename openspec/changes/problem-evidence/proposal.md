@@ -38,7 +38,7 @@ Without them, the problem slide rests on a projection and on the size of one tab
 
 ## Impact
 
-- `evidence/problem/`, `docs/rationale/`, `docs/sizing_capacity.md`, `evidence/README.md`, the evidence of REQ-0014 and REQ-0053. A pointer in `docs/build/flows/03-flow-selection.md`.
+- `evidence/problem/`, `docs/rationale/`, `docs/sizing-capacity.md`, `evidence/README.md`, the evidence of REQ-0014 and REQ-0053. A pointer in `docs/build/flows/03-flow-selection.md`.
 
 ## Non-goals
 

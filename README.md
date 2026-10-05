@@ -123,7 +123,7 @@ The [requirements](docs/requirements/requirements.md#status-by-priority) page gi
 
 ## Limitations
 
-What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing_capacity.md) gives the capacity limits.
+What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-capacity.md) gives the capacity limits.
 
 - **Data:** synthetic and in Spanish only. Accounts are only in México, Colombia and Argentina, and Mexican accounts are only in USD. The data cannot support a charge investigation: the balance has no usable as-of date, complaints cannot be tied to a charge, blocked products have no transactions, and no customer signal adds to `fraud_score` ([investigation data support](docs/rationale/investigation-data-support.md)). A `fraud_score` above 30 is always fraud, which is an artefact of the data generator. Real Gold runs locally only. The public link uses the labelled mock.
 - **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not the rule of a bank. One 90-day window serves the three countries. The sources disagree: Argentina counts 30 days from the receipt of the statement, and we found no fixed window for Colombia. The engine cannot express a different window start per country, provisional credit or a response time ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer states that the rule is a demonstration policy.

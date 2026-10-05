@@ -43,7 +43,7 @@ An honest list of what the prototype lacks before real use: capacity, data, lang
 
 **Depends on:** [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053). Gathers the data, language and capacity limits.
 
-**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing_capacity.md) (REQ-0053), the [what is real](../architecture/what-is-real.md) page and the [investigation data support](../rationale/investigation-data-support.md) page. Missing also: a roadmap section in the README with each item not built and the evidence for why.
+**Evidence:** Proven by: the README [limitations](../../README.md#limitations) section (data, languages, model, state, privacy, safety evidence, deployment) and the [sizing](../sizing-capacity.md) (REQ-0053), the [what is real](../architecture/what-is-real.md) page and the [investigation data support](../rationale/investigation-data-support.md) page. Missing also: a roadmap section in the README with each item not built and the evidence for why.
 
 Missing: the same limits on the slides.
 
