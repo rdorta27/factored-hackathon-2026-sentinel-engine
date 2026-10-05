@@ -81,6 +81,9 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-resolution-v1`](evaluation-runs/2024Q4-resolution-v1/summary.json) | resolution | Superseded | First multi-turn run that can resolve a case: 56 cases in 14 situations ([022](../docs/build/decisions/022-resolution-acceptance.md)) | matches | REQ-0055 |
 | [`2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | resolution | **Current** | The same set after the chat-loop change, with breakdown by variant and country | matches | REQ-0055, REQ-0024 |
 | [`2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | calibration | **Current** | Confidence cut-offs on the validation split (n = 26, descriptive) | matches | REQ-0002, REQ-0016 |
+| [`2024Q4-select-v3`](evaluation-runs/2024Q4-select-v3/summary.json), [`2024Q4-select-v3c`](evaluation-runs/2024Q4-select-v3c/summary.json) | selection | Superseded | Prompt v3 on development: 8 examples, then the refined prompt. Kept for the iteration history. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-select-v3d`](evaluation-runs/2024Q4-select-v3d/summary.json) | selection | **Current (v3)** | Prompt v3 on development (198 cases, 32-example matrix): kind 0.9899, subtype 1.0, 94 drafts with 0 rejected. Offline replay of v3c with the kind-key confidence fix. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | not checked | REQ-0002, REQ-0016 |
 
 ## Adversarial
 
