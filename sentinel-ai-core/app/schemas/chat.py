@@ -93,6 +93,14 @@ class TextReply(BaseModel):
     steps: list[str] = Field(default_factory=list, max_length=8)
 
 
+class ClarificationValues(BaseModel):
+    """Verified values a clarification may name. Optional, added for the flow fixes."""
+
+    model_config = StrictModel
+
+    searched_date: Optional[str] = Field(default=None, max_length=32)
+
+
 class Clarification(BaseModel):
     model_config = StrictModel
 
@@ -100,6 +108,7 @@ class Clarification(BaseModel):
     message_key: str = Field(min_length=1, max_length=64)
     missing: str = Field(min_length=1, max_length=200)
     candidates: list[CandidateTransaction] = Field(default_factory=list, max_length=4)
+    values: ClarificationValues = Field(default_factory=ClarificationValues)
     steps: list[str] = Field(default_factory=list, max_length=8)
 
 
@@ -128,6 +137,9 @@ class ExplanationValues(BaseModel):
     last_eligible_date: Optional[str] = Field(default=None, max_length=32)
     age_days: Optional[int] = Field(default=None, ge=0)
     synthetic: Optional[bool] = None
+    # Dispute-status reply: the case reference and its status, from the case store.
+    case_id: Optional[str] = Field(default=None, max_length=64)
+    case_status: Optional[str] = Field(default=None, max_length=32)
 
 
 class Explanation(BaseModel):
