@@ -70,8 +70,10 @@ main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; }
 cd factored-hackathon-2026-sentinel-engine/sentinel-ai-core
 pip install -e ".[dev,eval]"
 SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
-python3 -m eval.run verify 2024Q4-resolution-v2</code></pre>
-      <p class="note">O comando <code>verify</code> recalcula uma execução congelada a partir de suas gravações e a compara com seu <code>summary.json</code>. No dia do congelamento, três execuções coincidiram: <code>2024Q4-resolution-v1</code>, <code>2024Q4-resolution-v2</code> e <code>2024Q4-train-v1</code>. A execução <code>2024Q4-eval-v7</code> difere em seu bloco de sistema, e o índice de evidências diz isso. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Índice de evidências</a>.</p>
+export SENTINEL_LLM_CHEAP_MODEL=accounts/fireworks/models/glm-5p3-flash
+export SENTINEL_LLM_STRONG_MODEL=accounts/fireworks/models/glm-5p3-flash
+python3 -m eval.run verify 2024Q4-train-v1</code></pre>
+      <p class="note">Os dois nomes de modelo são públicos. Não são chaves. O comando <code>verify</code> não faz nenhuma chamada real. Ele recalcula uma execução congelada a partir de suas gravações e a compara com seu <code>summary.json</code>. Hoje <code>2024Q4-train-v1</code> coincide. As execuções <code>2024Q4-resolution-v1</code> e <code>2024Q4-resolution-v2</code> diferem de uma reprodução do código atual, porque o código mudou depois de medi-las. Uma execução congelada nunca é editada: uma nova medição é uma nova execução. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Índice de evidências</a>.</p>
       <p class="note">A suíte de ataques grava uma nova execução só quando você pede: <code>SENTINEL_WRITE_EVIDENCE=1 python3 -m pytest tests/adversarial -q</code>.</p>
     </section>
 

@@ -70,8 +70,10 @@ main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; }
 cd factored-hackathon-2026-sentinel-engine/sentinel-ai-core
 pip install -e ".[dev,eval]"
 SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
-python3 -m eval.run verify 2024Q4-resolution-v2</code></pre>
-      <p class="note">El comando <code>verify</code> recalcula una corrida congelada a partir de sus grabaciones y la compara con su <code>summary.json</code>. El día del congelamiento, tres corridas coincidieron: <code>2024Q4-resolution-v1</code>, <code>2024Q4-resolution-v2</code> y <code>2024Q4-train-v1</code>. La corrida <code>2024Q4-eval-v7</code> difiere en su bloque de sistema, y el índice de evidencia lo dice. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Índice de evidencia</a>.</p>
+export SENTINEL_LLM_CHEAP_MODEL=accounts/fireworks/models/glm-5p3-flash
+export SENTINEL_LLM_STRONG_MODEL=accounts/fireworks/models/glm-5p3-flash
+python3 -m eval.run verify 2024Q4-train-v1</code></pre>
+      <p class="note">Los dos nombres de modelo son públicos. No son claves. El comando <code>verify</code> no hace ninguna llamada real. Recalcula una corrida congelada a partir de sus grabaciones y la compara con su <code>summary.json</code>. Hoy <code>2024Q4-train-v1</code> coincide. Las corridas <code>2024Q4-resolution-v1</code> y <code>2024Q4-resolution-v2</code> difieren de una repetición del código actual, porque el código cambió después de medirlas. Una corrida congelada nunca se edita: una medición nueva es una corrida nueva. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Índice de evidencia</a>.</p>
       <p class="note">La suite de ataques escribe una corrida nueva solo cuando lo pides: <code>SENTINEL_WRITE_EVIDENCE=1 python3 -m pytest tests/adversarial -q</code>.</p>
     </section>
 

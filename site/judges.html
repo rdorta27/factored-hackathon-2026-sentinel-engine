@@ -70,8 +70,10 @@ main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; }
 cd factored-hackathon-2026-sentinel-engine/sentinel-ai-core
 pip install -e ".[dev,eval]"
 SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
-python3 -m eval.run verify 2024Q4-resolution-v2</code></pre>
-      <p class="note">The <code>verify</code> command recomputes a frozen run from its recordings and compares it with its <code>summary.json</code>. On the day of the freeze, three runs matched: <code>2024Q4-resolution-v1</code>, <code>2024Q4-resolution-v2</code> and <code>2024Q4-train-v1</code>. The run <code>2024Q4-eval-v7</code> differs in its system block, and the evidence index says so. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Evidence index</a>.</p>
+export SENTINEL_LLM_CHEAP_MODEL=accounts/fireworks/models/glm-5p3-flash
+export SENTINEL_LLM_STRONG_MODEL=accounts/fireworks/models/glm-5p3-flash
+python3 -m eval.run verify 2024Q4-train-v1</code></pre>
+      <p class="note">The two model names are public. They are not keys. The <code>verify</code> command makes no live call. It recomputes a frozen run from its recordings and compares it with its <code>summary.json</code>. Today <code>2024Q4-train-v1</code> matches. The runs <code>2024Q4-resolution-v1</code> and <code>2024Q4-resolution-v2</code> differ from a replay of the current code, because the code changed after they were measured. A frozen run is never edited: a new measurement is a new run. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Evidence index</a>.</p>
       <p class="note">The attack suite writes a new run only when you ask for it: <code>SENTINEL_WRITE_EVIDENCE=1 python3 -m pytest tests/adversarial -q</code>.</p>
     </section>
 

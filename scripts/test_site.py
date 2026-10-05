@@ -333,6 +333,9 @@ def test_judges_page_commands_and_links_exist():
     assert (sn.ROOT / "sentinel-ai-core/eval/run.py").exists() and "-m eval.run verify" in code
     run = re.search(r"verify (\S+)", code).group(1)
     assert (sn.ROOT / "evidence/evaluation-runs" / run / "summary.json").exists()
+    env = (sn.ROOT / ".env.example").read_text()
+    for name in re.findall(r"export (SENTINEL_\w+)=", code):
+        assert name in env, name
     extras = (sn.ROOT / "sentinel-ai-core/pyproject.toml").read_text()
     assert "dev = [" in extras and "eval = [" in extras
     assert (sn.ROOT / "sentinel-ai-core/tests/adversarial").is_dir()
