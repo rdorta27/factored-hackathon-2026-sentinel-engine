@@ -27,3 +27,8 @@ last_reviewed: 2026-10-04
 8. **Reuse the `explanation` kind for status and why.** The charge-status reply and the why-for-a-named-charge reply carry verified values (merchant, amount, date, status) in the existing values object, which the page already fills. No new reply kind.
 9. **No HTML.** Only locale keys. `bank-ui` owns the page.
 10. **Python.** If `python3 -m pytest` does not find pytest, use the full interpreter path in `.local/final-push/02-sesiones.md`. Run `uvicorn` on port 8004.
+
+## End-to-end seams (2026-10-04)
+
+11. **One narrowing seam.** All charge narrowing goes through one function, `narrow(message, understood, candidates) -> NarrowResult`, in `app/ai/grounding.py`. The loop calls only that function. `charge-ranker` plugs in behind it when its switch is on; with the switch off, the result is identical. This keeps one owner of `step.py`.
+12. **The page shows `text`.** `bank-ui` owns the page. This change adds one line in `static/app.js` to show `text` when present, in its own commit, after `bank-ui` merges.

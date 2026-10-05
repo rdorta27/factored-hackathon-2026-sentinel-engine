@@ -19,6 +19,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [008](../../../docs/bui
 - [ ] 2.3 Out-of-scope replies by subtype. Evidence: tests and locale keys in es-419 and pt-BR.
 - [ ] 2.4 Slot grounding and the parser fallback for amounts in words and dates. Evidence: the "mil pesos" test.
 - [ ] 2.5 Why for a named charge through the explanation module. Evidence: the "enero" test.
+- [ ] 2.7 Put all charge narrowing behind one function `narrow(...)` in `app/ai/grounding.py`, so a selector can plug in later. Evidence: a test that the loop calls only that function.
 - [ ] 2.6 The words table, the optional `text` field and the template variants. Evidence: tests and the page shows `text`.
 
 ## 3. Evidence
