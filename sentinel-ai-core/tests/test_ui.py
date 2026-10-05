@@ -369,8 +369,12 @@ def test_static_files_are_revalidated_so_versions_never_mix() -> None:
         assert api.get(path).headers["cache-control"] == "no-cache", path
 
 
-def test_flags_close_the_header_so_a_longer_label_does_not_move_them() -> None:
-    assert INDEX.index('id="agent"') < INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+def test_flags_close_the_header_and_the_agent_button_sits_with_the_chat() -> None:
+    # The header keeps the flags together: logout, then the language group.
+    assert INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+    # The agent button left the header for the chat column, so a longer label
+    # never moves the flags.
+    assert INDEX.index('id="view-chat"') < INDEX.index('id="agent"') < INDEX.index('id="view-queue"')
     assert 'rel="icon"' in INDEX
     assert (STATIC / "favicon.svg").is_file()
 

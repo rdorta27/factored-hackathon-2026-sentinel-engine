@@ -215,8 +215,8 @@ function show(id) {
     document.getElementById(view).hidden = id !== view;
   });
   document.getElementById("logout").hidden = id === "view-login";
-  // The top-bar agent button stays hidden: the chat offers the person case.
-  // The id and the handler stay for the tests and the locale keys.
+  // The agent button lives in the chat column, away from the header flags.
+  document.getElementById("agent").hidden = id !== "view-chat";
   // The demo banner is for the entry; a customer session has the data-date chip.
   document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
   // The session line and the data date belong to a customer session only.
