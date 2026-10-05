@@ -22,6 +22,11 @@ env:
 jobs:
   ai-core:
     runs-on: ubuntu-latest
+    env:
+      # The replay of the resolution runs rebuilds the summary, which names the
+      # model of 016. These are model names, not keys.
+      SENTINEL_LLM_CHEAP_MODEL: accounts/fireworks/models/glm-5p3-flash
+      SENTINEL_LLM_STRONG_MODEL: accounts/fireworks/models/glm-5p3-flash
     defaults:
       run:
         working-directory: sentinel-ai-core
