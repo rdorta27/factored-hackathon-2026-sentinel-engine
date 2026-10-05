@@ -12,8 +12,8 @@ Depends on `router-v3` (contract v3: task 1.1; development cases: task 2.1), `tr
 
 ## 1. Rules first
 
-- [ ] 1.1 Run the baseline and `router_v2` on the development cases of `router-v3` (new live calls only; cap USD 1) and write the development numbers. Evidence: a development run under `evidence/evaluation-runs/`.
-- [ ] 1.2 Extend the 018 amendment of `router-confidence`: unnecessary-handoff rate, system outcome match, subtype accuracy, slot precision, rejected-draft rate, unsafe wording, the v7 gates, targets from 1.1, and the v8 spend cap. Commit it before the seal. Evidence: the decision file and its commit order.
+- [x] 1.1 Run the baseline and `router_v2` on the development cases of `router-v3` (new live calls only; cap USD 1) and write the development numbers. Evidence: a development run under `evidence/evaluation-runs/`.
+- [x] 1.2 Extend the 018 amendment of `router-confidence`: unnecessary-handoff rate, system outcome match, subtype accuracy, slot precision, rejected-draft rate, unsafe wording, the v7 gates, targets from 1.1, and the v8 spend cap. Commit it before the seal. Evidence: the decision file and its commit order.
 - [x] 1.3 Add the new metrics to the runner and the report, with a test per metric. Evidence: `eval/metrics.py`, `eval/report.py`, tests.
 - [x] 1.4 Add three reports: the ceiling of safe resolution, a handoff checklist score (request, verified facts, actions, evidence with rule id and trace id, open questions, reason, language and country: seven items, scored by a script), and latency per conversation. Add the three repeats of the high-risk subset to the runner. Evidence: `eval/metrics.py`, `eval/report.py`, tests.
 
