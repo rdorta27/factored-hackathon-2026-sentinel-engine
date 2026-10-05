@@ -72,7 +72,6 @@ grep -rl '^style: ASD-STE100' --include=*.md . | grep -v AGENTS.md
 | [`scripts/`](scripts/) | Repository scripts. `render_flow_measurements.py` generates the flow measurements page and can verify it against a new run. |
 | [`sentinel-data-engine/`](sentinel-data-engine/) | Data pipeline (Bronze, Silver, Gold). Owner: Natalia. |
 | [`sentinel-ai-core/`](sentinel-ai-core/) | Charge-inquiry loop, policy engine, the page (customer chat and advisor view) and the API under `/api/v1`. Owners are in [team/plan.md](team/plan.md#folders). |
-| [`sentinel-login/`](sentinel-login/) | The original demo page, kept as a reference. It is not a backend, and the service does not serve it ([009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | `.claude/`, `.opencode/` | OpenSpec commands and skills for Claude Code and OpenCode (generated) |
 
 A new person reads the pages in the order of [`docs/README.md`](docs/README.md).

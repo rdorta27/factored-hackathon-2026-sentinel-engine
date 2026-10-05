@@ -132,9 +132,9 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Persist sessions, conversation and cases in SQLite (mentor feedback); delete conversation on logout and expiry | Natalia (Rubén integrated) | Done: `tests/test_state_sqlite.py`; OpenSpec change `persist-state-and-dispute-api` |
 | Two-step disputes API and one open dispute per charge across sessions | Natalia, Felix (Rubén integrated) | Done: `tests/test_disputes_api.py`, adversarial B9, B10, C6, D6, D7 |
 | Handoff ticket with conversation summary and every attempted action | Natalia (Rubén integrated; summary and attempted actions added by Rubén) | Done: `tests/test_handoff_package.py` |
-| Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
+| Advisor view, role landing and roles in code; old mock backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 | Test that no reply shows amounts or merchants outside the verified facts | Rubén | Done: `tests/test_facts_grounding.py` (mutation-checked) |
-| Tell Felix and Natalia: `sentinel-login/` retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
+| Tell Felix and Natalia: the old mock backend retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
 | Fraud and high-amount thresholds per account country and currency (decisions 25, 26) | Rubén | Done: [010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md); evidence `evidence/evaluation/2024Q4-v2/`, run `2024Q4-eval-v6` |
 | Source inventory: every input labeled by origin, no external data ([inventory](../docs/data_inventory.md)) | Natalia | Done: REQ-0031, REQ-0054 |
 | Pipeline run end to end on the full dataset with a quality report; Silver normalizes `México`; Gold uses the 2026-06-17 cutoff | Natalia | Done: `data/gold_bank.duckdb` (gitignored), [report](../sentinel-data-engine/data_quality_report.md); quality metrics still incomplete (open task) |
@@ -153,7 +153,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 |---|---|---|
 | Evaluation runner and held-out metrics (safe resolution, unsafe outcomes, handoff, latency, cost) | Rubén | Done early 9/30; latest frozen run `evidence/evaluation-runs/2024Q4-eval-v5/` on the aligned API (0 failures, same metrics as v1 except latency) |
 | Metrics by language and country, cost per resolution, frozen in `evidence/` | Natalia, Rubén | Done: by-locale/by-country metrics with small-sample limits in the frozen run; cost per resolution "not defined" (no resolutions by design) |
-| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Done: backend, tests and packaging removed; only the original page remains as a reference ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
+| Retire the old mock backend once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Done: backend, tests, packaging and the reference page removed ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
 
 ### Sat 10/3 to Mon 10/5
 
