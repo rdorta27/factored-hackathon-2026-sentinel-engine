@@ -39,7 +39,7 @@ Runs before gate G3. Merge after `live-ops`, because `scripts/e2e_check.py` chec
 
 - [x] 3.1 Merge `origin/main` into this branch and resolve the conflict in `app.js` by hand. Keep the changes of `demo-clarity` and `judge-access` (the example buttons, the build line, the judge guide, the simulated-data notice and the empty-account messages). Evidence: merge commit `d1dc382`. It kept the example buttons, the build line, the judge guide, the simulated-data notice and the empty-account messages.
 - [x] 3.2 Run the full suite, the phone check at 390 px and `scripts/e2e_check.py` against a local app. Evidence: 944 tests pass and 2 skip. `scripts/e2e_check.py` passes all eight checks, with the phone layout at 390 px.
-- [ ] 3.3 Show the owner the entry page and the chat at 390 px before the merge. Evidence: the screenshots.
+- [x] 3.3 Show the owner the entry page and the chat at 390 px before the merge. Evidence: the owner saw and approved the screens on 2026-10-05.
 
 ## 4. Requirements and team
 
