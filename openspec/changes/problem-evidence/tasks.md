@@ -16,7 +16,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Decisions: [003](../..
 
 ## 2. The documents
 
-- [ ] 2.1 Write `docs/rationale/problem-and-demand.md` in plain English: the problem, the demand, the hours, and what the data cannot say. Each number cites a field of `summary.json`. Evidence: the page.
+- [x] 2.1 Write `docs/rationale/problem-and-demand.md` in plain English: the problem, the demand, the hours, and what the data cannot say. Each number cites a field of `summary.json`. Evidence: the page.
 - [ ] 2.2 Replace the projected busy-day figures in `docs/sizing_capacity.md` with the measured ones, and say which are still projections. Evidence: the page.
 - [ ] 2.3 Update the evidence of REQ-0014 and REQ-0053, add the run to `evidence/README.md`, and add a pointer in `docs/build/flows/03-flow-selection.md`. Evidence: those files.
 - [ ] 2.4 List the fields that feed the slide "why" in the plan of `pitch-site`. Evidence: `.local/final-push/plans/pitch-site.md` (the owner copies it).
