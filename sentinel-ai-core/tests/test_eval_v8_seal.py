@@ -47,6 +47,36 @@ def test_v8_seal_verifies_and_uses_no_measurement():
     assert measured["measured"] == [{"hash": V7_HASH, "run_id": "2024Q4-eval-v7"}]
 
 
+V8B_MIN_BASES_PER_THIN_INTENT = 6
+
+
+def test_v8b_seal_verifies_and_leaves_older_seals_unchanged():
+    import json as _json
+
+    from eval.seal import verify_seal
+
+    record = verify_seal(HERE / "eval" / "cases" / "sealed_v8b", HERE / "eval" / "cases" / "sealed_v8b" / "seal.json")
+    assert record["n"] == 92
+    assert record["hash"] not in {
+        _json.loads((HERE / "eval" / "cases" / "seal.json").read_text(encoding="utf-8"))["hash"],
+        _json.loads((HERE / "eval" / "cases" / "sealed_v8" / "seal.json").read_text(encoding="utf-8"))["hash"],
+    }
+    assert verify_seal(HERE / "eval" / "cases" / "sealed", HERE / "eval" / "cases" / "seal.json")["hash"] == V7_HASH
+
+
+def test_v8b_adds_six_bases_per_thin_intent():
+    from collections import Counter
+
+    from eval.cases import load_dir
+
+    rows = [c for c in load_dir(HERE / "eval" / "cases" / "sealed_v8b") if "noisy" not in c.tags]
+    bases = Counter(c.expected_intent for c in {c.base_id: c for c in rows}.values())
+    assert bases["out_of_scope"] >= V8B_MIN_BASES_PER_THIN_INTENT
+    assert bases["person"] >= V8B_MIN_BASES_PER_THIN_INTENT
+    assert bases["status"] >= V8B_MIN_BASES_PER_THIN_INTENT
+    assert len({c.base_id for c in rows}) == 23
+
+
 def test_v8_seal_covers_four_complete_blocks():
     from eval.cases import load_dir
     from eval.seal import blocks, shortfalls

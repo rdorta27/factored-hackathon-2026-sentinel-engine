@@ -24,9 +24,9 @@ Depends on `router-v3` (contract v3: task 1.1; development cases: task 2.1), `tr
 - [x] 2.5 An isolated author writes the attack block and the noisy twins in four variants, from the attack categories of the adversarial suite and the label definitions only. Evidence: `eval/cases/` and provenance in `eval/review/`.
 - [x] 2.3 Review and back-translate all four blocks as in `eval-v7`; fix or drop drifting cases before the seal. Evidence: `eval/review/` notes.
 - [x] 2.4 Seal the set under a new hash, leaving the v7 entry unchanged. Evidence: `eval/cases/seal.json` and a test that the v7 hash is unchanged.
-- [ ] 2.6 An isolated author writes the top-up block in four variants: at least 6 new bases for each intent with fewer than 10 bases (`out_of_scope`, `person`, `status`), plus ambiguous messages, mixed Spanish and Portuguese, and two intents in one message. The author reads only the contract definitions. Evidence: `eval/cases/sealed_v8b/` and provenance in `eval/review/`.
-- [ ] 2.7 Review and back-translate the top-up block as in task 2.3; drop near copies of an earlier base and count them. Evidence: `eval/review/` notes.
-- [ ] 2.8 Seal the top-up block under its own hash; leave the v7 and v8 entries unchanged. Evidence: `eval/cases/sealed_v8b/seal.json` and a test that the other hashes are unchanged.
+- [x] 2.6 An isolated author writes the top-up block in four variants: at least 6 new bases for each intent with fewer than 10 bases (`out_of_scope`, `person`, `status`), plus ambiguous messages, mixed Spanish and Portuguese, and two intents in one message. The author reads only the contract definitions. Evidence: `eval/cases/sealed_v8b/` and provenance in `eval/review/`.
+- [x] 2.7 Review and back-translate the top-up block as in task 2.3; drop near copies of an earlier base and count them. Evidence: `eval/review/` notes.
+- [x] 2.8 Seal the top-up block under its own hash; leave the v7 and v8 entries unchanged. Evidence: `eval/cases/sealed_v8b/seal.json` and a test that the other hashes are unchanged.
 
 ## 3. Rehearsal
 
