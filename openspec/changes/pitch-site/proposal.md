@@ -14,6 +14,7 @@ The organizers said that the pitch carries the most weight: slides are 60% produ
 
 - **Product statement:** `docs/product.md`, one page: the user, the problem with its demand data, the difference, the proof (each claim linked to the evidence index), and the tagline. Working tagline: "The AI converses. The rules decide."
 - **GitHub Pages site:** a static site in `site/`, in English, from the `Pages` artboard of the canvas: the product, how it works in five steps, the measured results with their sources, the four demo cases, links to the live demo, the architecture and the repository. A workflow publishes `site/` to GitHub Pages from `main`. Every number cites a `summary.json` field.
+- **Architecture drawing:** one static SVG, shared by slide 3, the README, the video and the site.
 - **Interactive diagrams:** standalone pages in `site/diagrams/`: the architecture (demo and production view), one chat turn, the three demo cases, and an evidence explorer. An optional page shows why a confidence cut-off does not decide.
 - **Judge sections:** try the demo (credentials come by email, never on the site), limits, path to production, reproduce a run, screenshots, responsible AI, team, judge questions and page details.
 - **Roadmap:** a `## Roadmap` section in the README, with each item not built and its evidence: Customer 360 (balances, history), the investigation of a charge, the feedback dataset, the spending assistant, policy retrieval, handoff routing (REQ-0030, REQ-0056).

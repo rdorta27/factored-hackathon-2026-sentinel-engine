@@ -92,3 +92,76 @@ def test_product_page_numbers_match_the_evidence():
     ]
     for text in expected:
         assert text in page, f"docs/product.md does not show {text!r}"
+
+
+# --- architecture drawing (tasks 2.4 and 4.1) ---
+
+import build_architecture as ba  # noqa: E402
+
+
+def test_architecture_files_are_current():
+    for path, text in ba.outputs().items():
+        assert path.read_text() == text, f"{path.name} is stale: run scripts/build_architecture.py"
+
+
+def test_architecture_evidence_paths_exist():
+    data = ba.load()
+    ids = {n["id"] for n in data["nodes"]}
+    assert len(ids) == len(data["nodes"])
+    for n in data["nodes"]:
+        assert n["status"] in {"real", "mock", "synthetic"} and n["decides"] in ba.DECIDES
+        assert n["evidence"], n["id"]
+        for rel in n["evidence"]:
+            assert (sn.ROOT / rel).exists(), f"{n['id']}: missing {rel}"
+        for key in n["metrics"]:
+            assert key in sn.METRICS, f"{n['id']}: unknown number {key}"
+    for e in data["edges"]:
+        assert e["from"] in ids and e["to"] in ids
+
+
+def test_architecture_nodes_are_keyboard_operable():
+    html = (SITE / "diagrams" / "architecture.html").read_text()
+    for n in ba.load()["nodes"]:
+        assert f'id="n-{n["id"]}"' in html and f'id="d-{n["id"]}"' in html
+    assert html.count('role="button" aria-label=') == len(ba.load()["nodes"])
+    assert html.count('tabindex="0"') >= len(ba.load()["nodes"])
+    # No library, no external request: one local script.
+    assert html.count("<script") == 1 and 'src="architecture.js"' in html
+
+
+def test_every_mock_names_its_production_replacement():
+    for n in ba.load()["nodes"]:
+        if n["status"] == "mock":
+            assert n["prod"] and n["prod_short"] and n["prod"] != n["runs"], n["id"]
+
+
+def test_architecture_page_in_the_browser():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    url = (SITE / "diagrams" / "architecture.html").as_uri()
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        errors = []
+        page = browser.new_page(viewport={"width": 1280, "height": 900})
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        requests = []
+        page.on("request", lambda r: requests.append(r.url))
+        page.goto(url)
+        page.click("#n-gold")
+        assert page.inner_text(".detail.on h3") == "Gold store"
+        page.click("[data-view=prod]")
+        assert "Gold on Databricks" in page.text_content("#n-gold")
+        page.click("[data-view=demo]")
+        assert "Labelled in-memory mock" in page.text_content("#n-gold")
+        page.focus("#n-policy")
+        page.keyboard.press("Enter")
+        assert page.inner_text(".detail.on h3") == "Policy engine"
+        phone = browser.new_page(viewport={"width": 390, "height": 800})
+        phone.goto(url)
+        assert not phone.evaluate("document.documentElement.scrollWidth > innerWidth")
+        browser.close()
+    assert not errors
+    assert all(u.startswith("file:") for u in requests), requests
