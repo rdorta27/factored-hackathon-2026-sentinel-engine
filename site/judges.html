@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>For judges · Sentinel Engine</title>
+<meta name="description" content="Path to production, how to reproduce a run, responsible AI and short answers to the questions a judge asks.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<style>
+pre { margin: 0; padding: 14px 16px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); overflow-x: auto; font: 14px/1.5 var(--mono); }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.tablewrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+.toc { display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap; padding: 0; list-style: none; margin: 0; }
+.toc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--card); text-decoration: none; font-weight: 600; }
+details { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 4px 16px; }
+summary { min-height: 44px; padding: 10px 0; font-weight: 700; cursor: pointer; }
+details p { margin: 0 0 12px; color: var(--muted); }
+.langs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+main { display: flex; flex-direction: column; gap: 18px; padding-bottom: 24px; }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./"><img src="favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="./">Home</a><a href="diagrams/architecture.html">Architecture</a><a href="diagrams/evidence.html">Evidence</a></nav>
+  </header>
+  <main id="main">
+    <h1>For judges</h1>
+    <p class="lead">What a reviewer asks first: can it reach production, can I reproduce it, is the AI responsible, and what is real.</p>
+    <ul class="toc" aria-label="Sections">
+      <li><a href="#production">Path to production</a></li>
+      <li><a href="#reproduce">Reproduce</a></li>
+      <li><a href="#responsible">Responsible AI</a></li>
+      <li><a href="#questions">Questions</a></li>
+    </ul>
+
+    <section id="production" aria-labelledby="production-h">
+      <h2 id="production-h">Path to production</h2>
+      <p class="note">The demo runs the same code as production. This table lists only what must change. Each row links to its page. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/specification.md#path-to-production">Full table</a>.</p>
+      <div class="tablewrap" tabindex="0" aria-label="Path to production table">
+      <table>
+        <thead><tr><th>Area</th><th>Today</th><th>Before production</th></tr></thead>
+        <tbody>
+          <tr><td>Identity</td><td>Test session</td><td>The identity provider of the bank. Credentials in Azure Key Vault.</td></tr>
+          <tr><td>State</td><td>SQLite on one replica</td><td>PostgreSQL, with the same models, for more than one instance.</td></tr>
+          <tr><td>Gold</td><td>A labelled mock on the public link</td><td>Gold on Databricks. The way to read it at request time is not decided.</td></tr>
+          <tr><td>Policy</td><td>Synthetic values, labelled</td><td>The approved policy of the bank, in the same format.</td></tr>
+          <tr><td>Handoff</td><td>One demo advisor view</td><td>A queue that creates the ticket in the CRM of the bank, routed by language and specialty.</td></tr>
+          <tr><td>LLM</td><td>GLM 5.3 Flash on Fireworks AI</td><td>The same weights on Azure AI Foundry or Databricks, with quotas and a spend cap.</td></tr>
+          <tr><td>Capacity</td><td>No load test of the chat endpoint</td><td>A load test as a release gate. See <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/sizing-capacity.md">sizing</a>.</td></tr>
+          <tr><td>Monitoring</td><td>Turn records. A replayed workload, grouped by country and language.</td><td>Central traces and alerts for each country.</td></tr>
+          <tr><td>Cost</td><td>An estimate for the deployment</td><td>See <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/cost.md">cost</a>. It is a projection, not a measurement.</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </section>
+
+    <section id="reproduce" aria-labelledby="reproduce-h">
+      <h2 id="reproduce-h">Reproduce</h2>
+      <p>Clone the repository, run the tests and replay a frozen run offline. No model key, no cloud credential and no data are needed.</p>
+<pre><code>git clone https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine.git
+cd factored-hackathon-2026-sentinel-engine/sentinel-ai-core
+pip install -e ".[dev,eval]"
+SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
+python3 -m eval.run verify 2024Q4-resolution-v2</code></pre>
+      <p class="note">The <code>verify</code> command recomputes a frozen run from its recordings and compares it with its <code>summary.json</code>. On the day of the freeze, three runs matched: <code>2024Q4-resolution-v1</code>, <code>2024Q4-resolution-v2</code> and <code>2024Q4-train-v1</code>. The run <code>2024Q4-eval-v7</code> differs in its system block, and the evidence index says so. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/README.md#evaluation-runs">Evidence index</a>.</p>
+      <p class="note">The attack suite writes a new run only when you ask for it: <code>SENTINEL_WRITE_EVIDENCE=1 python3 -m pytest tests/adversarial -q</code>.</p>
+    </section>
+
+    <section id="responsible" aria-labelledby="responsible-h">
+      <h2 id="responsible-h">Responsible AI</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>What the model never receives</h3>
+          <ul>
+            <li>The customer id. The tools are bound to the session.</li>
+            <li>Personal identifiers. Code masks them by pattern before any model call.</li>
+            <li>The decision. The model labels the intent. The policy engine decides.</li>
+          </ul>
+          <p class="note">Limit: the masking finds only the patterns that it knows. It does not find other personal data. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/004-pii-lifecycle.md">Decision 004</a>.</p>
+        </div>
+        <div class="card">
+          <h3>Every decision has a reason</h3>
+          <ul>
+            <li>The policy engine returns a rule id with each decision.</li>
+            <li>A later "why?" gets the stored decision. The model does not make up a new answer.</li>
+            <li>The advisor sees the trace of each step.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="tag test" data-num-type="adv_attempted">Test suite</span>
+          <h3>Attacks</h3>
+          <p><strong data-num="adv_rate">0/42</strong> unsafe outcomes in <span data-num="adv_attempted">42</span> attacks. <span data-num="adv_mock">3</span> injection attempts pass only because the stand-in model is the keyword baseline. We say so.</p>
+          <span class="src">evidence/adversarial/20261005T014816Z · totals</span>
+        </div>
+        <div class="card">
+          <h3>Fairness limits</h3>
+          <ul>
+            <li>The data has no customer segment for the resolution cases, so we show no breakdown by segment.</li>
+            <li>The numbers by language and country are descriptive. Each group is small.</li>
+          </ul>
+        </div>
+      </div>
+      <h3>Results by language</h3>
+      <p class="note"><span data-num-type="lang_es_ar">Simulation</span>. Intent accuracy of the LLM router on the held-out cases. Each variant has a small sample. The 95% range is wide, so do not read a gap between variants as a disparity. See the <a href="diagrams/evidence.html#language">evidence explorer</a> for the range of each variant.</p>
+      <div class="langs">
+        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">98.6%</span><p>on <span data-num-den="lang_es_ar">70</span> cases</p></div>
+        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">97.1%</span><p>on <span data-num-den="lang_es_co">70</span> cases</p></div>
+        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">98.6%</span><p>on <span data-num-den="lang_es_mx">70</span> cases</p></div>
+        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">98.6%</span><p>on <span data-num-den="lang_pt_br">70</span> cases</p></div>
+      </div>
+      <p class="note">The Portuguese cases are model-written. No native speaker reviewed them. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/018-evaluation-acceptance.md">Decision 018</a>.</p>
+    </section>
+
+    <section id="questions" aria-labelledby="questions-h">
+      <h2 id="questions-h">Questions a judge asks</h2>
+      <details><summary>Is it in production?</summary><p>No. It is a prototype. It runs the code that production would run, with documented mocks. No number on this site is a production measurement.</p></details>
+      <details><summary>What is a mock?</summary><p>A stand-in with the same contract as the production part. Production replaces the backend and keeps the code. The <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">mocks page</a> lists each one with its limit. The <a href="diagrams/architecture.html">architecture diagram</a> marks them.</p></details>
+      <details><summary>Why is the resolution ceiling <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span>?</summary><p>The policy lets only those simulated cases resolve. The other cases must end in a handoff or a question. Both the baseline and the LLM router resolve every case under the ceiling. The set cannot tell them apart on resolution.</p></details>
+      <details><summary>Then what does the LLM router add?</summary><p>It labels the intent better: <span data-num="intent_router">98.2%</span> against <span data-num="intent_baseline">53.9%</span> for the keyword baseline on <span data-num-den="intent_router">280</span> held-out turns. That is a simulation on team-written cases.</p></details>
+      <details><summary>Does the model decide?</summary><p>No. The model labels the intent. Code masks, looks up, decides, acts and reads the case back.</p></details>
+    </section>
+  </main>
+  <footer>
+    <a href="./">Home</a>
+    <a href="diagrams/evidence.html">Evidence</a>
+    <span class="grow">Synthetic demo data. No credentials and no real data in the repository.</span>
+  </footer>
+</div>
+</body>
+</html>

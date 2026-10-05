@@ -121,6 +121,46 @@
       "denominator": 16,
       "denominator_field": "ceiling.router_v2.resolvable"
     },
+    "lang_es_ar": {
+      "text": "98.6%",
+      "value": 0.9857,
+      "type": "Simulation",
+      "label": "intent accuracy on es-AR",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "field": "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy",
+      "denominator": 70,
+      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-AR.n"
+    },
+    "lang_es_co": {
+      "text": "97.1%",
+      "value": 0.9714,
+      "type": "Simulation",
+      "label": "intent accuracy on es-CO",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "field": "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy",
+      "denominator": 70,
+      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-CO.n"
+    },
+    "lang_es_mx": {
+      "text": "98.6%",
+      "value": 0.9857,
+      "type": "Simulation",
+      "label": "intent accuracy on es-MX",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "field": "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy",
+      "denominator": 70,
+      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-MX.n"
+    },
+    "lang_pt_br": {
+      "text": "98.6%",
+      "value": 0.9857,
+      "type": "Simulation",
+      "label": "intent accuracy on pt-BR",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "field": "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy",
+      "denominator": 70,
+      "denominator_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.n"
+    },
     "problem_calls": {
       "text": "464,791",
       "value": 464791,
@@ -172,21 +212,94 @@
           "value": 0.5393,
           "n": 280,
           "field": "component.versions.baseline.breakdown.overall.accuracy",
-          "n_field": "component.versions.baseline.breakdown.overall.n"
+          "n_field": "component.versions.baseline.breakdown.overall.n",
+          "ci": [
+            0.425,
+            0.65
+          ],
+          "ci_field": "component.versions.baseline.breakdown.overall.interval_95"
         },
         {
           "label": "LLM router, first version",
           "value": 0.7429,
           "n": 280,
           "field": "component.versions.router_v1.breakdown.overall.accuracy",
-          "n_field": "component.versions.router_v1.breakdown.overall.n"
+          "n_field": "component.versions.router_v1.breakdown.overall.n",
+          "ci": [
+            0.6429,
+            0.8429
+          ],
+          "ci_field": "component.versions.router_v1.breakdown.overall.interval_95"
         },
         {
           "label": "LLM router, final version",
           "value": 0.9821,
           "n": 280,
           "field": "component.versions.router_v2.breakdown.overall.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.overall.n"
+          "n_field": "component.versions.router_v2.breakdown.overall.n",
+          "ci": [
+            0.95,
+            1.0
+          ],
+          "ci_field": "component.versions.router_v2.breakdown.overall.interval_95"
+        }
+      ]
+    },
+    {
+      "id": "language",
+      "title": "By language",
+      "type": "Simulation",
+      "kind": "rate",
+      "about": "Intent accuracy of the final LLM router for each variant. Each variant has a small sample, so the confidence range is wide. Read the range before you compare two variants. The Portuguese cases are model-written and no native speaker reviewed them.",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "rows": [
+        {
+          "label": "es-AR",
+          "value": 0.9857,
+          "n": 70,
+          "field": "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy",
+          "n_field": "component.versions.router_v2.breakdown.by_variant.es-AR.n",
+          "ci": [
+            0.9571,
+            1.0
+          ],
+          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-AR.interval_95"
+        },
+        {
+          "label": "es-CO",
+          "value": 0.9714,
+          "n": 70,
+          "field": "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy",
+          "n_field": "component.versions.router_v2.breakdown.by_variant.es-CO.n",
+          "ci": [
+            0.9286,
+            1.0
+          ],
+          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-CO.interval_95"
+        },
+        {
+          "label": "es-MX",
+          "value": 0.9857,
+          "n": 70,
+          "field": "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy",
+          "n_field": "component.versions.router_v2.breakdown.by_variant.es-MX.n",
+          "ci": [
+            0.9571,
+            1.0
+          ],
+          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-MX.interval_95"
+        },
+        {
+          "label": "pt-BR",
+          "value": 0.9857,
+          "n": 70,
+          "field": "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy",
+          "n_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.n",
+          "ci": [
+            0.9571,
+            1.0
+          ],
+          "ci_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.interval_95"
         }
       ]
     },

@@ -61,6 +61,10 @@ METRICS: dict[str, tuple] = {
                         "ceiling.router_v2.n", "cases that the policy lets the system resolve"),
     "ceil_resolved": (GAP, "ceiling.router_v2.resolved", "int", "Simulation",
                       "ceiling.router_v2.resolvable", "of the resolvable cases resolved"),
+    "lang_es_ar": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-AR.n", "intent accuracy on es-AR"),
+    "lang_es_co": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-CO.n", "intent accuracy on es-CO"),
+    "lang_es_mx": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-MX.n", "intent accuracy on es-MX"),
+    "lang_pt_br": (EVAL, "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.pt-BR.n", "intent accuracy on pt-BR"),
     "problem_calls": (PROBLEM, "totals.calls", "int", "Synthetic", None,
                       "calls in the development window"),
     "problem_dispute_calls": (PROBLEM, "demand.transaction_dispute.calls", "int",
@@ -82,9 +86,19 @@ SERIES: list[dict] = [
         "id": "intent", "title": "Intent accuracy", "type": "Simulation", "run": EVAL, "kind": "rate",
         "about": "The intent router against the keyword baseline on the same sealed held-out turns. The cases are team-written, not production traffic.",
         "rows": [
-            ("Keyword baseline", "component.versions.baseline.breakdown.overall.accuracy", "component.versions.baseline.breakdown.overall.n"),
-            ("LLM router, first version", "component.versions.router_v1.breakdown.overall.accuracy", "component.versions.router_v1.breakdown.overall.n"),
-            ("LLM router, final version", "component.versions.router_v2.breakdown.overall.accuracy", "component.versions.router_v2.breakdown.overall.n"),
+            ("Keyword baseline", "component.versions.baseline.breakdown.overall.accuracy", "component.versions.baseline.breakdown.overall.n", "component.versions.baseline.breakdown.overall.interval_95"),
+            ("LLM router, first version", "component.versions.router_v1.breakdown.overall.accuracy", "component.versions.router_v1.breakdown.overall.n", "component.versions.router_v1.breakdown.overall.interval_95"),
+            ("LLM router, final version", "component.versions.router_v2.breakdown.overall.accuracy", "component.versions.router_v2.breakdown.overall.n", "component.versions.router_v2.breakdown.overall.interval_95"),
+        ],
+    },
+    {
+        "id": "language", "title": "By language", "type": "Simulation", "run": EVAL, "kind": "rate",
+        "about": "Intent accuracy of the final LLM router for each variant. Each variant has a small sample, so the confidence range is wide. Read the range before you compare two variants. The Portuguese cases are model-written and no native speaker reviewed them.",
+        "rows": [
+            ("es-AR", "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy", "component.versions.router_v2.breakdown.by_variant.es-AR.n", "component.versions.router_v2.breakdown.by_variant.es-AR.interval_95"),
+            ("es-CO", "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy", "component.versions.router_v2.breakdown.by_variant.es-CO.n", "component.versions.router_v2.breakdown.by_variant.es-CO.interval_95"),
+            ("es-MX", "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy", "component.versions.router_v2.breakdown.by_variant.es-MX.n", "component.versions.router_v2.breakdown.by_variant.es-MX.interval_95"),
+            ("pt-BR", "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy", "component.versions.router_v2.breakdown.by_variant.pt-BR.n", "component.versions.router_v2.breakdown.by_variant.pt-BR.interval_95"),
         ],
     },
     {
@@ -148,8 +162,12 @@ def build_series(runs_cache: dict, evidence: Path) -> list[dict]:
             runs_cache[run] = json.loads((evidence / run / "summary.json").read_text())
         data = runs_cache[run]
         rows = []
-        for label, vpath, dpath in sdef["rows"]:
-            rows.append({"label": label, "value": dig(data, vpath), "n": dig(data, dpath), "field": vpath, "n_field": dpath})
+        for label, vpath, dpath, *ci in sdef["rows"]:
+            row = {"label": label, "value": dig(data, vpath), "n": dig(data, dpath), "field": vpath, "n_field": dpath}
+            if ci:
+                row["ci"] = dig(data, ci[0])
+                row["ci_field"] = ci[0]
+            rows.append(row)
         entry = {k: sdef[k] for k in ("id", "title", "type", "kind", "about") if k in sdef}
         entry.update({"source": f"evidence/{run}/summary.json", "rows": rows})
         for k in ("unit", "mode"):

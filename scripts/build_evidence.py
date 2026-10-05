@@ -48,6 +48,8 @@ def series_html(s: dict) -> str:
         else:
             width = r["value"] / top * 100
             note = f'{int(r["n"]):,} turns' if unit != "USD" else f'for {int(r["n"]):,} turns'
+        if r.get("ci"):
+            note += f' · 95% range {r["ci"][0] * 100:.1f}% to {r["ci"][1] * 100:.1f}%'
         rows.append(
             f'<li><span class="lab">{escape(r["label"])}</span>'
             f'<span class="track" role="img" aria-label="{escape(r["label"])}: {num(r["value"], kind, unit)} {note}">'

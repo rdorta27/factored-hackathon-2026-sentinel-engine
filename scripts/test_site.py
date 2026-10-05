@@ -225,11 +225,12 @@ def test_markdown_number_marks_match_the_evidence():
 import build_cases as bc  # noqa: E402
 import build_evidence as be  # noqa: E402
 
-DIAGRAMS = ["architecture", "cases", "evidence"]
+DIAGRAMS = ["architecture", "cases", "evidence", "turn"]
 
 
 def test_cases_and_evidence_files_are_current():
-    for mod in (bc, be):
+    import build_turn as bt
+    for mod in (bc, be, bt):
         for path, text in mod.outputs().items():
             assert path.read_text() == text, f"{path.name} is stale: run scripts/{mod.__name__}.py"
 
@@ -285,6 +286,11 @@ def test_every_diagram_in_the_browser():
                 page.focus("#n-gold")
                 page.keyboard.press("Enter")
                 assert page.inner_text(".detail.on h3") == "Gold store"
+            elif name == "turn":
+                page.locator("[data-go]").nth(0).focus()
+                page.keyboard.press("Enter")
+                page.click("#next")
+                assert page.inner_text(".tstep.on h3").startswith("2.")
             else:
                 tabs = page.locator("[role=tab]")
                 assert tabs.count() >= 3
@@ -306,3 +312,51 @@ def test_home_page_links_every_diagram_and_the_slides():
         assert (SITE / target).exists()
     assert 'property="og:image"' in home and (SITE / "preview.png").exists()
     assert 'id="limits"' in home and "submission email" in home
+
+
+def test_turn_page_uses_demo_lines_and_real_stops():
+    import build_turn as bt
+    replay = (sn.ROOT / "sentinel-ai-core/eval/demo/replay.md").read_text()
+    for sample in bt.SAMPLES:
+        assert sample["text"] in replay, sample["id"]
+    assert len(bt.STEPS) == 7
+    assert [s["decides"] for s in bt.STEPS].count("model") == 1
+    for step in bt.STEPS:
+        for rel in step["evidence"]:
+            assert (sn.ROOT / rel).exists(), f"{step['id']}: missing {rel}"
+
+
+def test_judges_page_commands_and_links_exist():
+    html = (SITE / "judges.html").read_text()
+    code = re.search(r"<pre><code>(.*?)</code></pre>", html, re.S).group(1)
+    assert "git clone https://github.com/" in code and "pip install -e" in code
+    assert (sn.ROOT / "sentinel-ai-core/eval/run.py").exists() and "-m eval.run verify" in code
+    run = re.search(r"verify (\S+)", code).group(1)
+    assert (sn.ROOT / "evidence/evaluation-runs" / run / "summary.json").exists()
+    extras = (sn.ROOT / "sentinel-ai-core/pyproject.toml").read_text()
+    assert "dev = [" in extras and "eval = [" in extras
+    assert (sn.ROOT / "sentinel-ai-core/tests/adversarial").is_dir()
+    # Every repository link of the page points to a file that exists.
+    base = "https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/"
+    for rel in re.findall(re.escape(base) + r"([^\"#]+)", html):
+        assert (sn.ROOT / rel).exists(), rel
+
+
+def test_judges_page_in_the_browser():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    url = (SITE / "judges.html").as_uri()
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        page = browser.new_page(viewport={"width": 390, "height": 800})
+        requests = []
+        page.on("request", lambda r: requests.append(r.url))
+        page.goto(url)
+        assert not page.evaluate("document.documentElement.scrollWidth > innerWidth")
+        page.locator("summary").first.click()
+        assert page.locator("details[open]").count() == 1
+        assert all(u.startswith("file:") for u in requests), requests
+        browser.close()
