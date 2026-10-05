@@ -59,6 +59,44 @@ main {
   display: block;
 }
 
+/* The build line: the served build, read once from /api/v1/health. */
+.build-info {
+  padding: 12px 4px 0;
+  text-align: center;
+  overflow-wrap: anywhere;
+  opacity: 0.7;
+}
+
+/* Guide for the judge: a closed panel on the entry page. */
+.judge-guide {
+  margin-top: 24px;
+}
+
+.judge-guide > summary {
+  cursor: pointer;
+  padding: 12px 4px;
+}
+
+.judge-guide-body {
+  padding: 4px 4px 0;
+}
+
+.judge-guide-body h3 {
+  margin: 12px 0 4px;
+}
+
+/* The claims panel control for the cases after the first five. */
+.cases-toggle {
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* The agent shortcut sits with the chat, not with the header flags. */
+.chat-agent {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
 /* --- Entry: promise, test cases, password form ------------------------- */
 
 .entry {
