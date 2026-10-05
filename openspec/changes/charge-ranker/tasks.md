@@ -19,7 +19,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 3. Model
 
-- [ ] 3.1 Write the clues, using the parsers of `app/ai/grounding.py`. Train on the train split only. Calibrate on train. Set the threshold on validation. Save the weights and their hash. Evidence: `app/ai/charge_ranker.py`, `eval/train_charge_ranker.py`, tests.
+- [x] 3.1 Write the clues, using the parsers of `app/ai/grounding.py`. Train on the train split only. Calibrate on train. Set the threshold on validation. Save the weights and their hash. Evidence: `app/ai/charge_ranker.py`, `eval/train_charge_ranker.py`, tests.
 - [ ] 3.2 Write the evaluation script. It compares the four configurations on the same set and reports by language and by "has a merchant name", with counts and 95% ranges. A test fails if it imports training code. Evidence: `eval/eval_charge_ranker.py` and the test.
 
 ## 4. Measure and serve

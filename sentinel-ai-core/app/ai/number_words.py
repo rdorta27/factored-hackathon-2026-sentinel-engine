@@ -172,3 +172,12 @@ def words_to_numbers(text: str) -> list[int]:
             found.append(value)
         index = max(end, index + 1)
     return found
+
+
+_MULTIPLIERS = frozenset({"mil", "millon", "millones", "milhao", "milhoes", "y", "e"})
+
+
+def is_number_word(token: str) -> bool:
+    """True for a word that writes part of a number, so it is not a merchant name."""
+    token = normalize_text(token)
+    return token in _VALUES or token in _MULTIPLIERS
