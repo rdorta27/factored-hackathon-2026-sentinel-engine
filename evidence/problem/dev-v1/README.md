@@ -70,6 +70,26 @@ that maps to `other`.
 
 Every measure uses the development zone only.
 
+## Results
+
+Every value below comes from `summary.json`. The field path is the source.
+
+| What | Field | Value |
+|---|---|---|
+| Calls in the window | `totals.calls` | 464,791 |
+| Calls excluded at the held-out cut | `totals.excluded_heldout` | 217 |
+| Days in the window | `totals.days` | 745 |
+| FCR, Transaccional (account inquiry) | `reasons.Transaccional.share_pct` | 91.44% [91.3, 91.57] |
+| FCR, Queja (transaction dispute) | `reasons.Queja.share_pct` | 43.64% [43.29, 43.98] |
+| Calls a day, account inquiry | `demand.account_or_payment_inquiry.per_day_mean` | 218.48 |
+| Busy day, account inquiry | `demand.account_or_payment_inquiry.busy_day_p95` | 292 [289, 296] |
+| Highest day, account inquiry | `demand.account_or_payment_inquiry.highest_day` | 332 [316, 332] |
+| Calls a day, transaction dispute | `demand.transaction_dispute.per_day_mean` | 106.3 |
+| Busy day, transaction dispute | `demand.transaction_dispute.busy_day_p95` | 145 [142, 148] |
+| Agent hours a month, account inquiry | `hours.account_or_payment_inquiry.hours_per_month` | 408.03 (rank 1) |
+| Agent hours a month, transaction dispute | `hours.transaction_dispute.hours_per_month` | 390.78 (rank 2) |
+| Calls with no duration | `missing.duration_seconds.share_pct` | 14.0% |
+
 ## How to run
 
 ```bash
