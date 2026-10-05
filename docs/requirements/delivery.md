@@ -52,6 +52,8 @@ State openly what the data cannot support. The dataset is synthetic and in Spani
 
 Missing: the limits on the slides. They include the limits that [018](../build/decisions/018-evaluation-acceptance.md) fixes. The cases are model-written and model-reviewed. No human or native speaker reviewed them. The variants are not strictly equivalent.
 
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the [negative results](../rationale/negative-results.md) page records each rejected component and the rule that decided it; the [mocks](../architecture/mocks.md) page records each mock, its limit and its production backend. Remaining: the known limitation of the attack suite (category B, task 4.3), the 20-label human check (task 3.3) and the limits on the slides.
+
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
 

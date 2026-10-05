@@ -56,6 +56,7 @@ def accuracy_block(cases: list[Case], correct: list[bool]) -> dict:
     descriptive = interval is None or (interval[1] - interval[0]) / 2 > DESCRIPTIVE_HALF_WIDTH
     return {
         "n": n,
+        "bases": len(clusters),
         "clusters": len(clusters),
         "accuracy": round(hits / n, 4) if n else 0.0,
         "interval_95": list(interval) if interval else None,

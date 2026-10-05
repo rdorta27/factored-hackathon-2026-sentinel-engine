@@ -55,7 +55,11 @@ def build_client(fixtures_dir: Path | str, model=None) -> TestClient:  # type: i
     )
     router = model if model is not None else PromptedLLMRouter(FixtureTransport(fixtures_dir), config)
     # Each case on its own in-memory state: cases never share sessions or cases.
-    return TestClient(create_app(model=router, state_backend="memory"))
+    app = create_app(model=router, state_backend="memory")
+    # The transport behind the router carries the latency of the last model call,
+    # live or recorded, so the turn record can report it (evidence-hardening 2.1).
+    app.state.model_transport = getattr(router, "_transport", None)
+    return TestClient(app)
 
 
 def login(client: TestClient, customer: str = CUSTOMER) -> None:
@@ -118,7 +122,10 @@ def _post(client: TestClient, payload: dict) -> tuple[object, list]:
     return response, records
 
 
-def run_case(client: TestClient, case: Case) -> dict:
+def run_case(client: TestClient, case: Case, timing: str = "replay") -> dict:
+    from time import perf_counter
+
+    case_started = perf_counter()
     login(client, CUSTOMERS[case.country] if case.selected_reference else CUSTOMER)
     inject_fault(client, case.fault or "none")
     response, records = _post(client, {"message": case.message})
@@ -136,6 +143,8 @@ def run_case(client: TestClient, case: Case) -> dict:
     understand = next((r for r in records if r.step == "understand"), None)
     closing = next((r for r in reversed(records) if r.step == "turn"), None)
     policy_rules = sorted({r.policy_rule for r in records if r.policy_rule})
+    transport = getattr(client.app.state, "model_transport", None)
+    model_latency = getattr(transport, "last_latency_ms", None)
     return {
         "id": case.id,
         "locale": case.locale,
@@ -145,12 +154,16 @@ def run_case(client: TestClient, case: Case) -> dict:
         "expected_intent": case.expected_intent,
         "expected_outcome": case.expected_outcome,
         "outcome": kind,
+        "label": understand.label if understand else None,
         "matched": match_outcome(case, kind, response.status_code, policy_rules),
         "requires_handoff": case.requires_handoff,
         "must_not_pass": case.must_not_pass,
         "fault": case.fault or "none",
         "adversarial": "adversarial" in case.tags,
         "latency_ms": closing.latency_ms if closing else 0.0,
+        "model_latency_ms": float(model_latency) if model_latency is not None else None,
+        "conversation_latency_ms": (perf_counter() - case_started) * 1000,
+        "latency_source": timing,
         "cost_usd": understand.cost_usd if understand else 0.0,
         "model": understand.model if understand else "unknown",
         "route": understand.route if understand else "unknown",
@@ -159,11 +172,11 @@ def run_case(client: TestClient, case: Case) -> dict:
     }
 
 
-def run_system(cases: list[Case], fixtures_dir: Path | str, model_factory=None) -> list[dict]:  # type: ignore[no-untyped-def]
+def run_system(cases: list[Case], fixtures_dir: Path | str, model_factory=None, timing: str = "replay") -> list[dict]:  # type: ignore[no-untyped-def]
     turns = []
     for case in cases:
         model = model_factory() if model_factory is not None else None
-        turns.append(run_case(build_client(fixtures_dir, model), case))
+        turns.append(run_case(build_client(fixtures_dir, model), case, timing=timing))
     return turns
 
 
