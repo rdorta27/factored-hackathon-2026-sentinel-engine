@@ -94,8 +94,10 @@ All judges use the same set. The cases share state between judges.
 - The plain passwords are in `deploy/judge-users/passwords.csv` on the owner's
   machine. Git ignores the file. The users file on the link holds salted hashes
   only.
-- Lockout rule: after 5 failed logins for one login id or one address, the
-  login answers HTTP 429. The lock lasts 15 minutes.
+- Lockout rule: after 10 failed logins for one login id or one address, the
+  login answers HTTP 429. The lock lasts 15 minutes. The entry page shows a
+  clear "access is blocked" message on HTTP 429, not the wrong-credentials
+  message.
 - The public link has no one-click entry. The documented fixture passwords do
   not work on the link.
 
@@ -106,7 +108,7 @@ Each row has one owner and one proof. A row stays pending until its proof exists
 | Item | Owner | Proof | Status |
 |---|---|---|---|
 | Repository | Rubén | The public repository and its [README](../../README.md) | Done |
-| Deployed link | Rubén | A response from the live link | Pending |
+| Deployed link | Rubén | The `GET /api/v1/health` response of the 2026-10-05 redeploy, with `bundle_hash` `2efe5962…` | Done |
 | Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run | Pending |
 | Slides PDF | Rubén | `python3 scripts/export_slides.py` writes `site/slides/sentinel-slides.pdf` | Pending |
 | Video | Rubén | The video, 3 minutes at most | Pending |
@@ -133,6 +135,76 @@ Run the last checks in this order:
 4. The secret scan in CI
 
 The rule: after the last check, nobody changes the code. A change restarts the procedure.
+
+## Gate G3 record
+
+The owner confirmed the freeze on 2026-10-05. This record closes `post-freeze` task 1.1.
+
+| Item | Value |
+|---|---|
+| Branch | `feat/post-freeze` |
+| Freeze commit | `f18be6a` |
+| Measured commit (sealed run) | `8ee4575` |
+| `bundle_hash` of `/health` | `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2` |
+| Local end-to-end check | Pass, `post-freeze` task 1.2 |
+
+The `bundle_hash` of the local `/health` equals the served hash of the sealed run `2024Q4-eval-v8` (decision 018). The measured behavior is the served behavior.
+
+Owner inputs:
+
+| Input | Answer |
+|---|---|
+| (a) Freeze confirmation | Yes, the code is frozen |
+| (b) Spend allowed for live model calls | USD 1 |
+| (c) OK for `az` and the redeploy, and the subscription | Yes; `Azure subscription 1` (`dd53bd4a-c46b-453e-8b07-352facf6d5ad`) |
+| (d) Judge sheet and users file | `deploy/judge-users/passwords.csv` and `deploy/judge-users/users.json` (generated, gitignored) |
+
+No password is in this record.
+
+## Release notes
+
+Two milestones. The owner runs the tag and release commands after the final redeploy. No one pushes in the worktree.
+
+### v0.9-demo - 2026-10-05
+
+The demo code is merged and frozen. The link serves `router_v2` with prompt `v2` and the labelled Gold mock.
+
+- Sealed v8 measurement: 444 cases in the main set and 92 in the top-up set (`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`, `seals.v8` and `seals.v8b`). The verdict serves `router_v2`; prompt `v3` fails the zero-unsafe-wording gate and the subtype gate (decision 018, Result v8).
+- Router against the baseline: the paired difference is above zero (`paired.router_v2_vs_baseline`).
+- Attacks: 0 unsafe outcomes of 42 (`evidence/adversarial/20261005T014816Z/summary.json`, `totals.unsafe_outcome_rate`). The three mock-only attacks pass on the real model (`evidence/adversarial/20261005T204313Z/summary.json`).
+- Live latency on the frozen build: p50 and p95 per call are `timing.per_call.p50` and `timing.per_call.p95` of `evidence/evaluation-runs/2024Q4-resolution-live-v1/summary.json`.
+- `bundle_hash` of the deployed link: `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement.
+
+### v1.0-submission - after the video
+
+The delivered state: the frozen code, the repository, the public link, the site, the slides PDF and the video.
+
+The owner runs these commands on `main`, after this branch merges and the video is published:
+
+```bash
+git tag v0.9-demo
+git tag v1.0-submission
+git push origin v0.9-demo v1.0-submission
+gh release create v0.9-demo --title "v0.9-demo" --notes-file docs/build/delivery.md
+gh release create v1.0-submission --title "v1.0-submission" --notes-file docs/build/delivery.md
+```
+
+## Handover to docs-followups-2
+
+This record closes `post-freeze` task 6.1. The `docs-followups-2` change reads it.
+
+| Item | Value |
+|---|---|
+| Freeze commit | `f18be6a` |
+| `bundle_hash` of the link | `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2` |
+| Model served | `accounts/fireworks/models/glm-5p3-flash` |
+| Prompt version served | `v2` |
+| Gold source served | `mock` |
+| Final measurement run | `evidence/evaluation-runs/2024Q4-eval-v8` |
+| Live latency run | `evidence/evaluation-runs/2024Q4-resolution-live-v1` |
+| Adversarial run on the real model | `evidence/adversarial/20261005T204313Z` |
+| Robustness runs | None. Tasks 3.1 to 3.3 of this plan did not run. |
+| Date of the final redeploy | 2026-10-05 |
 
 ## Pending
 

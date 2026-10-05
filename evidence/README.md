@@ -105,7 +105,8 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-resolution-v1`](evaluation-runs/2024Q4-resolution-v1/summary.json) | resolution | Superseded | First multi-turn run that can resolve a case: 56 cases in 14 situations ([022](../docs/build/decisions/022-resolution-acceptance.md)) | matches | REQ-0055 |
 | [`2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | resolution | **Current** | The same set after the chat-loop change, with breakdown by variant and country | matches | REQ-0055, REQ-0024 |
 | [`2024Q4-resolution-gap-v1`](evaluation-runs/2024Q4-resolution-gap-v1/summary.json) | gap | **Current** | Replay of the resolution set: the baseline and router v2 both resolve 16 of 56 cases. The policy ceiling is 16. The paired difference is 0 because both systems reach the ceiling. No case differs in outcome or intent label. | not checked | REQ-0055, REQ-0022 |
-| [`2024Q4-resolution-live-dev-v1`](evaluation-runs/2024Q4-resolution-live-dev-v1/summary.json) | resolution (live) | **Current** | Live timing rehearsal on the development resolution set. 56 live calls under a USD 1 cap, spend USD 0.008935, cap not reached. Per model call p50/p95 2439.66/5124.78 ms; per conversation 2558.43/5220.92 ms. Safe resolution 16 of 56. | not checked | REQ-0055 |
+| [`2024Q4-resolution-live-dev-v1`](evaluation-runs/2024Q4-resolution-live-dev-v1/summary.json) | resolution (live) | Superseded | Live timing rehearsal on the development resolution set. 56 live calls under a USD 1 cap, spend USD 0.008935, cap not reached. Per model call p50/p95 2439.66/5124.78 ms; per conversation 2558.43/5220.92 ms. Safe resolution 16 of 56. | not checked | REQ-0055 |
+| [`2024Q4-resolution-live-v1`](evaluation-runs/2024Q4-resolution-live-v1/summary.json) | resolution (live) | **Current** | Live timing run on the frozen build (commit `a3db6bb`). 56 live calls under a USD 1 cap, spend USD 0.008977, cap not reached. Per model call p50/p95 2087.89/5217.76 ms; per conversation 2187.95/5310.84 ms. Cost per attempted case USD 0.00016 and per resolution USD 0.000561. Safe resolution 16 of 56. Data type: Simulation, live model call, mock store. | not checked | REQ-0055 |
 | [`2024Q4-cutoff-diagnosis-v1`](evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json) | cutoff diagnosis | **Current** | Replay of `calibration-v3` and `rehearsal-v8`: the validation split has 24 of 26 rows with confidence. The lowest cut-off that meets the 018 rule is 0.99998456 raw and 1.0 after `round(t_act, 2)`. Kind accuracy of v3 on development: 0.9899 without cut-offs, 0.7778 at the unrounded cut-off, 0.5404 at 1.0. | not checked | REQ-0002, REQ-0016 |
 | [`2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | calibration | **Current** | Confidence cut-offs on the validation split (n = 26, descriptive) | DIFFERS: the development cases changed on 2026-10-04 (`a17ed3a`), after the run | REQ-0002, REQ-0016 |
 | [`2024Q4-select-v3`](evaluation-runs/2024Q4-select-v3/summary.json), [`2024Q4-select-v3c`](evaluation-runs/2024Q4-select-v3c/summary.json) | selection | Superseded | Prompt v3 on development: 8 examples, then the refined prompt. Kept for the iteration history. | refused: the case set differs from the one measured | REQ-0016, REQ-0020 |
@@ -133,6 +134,7 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 | Run | Status | Attempted | Unsafe | No defense yet |
 |---|---|---|---|---|
 | [`20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261005T204313Z`](adversarial/20261005T204313Z/summary.json) | **Current (real model)** | 3 | 0/3 | 0 |
 | [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | `20261002T195516Z` | Superseded | 42 | 0/42 | 3 |
@@ -142,6 +144,17 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 | `20261001T114008Z`, `20260930T214744Z` | Superseded | 29 | 0/29 | 4 |
 
 Source of each number: `totals.attempted`, `totals.unsafe_outcome_rate`, `totals.no_defense_yet`. In the current run, 3 injection attempts pass only because the keyword model answers them (`categories.A_prompt_injection.passes_on_mock`). The attack block of `eval-v7` tests attacks against the live model.
+
+The run `20261005T204313Z` repeats only the 3 `passes_on_mock` attacks (A1, A2, A5) against the real router model. All 3 pass, so `totals.unsafe_outcome_rate` is `0/3`. This run is a partial run: it holds 3 attacks, not the full 42. `post-freeze` task 3.4 writes it.
+
+## Robustness
+
+The fault-injection run and the load run. Scripts: `scripts/inject_faults.py` and `scripts/load_chat.py`. Data type: **Simulation**, **Mock store**. The app runs locally with the keyword baseline model and the Gold mock; the load run has one small **live model** part. Requirements: REQ-0021, REQ-0026, REQ-0053.
+
+| Run | Status | What it measures | Requirements |
+|---|---|---|---|
+| [`20261005T210525Z`](robustness/20261005T210525Z/summary.json) | **Current** | Fault injection. Seven faults, 12 turns each. The healthy baseline answers 12 of 12 turns. The model timeout, the model 5xx and the invalid JSON answer 12 of 12 through the baseline fallback. The slow Gold adds about 6 s per turn and answers 12 of 12. The Gold error answers 12 of 12. The store error answers 10 of 12 (one client read error and one unparseable reply). | REQ-0021, REQ-0026 |
+| [`20261005T211031Z`](robustness/20261005T211031Z/summary.json) | **Current** | Load test of one chat replica with recorded model answers. On the host, `recorded_local` reaches 4.82, 9.59 and 17.51 requests per second at the targets 5, 10 and 20, with no error and no 429. In the container at 0.5 vCPU and 1 GiB, `recorded_container` reaches 4.29, 5.62 and 4.54 requests per second; the p95 rises to 918 ms at the target 20. The small live run `live_local` at the target 2 reaches 0.66 requests per second with p50 1394 ms and p95 3870 ms. | REQ-0053 |
 
 ## Monitoring
 

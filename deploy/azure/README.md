@@ -17,6 +17,18 @@ link runs: [decision 019](../../docs/build/decisions/019-azure-container-apps.md
     The deploy stops with an error when it is missing and never generates one,
     so `session_ref` stays continuous across redeploys.
 
+The script also sets these variables on the container app:
+
+| Variable | Value | Why |
+|---|---|---|
+| `SENTINEL_BRAND_NAME` | `Sentinel` | White label. The default name. |
+| `SENTINEL_BRAND_ACCENT` | `#1f4fa3` | White label. The bank blue of decision 006. |
+| `SENTINEL_LLM_PROMPT_VERSION` | `v2` | The prompt that the v8 verdict chose (decision 018). |
+| `SENTINEL_LLM_DAILY_BUDGET_USD` | `5` | A small daily cap protects the public link (REQ-0026, REQ-0055). |
+| `SENTINEL_CHARGE_RANKER` | `off` | The learned charge selector stays off (decision 025). |
+
+`SENTINEL_LLM_CUTOFFS` stays unset. The v3 cut-offs make the router ask for clarification in about 80% of turns (evidence-hardening 4.4).
+
 ## Run it
 
 From the repository root:

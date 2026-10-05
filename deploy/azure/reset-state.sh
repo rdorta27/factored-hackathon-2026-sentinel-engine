@@ -49,9 +49,18 @@ run() {
 	"$@"
 }
 
-# Scale to zero first: SQLite on the share must not hold an open handle.
-run az containerapp update --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
-	--min-replicas 0 --max-replicas 0 --output none
+# Stop the active revision first: SQLite on the share must not hold an open
+# handle. `az containerapp update` cannot set max-replicas below 1, so the
+# revision is deactivated and activated again.
+if [[ "$DRY_RUN" -eq 1 ]]; then
+	active_revision="<active-revision>"
+else
+	active_revision="$(az containerapp revision list \
+		--name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
+		--query "[?properties.active].name | [0]" -o tsv)"
+fi
+run az containerapp revision deactivate --name "$APP_NAME" \
+	--resource-group "$RESOURCE_GROUP" --revision "$active_revision" --output none
 
 if [[ "$DRY_RUN" -eq 0 ]]; then
 	storage_key="$(az storage account keys list \
@@ -78,9 +87,9 @@ else
 	done
 fi
 
-# One replica keeps the link warm; see decision 019.
-run az containerapp update --name "$APP_NAME" --resource-group "$RESOURCE_GROUP" \
-	--min-replicas 1 --max-replicas 1 --output none
+# Activate the revision again; one replica keeps the link warm (decision 019).
+run az containerapp revision activate --name "$APP_NAME" \
+	--resource-group "$RESOURCE_GROUP" --revision "$active_revision" --output none
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
 	echo "dry run: no Azure call made, no file deleted"

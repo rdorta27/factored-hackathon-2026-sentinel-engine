@@ -71,7 +71,7 @@ AI cost per successful resolution: 5 / 40 = USD 0.125
 
 ## 2. Security and reliability
 
-The measured values are in the current adversarial run ([`20261005T014816Z`](../../evidence/adversarial/20261005T014816Z/summary.json)) and in the attack block of [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The [evidence index](../../evidence/README.md#adversarial) shows which adversarial run is current.
+The measured values are in the current adversarial run ([`20261005T014816Z`](../../evidence/adversarial/20261005T014816Z/summary.json)), the real-model run ([`20261005T204313Z`](../../evidence/adversarial/20261005T204313Z/summary.json)), the fault run ([`20261005T210525Z`](../../evidence/robustness/20261005T210525Z/summary.json)), the load run ([`20261005T211031Z`](../../evidence/robustness/20261005T211031Z/summary.json)) and the attack block of [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). The [evidence index](../../evidence/README.md#adversarial) shows which adversarial run is current.
 
 | Metric | Formula | Target | Where it is measured |
 |---|---|---|---|
@@ -81,6 +81,9 @@ The measured values are in the current adversarial run ([`20261005T014816Z`](../
 | Tool-failure handling | failures handled with a bounded retry, a fallback or an escalation / injected failures | all handled | `categories.D_tool_failures.blocked_verified` over `attempted` |
 | Expired sessions handled | cases that ask for re-authentication / cases with an expired session | all handled | `categories.C_session.blocked_verified` over `attempted` |
 | Restricted data in external LLMs | number of requests with restricted data | 0 | attack A9 and the privacy tests in `sentinel-ai-core/tests/privacy/` |
+| Injected failures handled safely | safe turns / turns for each injected fault | all handled; the store error leaves 2 of 12 | `faults.store-error.safe_share` in [`20261005T210525Z`](../../evidence/robustness/20261005T210525Z/summary.json) |
+| Chat capacity | achieved requests per second and p95 at the deployed limits | about 5 req/s at 0.5 vCPU and 1 GiB | `recorded_container` in [`20261005T211031Z`](../../evidence/robustness/20261005T211031Z/summary.json) |
+| Model spend guard | turns that reach the daily cap / turns | the baseline answers above the cap | `SENTINEL_LLM_DAILY_BUDGET_USD` in `app/ai/budget.py` |
 
 ## 3. Response quality
 

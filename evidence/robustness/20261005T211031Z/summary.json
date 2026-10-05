@@ -1,0 +1,90 @@
+{
+  "kind": "load",
+  "limits": "one process; the container mode uses 0.5 vCPU and 1 GiB",
+  "live_local": [
+    {
+      "achieved_rps": 0.6592733164374023,
+      "container": false,
+      "errors": 0,
+      "p50_ms": 1393.977656000061,
+      "p95_ms": 3870.195257011801,
+      "rejected_429": 0,
+      "requests": 8,
+      "stub": "live",
+      "target_rps": 2.0
+    }
+  ],
+  "measured_commit": "189b4fd43086a4c5a1f7102dababb67014ebf4a0",
+  "recorded_container": [
+    {
+      "achieved_rps": 4.293807011065138,
+      "container": true,
+      "errors": 0,
+      "p50_ms": 6.963703024666756,
+      "p95_ms": 99.71012661699206,
+      "rejected_429": 0,
+      "requests": 45,
+      "stub": "recorded",
+      "target_rps": 5.0
+    },
+    {
+      "achieved_rps": 5.618683264828945,
+      "container": true,
+      "errors": 0,
+      "p50_ms": 6.237304012756795,
+      "p95_ms": 202.64920429326594,
+      "rejected_429": 0,
+      "requests": 61,
+      "stub": "recorded",
+      "target_rps": 10.0
+    },
+    {
+      "achieved_rps": 4.536661917265503,
+      "container": true,
+      "errors": 0,
+      "p50_ms": 22.709896002197638,
+      "p95_ms": 918.2203194999602,
+      "rejected_429": 0,
+      "requests": 48,
+      "stub": "recorded",
+      "target_rps": 20.0
+    }
+  ],
+  "recorded_local": [
+    {
+      "achieved_rps": 4.822301551379055,
+      "container": false,
+      "errors": 0,
+      "p50_ms": 23.585768998600543,
+      "p95_ms": 35.696587670827284,
+      "rejected_429": 0,
+      "requests": 50,
+      "stub": "recorded",
+      "target_rps": 5.0
+    },
+    {
+      "achieved_rps": 9.587723999374255,
+      "container": false,
+      "errors": 0,
+      "p50_ms": 18.352426501223817,
+      "p95_ms": 46.29843754519243,
+      "rejected_429": 0,
+      "requests": 100,
+      "stub": "recorded",
+      "target_rps": 10.0
+    },
+    {
+      "achieved_rps": 17.5100262619651,
+      "container": false,
+      "errors": 0,
+      "p50_ms": 24.683559488039464,
+      "p95_ms": 79.04392838536296,
+      "rejected_429": 0,
+      "requests": 188,
+      "stub": "recorded",
+      "target_rps": 20.0
+    }
+  ],
+  "run_id": "20261005T211031Z",
+  "script": "scripts/load_chat.py"
+}
