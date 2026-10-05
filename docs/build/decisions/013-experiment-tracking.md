@@ -34,3 +34,4 @@ Option 3. The evaluation runs are the experiment log: one folder per run, never 
 - To compare runs, compare their `summary.json` files. There is no dashboard.
 - The [evidence index](../../../evidence/README.md#evaluation-runs) lists every run with its status (current or superseded) and its offline `verify` result.
 - Production path: MLflow on Databricks, which the production pipeline already uses (decision 12). It reads the same fields.
+- *Updated 10/5:* a training run is also a frozen run. `evidence/evaluation-runs/2024Q4-train-v1/` records the split ids, the regularization parameter, the validation scores, the pinned scikit-learn version and the hash of the model file. `python3 -m eval.run verify` trains again on the frozen split ids and compares the hash. The hash is valid only with the pinned scikit-learn version.

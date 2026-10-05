@@ -18,6 +18,7 @@ from eval.bench_router import INVALID
 from eval.cases import Case
 from eval.intervals import breakdown
 from eval.paired import paired, variant_losses
+from eval.per_intent import per_intent_intervals
 
 UNAVAILABLE = "unavailable"
 
@@ -78,6 +79,7 @@ def run_version(cases: list[Case], version: Version) -> dict:
         "n": len(cases),
         "predicted": predicted,
         "intent": metrics.intent_metrics(pairs),
+        "per_intent": per_intent_intervals(cases, predicted),
         "breakdown": breakdown(cases, predicted),
         "variant_losses": variant_losses(cases, predicted),
         "json_failures": {"n": len(cases), "count": predicted.count(INVALID)},

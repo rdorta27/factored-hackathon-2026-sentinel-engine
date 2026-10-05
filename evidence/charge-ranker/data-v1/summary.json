@@ -1,0 +1,130 @@
+{
+  "checks": {
+    "customers_in_two_splits": 0,
+    "test_only_families_outside_test": 0
+  },
+  "code_hash": "9b4d5f19a5a278d059ce676eafe523f0a37121d6ad1ac1626128e6d12d4f5fa5",
+  "customers_per_split": {
+    "test": 3000,
+    "train": 3000,
+    "validation": 1500
+  },
+  "data_type": "Simulation: team-generated descriptions of real Gold transactions. Labels are exact.",
+  "examples_hash": "c7e2a30f0cf2b41e141126361f88945fbe0c00df91a1799a755bffebbe51b065",
+  "examples_per_customer": {
+    "test": 2,
+    "train": 2,
+    "validation": 2
+  },
+  "families": {
+    "test_only": [
+      "story",
+      "informal"
+    ],
+    "train": [
+      "direct",
+      "question",
+      "terse"
+    ]
+  },
+  "run": "charge-ranker/data-v1",
+  "seed": 20261004,
+  "split_rule": {
+    "customers": {
+      "test": [
+        80,
+        100
+      ],
+      "train": [
+        0,
+        60
+      ],
+      "validation": [
+        60,
+        80
+      ]
+    },
+    "target_dates": {
+      "test": [
+        "2025-07-01",
+        "9999-12-31"
+      ],
+      "train": [
+        "0000-01-01",
+        "2024-12-31"
+      ],
+      "validation": [
+        "2025-01-01",
+        "2025-06-30"
+      ]
+    }
+  },
+  "splits": {
+    "test": {
+      "amount_in_words": 801,
+      "candidates_max": 99,
+      "candidates_median": 25.0,
+      "customers": 2988,
+      "customers_hash": "11408544ad2a49dcee6688fdcee9dcdcd604e4a27aaaa5879e6470c1fd42cd8a",
+      "examples": 5976,
+      "families": {
+        "direct": 1178,
+        "informal": 1161,
+        "question": 1211,
+        "story": 1180,
+        "terse": 1246
+      },
+      "locales": {
+        "es-419": 2942,
+        "pt-BR": 3034
+      },
+      "mentions_merchant": 1158,
+      "target_date_first": "2025-07-01",
+      "target_date_last": "2026-06-17"
+    },
+    "train": {
+      "amount_in_words": 794,
+      "candidates_max": 57,
+      "candidates_median": 7.0,
+      "customers": 2999,
+      "customers_hash": "ea13e1c7ded55d4fd3a68793e8674bd04468eb6961077c4dd13bfc6fb91c291f",
+      "examples": 5998,
+      "families": {
+        "direct": 1994,
+        "informal": 0,
+        "question": 1982,
+        "story": 0,
+        "terse": 2022
+      },
+      "locales": {
+        "es-419": 2938,
+        "pt-BR": 3060
+      },
+      "mentions_merchant": 1158,
+      "target_date_first": "2023-06-17",
+      "target_date_last": "2024-12-31"
+    },
+    "validation": {
+      "amount_in_words": 379,
+      "candidates_max": 81,
+      "candidates_median": 18.0,
+      "customers": 1424,
+      "customers_hash": "a80d45fa319ec6012d97f88442112fe8ff9fdba5dd38862c6edf7bafe018202b",
+      "examples": 2848,
+      "families": {
+        "direct": 940,
+        "informal": 0,
+        "question": 977,
+        "story": 0,
+        "terse": 931
+      },
+      "locales": {
+        "es-419": 1434,
+        "pt-BR": 1414
+      },
+      "mentions_merchant": 541,
+      "target_date_first": "2025-01-01",
+      "target_date_last": "2025-06-30"
+    }
+  }
+}
