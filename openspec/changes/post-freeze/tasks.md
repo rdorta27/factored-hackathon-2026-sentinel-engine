@@ -44,4 +44,4 @@ The measurement of `eval-v8`, its verdict, its reports and the error analysis mo
 
 The closing documents moved to the `docs-followups-2` change. It runs after `release`. Nothing here changes code or the `bundle_hash`.
 
-- [ ] 6.1 Give the owner the record for `docs-followups-2`: the freeze commit, the `bundle_hash`, the model and prompt version served, the run ids of the final measurement, the robustness runs and the live latency run, and the date of the final redeploy. Evidence: the record in `docs/build/delivery.md`. Ref: decision 019.
+- [x] 6.1 Give the owner the record for `docs-followups-2`: the freeze commit, the `bundle_hash`, the model and prompt version served, the run ids of the final measurement, the robustness runs and the live latency run, and the date of the final redeploy. Evidence: the record in `docs/build/delivery.md`. Ref: decision 019.

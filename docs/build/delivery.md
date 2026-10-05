@@ -187,6 +187,23 @@ gh release create v0.9-demo --title "v0.9-demo" --notes-file docs/build/delivery
 gh release create v1.0-submission --title "v1.0-submission" --notes-file docs/build/delivery.md
 ```
 
+## Handover to docs-followups-2
+
+This record closes `post-freeze` task 6.1. The `docs-followups-2` change reads it.
+
+| Item | Value |
+|---|---|
+| Freeze commit | `f18be6a` |
+| `bundle_hash` of the link | `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2` |
+| Model served | `accounts/fireworks/models/glm-5p3-flash` |
+| Prompt version served | `v2` |
+| Gold source served | `mock` |
+| Final measurement run | `evidence/evaluation-runs/2024Q4-eval-v8` |
+| Live latency run | `evidence/evaluation-runs/2024Q4-resolution-live-v1` |
+| Adversarial run on the real model | `evidence/adversarial/20261005T204313Z` |
+| Robustness runs | None. Tasks 3.1 to 3.3 of this plan did not run. |
+| Date of the final redeploy | 2026-10-05 |
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)
