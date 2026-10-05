@@ -408,3 +408,74 @@ def test_advisor_detail_shows_no_customer_id_and_translates_status_and_turns() -
         strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
         for kind in ("text", "clarification", "confirm_box", "case_confirmation", "explanation", "handoff", "error"):
             assert f"turnSystem.{kind}" in strings, (name, kind)
+
+
+def test_a_double_click_sends_one_turn_and_the_controls_unlock() -> None:
+    """One click starts one turn. A double click and an impatient tap do not.
+
+    Every send control is off while the turn runs. The finally block turns them
+    on again, so a failed or timed-out turn never leaves the page locked.
+    """
+    assert "function isBusy()" in APP_JS
+    assert "function setBusy(busy)" in APP_JS
+    post = APP_JS[APP_JS.index("async function postChat") : APP_JS.index("function selectCandidate")]
+    # The turn entry point refuses a second call while one runs.
+    assert "if (isBusy()) return" in post
+    assert "setBusy(true)" in post
+    # The lock covers the input, the send button and the agent button.
+    lock = APP_JS[APP_JS.index("function setBusy") : APP_JS.index("async function postChat")]
+    assert "#chat-form input, #chat-form button, #agent" in lock
+    assert "aria-busy" in lock
+    # The unlock sits in the finally block, so a failed turn still unlocks.
+    assert "} finally {" in post
+    after_finally = post[post.index("} finally {") :]
+    assert "setBusy(false)" in after_finally
+    # A candidate pick is refused too while a turn runs.
+    candidate = APP_JS[APP_JS.index("function selectCandidate") : APP_JS.index("function renderCandidates")]
+    assert "if (isBusy()) return" in candidate
+
+
+def test_the_thread_redraws_and_only_the_last_locale_request_wins() -> None:
+    """A late answer of an old locale request must not win.
+
+    The thread and the persona welcome redraw in the new language. The raw i18n
+    keys stay hidden until the first locale loads.
+    """
+    load = APP_JS[APP_JS.index("async function loadLocale") : APP_JS.index("async function api")]
+    # Each call takes a ticket; only the newest ticket may paint.
+    assert "const request = ++localeRequest" in load
+    assert "if (request !== localeRequest) return" in load
+    # The thread redraws after the strings change.
+    assert "renderThread()" in load
+    # The first load lifts the raw-key cover.
+    assert 'document.body.removeAttribute("data-loading")' in load
+    assert "<body data-loading>" in INDEX
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "body[data-loading] main" in styles and "visibility: hidden" in styles
+
+
+def test_closed_chips_are_disabled_and_the_advisor_view_shows_names() -> None:
+    """A later turn closes the earlier candidates, so an old chip cannot fire.
+
+    The advisor list shows country and language words, not raw codes.
+    """
+    # A new turn closes every earlier entry.
+    post = APP_JS[APP_JS.index("async function postChat") : APP_JS.index("function selectCandidate")]
+    assert "entry.closed = true" in post
+    # The closed flag disables the chips when the thread redraws.
+    candidates = APP_JS[APP_JS.index("function renderCandidates") : APP_JS.index("const HAND_STEPS")]
+    assert "if (closed) {" in candidates
+    assert "chip.disabled = true" in candidates
+    assert "Boolean(entry && entry.closed)" in APP_JS
+    # The advisor row uses the name helpers, not the raw code.
+    row = APP_JS[APP_JS.index("function ticketRow") : APP_JS.index("const QUEUE_REFRESH_MS")]
+    assert "countryName(ticket.country)" in row
+    assert "languageName(ticket.package.language)" in row
+    import json
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in ("MX", "CO", "AR"):
+            assert strings.get(f"country.{code}"), (name, code)
+        for code in ("es-419", "es-MX", "es-CO", "es-AR", "pt-BR"):
+            assert strings.get(f"lang.{code}"), (name, code)
