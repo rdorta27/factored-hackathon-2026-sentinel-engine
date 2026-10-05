@@ -25,7 +25,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 4. Archive and branches (when the owner asks)
 
-- [ ] 4.1 Archive the merged plans in this order: `flow-fixes`, `router-v3`, `bank-ui`, `chat-start`, `problem-evidence`, `trained-baseline`, `charge-ranker` and `robustness-evidence`. Do it after tasks 1.2 and 1.3. Evidence: `openspec/changes/archive/` and the synced main specs.
+- [x] 4.1 Archive the merged plans in this order: `flow-fixes`, `router-v3`, `bank-ui`, `chat-start`, `problem-evidence`, `trained-baseline`, `charge-ranker` and `robustness-evidence`. Do it after tasks 1.2 and 1.3. Evidence: `openspec/changes/archive/` and the synced main specs.
 - [x] 4.2 List the merged remote branches for the owner to delete. Build the list with `git branch -r --merged origin/main`, so it includes the plans merged after 2026-10-04. On 2026-10-05 the list has 45 branches. Delete none until the owner asks. Evidence: the list in the pull request description.
 
 ## 5. Cleanup
