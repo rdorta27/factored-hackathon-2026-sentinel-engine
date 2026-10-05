@@ -46,7 +46,7 @@ Each reported metric states how many cases it covers, the mix of the cases, the 
 
 **Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055). The page reports the held-out metrics with n and failures.
 
-**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It holds n, the case mix, the model and prompt versions, the failures and the base-level 95% intervals. It also holds the stability over 3 recorded repetitions on 100 cases (`component.versions.router_v2.stability`).
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). It holds n, the case mix, the model and prompt versions, the failures and the base-level 95% intervals. It also holds the stability over 3 recorded repetitions on the high-risk subset (`high_risk_repeats`) and the v8 metrics per candidate (`candidates.<name>.subtype`, `slots`, `drafts`, `unsafe_wording`). The [analysis run](../../evidence/evaluation-runs/2024Q4-analysis-v8/summary.json) adds the confusion by intent, language and country (`M1_errors`).
 
 Missing: nothing for the router component.
 
@@ -126,7 +126,7 @@ Report the outcome metrics that the brief requires:
 
 **Evidence:** Proven by:
 
-- The [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It gives each mandatory metric with its denominator (section 6).
+- The [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). It gives the v8 component metrics per candidate: kind accuracy, subtype accuracy, slot precision, rejected drafts, unsafe wording, cost and latency, each with its denominator (`candidates.<name>.*`). The attack block reports the unsafe wording of each candidate (`attacks.candidates.<name>.unsafe_wording`).
 - The final resolution run [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json), with [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) beside it. It measures safe automated resolution over 56 cases in 14 situations on the final loop. Both versions resolve 16 of 56 cases, with 0 unsafe outcomes and 0 missed transfers. The cost per resolution is USD 0.000561 for `router_v2`. The run has the breakdown by variant and by country, with n, situation-level intervals and the label "descriptive". It verifies offline.
 - The router reports tokens and cost for each turn (`tests/test_ai_router.py`).
 

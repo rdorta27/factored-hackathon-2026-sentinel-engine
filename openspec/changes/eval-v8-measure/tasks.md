@@ -21,14 +21,14 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [016](../../../docs/bui
 
 ## 2. Measure and decide (after the owner inputs)
 
-- [ ] 2.1 Check the preconditions: a clean working tree, no entry of the v8 or v8b hash in `eval/measured.json`, both seals verify, `.env` has the model key, and the commit and the `bundle_hash` are recorded in the commit body. Evidence: the output.
-- [ ] 2.2 Measure once: `python3 -m eval.measure_v8 measure 2024Q4-eval-v8 --record --cap <input>`. Freeze `evidence/evaluation-runs/2024Q4-eval-v8/` and add it to `evidence/README.md` (Simulation, live model calls, mock store). If the run stops before the freeze, fix the cause and run it again: the recordings are kept and the sets are not yet measured. Never run it again after the freeze. Evidence: `summary.json`, `report.md` and `eval/measured.json`.
-- [ ] 2.3 Verify the run offline with `python3 -m eval.measure_v8 verify 2024Q4-eval-v8`. Evidence: the output says that the run matches.
-- [ ] 2.4 Run `verdict`. Write the result in decision 018 (a dated section "Result v8"): the table of gates, the served choice and the failed rule if any. Set the answer for `post-freeze`: the value of `SENTINEL_LLM_PROMPT_VERSION` for the redeploy. Evidence: decision 018 and the verdict output.
-- [ ] 2.5 Update `docs/build/metrics-report.md`, the results table of the README, `evidence/README.md` and the evidence of REQ-0016, REQ-0022 and REQ-0055. Cite fields of `summary.json`. Do not copy a number by hand. Say that a failed gate is a result, not an error. Evidence: those files.
-- [ ] 2.6 Write `docs/rationale/router-error-analysis.md`: the ten most frequent confusions with case ids, cause and kind of fix; accuracy by intent with the number of bases; a note on the intents with fewer than 10 bases. Cite fields only. Label the cases as team-written simulation. Evidence: the page.
+- [x] 2.1 Check the preconditions: a clean working tree, no entry of the v8 or v8b hash in `eval/measured.json`, both seals verify, `.env` has the model key, and the commit and the `bundle_hash` are recorded in the commit body. Evidence: the output.
+- [x] 2.2 Measure once: `python3 -m eval.measure_v8 measure 2024Q4-eval-v8 --record --cap <input>`. Freeze `evidence/evaluation-runs/2024Q4-eval-v8/` and add it to `evidence/README.md` (Simulation, live model calls, mock store). If the run stops before the freeze, fix the cause and run it again: the recordings are kept and the sets are not yet measured. Never run it again after the freeze. Evidence: `summary.json`, `report.md` and `eval/measured.json`.
+- [x] 2.3 Verify the run offline with `python3 -m eval.measure_v8 verify 2024Q4-eval-v8`. The run reports DIFFERS in `router_v3` and `router_v3_cutoffs` only: 30 transient `unavailable` calls that a later pass recorded. The owner accepts the frozen run and the difference is documented in 018. Evidence: the verify output and 018.
+- [x] 2.4 Run `verdict`. Write the result in decision 018 (a dated section "Result v8"): the table of gates, the served choice and the failed rule if any. Set the answer for `post-freeze`: the value of `SENTINEL_LLM_PROMPT_VERSION` for the redeploy. Evidence: decision 018 and the verdict output.
+- [x] 2.5 Update `docs/build/metrics-report.md`, the results table of the README, `evidence/README.md` and the evidence of REQ-0016, REQ-0022 and REQ-0055. Cite fields of `summary.json`. Do not copy a number by hand. Say that a failed gate is a result, not an error. Evidence: those files.
+- [x] 2.6 Write `docs/rationale/router-error-analysis.md`: the ten most frequent confusions with case ids, cause and kind of fix; accuracy by intent with the number of bases; a note on the intents with fewer than 10 bases. Cite fields only. Label the cases as team-written simulation. Evidence: the page.
 
 ## 3. Requirements and team
 
-- [ ] 3.1 Update the cards of REQ-0016, REQ-0022 and REQ-0055 with the new evidence. Change a status only where the evidence exists. Evidence: `docs/requirements/`.
-- [ ] 3.2 Update `team/tasks.md` and `team/plan.md`. Evidence: the two files.
+- [x] 3.1 Update the cards of REQ-0016, REQ-0022 and REQ-0055 with the new evidence. Change a status only where the evidence exists. Evidence: `docs/requirements/`.
+- [x] 3.2 Update `team/tasks.md` and `team/plan.md`. Evidence: the two files.
