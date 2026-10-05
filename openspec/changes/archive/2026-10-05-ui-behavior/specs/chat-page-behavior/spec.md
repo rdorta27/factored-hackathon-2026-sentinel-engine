@@ -1,7 +1,3 @@
-## Purpose
-
-Fixes the visible behavior of the chat page while a turn runs and when the language changes, so one click starts one turn and the thread speaks the language of the customer.
-
 ## ADDED Requirements
 
 ### Requirement: One click starts one turn
@@ -35,3 +31,41 @@ The page SHALL disable the candidate chips of a closed turn. Traces to REQ-0042 
 
 - **WHEN** a later turn opens
 - **THEN** the chips of the earlier turns are disabled
+
+### Requirement: The view lives in the URL
+
+The page SHALL keep the current view in the URL hash: `#/` for the entry, `#/chat`, `#/queue` and `#/queue/<case id>`. A reload with a live session SHALL return to the same view. The Back button SHALL move between views. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: Reload in a case
+
+- **WHEN** an advisor reloads the page at `#/queue/<case id>`
+- **THEN** the page shows the same case
+
+### Requirement: The advisor reads the handoff as data
+
+The advisor view SHALL show the list and the open case side by side on a wide screen. The case SHALL have a JSON tab with the ticket and the trace. The JSON SHALL NOT hold `customer_id`. Traces to REQ-0008 (P0, Done).
+
+#### Scenario: JSON tab
+
+- **WHEN** an advisor opens the JSON tab of a case
+- **THEN** the page shows the ticket and the trace as JSON
+- **AND** the text does not contain `customer_id`
+
+### Requirement: One charge files one ticket
+
+When a charge already has a handoff ticket for the customer, a new handoff on that charge SHALL reuse that ticket, also in a new session. The listing SHALL mark that charge as not eligible. Traces to REQ-0008 (P0, Done).
+
+#### Scenario: A second session
+
+- **WHEN** a customer asks for a person on a charge that has a ticket, in a new session
+- **THEN** the reply carries the first reference and the case store holds one ticket for the charge
+
+### Requirement: A closed charge explains itself
+
+A tap on a closed charge or on a claim SHALL open an information card in the thread and SHALL NOT send a chat turn. The card SHALL show the state, the reason and the facts that the server sends. The page SHALL NOT compute a date. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: Outside the window
+
+- **WHEN** a customer taps a charge outside the window
+- **THEN** the card shows the window in days and the last day to dispute, as the server sends them
+
