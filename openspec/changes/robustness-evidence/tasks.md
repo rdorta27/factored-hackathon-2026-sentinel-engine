@@ -11,7 +11,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [016](../../../docs/bui
 ## 1. Code (merge early)
 
 - [x] 1.1 Find blocking calls in async routes and fix them or measure them. Evidence: a test or a timing note in the commit body.
-- [ ] 1.2 Add the daily spend guard with the `budget` route. Evidence: `tests/test_model_serving.py`.
+- [x] 1.2 Add the daily spend guard with the `budget` route. Evidence: `tests/test_model_serving.py`.
 - [x] 1.3 Add the parallel-confirmation test. Evidence: `tests/test_confirmation.py` opens one case for N calls.
 - [ ] 1.4 Add the fault adapters and the fault-injection runner. Evidence: tests for each fault.
 - [x] 1.7 Give `PendingConfirmation` a creation time and refuse a confirmation older than five minutes, so the loop asks again. Evidence: `tests/test_confirmation.py`.
