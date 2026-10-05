@@ -26,8 +26,8 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Public link: `Dockerfile`, container secrets, demo variables ([019](../docs/build/decisions/019-azure-container-apps.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Live with router_v2 (health checked 10/02: `glm-5p3-flash`, prompt v2, mock Gold); the image predates PRs #49 and #50, so a redeploy is pending; durable state and platform logs are the `runtime-and-ci` change |
-| 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | In progress: the full report was restored by hand (`89ca1d4`) and Silver keeps the durations and `process_date` columns (PR #44); the pipeline rewrites the report on every run without those sections, so the generator and a `verify` mode are the `quality-report` change (Natalia) |
+| 1 | Public link: `Dockerfile`, container secrets, demo variables ([019](../docs/build/decisions/019-azure-container-apps.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Live with router_v2. The redeploy of 10/3 (commit `9664d9d`, PR #52) added the Azure Files share, and the state survived a revision restart ([REQ-0035](../docs/requirements/delivery.md#req-0035)). The revision does not include the pull requests after #52. The final redeploy comes before the video |
+| 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | Done: the runner generates the full report and a `verify` mode checks its figures (`quality-report`, PR #54, archived 10/3). Silver keeps the durations and `process_date` columns (PR #44) |
 | 3 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | Done: PR #50 (`real-gold`) reads the PII-free view from the DuckDB file chosen by `SENTINEL_GOLD_DUCKDB` or the repository path, excludes rows after the reference date, and writes local users for real customers outside git |
 | 4 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | Done: normal, ambiguous and handoff cases ran on real Gold locally in es-419 and pt-BR ([MT-09](chat-manual-tests.md)); the public link stays on the mock |
 | 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Sun 10/4 | Metrics, trade-offs and slides with a real delta | Done: comparison frozen in `2024Q4-eval-v7` (REQ-0016); router_v2 served with a baseline fallback and live on the public link (checked 10/02) |
@@ -36,7 +36,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | In progress: the README has the limitations section (10/02); the slides are pending |
 | 9 | Path to production write-up, including monitoring; handoff delivery decided ([015](../docs/build/decisions/015-handoff-delivery.md)) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Sun 10/4 | Public link, submission | Secrets review done; the freeze itself moves to Sun 10/4 night. gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
-| 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | In progress: results and limitations updated on 10/02 against PRs #42 to #50; final pass after `evaluation-final` |
+| 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | In progress: results and limitations updated on 10/2 against PRs #42 to #50, and on 10/5 against the plans merged up to PR #67. The final pass follows the v8 measurement |
 | 12 | Start the video script | REQ-0037 | Unassigned | — | Video | Pending |
 | 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Unassigned | — | Validation Fri | Pending |
 | 14 | Validate the presentation outline with the group | REQ-0036 | Unassigned | — | Slides | Pending |
@@ -45,9 +45,9 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | — | Submission | Pending |
 | 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | — | — | Pending |
 | 19 | Critical fixes only after the freeze | — | Unassigned | — | — | Pending |
-| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Unassigned | — | Final metrics, README, slides | Planned: OpenSpec change `router-v3` (branch `feat/router-v3`), after `evaluation-final` |
+| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Unassigned | — | Final metrics, README, slides | Done except the measurement: `router-v3` (PR #59) and `eval-v8` (PR #67) are merged, and `router-v3` is archived. The single measurement `2024Q4-eval-v8` and the decision to serve v3 wait for the code freeze. Until then router_v2 is served and prompt v3 is off |
 | 21 | Make the synthetic policy honest ([sources](../docs/rationale/policy-sources.md)): a person verifies the rows of the verification table that are `secondary source only`, re-reads the Argentine article numbers, finds Colombia's window, checks the data dictionary for a card network field, and decides whether the engine learns the window start and the bank obligation ([021](../docs/build/decisions/021-dispute-policy-sources.md)); then set `source` in each country file (the invented "(Art. 4)" citation, the hard-coded "90 días" and the unlabelled estimated time are fixed) | REQ-0033 | Unassigned | — | README, slides | In progress: table filled 10/02 from a web search, nothing verified by a person; policy stays a declared demonstration |
-| 22 | A chat that behaves better ([plan](chat-behavior-plan.md), observations in [manual tests](chat-manual-tests.md)): richer reading, locate the charge, contrast what the customer says with the data, explain decisions, evaluation by conversation and a new sealed set | REQ-0001, REQ-0002, REQ-0016, REQ-0017 | Unassigned | — | Final metrics, slides | Partly done: narrowing, the not-found reply, the prompt-extraction refusal and the injection record merged in PR #49 (`chat-loop`); the interface is `ui-product`; small talk is `router-v3` |
+| 22 | A chat that behaves better ([plan](chat-behavior-plan.md), observations in [manual tests](chat-manual-tests.md)): richer reading, locate the charge, contrast what the customer says with the data, explain decisions, evaluation by conversation and a new sealed set | REQ-0001, REQ-0002, REQ-0016, REQ-0017 | Unassigned | — | Final metrics, slides | Done except the measurement: narrowing, the not-found reply, the prompt-extraction refusal and the injection record (PR #49, `chat-loop`); the interface (`ui-product`, `bank-ui`); openers, status answers, the "why?" answer and validated drafts (`router-v3`, `chat-start`, PR #62). The final measurement waits for the code freeze |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
@@ -60,7 +60,8 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | — | Path to production | Done: `sentinel-ai-core/eval/monitor.py`, aggregates only, frozen over the simulated replay workload ([evidence](../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)); a field run reads the Azure log with the same script |
 | 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
 | 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Done: `silver_transactions` keeps `amount_usd` |
-| 8 | Evidence hardening ([plan](../openspec/changes/evidence-hardening/tasks.md)): explain the resolution gap, measure latency and cost live, report bases and a 20-label human check, publish negative results | REQ-0022, REQ-0055, REQ-0021, REQ-0013 | Rubén | Before the slides close | Slides and site numbers (REQ-0036) | In progress: the gap run, the live rehearsal, `bases`, the negative-results page, the mocks page and the cut-off diagnosis are done. Remaining: the 20-label review, the live run on the frozen build (task 2.4), the three attack cases against the real model (task 4.2), the repeats (task 3.5) and the slide limits |
+| 8 | Move the pages of `docs/understand/` to `docs/overview.md`, `docs/data/` and `docs/glossary/`, fix the links, update `AGENTS.md` and remove the folder ([plan](../openspec/changes/docs-followups/tasks.md), group 6) | REQ-0034 | Unassigned | After the other plans merge | — | Done: pages moved, links fixed, `scripts/check_links.py` clean ([decision 30](pending-decisions.md#decided)) |
+| 9 | Evidence hardening ([plan](../openspec/changes/evidence-hardening/tasks.md)): explain the resolution gap, measure latency and cost live, report bases and a 20-label human check, publish negative results | REQ-0022, REQ-0055, REQ-0021, REQ-0013 | Rubén | Before the slides close | Slides and site numbers (REQ-0036) | In progress: the gap run, the live rehearsal, `bases`, the negative-results page, the mocks page and the cut-off diagnosis are done. Remaining: the 20-label review, the live run on the frozen build (task 2.4), the three attack cases against the real model (task 4.2), the repeats (task 3.5) and the slide limits |
 
 ### Low: only if time remains (P2) or to confirm and close
 
@@ -132,9 +133,9 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Persist sessions, conversation and cases in SQLite (mentor feedback); delete conversation on logout and expiry | Natalia (Rubén integrated) | Done: `tests/test_state_sqlite.py`; OpenSpec change `persist-state-and-dispute-api` |
 | Two-step disputes API and one open dispute per charge across sessions | Natalia, Felix (Rubén integrated) | Done: `tests/test_disputes_api.py`, adversarial B9, B10, C6, D6, D7 |
 | Handoff ticket with conversation summary and every attempted action | Natalia (Rubén integrated; summary and attempted actions added by Rubén) | Done: `tests/test_handoff_package.py` |
-| Advisor view, role landing and roles in code; `sentinel-login/` backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
+| Advisor view, role landing and roles in code; old mock backend removed | Felix (Rubén integrated) | Done: `tests/test_handoffs_api.py`, adversarial B11, B12; [009](../docs/build/decisions/009-demo-ui-and-advisor-view.md) |
 | Test that no reply shows amounts or merchants outside the verified facts | Rubén | Done: `tests/test_facts_grounding.py` (mutation-checked) |
-| Tell Felix and Natalia: `sentinel-login/` retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
+| Tell Felix and Natalia: the old mock backend retired, PR #20 routers replaced by the single API, Gold eligibility uses `CURRENT_DATE` | Rubén | Done |
 | Fraud and high-amount thresholds per account country and currency (decisions 25, 26) | Rubén | Done: [010](../docs/build/decisions/010-fraud-handoff-rule.md), [011](../docs/build/decisions/011-high-amount-threshold.md); evidence `evidence/evaluation/2024Q4-v2/`, run `2024Q4-eval-v6` |
 | Source inventory: every input labeled by origin, no external data ([inventory](../docs/data_inventory.md)) | Natalia | Done: REQ-0031, REQ-0054 |
 | Pipeline run end to end on the full dataset with a quality report; Silver normalizes `México`; Gold uses the 2026-06-17 cutoff | Natalia | Done: `data/gold_bank.duckdb` (gitignored), [report](../sentinel-data-engine/data_quality_report.md); quality metrics still incomplete (open task) |
@@ -142,7 +143,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Homologate file names | Rubén | Done: renamed the sizing page to [sizing-capacity](../docs/sizing-capacity.md) (REQ-0053) |
 | Data setup in two steps: sync the raw tables, build the DuckDB file | Natalia | Done: [quickstart](../sentinel-data-engine/README.md#9-local-development-quickstart) (REQ-0028) |
 | Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261002T120107Z/summary.json` (REQ-0047) |
-| Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/understand/dataset.md#assumptions); asked in the help channel |
+| Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/data/dataset.md#assumptions); asked in the help channel |
 | A person request while the confirm box is open escalates like any other; insisting after other messages still escalates; the extra model call is logged | Felix (Rubén reviewed and fixed) | Done: `tests/test_person_while_confirming.py`, PR #30 (REQ-0040) |
 | Close pending decisions 10, 13, 14, 15, 16, 23, 27 and 28 | Rubén | Done: [012](../docs/build/decisions/012-public-deployment.md) to [017](../docs/build/decisions/017-portuguese.md) |
 | Requirements regrouped by type (frontend and backend, non-functional, data and ML, analytics, delivery) with one card each and their dependencies | Rubén | Done: [requirements](../docs/requirements/requirements.md) |
@@ -153,11 +154,24 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 |---|---|---|
 | Evaluation runner and held-out metrics (safe resolution, unsafe outcomes, handoff, latency, cost) | Rubén | Done early 9/30; latest frozen run `evidence/evaluation-runs/2024Q4-eval-v5/` on the aligned API (0 failures, same metrics as v1 except latency) |
 | Metrics by language and country, cost per resolution, frozen in `evidence/` | Natalia, Rubén | Done: by-locale/by-country metrics with small-sample limits in the frozen run; cost per resolution "not defined" (no resolutions by design) |
-| Retire sentinel-login/ once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Done: backend, tests and packaging removed; only the original page remains as a reference ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
+| Retire the old mock backend once ai-core runs the demo alone (cleanup change, only with ai-core E2E green and the migration change archived) | Rubén | Done: backend, tests, packaging and the reference page removed ([009](../docs/build/decisions/009-demo-ui-and-advisor-view.md)) |
 
 ### Sat 10/3 to Mon 10/5
 
-Nothing done yet; see [open work by priority](#open-work-by-priority).
+Pull requests that merged into `main` (read on 2026-10-05). The open work is in [open work by priority](#open-work-by-priority).
+
+| Day | Pull request | What it did |
+|---|---|---|
+| Sat 10/3 | #52, #53 | `runtime-and-ci`: durable state, platform logs, CI. The public link was redeployed from #52 |
+| Sat 10/3 | #54 | `quality-report`: the pipeline generates the data quality report |
+| Sun 10/4 | #55, #56 | `evaluation-final` (breakdown, monitoring, ROI) and `router-confidence` |
+| Sun 10/4 | #57, #58 | `ui-product` (product interface, advisor trace) and the customer-signals evidence |
+| Sun 10/4 | #59, #60, #61 | `router-v3`, `flow-fixes` and `bank-ui` |
+| Sun 10/4 | #62, #63 | `chat-start` (the chat behaves better) and `problem-evidence` |
+| Sun 10/4 | #64, #65 | `trained-baseline` and `charge-ranker` (selector off by default) |
+| Mon 10/5 | #66, #67 | `robustness-evidence` and `eval-v8` (sealed sets, rehearsal, ablation) |
+
+Still open after the freeze: the single v8 measurement and its verdict, the robustness runs, the final redeploy, the slides and the video.
 
 ## To find out
 
@@ -173,7 +187,7 @@ Need information, not a decision. Ordered by date.
 | Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Done: 11:59 pm (UTC-5); video 3 minutes at most |
 | Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
 | Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | In progress: one snapshot, `last_updated` up to 2027; `is_repeat_complainer` still open |
-| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/understand/dataset.md#measured-issues-q4-2024)) |
+| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/data/dataset.md#measured-issues-q4-2024)) |
 | Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
 | How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Done: team-written simulation cases (`requires_handoff` marks human cases) plus frozen data labels in `evidence/evaluation/2024Q4-v1/summary.json` |
 | Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | In progress: measured fixture cost per turn in the frozen run; advisor cost and live-model prices still open (decision 10) |

@@ -100,7 +100,7 @@ Explain products and give a simulated eligibility outcome.
 | Spread of the share above 30 days past due, three loan types | 0.48% | `credit.delinq_spread_pp` |
 
 - **No demand measured**, and the highest policy risk: the brief requires separating conversation, risk estimate and policy, with fairness and explanations.
-- **Biased snapshot.** `products` is one snapshot filtered by `last_updated`: it shows products touched in Q4, not the real portfolio, and holds dates as late as 2027 ([dataset](../../understand/dataset.md)).
+- **Biased snapshot.** `products` is one snapshot filtered by `last_updated`: it shows products touched in Q4, not the real portfolio, and holds dates as late as 2027 ([dataset](../../data/dataset.md)).
 - **Flat signal** by loan type.
 
 **Verdict:** discarded.

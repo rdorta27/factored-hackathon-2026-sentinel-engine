@@ -42,4 +42,5 @@ This does not contradict [006](006-frontend.md). The frontend is still one page 
 - The advisor view is read-only: no claim and no change of state. The old queue actions of `sentinel-login` are not migrated.
 - The login path moves from `/api/v1/session/*` to `/api/v1/auth/*`. The tests, the eval runner and the docs follow.
 - Open: routing by language and specialty (REQ-0046), the admin panel, and the removal of the reference page in `sentinel-login/` when nobody uses it.
+- *Updated 10/5:* the `sentinel-login/` folder is removed. Nothing served it, imported it or tested it, and it confused readers of the repository (REQ-0034). The history stays in Git and in `openspec/changes/archive/`.
 - *Updated 10/4:* PR #57 adds the product interface and the advisor trace of each step (REQ-0029, REQ-0038). Screens: [`docs/build/screenshots/ui-product/`](../screenshots/ui-product/).

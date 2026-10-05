@@ -1,7 +1,6 @@
 # Sentinel AI Core
 
-This package is the only submission server. `sentinel-login/` stays in the
-repository as a reference and is not the server to start for the demo.
+This package is the only submission server.
 
 ## Run
 

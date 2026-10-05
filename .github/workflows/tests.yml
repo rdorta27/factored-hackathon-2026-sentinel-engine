@@ -68,3 +68,18 @@ jobs:
 
       - name: Test
         run: python -m pytest -q
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check relative links
+        run: python3 scripts/check_links.py
+
+      - name: Check cited requirement status
+        run: python3 scripts/check_spec_citations.py

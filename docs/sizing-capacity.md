@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Sizing & Capacity Specification — Sentinel Engine
 
 **Version:** 1.0  
@@ -10,16 +16,16 @@
 
 ## 1. Executive Summary
 
-This document specifies the operational workload, dispute volume projections, local prototype performance benchmarks, and production scaling roadmap for the Sentinel Engine dispute-resolution system.
+This document specifies four items for the Sentinel Engine dispute-resolution system: the operational workload, the projections of dispute volume, the performance benchmarks of the local prototype and the production scaling roadmap.
 
-Sizing scope covers four layers:
+The sizing covers four layers:
 
-1. **Historical transaction volume** — the empirical dataset used to validate pipeline and model correctness.
-2. **Dispute frequency** — daily and peak rates derived from the 90-day dataset window ending at the 2026-06-17 cutoff.
-3. **Local DuckDB prototype throughput** — measured on a single developer machine to set the performance baseline.
-4. **Azure cloud scaling targets** — the architecture and SLO targets for a regional bank deployment.
+1. **Historical transaction volume.** This is the empirical dataset that validates the correctness of the pipeline and the models.
+2. **Dispute frequency.** The daily rates and the peak rates come from the 90-day dataset window that ends at the cutoff of 2026-06-17.
+3. **Throughput of the local DuckDB prototype.** The team measured it on one developer machine to set the performance baseline.
+4. **Azure cloud scaling targets.** These are the architecture and the SLO targets for a regional bank deployment.
 
-All workload numbers below are grounded in the Medallion pipeline run executed against the Factored Datathon 2026 synthetic dataset. No production bank data is used; sizing ratios are the analytically valid output.
+All workload numbers below come from the Medallion pipeline run on the Factored Datathon 2026 synthetic dataset. The team used no production bank data. The sizing ratios are the analytically valid output.
 
 ---
 
@@ -37,7 +43,11 @@ All workload numbers below are grounded in the Medallion pipeline run executed a
 
 ### 2.2 Eligible Dispute Volume (90-Day Window)
 
-The Gold view `v_service_dispute_eligible_transactions` applies the eligibility filter (transaction age ≤ 90 days relative to the 2026-06-17 cutoff, status not already resolved, product type eligible for dispute).
+The Gold view `v_service_dispute_eligible_transactions` applies the eligibility filter. A transaction is eligible when it meets three conditions:
+
+- The transaction is 90 days old or less, relative to the cutoff of 2026-06-17.
+- The status is not already resolved.
+- The product type is eligible for dispute.
 
 | Metric | Value | Derivation |
 |---|---|---|
@@ -48,7 +58,7 @@ The Gold view `v_service_dispute_eligible_transactions` applies the eligibility 
 
 ### 2.3 Daily Inquiry Load
 
-Customers who call the contact center to inquire about a transaction before filing a formal dispute represent approximately 35% of total call center volume in the dataset.
+Some customers call the contact center to ask about a transaction before they file a formal dispute. They are about 35% of the total call center volume in the dataset.
 
 | Metric | Value | Derivation |
 |---|---|---|
@@ -58,23 +68,18 @@ Customers who call the contact center to inquire about a transaction before fili
 | Busy day (p95) | **292 / day** | `demand.account_or_payment_inquiry.busy_day_p95` |
 | Highest day | **332 / day** | `demand.account_or_payment_inquiry.highest_day` |
 
-Each inquiry triggers one Sentinel AI Core `/api/v1/chat` request. At steady state, the system must sustain **~218 requests/day** with end-to-end response times inside the targets of section 4.3.
+Each inquiry triggers one Sentinel AI Core `/api/v1/chat` request. At steady state, the system must sustain **~218 requests/day**. The end-to-end response times must stay inside the targets of section 4.3.
 
 ### 2.4 Peak Workload
 
-The problem run measures the calls a day on the development zone
-([`problem/dev-v1`](../evidence/problem/dev-v1/summary.json), event dates
-2023-06-17 to 2025-07-01). A busy day is the 95th percentile of the daily
-counts: 95 of 100 days are below it. The highest day is the maximum.
+The problem run measures the calls a day on the development zone ([`problem/dev-v1`](../evidence/problem/dev-v1/summary.json), event dates 2023-06-17 to 2025-07-01). A busy day is the 95th percentile of the daily counts: 95 of 100 days are below it. The highest day is the maximum.
 
 | Workload | Mean a day | Busy day (p95) | Highest day | Source |
 |---|---|---|---|---|
 | Account inquiry (flow entry) | 218.48 | 292 [289, 296] | 332 [316, 332] | `demand.account_or_payment_inquiry.*` |
 | Transaction dispute | 106.3 | 145 [142, 148] | 169 [162, 169] | `demand.transaction_dispute.*` |
 
-The scenarios below are **projections**. The dataset has no campaign calendar,
-so the team cannot measure a commercial event. Each row multiplies the
-measured busy day by an assumed event factor.
+The scenarios below are **projections**. The dataset has no campaign calendar, so the team cannot measure a commercial event. Each row multiplies the measured busy day by an assumed event factor.
 
 | Scenario | Formal Disputes | Inquiry Calls | Chat API Req/s |
 |---|---|---|---|
@@ -83,13 +88,13 @@ measured busy day by an assumed event factor.
 | High-volume event (Hot Sale / CyberMonday) | **15–20 / day** | **~1,000 / day** | **~0.70** |
 | Stress ceiling (10× steady state) | ~30 / day | ~2,100 / day | ~1.5 |
 
-The stress ceiling represents the design target for auto-scaling: the system must handle a 10× burst without service degradation and return to steady-state resource usage within 5 minutes of the peak subsiding. The formal-dispute counts stay projections: the dataset does not separate dispute calls from other account inquiries.
+The stress ceiling is the design target for auto-scaling. The system must handle a 10× burst with no service degradation. It must return to steady-state resource usage within 5 minutes after the peak ends. The formal-dispute counts stay projections. The dataset does not separate dispute calls from other account inquiries.
 
 ---
 
 ## 3. Local Prototype Capacity & Performance Benchmarks
 
-These measurements are from a single developer machine (Linux / WSL2) running the full Medallion pipeline end-to-end.
+The team made these measurements on one developer machine (Linux / WSL2). The machine ran the full Medallion pipeline from start to end.
 
 ### 3.1 Data Processing Engine — DuckDB
 
@@ -101,11 +106,11 @@ These measurements are from a single developer machine (Linux / WSL2) running th
 | Resulting database file | `gold_bank.duckdb` — **652 MB** |
 | Peak memory (DuckDB in-process) | < 4 GB |
 
-DuckDB's columnar execution engine processes all 13 source tables in a single-node, in-process model. No external server, no network I/O, and no serialization overhead between layers.
+The columnar execution engine of DuckDB processes all 13 source tables in a single-node, in-process model. It needs no external server. It has no network I/O and no serialization overhead between layers.
 
 ### 3.2 Service Layer Query Latency
 
-The PII-free Gold view `v_service_dispute_eligible_transactions` is the read surface exposed to `sentinel-ai-core`. Candidate transaction lookups are point queries filtered by `customer_id` and date range.
+The PII-free Gold view `v_service_dispute_eligible_transactions` is the read surface for `sentinel-ai-core`. The candidate transaction lookups are point queries. They filter by `customer_id` and date range.
 
 | Query type | p50 latency | p99 latency |
 |---|---|---|
@@ -113,11 +118,11 @@ The PII-free Gold view `v_service_dispute_eligible_transactions` is the read sur
 | Dispute eligibility check (single `transaction_id`) | < 5 ms | < 20 ms |
 | Customer 360 profile fetch (`gold_dispute_customer_360`) | < 15 ms | < 50 ms |
 
-**Design target for the service layer: < 50 ms** for any Gold view read, leaving the remaining budget for LLM inference and API serialization.
+**Design target for the service layer: < 50 ms** for any Gold view read. The rest of the budget is for LLM inference and API serialization.
 
 ### 3.3 Operational Dispute Store — SQLite (Prototype)
 
-The prototype uses an isolated SQLite database for the dispute operational record. It enforces idempotency via unique constraints on `(dispute_id, transaction_id)`.
+The prototype uses an isolated SQLite database for the operational record of the disputes. Unique constraints on `(dispute_id, transaction_id)` enforce idempotency.
 
 | Metric | Value |
 |---|---|
@@ -126,13 +131,13 @@ The prototype uses an isolated SQLite database for the dispute operational recor
 | Concurrent writer support | Single-process only (SQLite limitation) |
 | Max safe throughput | ~50 writes/s |
 
-The SQLite store is adequate for the prototype and local demo. It is replaced in production (see Section 4.2).
+The SQLite store is adequate for the prototype and the local demo. Production replaces it (see Section 4.2).
 
 ---
 
 ## 4. Production Scaling Strategy — Azure Cloud Architecture
 
-The local prototype validates correctness. The following architecture replaces each local component for a multi-tenant, multi-region bank deployment.
+The local prototype validates correctness. The architecture below replaces each local component for a multi-tenant, multi-region bank deployment.
 
 ### 4.1 Data Lakehouse — Azure Databricks + Delta Lake
 
@@ -140,7 +145,7 @@ The local prototype validates correctness. The following architecture replaces e
 |---|---|
 | DuckDB single-node in-process | **Azure Databricks (PySpark + Delta Lake on ADLS Gen2)** |
 | Manual full-reload pipeline | **Delta Auto Loader** (continuous incremental ingestion via `cloudFiles`) |
-| Local CSV source | **ADLS Gen2 landing zone** (bank's nightly extracts or CDC streams) |
+| Local CSV source | **ADLS Gen2 landing zone** (nightly extracts or CDC streams of the bank) |
 | Local DuckDB Gold tables | **Delta tables in Unity Catalog** (versioned, auditable, ACID) |
 
 **Cluster sizing (initial production target):**
@@ -151,7 +156,7 @@ The local prototype validates correctness. The following architecture replaces e
 | Incremental (streaming) | 2 workers | 4 vCores | 16 GB | Auto Loader micro-batch |
 | Ad-hoc query | 1 worker (autoscale to 4) | 8 vCores | 32 GB | Analyst queries, evidence runs |
 
-Delta Auto Loader enables sub-minute latency from source file arrival to Gold view availability, replacing the current ~10-minute full-pipeline run.
+Delta Auto Loader gives sub-minute latency from the arrival of a source file to the availability of the Gold view. The current full-pipeline run takes ~10 minutes.
 
 ### 4.2 Operational Store — Azure Database for PostgreSQL (Flexible Server)
 
@@ -162,7 +167,7 @@ Delta Auto Loader enables sub-minute latency from source file arrival to Gold vi
 | ~50 writes/s max | **> 10,000 writes/s** (General Purpose, 8 vCores) |
 | No HA | **Zone-redundant HA** with automatic failover < 30 s |
 
-PostgreSQL supports concurrent writes from multiple FastAPI replicas without serialization. The `disputes` table schema is identical to the prototype; only the connection string changes.
+PostgreSQL supports concurrent writes from many FastAPI replicas with no serialization. The schema of the `disputes` table is the same as in the prototype. Only the connection string changes.
 
 ### 4.3 Serving Layer — Azure Container Apps
 
@@ -194,7 +199,9 @@ trigger:
 | p99 | < 500 ms | Gold view query + API serialization (non-LLM path) |
 | Model call (GLM 5.3 Flash on Fireworks AI, [016](build/decisions/016-router-models.md)) | measured p50 1079 ms, p95 4475 ms | [`2024Q4-eval-v7`](../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): `component.versions.router_v2.latency_ms` |
 
-The model targets come from the measured router latency, not from an estimate. The router runs **first** on every text turn: it labels the intent before the loop reads Gold or checks eligibility. A turn that selects a charge from the list (a structured candidate id) does not call the model. The non-LLM path (eligibility check, customer lookup, idempotency gate) must complete in < 200 ms at p95 under peak load (1,000 inquiry calls/day ≈ 0.70 req/s sustained). These numbers are not a load test of `/api/v1/chat`: that test is still open.
+The model targets come from the measured router latency. They are not an estimate. The router runs **first** on every text turn. It labels the intent before the loop reads Gold or checks eligibility. A turn that selects a charge from the list (a structured candidate id) does not call the model.
+
+The non-LLM path (eligibility check, customer lookup, idempotency gate) must complete in < 200 ms at p95 under peak load (1,000 inquiry calls/day ≈ 0.70 req/s sustained). These numbers are not a load test of `/api/v1/chat`. That test is still open.
 
 ### 4.4 Storage & Retention
 
@@ -214,7 +221,7 @@ The model targets come from the measured router latency, not from an estimate. T
 | Requirement | Description | Status | Evidence |
 |---|---|---|---|
 | REQ-0053 | Sizing and capacity plan | **Done** | This document |
-| REQ-0015 | Repeatable pipeline | In progress | Unblocked by REQ-0031 |
+| REQ-0015 | Repeatable pipeline | **Done** | REQ-0031 unblocked it |
 | REQ-0031 | Approved data, labeled by origin | Done | `docs/data_inventory.md` |
 | ADR 001 | Azure platform | Implemented | Databricks + Container Apps target |
 | ADR 005 | Python + FastAPI backend | Implemented | Container Apps deployment model |
