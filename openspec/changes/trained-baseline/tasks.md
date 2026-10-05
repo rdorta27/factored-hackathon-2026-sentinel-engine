@@ -20,8 +20,8 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 3. Runner
 
-- [ ] 3.1 Load the frozen model as the `trained_baseline` version behind `ModelPort`. Evidence: tests.
-- [ ] 3.2 Add precision, recall and F1 per intent with intervals to the runner summary. Evidence: tests and a dry run on development.
+- [x] 3.1 Load the frozen model as the `trained_baseline` version behind `ModelPort`. Evidence: tests.
+- [x] 3.2 Add precision, recall and F1 per intent with intervals to the runner summary. Evidence: tests and a dry run on development.
 
 ## 4. Documents
 

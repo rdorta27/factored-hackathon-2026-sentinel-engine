@@ -8,6 +8,7 @@ never loads this module (decision 007, 2026-10-05 amendment).
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import unicodedata
@@ -20,6 +21,10 @@ from app.ai.port import ModelInfo, UnderstandKind, UnderstandResult
 from app.orchestrator.types import Language
 from app.privacy.mask import mask
 
+HERE = Path(__file__).parent
+REPO_ROOT = HERE.parent.parent
+# The frozen training run the runner loads (decision 013). A new run id means new evidence.
+TRAIN_RUN = "2024Q4-train-v1"
 MODEL_NAME = "trained-baseline"
 ROUTE = "trained"
 PROMPT_VERSION = "tfidf-lr"
@@ -85,4 +90,21 @@ class TrainedBaseline:
         return UnderstandResult(kind=UnderstandKind(self.classify(message)), language=language)
 
 
-__all__ = ["DECIMALS", "MODEL_NAME", "TrainedBaseline", "prepare", "tfidf"]
+def load_frozen(run_id: str = TRAIN_RUN, repo_root: Path | str = REPO_ROOT) -> TrainedBaseline:
+    """Load the model file of a frozen training run. The file must match the frozen hash."""
+    folder = Path(repo_root) / "evidence" / "evaluation-runs" / run_id
+    summary = json.loads((folder / "summary.json").read_text(encoding="utf-8"))
+    raw = (folder / summary["model"]["file"]).read_bytes()
+    if hashlib.sha256(raw).hexdigest() != summary["model"]["sha256"]:
+        raise ValueError(f"the model file of {run_id} does not match its frozen hash")
+    return TrainedBaseline(json.loads(raw))
+
+
+def trained_version(run_id: str = TRAIN_RUN, repo_root: Path | str = REPO_ROOT):  # type: ignore[no-untyped-def]
+    """The ``trained_baseline`` entry for ``run_versions``. No model key, no cost, no transport."""
+    from eval.versions import Version
+
+    return Version(load_frozen(run_id, repo_root))
+
+
+__all__ = ["DECIMALS", "MODEL_NAME", "TRAIN_RUN", "TrainedBaseline", "load_frozen", "prepare", "tfidf", "trained_version"]

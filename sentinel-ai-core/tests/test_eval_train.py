@@ -10,7 +10,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from app.ai.port import ModelPort, UnderstandKind
 from eval import train
 from eval.cases import load_dir, validate_case
-from eval.trained import ANALYZER, NGRAM_RANGE, TrainedBaseline, _vectorizer, prepare, tfidf
+from eval.trained import (
+    ANALYZER,
+    NGRAM_RANGE,
+    TrainedBaseline,
+    _vectorizer,
+    prepare,
+    tfidf,
+)
 
 PHRASES = {
     "charge": ["no reconozco este cargo", "me cobraron dos veces", "não reconheço essa cobrança", "cargo raro de ayer"],

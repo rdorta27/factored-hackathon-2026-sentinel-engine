@@ -629,7 +629,8 @@ def resolution(
 
 def _strip(node):  # type: ignore[no-untyped-def]
     if isinstance(node, dict):
-        return {k: _strip(v) for k, v in node.items() if k != "latency_ms"}
+        # per_intent was added after 2024Q4-eval-v7 (covered by unit tests), so frozen runs without it still verify.
+        return {k: _strip(v) for k, v in node.items() if k not in ("latency_ms", "per_intent")}
     if isinstance(node, list):
         return [_strip(v) for v in node]
     return node
