@@ -60,6 +60,14 @@ def test_demo_templates_exist_in_every_locale(locale: str) -> None:
     assert missing == [], f"{locale} missing demo keys: {missing}"
 
 
+def test_the_old_demo_hint_is_gone_from_every_locale() -> None:
+    """The Spanish regionals override `demoHint`, so the rename covers them too."""
+    for locale in LOCALES:
+        strings = json.loads((I18N_DIR / f"{locale}.json").read_text(encoding="utf-8"))
+        assert strings.get("demoHint") != "Prueba rápida", locale
+        assert strings.get("demoHint"), locale
+
+
 def test_templates_use_placeholders_not_fixture_values() -> None:
     """No hardcoded amount, merchant or date: they come from the customer."""
     for locale in LOCALES:
