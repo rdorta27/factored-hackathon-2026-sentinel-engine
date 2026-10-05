@@ -10,7 +10,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 1. Rules first
 
-- [ ] 1.1 Write decision 025: the learned charge selector, the metrics (right charge first, right charge in the first three, wrong automatic picks, share that asks), the splits, the threshold rule and the serving rule. Update decision 007. Evidence: the decision files and their commit order.
+- [x] 1.1 Write decision 025: the learned charge selector, the metrics (right charge first, right charge in the first three, wrong automatic picks, share that asks), the splits, the threshold rule and the serving rule. Update decision 007. Evidence: the decision files and their commit order.
 
 ## 2. Data
 
