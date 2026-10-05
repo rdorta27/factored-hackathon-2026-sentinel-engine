@@ -26,8 +26,8 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 
 | # | Task | REQ | Owner | Due | Unblocks | Status |
 |---|---|---|---|---|---|---|
-| 1 | Public link: `Dockerfile`, container secrets, demo variables ([019](../docs/build/decisions/019-azure-container-apps.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Live with router_v2 (health checked 10/02: `glm-5p3-flash`, prompt v2, mock Gold); the image predates PRs #49 and #50, so a redeploy is pending; durable state and platform logs are the `runtime-and-ci` change |
-| 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | In progress: the full report was restored by hand (`89ca1d4`) and Silver keeps the durations and `process_date` columns (PR #44); the pipeline rewrites the report on every run without those sections, so the generator and a `verify` mode are the `quality-report` change (Natalia) |
+| 1 | Public link: `Dockerfile`, container secrets, demo variables ([019](../docs/build/decisions/019-azure-container-apps.md)) | REQ-0035 | Felix | Fri 10/2 | Video on the deployed tool (REQ-0037) | Live with router_v2. The redeploy of 10/3 (commit `9664d9d`, PR #52) added the Azure Files share, and the state survived a revision restart ([REQ-0035](../docs/requirements/delivery.md#req-0035)). The revision does not include the pull requests after #52. The final redeploy comes before the video |
+| 2 | Pipeline quality report: add nulls, orphaned records, late arrivals and Bronze counts for partitioned tables, and explain the drop from the declared volumes | REQ-0015 | Natalia | Fri 10/2 | REQ-0015 done | Done: the runner generates the full report and a `verify` mode checks its figures (`quality-report`, PR #54, archived 10/3). Silver keeps the durations and `process_date` columns (PR #44) |
 | 3 | Charge lookup on Gold, or the fixture if the read path is not up (declared) | REQ-0003, REQ-0015 | Natalia, Rubén | Fri 10/2 | Normal case on real data | Done: PR #50 (`real-gold`) reads the PII-free view from the DuckDB file chosen by `SENTINEL_GOLD_DUCKDB` or the repository path, excludes rows after the reference date, and writes local users for real customers outside git |
 | 4 | Normal case end to end with real data | REQ-0009 | Rubén, Felix | Fri 10/2 | Demo on real data | Done: normal, ambiguous and handoff cases ran on real Gold locally in es-419 and pt-BR ([MT-09](chat-manual-tests.md)); the public link stays on the mock |
 | 5 | Measure the router models of [016](../docs/build/decisions/016-router-models.md): expand the cases first, run the five candidates on Fireworks from `.env`, apply the selection rule, freeze a new run, then serve the chosen pair | REQ-0016, REQ-0019 | Rubén | Sun 10/4 | Metrics, trade-offs and slides with a real delta | Done: comparison frozen in `2024Q4-eval-v7` (REQ-0016); router_v2 served with a baseline fallback and live on the public link (checked 10/02) |
@@ -36,7 +36,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 8 | Failure analysis and limitations: no Portuguese in the dataset, only MX, CO and AR, small samples, capacity, deployment, risks | REQ-0013, REQ-0030 | Unassigned | Fri 10/2 | README, slides | In progress: the README has the limitations section (10/02); the slides are pending |
 | 9 | Path to production write-up, including monitoring; handoff delivery decided ([015](../docs/build/decisions/015-handoff-delivery.md)) | REQ-0052 | Rubén | Fri 10/2 | — | In progress: [specification](../docs/architecture/specification.md#path-to-production) |
 | 10 | Review the repo for secrets and data, including the bucket id in older commits; freeze the code | REQ-0034 | Felix | Sun 10/4 | Public link, submission | Secrets review done; the freeze itself moves to Sun 10/4 night. gitleaks over the full history (0 findings) and manual review; bucket name accepted and documented in [security](../docs/build/security.md#history-review-req-0034-101) |
-| 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | In progress: results and limitations updated on 10/02 against PRs #42 to #50; final pass after `evaluation-final` |
+| 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | In progress: results and limitations updated on 10/2 against PRs #42 to #50, and on 10/5 against the plans merged up to PR #67. The final pass follows the v8 measurement |
 | 12 | Start the video script | REQ-0037 | Unassigned | — | Video | Pending |
 | 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Unassigned | — | Validation Fri | Pending |
 | 14 | Validate the presentation outline with the group | REQ-0036 | Unassigned | — | Slides | Pending |
@@ -45,9 +45,9 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | — | Submission | Pending |
 | 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | — | — | Pending |
 | 19 | Critical fixes only after the freeze | — | Unassigned | — | — | Pending |
-| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Unassigned | — | Final metrics, README, slides | Planned: OpenSpec change `router-v3` (branch `feat/router-v3`), after `evaluation-final` |
+| 20 | Router v3 and a new held-out measurement ([plan](router-v3-plan.md)): greeting and small-talk cases, definitions in the prompt, amendment to [018](../docs/build/decisions/018-evaluation-acceptance.md), new sealed set, one run `2024Q4-eval-v8`, then serve v3. If it does not land by Sun 10/4, submit router_v2 with the limit stated | REQ-0016, REQ-0017, REQ-0019, REQ-0020 | Unassigned | — | Final metrics, README, slides | Done except the measurement: `router-v3` (PR #59) and `eval-v8` (PR #67) are merged, and `router-v3` is archived. The single measurement `2024Q4-eval-v8` and the decision to serve v3 wait for the code freeze. Until then router_v2 is served and prompt v3 is off |
 | 21 | Make the synthetic policy honest ([sources](../docs/rationale/policy-sources.md)): a person verifies the rows of the verification table that are `secondary source only`, re-reads the Argentine article numbers, finds Colombia's window, checks the data dictionary for a card network field, and decides whether the engine learns the window start and the bank obligation ([021](../docs/build/decisions/021-dispute-policy-sources.md)); then set `source` in each country file (the invented "(Art. 4)" citation, the hard-coded "90 días" and the unlabelled estimated time are fixed) | REQ-0033 | Unassigned | — | README, slides | In progress: table filled 10/02 from a web search, nothing verified by a person; policy stays a declared demonstration |
-| 22 | A chat that behaves better ([plan](chat-behavior-plan.md), observations in [manual tests](chat-manual-tests.md)): richer reading, locate the charge, contrast what the customer says with the data, explain decisions, evaluation by conversation and a new sealed set | REQ-0001, REQ-0002, REQ-0016, REQ-0017 | Unassigned | — | Final metrics, slides | Partly done: narrowing, the not-found reply, the prompt-extraction refusal and the injection record merged in PR #49 (`chat-loop`); the interface is `ui-product`; small talk is `router-v3` |
+| 22 | A chat that behaves better ([plan](chat-behavior-plan.md), observations in [manual tests](chat-manual-tests.md)): richer reading, locate the charge, contrast what the customer says with the data, explain decisions, evaluation by conversation and a new sealed set | REQ-0001, REQ-0002, REQ-0016, REQ-0017 | Unassigned | — | Final metrics, slides | Done except the measurement: narrowing, the not-found reply, the prompt-extraction refusal and the injection record (PR #49, `chat-loop`); the interface (`ui-product`, `bank-ui`); openers, status answers, the "why?" answer and validated drafts (`router-v3`, `chat-start`, PR #62). The final measurement waits for the code freeze |
 
 ### High: scores points once P0 is on track (P1 and team hygiene)
 
@@ -157,7 +157,20 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 
 ### Sat 10/3 to Mon 10/5
 
-Nothing done yet; see [open work by priority](#open-work-by-priority).
+Pull requests that merged into `main` (read on 2026-10-05). The open work is in [open work by priority](#open-work-by-priority).
+
+| Day | Pull request | What it did |
+|---|---|---|
+| Sat 10/3 | #52, #53 | `runtime-and-ci`: durable state, platform logs, CI. The public link was redeployed from #52 |
+| Sat 10/3 | #54 | `quality-report`: the pipeline generates the data quality report |
+| Sun 10/4 | #55, #56 | `evaluation-final` (breakdown, monitoring, ROI) and `router-confidence` |
+| Sun 10/4 | #57, #58 | `ui-product` (product interface, advisor trace) and the customer-signals evidence |
+| Sun 10/4 | #59, #60, #61 | `router-v3`, `flow-fixes` and `bank-ui` |
+| Sun 10/4 | #62, #63 | `chat-start` (the chat behaves better) and `problem-evidence` |
+| Sun 10/4 | #64, #65 | `trained-baseline` and `charge-ranker` (selector off by default) |
+| Mon 10/5 | #66, #67 | `robustness-evidence` and `eval-v8` (sealed sets, rehearsal, ablation) |
+
+Still open after the freeze: the single v8 measurement and its verdict, the robustness runs, the final redeploy, the slides and the video.
 
 ## To find out
 
