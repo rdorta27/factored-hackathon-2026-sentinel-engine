@@ -40,10 +40,10 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 Found on 2026-10-05 in a local run. The server used the real Gold file, and the fixture users (`CUST-0001` to `CUST-0003`) exist only in the mock. The account had no charges. The panel of recent charges was empty with no message, and the only example button was "Quiero hablar con una persona". Each click opened a handoff ticket: 476 tickets for one customer.
 
-- [ ] 6.1 Show a message in the panel of recent charges when the account has no charges, in `es-419.json` and `pt-BR.json` (new key `txEmpty`). Keep the ids and the `data-testid` of the panel. Evidence: `app/static/` and a test for the empty list.
-- [ ] 6.2 Show the example buttons and their label only when the account has a charge or a repeated merchant. Do not show the single "talk to a person" button alone. Evidence: `app/static/app.js` and a test for an account without charges.
-- [ ] 6.3 Show the five most recent items in "My claims", with "Show all (N)" for the rest. Do this in the page. Do not change the API. Evidence: `app/static/` and a test with more than five cases.
-- [ ] 6.4 In `sentinel-ai-core/README.md`, say that a local run uses the real Gold file when it exists, that the fixture users exist only in the mock, and that the demo needs `SENTINEL_GOLD_SOURCE=mock`. Evidence: the README.
+- [x] 6.1 Show a message in the panel of recent charges when the account has no charges, in `es-419.json` and `pt-BR.json` (new key `txEmpty`). Keep the ids and the `data-testid` of the panel. Evidence: `app/static/` and a test for the empty list.
+- [x] 6.2 Show the example buttons and their label only when the account has a charge or a repeated merchant. Do not show the single "talk to a person" button alone. Evidence: `app/static/app.js` and a test for an account without charges.
+- [x] 6.3 Show the five most recent items in "My claims", with "Show all (N)" for the rest. Do this in the page. Do not change the API. Evidence: `app/static/` and a test with more than five cases.
+- [x] 6.4 In `sentinel-ai-core/README.md`, say that a local run uses the real Gold file when it exists, that the fixture users exist only in the mock, and that the demo needs `SENTINEL_GOLD_SOURCE=mock`. Evidence: the README.
 
 ## Moved to `post-freeze`
 

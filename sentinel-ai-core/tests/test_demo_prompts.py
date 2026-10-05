@@ -60,6 +60,20 @@ def test_demo_templates_exist_in_every_locale(locale: str) -> None:
     assert missing == [], f"{locale} missing demo keys: {missing}"
 
 
+def test_the_person_chip_never_stands_alone() -> None:
+    """An account with no charge and no repeated merchant shows no chips.
+
+    A local run against the real Gold file has no fixture charges. The lone
+    "talk to a person" button opened a handoff ticket on every click, so the
+    person chip now needs a data-driven chip next to it.
+    """
+    start = APP_JS.index("function renderDemoPrompts")
+    end = APP_JS.index("/* Advisor view")
+    block = APP_JS[start:end]
+    assert "if (prompts.length) prompts.push(t(\"demoPerson\"))" in block
+    assert "const showExamples = demoAvailable && prompts.length > 0" in block
+
+
 def test_the_old_demo_hint_is_gone_from_every_locale() -> None:
     """The Spanish regionals override `demoHint`, so the rename covers them too."""
     for locale in LOCALES:

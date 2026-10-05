@@ -185,6 +185,34 @@ def test_judge_guide_lists_the_three_cases_and_four_mocks() -> None:
         assert f'data-i18n="{key}"' in panel, key
 
 
+def test_charges_panel_shows_a_message_when_the_account_has_no_charges() -> None:
+    """A local run against the real Gold file has no fixture charges.
+
+    The panel of recent charges was empty with no message. It now says so.
+    """
+    import json
+
+    block = APP_JS[APP_JS.index("function paintCharges") :]
+    block = block[: block.index("\n}")]
+    assert 't("txEmpty")' in block
+    assert "!rows.length" in block
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        assert strings.get("txEmpty"), name
+
+
+def test_claims_panel_shows_five_and_an_expand_control() -> None:
+    """The claims panel pages at five and adds one control for the rest."""
+    import json
+
+    assert "const CASES_PAGE = 5" in APP_JS
+    assert "cases.slice(0, CASES_PAGE)" in APP_JS
+    assert 'data-testid", "cases-show-all"' in APP_JS
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        assert strings.get("casesShowAll"), name
+
+
 def test_build_line_reads_health_and_hides_on_failure() -> None:
     """The footer names the served build from the public health endpoint.
 

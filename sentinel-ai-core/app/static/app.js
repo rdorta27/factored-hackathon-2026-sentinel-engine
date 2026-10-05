@@ -173,6 +173,7 @@ function clearThread() {
   document.getElementById("transactions").textContent = "";
   document.getElementById("cases").textContent = "";
   lastTransactions = null;
+  casesShowAll = false;
 }
 
 /* The thread is a log of what happened. Changing the language draws it again, so
@@ -575,7 +576,23 @@ function renderSessionContext(payload) {
 
 let lastTransactions = null;
 
-/* "Mis reclamos": the cases of this customer, from the case store. */
+/* "Mis reclamos": the cases of this customer, from the case store. The panel
+   shows the five most recent and one control for the rest. The API still sends
+   every case, so the page pages them itself and no request changes. */
+const CASES_PAGE = 5;
+let casesShowAll = false;
+
+function casesShowAllButton(total) {
+  const button = el("button", "theme-toggle cases-toggle", fill(t("casesShowAll"), { count: total }));
+  button.type = "button";
+  button.setAttribute("data-testid", "cases-show-all");
+  button.addEventListener("click", () => {
+    casesShowAll = true;
+    if (lastTransactions) renderCases(lastTransactions.cases || []);
+  });
+  return button;
+}
+
 function renderCases(cases) {
   const box = document.getElementById("cases");
   box.textContent = "";
@@ -583,7 +600,8 @@ function renderCases(cases) {
     box.append(el("p", "chat-sub", t("casesEmpty")));
     return;
   }
-  cases.forEach((item) => {
+  const shown = casesShowAll ? cases : cases.slice(0, CASES_PAGE);
+  shown.forEach((item) => {
     const card = el("div", "case-card");
     card.setAttribute("data-testid", "case-card");
     const top = el("span", "tx-line");
@@ -594,6 +612,9 @@ function renderCases(cases) {
     card.append(el("span", "chat-sub", what.filter(Boolean).join(" · ")));
     box.append(card);
   });
+  if (!casesShowAll && cases.length > CASES_PAGE) {
+    box.append(casesShowAllButton(cases.length));
+  }
 }
 
 function paintCharges(payload) {
@@ -601,7 +622,12 @@ function paintCharges(payload) {
   renderCases(payload.cases || []);
   const box = document.getElementById("transactions");
   box.textContent = "";
-  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+  const rows = payload.transactions || [];
+  if (!rows.length) {
+    box.append(el("p", "chat-sub", t("txEmpty")));
+    return;
+  }
+  rows.forEach((tx) => box.append(renderCharge(tx)));
 }
 
 async function loadTransactions() {
@@ -706,7 +732,10 @@ function renderDemoPrompts(transactions) {
   if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
   const blocked = rows.find((tx) => tx.case_state === "outside_window" && tx.currency === localCurrency());
   if (blocked) prompts.push(fill(t("demoWhy"), { merchant: blocked.merchant }));
-  prompts.push(t("demoPerson"));
+  // The person chip never stands alone. An account without a charge and
+  // without a repeated merchant has nothing to demo, so the page hides all
+  // chips instead of offering one button that only opens a handoff ticket.
+  if (prompts.length) prompts.push(t("demoPerson"));
 
   prompts.forEach((phrase) => {
     const chip = el("button", "candidate", phrase);
