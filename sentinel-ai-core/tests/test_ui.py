@@ -94,12 +94,12 @@ def test_demo_entry_has_banner_personas_and_named_languages() -> None:
 def test_resolution_panel_renders_the_closed_steps() -> None:
     assert "renderSteps" in APP_JS
     assert 'data-testid", "steps-panel"' in APP_JS
-    assert 't("howIResolved")' in APP_JS
+    assert 'data-i18n="stepsTitle"' in INDEX
     assert "body.steps" in APP_JS
     assert "innerHTML" not in APP_JS
     strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
     for key in (
-        "howIResolved",
+        "stepsTitle",
         "step.understood",
         "step.lookedUp",
         "step.checkedPolicy",
@@ -156,3 +156,152 @@ def test_the_why_followup_returns_an_explanation_over_http() -> None:
     assert body["values"]["window_days"] == 90
     assert body["values"]["synthetic"] is True
 
+
+
+def test_bank_shell_has_session_line_data_date_and_three_columns() -> None:
+    for marker in ('id="session-context"', 'id="reference-date"', 'id="steps-col"', 'id="charges-col"', 'id="agent"'):
+        assert marker in INDEX, marker
+    # No balance anywhere in the shell or the script.
+    for word in ("saldo", "balance", "saldo disponible"):
+        assert word not in INDEX.lower() and word not in APP_JS.lower()
+    # The product is shown only when the API sends one.
+    assert "payload.product" in APP_JS
+    assert "innerHTML" not in APP_JS
+
+
+def test_charge_pill_reads_the_server_state_and_does_not_compute_it() -> None:
+    assert "tx.case_state" in APP_JS
+    for state in ("eligible", "in_review", "with_advisor", "already_disputed", "outside_window"):
+        strings = (STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8")
+        assert f'"state.{state}"' in strings
+    # The page never re-derives the window or the status rule.
+    assert "Date.now" not in APP_JS and "new Date()" not in APP_JS
+
+
+def test_new_locale_keys_exist_in_both_languages() -> None:
+    import json
+
+    es = json.loads((STATIC / "i18n" / "es-419.json").read_text(encoding="utf-8"))
+    pt = json.loads((STATIC / "i18n" / "pt-BR.json").read_text(encoding="utf-8"))
+    used = set(re.findall(r'data-i18n="([^"]+)"', INDEX))
+    assert used <= set(es) and used <= set(pt), sorted(used - set(es) | used - set(pt))
+    assert set(es) == set(pt), sorted(set(es) ^ set(pt))
+
+
+def test_handoff_card_has_the_six_fields_and_reads_codes_from_the_locale() -> None:
+    start = APP_JS.index("function handoffCard")
+    block = APP_JS[start : APP_JS.index("function whyCard")]
+    for key in (
+        "handoffRequest", "handoffFacts", "handoffActions", "handoffReason", "handoffSaid", "handoffPending",
+    ):
+        assert f'"{key}"' in block, key
+    assert 'data-testid", "handoff-card"' in block
+    assert "customer_id" not in block
+    import json
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in ("dispute", "person", "out_of_scope"):
+            assert f"handoffRequest.{code}" in strings
+        for code in ("amount_above_threshold", "customer_requested_person", "review_required"):
+            assert f"handoffOpen.{code}" in strings
+        for code in ("described_charge", "asked_for_person", "asked_why"):
+            assert f"handoffSaid.{code}" in strings
+
+
+def test_handoff_package_codes_all_have_a_label() -> None:
+    """Every code the server can put in the package has a label in both locales."""
+    import json
+
+    from app.routers import demo_chat
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for code in set(demo_chat._OPEN_QUESTIONS.values()) | {"review_required"}:
+            assert f"handoffOpen.{code}" in strings, (name, code)
+        for code in demo_chat._CUSTOMER_PHRASES:
+            assert f"handoffSaid.{code}" in strings, (name, code)
+
+
+def test_phone_layout_uses_drawers_and_44_px_targets() -> None:
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "@media (max-width: 1100px)" in styles
+    assert ".side-panel.drawer-open" in styles
+    assert "min-height: 44px" in styles
+    assert "overflow-x: auto" in styles.split("@media (max-width: 700px)")[1], "the language group scrolls, not the page"
+    for marker in ('data-drawer="steps-col"', 'data-drawer="charges-col"', "data-close-drawer"):
+        assert marker in INDEX, marker
+    assert "Escape" in APP_JS and "closeDrawers" in APP_JS
+
+
+def test_page_reads_the_brand_and_keeps_the_sentinel_mark() -> None:
+    assert "/ui/brand.css" in INDEX
+    assert "/ui/brand.json" in APP_JS and "applyBrand" in APP_JS
+    assert 'id="brand-name"' in INDEX
+    assert 'aria-label="Sentinel mark"' in INDEX, "the mark stays Sentinel under any bank name"
+
+
+def test_entry_has_promises_and_four_persona_cards_with_tag_language_and_story() -> None:
+    assert INDEX.count('class="persona-card"') == 4
+    for key in ("entryTitle", "entryLead", "entryPromise1", "entryPromise2", "entryPromise3"):
+        assert f'data-i18n="{key}"' in INDEX, key
+    for persona in ("Normal", "Ambiguous", "HighAmount", "NotMe"):
+        for suffix in ("", "Title", "Story"):
+            assert f'data-i18n="persona{persona}{suffix}"' in INDEX, (persona, suffix)
+    assert 'data-testid="demo-banner"' in INDEX
+
+
+def test_hidden_attribute_always_wins_over_a_display_rule() -> None:
+    """Regression: `.entry { display: flex }` kept the entry visible under the advisor queue."""
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "[hidden] {\n  display: none !important;" in styles
+
+
+def test_thread_is_a_log_that_is_drawn_again_when_the_language_changes() -> None:
+    for name in ("threadLog", "renderThread", "drawReply", "startThread"):
+        assert name in APP_JS, name
+    block = APP_JS[APP_JS.index("async function loadLocale") : APP_JS.index("async function api")]
+    assert "renderThread()" in block
+
+
+def test_steps_are_shown_one_at_a_time_and_say_they_are_a_record() -> None:
+    assert "STEP_PAUSE_MS" in APP_JS and "prefers-reduced-motion" in APP_JS
+    assert "not a\n   measure" in APP_JS or "not a measure" in APP_JS, "the code must say the pauses are staging"
+
+
+def test_claims_panel_welcome_help_and_phone_language_select() -> None:
+    for marker in ('id="cases"', 'data-i18n="casesTitle"', 'data-i18n="chatHelp"', 'id="demo-hint"', 'id="locale-current"'):
+        assert marker in INDEX, marker
+    assert "renderCases" in APP_JS and 'type: "welcome"' in APP_JS
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    assert "loc-name" not in INDEX, "the flags stand alone; the name shows on hover"
+    chat_css = (STATIC.parents[2] / "branding" / "chat.css").read_text(encoding="utf-8")
+    assert '.locale-button[aria-pressed="true"]' in chat_css and "attr(aria-label)" in chat_css
+    assert INDEX.count('class="flag"') == 5
+
+
+def test_static_files_are_revalidated_so_versions_never_mix() -> None:
+    api = TestClient(create_app())
+    for path in ("/ui/app.js", "/ui/styles.css", "/branding/chat.css"):
+        assert api.get(path).headers["cache-control"] == "no-cache", path
+
+
+def test_flags_close_the_header_so_a_longer_label_does_not_move_them() -> None:
+    assert INDEX.index('id="agent"') < INDEX.index('id="logout"') < INDEX.index('id="locale-group"')
+    assert 'rel="icon"' in INDEX
+    assert (STATIC / "favicon.svg").is_file()
+
+
+def test_advisor_detail_shows_no_customer_id_and_translates_status_and_turns() -> None:
+    block = APP_JS[APP_JS.index("async function openTicket") : APP_JS.index('document.getElementById("login-form")')]
+    assert "ticket.customer_id" not in block
+    assert 'codeLabel("ticketStatus"' in block
+    assert "turnsBlock" in APP_JS and 'codeLabel("turnSystem"' in APP_JS
+    import json
+
+    from app.routers import demo_chat  # noqa: F401 - the reply kinds below mirror ChatReply
+
+    for name in ("es-419", "pt-BR"):
+        strings = json.loads((STATIC / "i18n" / f"{name}.json").read_text(encoding="utf-8"))
+        for kind in ("text", "clarification", "confirm_box", "case_confirmation", "explanation", "handoff", "error"):
+            assert f"turnSystem.{kind}" in strings, (name, kind)
