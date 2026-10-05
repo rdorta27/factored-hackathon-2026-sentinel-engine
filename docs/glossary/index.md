@@ -2,7 +2,7 @@
 
 Shared vocabulary for the team, the submission and the system. Canonical language is English (en-US); each locale overlay keeps the local term intact with an English explanation on first use.
 
-**See also:** [overview](../overview.md), [dataset](../dataset.md).
+**See also:** [overview](../overview.md), [dataset](../data/dataset.md).
 
 Two vocabularies:
 

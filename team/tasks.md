@@ -60,7 +60,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | — | Path to production | Done: `sentinel-ai-core/eval/monitor.py`, aggregates only, frozen over the simulated replay workload ([evidence](../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)); a field run reads the Azure log with the same script |
 | 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
 | 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Done: `silver_transactions` keeps `amount_usd` |
-| 8 | Move the pages of `docs/understand/` to `docs/overview.md`, `docs/data/` and `docs/glossary/`, fix the links, update `AGENTS.md` and remove the folder ([plan](../openspec/changes/docs-followups/tasks.md), group 6) | REQ-0034 | Unassigned | After the other plans merge | — | Pending |
+| 8 | Move the pages of `docs/understand/` to `docs/overview.md`, `docs/data/` and `docs/glossary/`, fix the links, update `AGENTS.md` and remove the folder ([plan](../openspec/changes/docs-followups/tasks.md), group 6) | REQ-0034 | Unassigned | After the other plans merge | — | Done: pages moved, links fixed, `scripts/check_links.py` clean ([decision 30](pending-decisions.md#decided)) |
 
 ### Low: only if time remains (P2) or to confirm and close
 
@@ -142,7 +142,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Homologate file names | Rubén | Done: renamed the sizing page to [sizing-capacity](../docs/sizing-capacity.md) (REQ-0053) |
 | Data setup in two steps: sync the raw tables, build the DuckDB file | Natalia | Done: [quickstart](../sentinel-data-engine/README.md#9-local-development-quickstart) (REQ-0028) |
 | Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261002T120107Z/summary.json` (REQ-0047) |
-| Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/understand/dataset.md#assumptions); asked in the help channel |
+| Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/data/dataset.md#assumptions); asked in the help channel |
 | A person request while the confirm box is open escalates like any other; insisting after other messages still escalates; the extra model call is logged | Felix (Rubén reviewed and fixed) | Done: `tests/test_person_while_confirming.py`, PR #30 (REQ-0040) |
 | Close pending decisions 10, 13, 14, 15, 16, 23, 27 and 28 | Rubén | Done: [012](../docs/build/decisions/012-public-deployment.md) to [017](../docs/build/decisions/017-portuguese.md) |
 | Requirements regrouped by type (frontend and backend, non-functional, data and ML, analytics, delivery) with one card each and their dependencies | Rubén | Done: [requirements](../docs/requirements/requirements.md) |
@@ -173,7 +173,7 @@ Need information, not a decision. Ordered by date.
 | Deadline on Monday 10/5 and max video length | Hackathon help channel | Mon 9/28 | Done: 11:59 pm (UTC-5); video 3 minutes at most |
 | Is the Azure OpenAI model we want available in our region? | Whoever provides the subscription | Mon 9/28 | Pending |
 | Are there several monthly snapshots? How was `is_repeat_complainer` computed? | Data area | With the data sample | In progress: one snapshot, `last_updated` up to 2027; `is_repeat_complainer` still open |
-| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/understand/dataset.md#measured-issues-q4-2024)) |
+| How many late arrivals (gap between `process_date` and `transaction_date`)? | Data area | With the data sample | Done: ~25% of rows are one day late ([dataset](../docs/data/dataset.md#measured-issues-q4-2024)) |
 | Where does the 90-day dispute window come from (regulation, card network, or assumption)? | Natalia | Tue 9/29 | Pending |
 | How do we build reference labels (which cases need a human)? | ML area | Tue 9/29 | Done: team-written simulation cases (`requires_handoff` marks human cases) plus frozen data labels in `evidence/evaluation/2024Q4-v1/summary.json` |
 | Cost assumptions (LLM price, advisor cost) | Analysis area | Thu 10/1 | In progress: measured fixture cost per turn in the frozen run; advisor cost and live-model prices still open (decision 10) |

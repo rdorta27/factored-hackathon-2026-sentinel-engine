@@ -39,12 +39,12 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 Run this group last. Other plans add links to the old paths until they merge. Task 5.4 must be done first, because it finds every broken link.
 
-- [ ] 6.1 Confirm the destinations with the owner (see the open row in `team/pending-decisions.md`). The default is: `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, and `glossary/` to `docs/glossary/`. Evidence: the decision row moved to "Decided".
-- [ ] 6.2 Move the files with `git mv`. Keep the content, the headings and the anchors. Change only the relative links inside the moved files. Evidence: the rename list in `git status`.
-- [ ] 6.3 Fix every link to the old paths. The files that name them are `AGENTS.md`, `README.md`, `docs/README.md`, the requirement files, the decisions 008, 010, 011 and 017, the area pages, `docs/build/` pages, `docs/rationale/` pages, `docs/architecture/` pages and `team/tasks.md`. Evidence: `scripts/check_links.py` prints no broken link, and `grep -rI "understand/"` finds only `openspec/changes/archive/`.
-- [ ] 6.4 Update `AGENTS.md`: the layout table, the glossary path in the language section, and the data dictionary path in the rule on data. Update the sentence about the exception in `docs/README.md`, its reading order and its index, and the rules in the moved `reference/README.md`. Evidence: the diff.
-- [ ] 6.5 Remove the empty `docs/understand/` folder. Evidence: `ls docs` does not list it.
-- [ ] 6.6 Update `team/`: the two links in `team/tasks.md`, a row in the decisions table of `team/plan.md`, and the decision in `team/pending-decisions.md`. Evidence: the three files.
+- [x] 6.1 Confirm the destinations with the owner (see the open row in `team/pending-decisions.md`). The default is: `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, and `glossary/` to `docs/glossary/`. Evidence: the decision row moved to "Decided".
+- [x] 6.2 Move the files with `git mv`. Keep the content, the headings and the anchors. Change only the relative links inside the moved files. Evidence: the rename list in `git status`.
+- [x] 6.3 Fix every link to the old paths. The files that name them are `AGENTS.md`, `README.md`, `docs/README.md`, the requirement files, the decisions 008, 010, 011 and 017, the area pages, `docs/build/` pages, `docs/rationale/` pages, `docs/architecture/` pages and `team/tasks.md`. Evidence: `scripts/check_links.py` prints no broken link, and `grep -rI "understand/"` finds only `openspec/changes/archive/`.
+- [x] 6.4 Update `AGENTS.md`: the layout table, the glossary path in the language section, and the data dictionary path in the rule on data. Update the sentence about the exception in `docs/README.md`, its reading order and its index, and the rules in the moved `reference/README.md`. Evidence: the diff.
+- [x] 6.5 Remove the empty `docs/understand/` folder. Evidence: `ls docs` does not list it.
+- [x] 6.6 Update `team/`: the two links in `team/tasks.md`, a row in the decisions table of `team/plan.md`, and the decision in `team/pending-decisions.md`. Evidence: the three files.
 
 ## 7. Rename the replay script
 

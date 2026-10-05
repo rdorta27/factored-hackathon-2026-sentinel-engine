@@ -13,11 +13,7 @@ Open choices, each with its options, supporting material and deadline. The list 
 
 ## Open
 
-| # | Decision | Options | Supporting material | Deadline |
-|---|---|---|---|---|
-| 1 | Where the pages of `docs/understand/` go | Default: `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, `glossary/` to `docs/glossary/`. Other option: also move `docs/data_inventory.md` and `docs/sizing-capacity.md` into `docs/data/` | [`docs-followups`](../openspec/changes/docs-followups/tasks.md) group 6 | Before task 6.2 |
-
-New choices are added here with their options, supporting material and deadline.
+None. New choices are added here with their options, supporting material and deadline.
 
 ## Decided
 
@@ -51,3 +47,4 @@ New choices are added here with their options, supporting material and deadline.
 | 28 | Handoff delivery in production | Ticket store and advisor view in the demo; queue to the bank's CRM in production ([015](../docs/build/decisions/015-handoff-delivery.md)) | 10/1 |
 | 10 | Router models | Open-weight models on Fireworks AI, cheap and strong route, chosen per route by a rule fixed before measuring; gpt-oss-120b as the starting cheap model ([016](../docs/build/decisions/016-router-models.md)) | 10/1 |
 | 15 | Portuguese | A Portuguese-speaking customer holds an MX, CO or AR account; pt-BR twins of the key cases, written by one model, back-translated to Spanish by another and checked by the team ([017](../docs/build/decisions/017-portuguese.md)) | 10/1 |
+| 30 | Where the pages of `docs/understand/` go | `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, `glossary/` to `docs/glossary/`. `docs/data_inventory.md` and `docs/sizing-capacity.md` stay where they are. The `.gitignore` rule `data/` has the exception `!docs/data/`; the data formats stay ignored ([`docs-followups`](../openspec/changes/docs-followups/tasks.md), group 6) | 10/5 |

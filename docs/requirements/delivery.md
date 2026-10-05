@@ -22,7 +22,7 @@ This page covers what the evaluators receive: the repository, the deployed link,
 <a id="req-0013"></a>
 ### REQ-0013 · Report data and language limits
 
-State openly what the data cannot support. The dataset is synthetic and in Spanish only. It covers only Mexico, Colombia and Argentina. No real material tests Portuguese or other countries. The [dataset assumptions](../understand/dataset.md#assumptions) list the assumptions once.
+State openly what the data cannot support. The dataset is synthetic and in Spanish only. It covers only Mexico, Colombia and Argentina. No real material tests Portuguese or other countries. The [dataset assumptions](../data/dataset.md#assumptions) list the assumptions once.
 
 **Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** analysis
 
@@ -32,7 +32,7 @@ State openly what the data cannot support. The dataset is synthetic and in Spani
 
 **Evidence:** Proven by:
 
-- The [dataset assumptions](../understand/dataset.md#assumptions) and the [rationale](../rationale/data-assumptions.md). The data is synthetic and in Spanish only. Accounts exist only in México, Colombia and Argentina. Mexican accounts use only USD.
+- The [dataset assumptions](../data/dataset.md#assumptions) and the [rationale](../rationale/data-assumptions.md). The data is synthetic and in Spanish only. Accounts exist only in México, Colombia and Argentina. Mexican accounts use only USD.
 - The measured limits of the data. The balance has no usable as-of date. A complaint cannot link to a charge. No customer signal adds to `fraud_score`, and its label is a generator artefact. See [`customer-360/dev-v1`](../../evidence/customer-360/dev-v1/README.md), [`dev-signals-v1`](../../evidence/customer-360/dev-signals-v1/README.md) and the [investigation data support](../rationale/investigation-data-support.md).
 - Two more limits on the [problem and demand](../rationale/problem-and-demand.md) page. The product field is empty on most transactional calls. No complaint links to a call.
 - The language limits. The transcripts are two Spanish templates ([`transcript-chats/20261002T144836Z`](../../evidence/transcript-chats/20261002T144836Z/summary.json)). A model wrote the Portuguese cases ([018](../build/decisions/018-evaluation-acceptance.md)).

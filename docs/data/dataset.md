@@ -2,7 +2,7 @@
 
 Reference for the LATAM Bank dataset: what exists, what each column is for, and what to watch out for.
 
-**Purpose:** understand the data in one read, without opening the full dictionary. For the column-by-column reference (types and constraints), see [reference/latam-bank-data-dictionary.md](reference/latam-bank-data-dictionary.md). **Related:** [data area](../build/areas/data.md) (pipeline), [ML](../build/areas/ml.md) (labels and features), [glossary](glossary/).
+**Purpose:** understand the data in one read, without opening the full dictionary. For the column-by-column reference (types and constraints), see [reference/latam-bank-data-dictionary.md](reference/latam-bank-data-dictionary.md). **Related:** [data area](../build/areas/data.md) (pipeline), [ML](../build/areas/ml.md) (labels and features), [glossary](../glossary/).
 
 Sources: *dataset summary*, [data dictionary](reference/latam-bank-data-dictionary.md).
 

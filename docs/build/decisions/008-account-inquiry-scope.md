@@ -25,7 +25,7 @@ Requirements: REQ-0002 (clarify or abstain), REQ-0003 (verified records only), R
    - Against: the system does not serve part of the transactional demand (balances, product questions).
 2. **Add a `lookup_products` tool for balances and product details.**
    - For: it covers more of the inquiry demand.
-   - Against: a second data contract, more policy and failure cases, and a second workflow that the brief does not reward. The product snapshot is biased ([dataset](../../understand/dataset.md)).
+   - Against: a second data contract, more policy and failure cases, and a second workflow that the brief does not reward. The product snapshot is biased ([dataset](../../data/dataset.md)).
 
 ## Decision
 

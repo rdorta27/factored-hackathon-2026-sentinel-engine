@@ -40,7 +40,7 @@
 
 ### Simulated routing
 
-With `service_agents` we pick an active advisor who speaks the customer's language and has the specialty of the flow. See [dataset](../../understand/dataset.md#dictionary-supporting-dimensions).
+With `service_agents` we pick an active advisor who speaks the customer's language and has the specialty of the flow. See [dataset](../../data/dataset.md#dictionary-supporting-dimensions).
 
 ## Evidence for evaluation
 

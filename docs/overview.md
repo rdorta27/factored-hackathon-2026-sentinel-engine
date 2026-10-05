@@ -1,6 +1,6 @@
 # The Challenge
 
-**Purpose:** understand the hackathon without reading the PDFs. **Related:** [system](../architecture/system-architecture.md), [dataset](dataset.md), [requirements](../requirements/requirements.md), [glossary](glossary/).
+**Purpose:** understand the hackathon without reading the PDFs. **Related:** [system](architecture/system-architecture.md), [dataset](data/dataset.md), [requirements](requirements/requirements.md), [glossary](glossary/).
 
 > "Build something that works, prove that it works, and know when it should not act. And show us what it would take to make it real."
 
@@ -8,7 +8,7 @@
 
 A **customer-support assistant for a bank** operating in Mexico, Colombia, and Argentina. Not a chatbot: a **system** that understands the customer, queries verified data, executes safe actions, verifies that they happened, and hands the case to a person when appropriate.
 
-- **A single flow**, one of: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count. Ours is transaction disputes ([decision 003](../build/decisions/003-disputes-flow.md)).
+- **A single flow**, one of: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count. Ours is transaction disputes ([decision 003](build/decisions/003-disputes-flow.md)).
 - It must work in **Spanish and Portuguese**. The data is only in Spanish.
 - **End-to-end working first**; then we optimize.
 
@@ -22,7 +22,7 @@ A **customer-support assistant for a bank** operating in Mexico, Colombia, and A
 
 ## Golden rules
 
-This is the summary; the detail lives in [system](../architecture/system-architecture.md) and [conversation](../build/conversation.md).
+This is the summary; the detail lives in [system](architecture/system-architecture.md) and [conversation](build/conversation.md).
 
 1. **AI understands; code executes and verifies.** Permissions live in code, not in the prompt.
 2. **Only verified facts.** If the data is missing or not current, we say so.
@@ -39,7 +39,7 @@ This is the summary; the detail lives in [system](../architecture/system-archite
 | Data Engineering | Extraction and transformation pipeline |
 | Machine Learning | Selection, evaluation against a baseline, and model tracking |
 
-Main metrics: **safe automated resolution**, **unsafe outcomes**, and **cost**. Detail in [metrics](../build/metrics.md).
+Main metrics: **safe automated resolution**, **unsafe outcomes**, and **cost**. Detail in [metrics](build/metrics.md).
 
 ## Deliverables
 
@@ -58,8 +58,8 @@ We send to hackathon.admin@factored.ai:
 
 ## Known risks
 
-- **Portuguese without data:** evaluators will most likely test in Brazilian Portuguese. See [languages](../build/conversation.md#languages).
-- **Data with intentional issues:** duplicates, nulls, late arrivals, changing schema. See [dataset](dataset.md).
+- **Portuguese without data:** evaluators will most likely test in Brazilian Portuguese. See [languages](build/conversation.md#languages).
+- **Data with intentional issues:** duplicates, nulls, late arrivals, changing schema. See [dataset](data/dataset.md).
 - **Nobody on the team comes from contact centers:** the [glossary](glossary/) explains the business acronyms.
 
 ## Official material

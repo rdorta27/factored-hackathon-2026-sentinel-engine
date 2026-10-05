@@ -137,7 +137,7 @@ A failure ends in a safe answer or a handoff, never in an unverified claim (REQ-
 ## Language and locale
 
 - The reply language follows the customer (`es-419` or `pt-BR`). The currency follows the account. Amounts are in the original currency of the charge (REQ-0041).
-- The assistant understands and explains local acronyms and terms ([glossary](../understand/glossary/), REQ-0044).
+- The assistant understands and explains local acronyms and terms ([glossary](../glossary/), REQ-0044).
 - The country (MX, CO, AR) is configuration, not code (REQ-0049). The dataset has no Portuguese text, so the `pt-BR` cases are team-generated and have that label (REQ-0012, REQ-0013).
 
 ## Conversation state

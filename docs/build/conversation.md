@@ -134,7 +134,7 @@ REQ-0044 (neutral Spanish (es-419)) and REQ-0041 (original currency). The countr
 - Explain acronyms and local terms on first use. Example: "SPEI, Mexico's instant-transfer system".
 - Understand the terms of other countries and respond with what exists at their bank. Examples: "pago móvil" (the Venezuelan mobile-payment system) and "Pix" (the Brazilian instant-payment system).
 - The response language follows the customer. The currency follows the account (see [languages](#language-country-and-currency-are-independent)).
-- The [glossary](../understand/glossary/) has the equivalences for each country.
+- The [glossary](../glossary/) has the equivalences for each country.
 
 ## Languages
 
@@ -173,7 +173,7 @@ Portuguese tests most likely come from Brazil (pt-BR). The customer may use term
 - atendente (advisor),
 - CPF (Cadastro de Pessoas Físicas, the Brazilian individual taxpayer ID).
 
-The assistant must understand these terms. It must respond with the real data of the account. For example, the dataset has no Pix. The [glossary](../understand/glossary/glossary.pt-br.md) has the equivalences.
+The assistant must understand these terms. It must respond with the real data of the account. For example, the dataset has no Pix. The [glossary](../glossary/glossary.pt-br.md) has the equivalences.
 
 ### Spanish variants
 

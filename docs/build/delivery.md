@@ -1,6 +1,6 @@
 # Delivery
 
-Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables).
+Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../overview.md#deliverables).
 
 ## Language
 

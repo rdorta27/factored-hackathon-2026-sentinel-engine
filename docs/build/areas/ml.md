@@ -10,7 +10,7 @@ last_reviewed: 2026-10-04
 
 **Requirements:** the `ml` rows in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md), [metrics](../metrics.md), [metrics report](../metrics-report.md), [evidence index](../../../evidence/README.md).
+**Related:** [dataset](../../data/dataset.md), [metrics](../metrics.md), [metrics report](../metrics-report.md), [evidence index](../../../evidence/README.md).
 
 ## Scope
 

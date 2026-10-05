@@ -110,7 +110,7 @@ AUC measures **ranking** (0.5 = chance). It does not measure calibration or the 
 | Metric | Formula |
 |---|---|
 | Data quality | % of records that pass the contracts (types, nulls, ranges) |
-| Freshness | time from the moment a fact occurs until the system sees it (see [glossary](../understand/glossary/glossary.en-us.md#data)) |
+| Freshness | time from the moment a fact occurs until the system sees it (see [glossary](../glossary/glossary.en-us.md#data)) |
 | Update test | the update fixture passes (yes / no) |
 
 ## Open questions
