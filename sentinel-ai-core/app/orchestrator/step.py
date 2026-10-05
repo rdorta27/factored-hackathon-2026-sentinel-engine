@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from datetime import date
-from time import perf_counter
+from time import perf_counter, time
 from uuid import uuid4
 
 from app.ai.drafts import DraftFacts, fill_draft, validate_draft
@@ -45,6 +45,9 @@ from app.tools.ports import ToolStatus, TransactionLookup
 
 MAX_ATTEMPTS = 3
 OPEN_ACTION = "open_dispute"
+# A pending confirm box expires five minutes after it opened (REQ-0005).
+# A late confirmation never writes; the loop shows the candidate again.
+CONFIRM_TTL_S = 300.0
 # At most two clarification rounds: the third vague turn hands off (REQ-0001).
 MAX_CLARIFICATIONS = 2
 # The stored turn window is bounded like the history: the model only reads the
@@ -663,6 +666,10 @@ def _confirm(
         return TurnOutput(kind=OutcomeKind.FAILURE, language=state.language, reason="unknown_candidate")
     selected = shown_candidate(state, turn.candidate_id)
     if pending is None or turn.candidate_id != pending.candidate_id:
+        return _after_policy(state, ports, Intent.CHARGE, selected, "")
+    if time() - pending.created_at > CONFIRM_TTL_S:
+        # Late confirmation: never write, show the candidate again with a
+        # fresh box instead of the stale one.
         return _after_policy(state, ports, Intent.CHARGE, selected, "")
     # Pressing the button is the customer choosing the charge, not asking for a
     # person: an unanswered offer to help must not decide this turn. Clearing it

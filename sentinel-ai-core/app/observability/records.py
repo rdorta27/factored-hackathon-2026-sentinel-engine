@@ -57,6 +57,11 @@ class StepRecord:
     # Country policy file version and whether it is the team's synthetic policy.
     policy_version: str | None = None
     policy_synthetic: bool | None = None
+    # Hash chain (REQ-0025, REQ-0029): the hash of the previous record and
+    # this record's own hash. The recorder fills both on emit; readers use
+    # ``app.observability.chain.verify_chain`` to find a break.
+    prev_hash: str = ""
+    record_hash: str = ""
 
     def __post_init__(self) -> None:
         if not HEX16.match(self.trace_id):

@@ -1,0 +1,46 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-04
+---
+
+# Proposal
+
+## Why
+
+The brief asks for capacity limits, bounded retries, safe fallback and tool-failure handling with counts (REQ-0021, REQ-0026, REQ-0053). The review of 2026-10-04 found these gaps:
+
+- Nobody measured the capacity of `/api/v1/chat`. `docs/sizing_capacity.md` measures DuckDB queries only.
+- No run measures tool-failure handling as a rate. `docs/build/metrics.md` cites the adversarial categories only.
+- No evidence shows that two parallel confirmations open one case.
+- The public link has no daily model spend limit. Only the evaluation has a cap.
+- Diego (MLE at Factored) warned that CPU-bound work can block the FastAPI event loop. Nobody checked it.
+
+## What Changes
+
+- **Load test (the script here; the run moved to `post-freeze`):** a script drives `/api/v1/chat` with recorded model answers at increasing rates on one process. It records requests per second, p50 and p95, errors and 429 replies. A second run uses the live model with a small cap.
+- **Fault adapters (the frozen run moved to `post-freeze`):** model timeout, model 5xx, invalid JSON, slow Gold, Gold error, case-store error. For each fault: the outcome, the added latency and the share of turns with a safe reply.
+- **Parallel confirmations:** N parallel confirmations of one candidate open exactly one case.
+- **Event-loop check:** find synchronous work in async routes (DuckDB, SQLite, model calls). Move it to a thread pool, or prove it does not block, with a measurement.
+- **Spend guard:** a daily model budget (`SENTINEL_LLM_DAILY_BUDGET_USD`). Above it, the keyword baseline answers, and the turn log marks `budget` as the route.
+- **Four small safeguards.** (1) A pending confirmation expires after five minutes. (2) A strict mode (`SENTINEL_GOLD_REQUIRED`) refuses to start when Gold is missing or too old; it is off on the public link, which uses the labelled mock. (3) Each audit record carries the hash of the one before, so a change in the log is visible. (4) `/health` shows one hash of the files that decide behavior.
+- **One data proof.** A test shows that an incremental load gives the same rows as a full load, row by row.
+- **Cleanup:** remove `anthropic` and `aiosqlite` from `sentinel-ai-core/pyproject.toml` if no module imports them.
+- **Documents (moved to `post-freeze`):** four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`), the sizing page and the metrics catalog.
+
+## Capabilities
+
+### New Capabilities
+
+### Modified Capabilities
+- `failure-tests`: parallel confirmations, expiry, strict Gold, the audit chain and the spend guard. The fault and load runs moved to `post-freeze`.
+
+## Impact
+
+- `sentinel-ai-core/app/ai/serving.py` (budget), routers with blocking calls, `eval/` or `scripts/` (load and fault runs), tests, `evidence/robustness/`, `docs/rationale/`, `docs/sizing_capacity.md`, `docs/build/metrics.md`.
+- The measured runs use the final code. The code changes merge after `router-v3` (both change `app/ai/serving.py`); the runs freeze after the code freeze.
+
+## Non-goals
+
+- Autoscaling or PostgreSQL.
+- A load test of the public link. One replica serves the demo, and the test must not cost the evaluators.
