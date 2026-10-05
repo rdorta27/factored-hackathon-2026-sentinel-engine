@@ -75,6 +75,7 @@ For this reason the cases are **team-written text in es-419 and pt-BR**, declare
 | Adversarial set and results | Done | [`evidence/adversarial/`](../../../evidence/adversarial/) and the attack block of `eval-v7` |
 | Confidence cut-offs | Done, off by default | [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) |
 | Charge selector against the rules, with exact labels | Done, off by default | [`charge-ranker/test-v1`](../../../evidence/charge-ranker/test-v1/summary.json), [025](../decisions/025-charge-selector.md), [rationale](../../rationale/charge-selector.md) |
-| Greetings and small talk | Open | [router v3 plan](../../../team/router-v3-plan.md) |
+| Greetings and small talk | Built, measured on development only. The sealed measurement waits for the code freeze | [`2024Q4-select-v3d`](../../../evidence/evaluation-runs/2024Q4-select-v3d/summary.json), [`2024Q4-rehearsal-v8`](../../../evidence/evaluation-runs/2024Q4-rehearsal-v8/summary.json), [router v3 plan](../../../team/router-v3-plan.md) |
+| Prompt v3 examples, with 0, 4, 8 and 32 examples | Done on development. It picks nothing | [`2024Q4-ablation-v8`](../../../evidence/evaluation-runs/2024Q4-ablation-v8/summary.json) |
 | A trained baseline (TF-IDF and logistic regression) | Trained and frozen. Not yet measured on the sealed set | [`2024Q4-train-v1`](../../../evidence/evaluation-runs/2024Q4-train-v1/summary.json). The `eval-v8` measurement compares it with the router. |
 | Precision, recall and F1 per intent, with intervals | Done in the runner | `per_intent` in each version of a run summary (`eval/per_intent.py`) |

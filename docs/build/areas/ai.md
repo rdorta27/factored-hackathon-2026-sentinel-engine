@@ -44,12 +44,14 @@ With `service_agents` we pick an active advisor who speaks the customer's langua
 
 ## Evidence for evaluation
 
-- [ ] Demo of the 3 cases (normal, ambiguous, human) in es-419 and pt-BR
-- [ ] Working deployed link
-- [ ] Auditable execution logs
-- [ ] Reproducible installation instructions
+- [x] Demo of the 3 cases (normal, ambiguous, human) in es-419 and pt-BR ([REQ-0009](../../requirements/frontend-backend.md#req-0009), [REQ-0010](../../requirements/frontend-backend.md#req-0010), [REQ-0011](../../requirements/frontend-backend.md#req-0011))
+- [x] Working deployed link ([REQ-0035](../../requirements/delivery.md#req-0035)). The revision is from 10/3. The final redeploy comes before the video.
+- [x] Auditable execution logs ([REQ-0025](../../requirements/non-functional.md#req-0025))
+- [x] Reproducible installation instructions ([REQ-0028](../../requirements/non-functional.md#req-0028))
 
 ## Pending decisions
 
-- Hybrid LLM models (the router is already decided; backend and frontend are [005](../decisions/005-backend.md) and [006](../decisions/006-frontend.md))
-- Deployment service on Azure
+None. These two are closed:
+
+- Hybrid LLM models: the router and its models are decided in [016](../decisions/016-router-models.md). Backend and frontend are [005](../decisions/005-backend.md) and [006](../decisions/006-frontend.md).
+- Deployment service on Azure: Container Apps ([019](../decisions/019-azure-container-apps.md)).
