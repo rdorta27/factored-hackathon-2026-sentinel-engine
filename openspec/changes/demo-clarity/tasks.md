@@ -33,8 +33,8 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 ## 5. Requirements and team
 
-- [ ] 5.1 Update the card of REQ-0038 with the new evidence. Change a status only when its evidence exists. Evidence: `docs/requirements/frontend-backend.md`.
-- [ ] 5.2 Update `team/tasks.md`. Evidence: the file.
+- [x] 5.1 Update the card of REQ-0038 with the new evidence. Change a status only when its evidence exists. Evidence: `docs/requirements/frontend-backend.md`.
+- [x] 5.2 Update `team/tasks.md`. Evidence: the file.
 
 ## 6. Empty account and long lists
 
