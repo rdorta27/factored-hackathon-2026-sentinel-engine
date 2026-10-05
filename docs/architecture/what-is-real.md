@@ -38,7 +38,7 @@ Use these labels in every document, slide and evidence run:
 | Opening a dispute | **Mock** | The case store records the case. No bank system receives it. | The bank dispute system |
 | Secrets | **Mock** | `.env`, gitignored | Azure Key Vault |
 
-The [demo architecture](demo-architecture.md#mocked-components) shows the mocks in the diagrams.
+The [demo architecture](demo-architecture.md#mocked-components) shows the mocks in the diagrams. The [mocks](mocks.md) page explains each one.
 
 ## Data
 

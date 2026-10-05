@@ -72,6 +72,8 @@ Test the cases that the brief names: bad or missing data, expired session, unaut
 - D4 bounds the Gold reads (`SENTINEL_GOLD_TIMEOUT_S`, default 2 s, above the measured cold read of 0.28 s).
 - Fault injection in the runner (Gold, session, tool) degrades safely. See [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
 
+Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the three attack cases that pass on the stand-in model run against the real model, in a new adversarial run.
+
 <a id="req-0025"></a>
 ### REQ-0025 · Observability
 
@@ -169,6 +171,7 @@ The team may use mock banking tools if it documents their contracts and limits.
 - The mock Gold and the DuckDB Gold behind one seam, with a fallback (`tests/test_gold_duckdb.py`).
 - Memory state and SQLite state behind the same ports.
 - The list of mocks in the [demo architecture](../architecture/demo-architecture.md#mocked-components) and in [what is real](../architecture/what-is-real.md#components).
+- The [mocks](../architecture/mocks.md) page, which gives the reason, the limit and the production backend of each mock.
 
 <a id="req-0047"></a>
 ### REQ-0047 · No personal data to the LLM

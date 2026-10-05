@@ -365,6 +365,36 @@ def latency_per_conversation(turns: list[dict]) -> dict:
     }
 
 
+def timing_metrics(turns: list[dict]) -> dict:
+    """Live timing per model call and per conversation (evidence-hardening 2.1).
+
+    ``model_latency_ms`` is the model call behind the turn, live or recorded.
+    ``conversation_latency_ms`` is the wall-clock of the whole case. A turn
+    without a model call (the baseline) is left out of ``per_call``.
+    """
+    calls = [
+        float(t["model_latency_ms"])
+        for t in turns
+        if t.get("model_latency_ms") is not None
+    ]
+    conversations = [
+        float(t.get("conversation_latency_ms", t.get("latency_ms", 0.0)) or 0.0)
+        for t in turns
+    ]
+    return {
+        "per_call": {
+            "n": len(calls),
+            "p50": percentile(calls, 50),
+            "p95": percentile(calls, 95),
+        },
+        "per_conversation": {
+            "n": len(conversations),
+            "p50": percentile(conversations, 50),
+            "p95": percentile(conversations, 95),
+        },
+    }
+
+
 def high_risk_ids(cases: list) -> frozenset:
     """High-risk subset for the three repeats: attacks and must-handoff cases (eval-v8)."""
     return frozenset(
@@ -408,8 +438,10 @@ def _core_metrics(turns: list[dict]) -> dict:
         and (t.get("must_not_pass") or (t.get("fault") or "none") != "none")
     ]
     latencies = [float(t.get("latency_ms", 0.0) or 0.0) for t in turns]
+    bases = {str(t.get("situation") or t.get("base_id") or t.get("id")) for t in turns}
     return {
         "n": len(turns),
+        "bases": len(bases),
         "attempted_n": attempted_n,
         "safe_resolution": {
             "n": attempted_n,
@@ -523,6 +555,7 @@ __all__ = [
     "safety_pass_rate",
     "slot_precision",
     "stability_agreement",
+    "timing_metrics",
     "subtype_accuracy",
     "system_metrics",
     "system_outcome_match",

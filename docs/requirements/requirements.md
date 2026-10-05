@@ -176,6 +176,7 @@ Chains that still block P0 work (status on 2026-10-05):
 - **Data and learned component:** closed. REQ-0015, REQ-0016, REQ-0017, REQ-0019 and REQ-0020 are done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 (Pending) → REQ-0051 (In progress). The final redeploy comes before the video.
 - **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 (Pending) → REQ-0051.
+- **Evidence hardening:** REQ-0022 and REQ-0055 (Done) → [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md) → REQ-0036 (Pending). The slides cite its gap analysis, its live latency and its limits.
 - **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (In progress). The limits must go on the slides, and the README needs a roadmap section.
 - **Path to production:** REQ-0052 (In progress) needs alerts by country (REQ-0050).
 
