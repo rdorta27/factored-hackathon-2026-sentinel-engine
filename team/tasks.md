@@ -60,6 +60,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | — | Path to production | Done: `sentinel-ai-core/eval/monitor.py`, aggregates only, frozen over the simulated replay workload ([evidence](../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)); a field run reads the Azure log with the same script |
 | 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
 | 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Done: `silver_transactions` keeps `amount_usd` |
+| 8 | Final documents pass after the release ([plan](../openspec/changes/docs-followups-2/tasks.md)): public link pages, numbers, requirement statuses, archive, team, language, links, repository hygiene | REQ-0051 | Unassigned | After `release` | The tags and the submission | Pending |
 
 ### Low: only if time remains (P2) or to confirm and close
 

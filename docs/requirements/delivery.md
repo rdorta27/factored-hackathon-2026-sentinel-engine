@@ -114,6 +114,8 @@ The README, slides, video script, `docs/` and `team/` are written in English, si
 
 **Evidence:** Proven by: every file under `docs/` and `team/` is in English, and AGENTS.md requires simplified technical English (ASD-STE100) for all documentation. The deliverable pages (README, `docs/README.md`, `docs/rationale/`, `evidence/README.md`, `docs/architecture/what-is-real.md`) are rewritten in it. Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
 
+Planned by [`docs-followups-2`](../../openspec/changes/docs-followups-2/tasks.md): a final pass after the release that matches the documents to the submitted build, checks the language, the links and the repository hygiene. The status changes only when that pass finds its evidence.
+
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production
 
