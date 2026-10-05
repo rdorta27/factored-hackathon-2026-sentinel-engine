@@ -153,7 +153,6 @@ The [documentation index](docs/README.md) covers everything else.
 |---|---|
 | [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) on Delta Lake. DuckDB locally. The Databricks mode is implemented and not deployed. 13 LATAM Bank tables, about 19 M records. |
 | [`sentinel-ai-core/`](sentinel-ai-core/) | The service: FastAPI with one API under `/api/v1`, the policy engine, the orchestrator and the chat UI. State in SQLite. A DuckDB Gold adapter with a fallback to the labelled mock. The served `router_v2` with a baseline fallback. The evaluation harness (`eval/`): development cases, the sealed held-out set and the multi-turn resolution set. Owners are in [team/plan.md](team/plan.md#folders). |
-| [`sentinel-login/`](sentinel-login/README.md) | The original demo page, kept as a reference. It is not a backend and the service does not serve it ([009](docs/build/decisions/009-demo-ui-and-advisor-view.md)). |
 | [`docs/`](docs/README.md) | Architecture, the challenge and the data, requirements, rationale, design rules, decisions and delivery |
 | [`evidence/`](evidence/README.md) | Frozen, reproducible runs. The index gives the status and data type of each run. |
 | [`deploy/azure/`](deploy/azure/README.md) | The deployment script and its notes |
