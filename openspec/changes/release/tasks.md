@@ -22,6 +22,6 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Decisions: [002](../..
 - [ ] 3.1 Write the submission checklist in `docs/build/delivery.md`: repository name, deployed link, slides PDF, video, email address, Pages setting, secret scan, green test run. Each row has an owner and a proof. Evidence: the table.
 - [ ] 3.2 Write the freeze procedure: what must be merged, the order of the last checks and the rule of no change after the last check. Evidence: the section.
 
-## 4. After the freeze
+## Moved to `post-freeze`
 
-- [ ] 4.1 Review the README: links, numbers with their fields, and the limits section. Add the last pull requests to the changelog. Evidence: the diff.
+The last README review and the last changelog entries (old 4.1) now live in the `post-freeze` change. This plan closes when the changelog, the guide, the release notes, the checklist and the freeze procedure are merged.
