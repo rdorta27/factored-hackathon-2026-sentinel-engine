@@ -2,7 +2,7 @@ name: pages
 
 # Publishes site/ to GitHub Pages when a push to main changes the site.
 # The site is plain HTML, CSS and SVG. There is no build step.
-# One owner action: Settings > Pages > Source: GitHub Actions.
+# Replaces the default static.yml, which uploaded the whole repository.
 
 on:
   push:
@@ -48,4 +48,4 @@ jobs:
         with:
           path: site
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
