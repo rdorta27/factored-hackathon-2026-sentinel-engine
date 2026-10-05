@@ -86,6 +86,7 @@ Monitor latency, failures, escalations and complaints for each country.
 
 1. The [country log analytics report](../reports/req_0050_country_logs_report.md). It covers the digital event volumes (11.9M across México, Colombia and Argentina), the call center interaction counts and sentiment scores by country and channel, and the customer satisfaction survey averages. The sources are `bronze_digital_events`, `silver_call_center_interactions` and `silver_satisfaction_surveys` in `sentinel-data-engine/data/gold_bank.duckdb`.
 2. The monitoring of the system itself. The script `sentinel-ai-core/eval/monitor.py` aggregates the app turn log for each country and language. It reports turns, p50 and p95 latency, failed or timed-out steps, escalations, handoffs, fallback turns and cost. It keeps aggregates only and is write-once. The run [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) freezes the result for the simulated replay workload (256 turns, 888 records). The [metrics report](../build/metrics-report.md) shows it.
+3. The saved queries for the public link, [`deploy/azure/queries.kql`](../../deploy/azure/queries.kql). They run in the Log Analytics workspace of the Container Apps environment. They report turns, p50 and p95 latency and cost by country, outcome and language, and the failed or timed-out steps and the handoffs. They return aggregates only, with no identifier.
 
 <a id="req-0053"></a>
 ### REQ-0053 · Sizing and its limits
