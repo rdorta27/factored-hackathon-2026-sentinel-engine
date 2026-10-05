@@ -27,6 +27,9 @@ from app.session.security import hash_password  # noqa: E402
 DEFAULT_USERS = REPO / "deploy" / "judge-users" / "users.json"
 DEFAULT_PASSWORDS = REPO / "deploy" / "judge-users" / "passwords.csv"
 KDF = "pbkdf2-sha256-600k"
+# One simple shared password for the demo judges: short, lowercase and digits,
+# no symbols. Override it with --password.
+DEFAULT_PASSWORD = "demo1234"
 
 # The persona map uses these three customers; one advisor reads the queue.
 ACCOUNTS = (
@@ -37,15 +40,10 @@ ACCOUNTS = (
 )
 
 
-def random_password() -> str:
-    return secrets.token_urlsafe(12)
-
-
-def make_set() -> tuple[list[dict[str, str]], list[tuple[str, str, str]]]:
+def make_set(password: str = DEFAULT_PASSWORD) -> tuple[list[dict[str, str]], list[tuple[str, str, str]]]:
     users: list[dict[str, str]] = []
     sheet: list[tuple[str, str, str]] = []
     for login, country, role in ACCOUNTS:
-        password = random_password()
         salt_hex = secrets.token_bytes(16).hex()
         users.append(
             {
@@ -66,6 +64,7 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Write the judge users file and password sheet.")
     parser.add_argument("--users", default="", help="Users JSON. Empty uses deploy/judge-users/users.json.")
     parser.add_argument("--passwords", default="", help="Password sheet. Empty uses deploy/judge-users/passwords.csv.")
+    parser.add_argument("--password", default=DEFAULT_PASSWORD, help="Shared judge password. Default is demo1234.")
     return parser.parse_args()
 
 
@@ -73,7 +72,7 @@ def main() -> int:
     args = _parse_args()
     users_path = Path(args.users) if args.users else DEFAULT_USERS
     sheet_path = Path(args.passwords) if args.passwords else DEFAULT_PASSWORDS
-    users, sheet = make_set()
+    users, sheet = make_set(args.password)
     users_path.parent.mkdir(parents=True, exist_ok=True)
     sheet_path.parent.mkdir(parents=True, exist_ok=True)
     users_path.write_text(json.dumps({"users": users}, indent=2) + "\n", encoding="utf-8")
