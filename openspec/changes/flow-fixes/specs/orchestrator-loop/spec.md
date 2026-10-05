@@ -14,6 +14,16 @@ After a handoff, the loop SHALL answer a message about the same case with the re
 - **WHEN** a ticket exists and the customer names a different eligible charge
 - **THEN** the loop shows that charge in a confirm box
 
+#### Scenario: Another charge after two requests for an advisor
+
+- **WHEN** the customer asked twice for an advisor, and then names a different eligible charge
+- **THEN** the policy does not apply the `person.insist` rule, and the loop continues the normal flow with that charge
+
+#### Scenario: A third request for an advisor escalates
+
+- **WHEN** the customer asked twice for an advisor, wrote about another charge, and then asks for an advisor again
+- **THEN** the policy returns the handoff outcome with the rule `person.insist`
+
 ### Requirement: A dispute-status question never opens a case
 
 A deterministic check before the model SHALL recognize a question about the status of an existing dispute in es-419 and pt-BR. The reply SHALL come from the cases of the session customer, or SHALL say that no case exists. The loop SHALL NOT open a case on this question. Traces to REQ-0003 (P0, Done) and REQ-0006 (P0, Done).

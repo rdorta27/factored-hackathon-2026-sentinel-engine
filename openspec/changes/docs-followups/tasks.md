@@ -11,7 +11,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 ## 1. Correct what is wrong now
 
 - [x] 1.1 In `team/chat-manual-tests.md`, `bank-ui` and `chat-start` are merged. Change point 10 to "passed (bank-ui)" if the phone screenshots at 390 px prove it, or to "pending (bank-ui)" if they do not. Change point 6 to "passed" only if the direct "why" question passes in the `chat-start` conversation report. Otherwise write "partial (chat-start)". Evidence: the file and the screenshot names.
-- [ ] 1.2 Add the missing scenario to the `flow-fixes` spec: after two requests for an advisor, a request about another charge continues the normal flow, and a third request for an advisor escalates. Evidence: `openspec validate flow-fixes --strict`.
+- [x] 1.2 Add the missing scenario to the `flow-fixes` spec: after two requests for an advisor, a request about another charge continues the normal flow, and a third request for an advisor escalates. Evidence: `openspec validate flow-fixes --strict`.
 - [ ] 1.3 Write a script that prints each cited status in `openspec/specs/` that differs from `docs/requirements/requirements.md`, and fix the 59 citations. Evidence: the script prints no difference.
 
 ## 2. Plain English
@@ -45,3 +45,12 @@ Run this group last. Other plans add links to the old paths until they merge. Ta
 - [ ] 6.4 Update `AGENTS.md`: the layout table, the glossary path in the language section, and the data dictionary path in the rule on data. Update the sentence about the exception in `docs/README.md`, its reading order and its index, and the rules in the moved `reference/README.md`. Evidence: the diff.
 - [ ] 6.5 Remove the empty `docs/understand/` folder. Evidence: `ls docs` does not list it.
 - [ ] 6.6 Update `team/`: the two links in `team/tasks.md`, a row in the decisions table of `team/plan.md`, and the decision in `team/pending-decisions.md`. Evidence: the three files.
+
+## 7. Rename the replay script
+
+Run this group after group 6. It touches `team/chat-manual-tests.md`, which tasks 1.1 and 6.6 also edit.
+
+- [ ] 7.1 Rename `scripts/felix_replay.py` to `scripts/manual_test_replay.py` with `git mv`. Change its docstring, its usage examples and the prefix of its temporary folder. Change the start and end markers to `manual-test-replay:start` and `manual-test-replay:end`, and the generated title to `## Manual test replay (automated)`. Evidence: the diff.
+- [ ] 7.2 Change the same markers, the title and the run line in `team/chat-manual-tests.md`. Change both in the same commit, because the script finds its block by the markers. Evidence: the diff.
+- [ ] 7.3 Change the name in the comment of `scripts/sentinel_client.py` and in the evidence lines of `docs/requirements/frontend-backend.md`. Leave `openspec/changes/flow-fixes/` and `openspec/changes/robustness-evidence/` unchanged, because they are history. Evidence: `grep -rI "felix_replay\|felix-replay"` finds only those two plans.
+- [ ] 7.4 Run the script once against a local service. It must replace the existing block and not add a second one. Evidence: `git diff` of `team/chat-manual-tests.md` shows one block.
