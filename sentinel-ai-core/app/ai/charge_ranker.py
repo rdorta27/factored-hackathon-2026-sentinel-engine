@@ -10,8 +10,10 @@ equals the hash that the run recorded. This module never imports training code.
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
+import logging
 import math
 import os
 import re
@@ -202,6 +204,7 @@ class Ranking:
     ordered: list[Candidate]
     confidence: float
     pick: Candidate | None
+    stated: bool = True
 
 
 class RankerHashMismatch(RuntimeError):
@@ -220,12 +223,14 @@ class ChargeRanker:
     def rank(self, text: str, pool: list[Candidate], today: date) -> Ranking:
         if not pool:
             return Ranking([], 0.0, None)
+        stated = read_description(text, today, [row.merchant for row in pool]).stated
         scores = self.scores(feature_matrix(text, pool, today))
         order = sorted(range(len(pool)), key=lambda i: -scores[i])
         ordered = [pool[i] for i in order]
         confidence = softmax_top([scores[i] for i in order], self.temperature)
-        pick = ordered[0] if confidence >= self.threshold else None
-        return Ranking(ordered, confidence, pick)
+        # A text with no amount, merchant or date never picks a charge alone.
+        pick = ordered[0] if stated and confidence >= self.threshold else None
+        return Ranking(ordered, confidence, pick, stated)
 
 
 def file_hash(path: Path) -> str:
@@ -267,3 +272,22 @@ def selector_from_env() -> ChargeRanker | None:
     run = Path(os.environ.get(RUN_DIR, "").strip() or default_run_dir())
     recorded = json.loads((run / "summary.json").read_text(encoding="utf-8"))["model_sha256"]
     return load_ranker(run / "model.json", recorded)
+
+
+logger = logging.getLogger("sentinel.charge_ranker")
+
+
+@functools.lru_cache(maxsize=4)
+def _cached(switch: str, run: str) -> ChargeRanker | None:
+    try:
+        return selector_from_env()
+    except (RankerHashMismatch, OSError, KeyError, ValueError) as error:
+        logger.warning("charge selector refused, the rules answer: %s", error)
+        return None
+
+
+def active_selector() -> ChargeRanker | None:
+    """The selector the loop uses, or None. A refused file means the rules answer."""
+    if not enabled():
+        return None
+    return _cached(os.environ.get(SWITCH, ""), os.environ.get(RUN_DIR, ""))

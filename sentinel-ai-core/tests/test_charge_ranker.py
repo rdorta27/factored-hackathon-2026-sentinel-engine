@@ -121,3 +121,39 @@ def test_the_loop_does_not_import_the_selector_yet() -> None:
 
     source = (Path(__file__).resolve().parents[1] / "app" / "orchestrator" / "step.py").read_text(encoding="utf-8")
     assert "charge_ranker" not in source
+
+
+def test_off_changes_nothing_in_narrow(monkeypatch) -> None:
+    from app.ai.grounding import narrow
+
+    monkeypatch.delenv(ranker.SWITCH, raising=False)
+    texts = ["cargo de 1000 en ACME Store", "un cargo en ACME", "cobro del 12 de junio", "no reconozco un cargo"]
+    for text in texts:
+        assert narrow(text, None, POOL, TODAY) == narrow(text, None, POOL, TODAY, selector=None)
+    monkeypatch.setenv(ranker.SWITCH, "off")
+    assert narrow(texts[0], None, POOL, TODAY).match is not None  # the exact match of the rules
+
+
+def test_on_the_selector_picks_and_asks_through_narrow() -> None:
+    from app.ai.grounding import narrow
+
+    sure = narrow("cargo de 750 en ACME Store", None, POOL, TODAY, selector=_model())
+    assert sure.match is not None and sure.match.candidate_id == "d"
+    unsure = narrow("cargo en ACME Store", None, POOL, TODAY, selector=_model(threshold=0.999))
+    assert unsure.match is None and unsure.candidates
+    nothing = narrow("no reconozco un cargo", None, POOL, TODAY, selector=_model())
+    assert nothing.match is None
+
+
+def test_a_stated_date_with_no_charge_stays_not_found() -> None:
+    from app.ai.grounding import narrow
+
+    result = narrow("cargo del 1 de febrero", None, POOL, TODAY, selector=_model())
+    assert result.not_found is True
+
+
+def test_a_refused_file_makes_the_rules_answer(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv(ranker.SWITCH, "on")
+    monkeypatch.setenv(ranker.RUN_DIR, str(_run_dir(tmp_path, tamper=True)))
+    ranker._cached.cache_clear()
+    assert ranker.active_selector() is None

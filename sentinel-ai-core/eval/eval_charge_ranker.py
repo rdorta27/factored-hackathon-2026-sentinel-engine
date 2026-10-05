@@ -1,9 +1,9 @@
 """Compare the charge-selection configurations on one held-out set (decision 025).
 
 Configurations, all on the same examples:
-- `rules_fixed`: the parsers and the narrowing of `app/ai/grounding.py` as the loop uses them today.
-- `rules_tuned`: the same after `chat-start`. Not available until that change merges.
-- `learned`: the selector, with the weights and the threshold of the frozen run train-v1.
+- `rules_fixed`: the parsers and the narrowing before `chat-start` (a frozen copy, `grounding_before_chat_start.py`).
+- `rules_tuned`: `narrow` of `app/ai/grounding.py` after `chat-start`, with the switch off.
+- `learned`: the same `narrow`, with the selector of the frozen run train-v1. This is the served path.
 - `LLM`: the model reads the description into slots. Code then narrows the charges with them. Sample only.
 
 This module never imports the training module. It reads the weights file through
@@ -28,16 +28,14 @@ from app.ai import charge_ranker as ranker
 from app.ai.grounding import (
     SoftFacts,
     StatedFacts,
-    extract_facts,
-    extract_soft,
-    ground,
+    narrow,
     narrow_candidates,
-    rank_candidates,
     relative_dates,
     stated_merchant_tokens,
 )
 from app.orchestrator.types import Candidate
 from eval import charge_examples as gen
+from eval import grounding_before_chat_start as before
 from eval.charge_pool import pool_candidates
 
 ROOT = Path(__file__).resolve().parents[2] / "evidence" / "charge-ranker"
@@ -45,6 +43,7 @@ SHOWN = 3
 BOOTSTRAP = 1000
 METRICS = ("right_first", "right_in_top3", "wrong_automatic", "asks")
 
+_OFF = None  # `narrow` reads the switch when no selector is given; main() checks that it is off.
 Outcome = dict[str, bool]
 Reader = Callable[[str, date, list[Candidate]], "tuple[list[Candidate], Candidate | None]"]
 
@@ -66,20 +65,30 @@ def _rest(first: list[Candidate], pool: list[Candidate]) -> list[Candidate]:
 def rules_fixed(text: str, today: date, pool: list[Candidate]) -> tuple[list[Candidate], Candidate | None]:
     """What the loop does now: one exact match is picked; otherwise the short list asks."""
     merchants = [row.merchant for row in pool]
-    facts = extract_facts(text, today.year, merchants)
-    grounded = ground(facts, pool)
+    facts = before.extract_facts(text, today.year, merchants)
+    grounded = before.ground(facts, pool)
     if grounded.outcome == "matched" and grounded.match is not None:
         return _rest([grounded.match], pool), grounded.match
-    soft = extract_soft(text, today, merchants)
-    narrowed = narrow_candidates(facts, soft, pool, today)
-    ranked = narrowed.candidates if narrowed.stated else rank_candidates(facts, grounded.candidates or pool, today)
+    soft = before.extract_soft(text, today, merchants)
+    narrowed = before.narrow_candidates(facts, soft, pool, today)
+    ranked = narrowed.candidates if narrowed.stated else before.rank_candidates(facts, grounded.candidates or pool, today)
     return _rest(list(ranked), pool), None
+
+
+def _from_narrow(result) -> tuple[list[Candidate], Candidate | None]:  # type: ignore[no-untyped-def]
+    return result.candidates, result.match
+
+
+def rules_tuned(text: str, today: date, pool: list[Candidate]) -> tuple[list[Candidate], Candidate | None]:
+    """The loop after chat-start, with the selector off."""
+    ordered, pick = _from_narrow(narrow(text, None, pool, today, selector=_OFF))
+    return _rest(list(ordered), pool), pick
 
 
 def learned(model: ranker.ChargeRanker) -> Reader:
     def read(text: str, today: date, pool: list[Candidate]) -> tuple[list[Candidate], Candidate | None]:
-        result = model.rank(text, pool, today)
-        return result.ordered, result.pick
+        ordered, pick = _from_narrow(narrow(text, None, pool, today, selector=model))
+        return _rest(list(ordered), pool), pick
 
     return read
 
@@ -200,8 +209,12 @@ def main(argv: list[str] | None = None) -> None:
         raise SystemExit("The rebuilt examples differ from the frozen run data-v1.")
     chosen = [e for e in examples if e.split == args.split]
 
-    readers: dict[str, Reader] = {"rules_fixed": rules_fixed, "learned": learned(model)}
-    notes = ["rules_tuned is not measured: the change chat-start is not merged."]
+    if ranker.enabled():
+        raise SystemExit(f"Unset {ranker.SWITCH}: the rules configurations must run with the switch off.")
+    readers: dict[str, Reader] = {
+        "rules_fixed": rules_fixed, "rules_tuned": rules_tuned, "learned": learned(model),
+    }
+    notes = []
     llm_ids: set[str] | None = None
     if args.llm_sample:
         from app.ai.serving import model_from_env
