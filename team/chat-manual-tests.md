@@ -235,6 +235,64 @@ Points 4 and 8 depend on the model and stay out of scope for this change.
 
 <!-- felix-replay:end -->
 
+<!-- chat-transcripts:start -->
+## Chat transcripts (automated)
+
+Run: `python3 scripts/chat_transcripts.py --base-url http://127.0.0.1:8004`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per case, the real model.
+
+44 conversations, 0 findings.
+
+| Case | Variant | Customer | Reply |
+|---|---|---|---|
+| CT-01-es-MX | es-MX | Hola, buenos días | ¡Hola! ¿En qué te ayudo hoy? |
+| CT-01-es-CO | es-CO | Buenos días, ¿cómo están? | ¡Hola! ¿En qué te puedo colaborar hoy? |
+| CT-01-es-AR | es-AR | Hola, ¿cómo andás? | ¡Hola! ¿En qué te ayudo hoy? |
+| CT-01-pt-BR | pt-BR | Olá, bom dia | Olá! Como posso ajudar hoje? |
+| CT-02-es-MX | es-MX | Muchas gracias por tu ayuda | ¡De nada! ¿Te ayudo en algo más? |
+| CT-02-es-CO | es-CO | Gracias, muy amable | ¡Con gusto! ¿Necesitas algo más? |
+| CT-02-es-AR | es-AR | Gracias, genio | ¡De nada! ¿Te doy una mano con algo más? |
+| CT-02-pt-BR | pt-BR | Obrigado pela ajuda | De nada! Precisa de mais alguma coisa? |
+| CT-03-es-MX | es-MX | ¿Eres un bot o una persona? | Soy un asistente del banco, ¿en qué te ayudo? |
+| CT-03-es-CO | es-CO | ¿Usted es un robot? | Soy un asistente del banco, ¿en qué te colaboro? |
+| CT-03-es-AR | es-AR | ¿Sos un bot? | Soy un asistente del banco, ¿en qué te ayudo? |
+| CT-03-pt-BR | pt-BR | Você é um robô ou uma pessoa? | Sou um assistente do banco, como posso ajudar? |
+| CT-04-es-MX | es-MX | ¿En qué puedes ayudarme? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitas? |
+| CT-04-es-CO | es-CO | ¿Qué puedes hacer? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitas? |
+| CT-04-es-AR | es-AR | ¿Para qué servís? | Puedo ayudarte con consultas sobre cargos y reclamos. ¿Qué necesitás? |
+| CT-04-pt-BR | pt-BR | O que você faz? | opener.help |
+| CT-05-es-MX | es-MX | Adiós, hasta luego | ¡Hasta luego! Que tengas un buen día. |
+| CT-05-es-CO | es-CO | Chau, hasta pronto | ¡Hasta pronto! Que tengas un buen día. |
+| CT-05-es-AR | es-AR | Nos vemos, chau | ¡Chau! Que tengas un buen día. |
+| CT-05-pt-BR | pt-BR | Tchau, até logo | Tchau! Qualquer coisa, estou à disposição. |
+| CT-06-es-MX | es-MX | Hola, no reconozco el cargo de Cafe Central | confirmCharge |
+| CT-06-es-CO | es-CO | Buenos días, no reconozco un cargo en Cafe Central | confirmCharge |
+| CT-06-es-AR | es-AR | Hola, no reconozco el consumo de Cafe Central | confirmCharge |
+| CT-06-pt-BR | pt-BR | Olá, não reconheço a cobrança da Cafe Central | confirmCharge |
+| CT-07-es-MX | es-MX | Quiero ver el estado de mi último cargo | Reviso el estado de tu cargo y te lo muestro. |
+| CT-07-es-CO | es-CO | ¿En qué estado está mi último cobro? | Reviso el estado de tu cobro y te lo muestro. |
+| CT-07-es-AR | es-AR | ¿Cómo va el estado de mi último consumo? | Reviso el estado de tu consumo y te lo muestro. |
+| CT-07-pt-BR | pt-BR | Quero ver o estado da minha última cobrança | Vou verificar o estado da sua cobrança e te mostro. |
+| CT-08-es-MX | es-MX | Quiero un préstamo personal | Te explico qué puedo hacer por tu préstamo. |
+| CT-08-es-CO | es-CO | Necesito un préstamo de libre inversión | Te explico qué opciones de préstamo tenemos. |
+| CT-08-es-AR | es-AR | Quiero pedir un préstamo | Te explico qué puedo hacer por tu préstamo. |
+| CT-08-pt-BR | pt-BR | Quero um empréstimo pessoal | Vou explicar o que posso fazer pelo seu empréstimo. |
+| CT-09-es-MX | es-MX | ¿Cuánta plata tengo en mi cuenta? | Te digo cómo consultar tu saldo en la app. |
+| CT-09-es-CO | es-CO | ¿Cuál es el saldo de mi cuenta? | Te muestro cómo consultar tu saldo en la app. |
+| CT-09-es-AR | es-AR | ¿Cuánta guita tengo disponible? | Te digo cómo ver tu saldo en la app. |
+| CT-09-pt-BR | pt-BR | Quanto dinheiro eu tenho na conta? | Vou te mostrar como consultar seu saldo no aplicativo. |
+| CT-10-es-MX | es-MX | Hay un cobro de mil pesos que no reconozco | confirmCharge |
+| CT-10-es-CO | es-CO | No reconozco un cobro de mil pesos | confirmCharge |
+| CT-10-es-AR | es-AR | No reconozco un consumo de mil pesos | confirmCharge |
+| CT-10-pt-BR | pt-BR | Não reconheço uma cobrança de mil reais | confirmCharge |
+| CT-11-es-MX | es-MX | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-es-CO | es-CO | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-es-AR | es-AR | ¿Por qué no puedo reclamar el de enero? | explanation.window.expired |
+| CT-11-pt-BR | pt-BR | Por que não posso contestar a de janeiro? | explanation.window.expired |
+
+No finding. Every case matched its expected kind and key.
+
+<!-- chat-transcripts:end -->
+
 ## How to add an entry
 
 Copy a block: input, observed, expected, cause, capability, status. Name the
