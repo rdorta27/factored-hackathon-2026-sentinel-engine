@@ -94,8 +94,10 @@ All judges use the same set. The cases share state between judges.
 - The plain passwords are in `deploy/judge-users/passwords.csv` on the owner's
   machine. Git ignores the file. The users file on the link holds salted hashes
   only.
-- Lockout rule: after 5 failed logins for one login id or one address, the
-  login answers HTTP 429. The lock lasts 15 minutes.
+- Lockout rule: after 10 failed logins for one login id or one address, the
+  login answers HTTP 429. The lock lasts 15 minutes. The entry page shows a
+  clear "access is blocked" message on HTTP 429, not the wrong-credentials
+  message.
 - The public link has no one-click entry. The documented fixture passwords do
   not work on the link.
 

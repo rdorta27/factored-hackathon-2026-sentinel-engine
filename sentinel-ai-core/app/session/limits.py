@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-MAX_FAILURES = 5
+MAX_FAILURES = 10
 LOCKOUT_DURATION = timedelta(minutes=15)
 
 # Write budget for the authenticated business routes (chat, disputes): a

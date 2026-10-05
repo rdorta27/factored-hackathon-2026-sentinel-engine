@@ -1271,7 +1271,8 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     }),
   });
   if (!response.ok) {
-    document.getElementById("login-error").textContent = t("loginFailed");
+    document.getElementById("login-error").textContent =
+      response.status === 429 ? t("loginLocked") : t("loginFailed");
     return;
   }
   const { role } = await response.json();
