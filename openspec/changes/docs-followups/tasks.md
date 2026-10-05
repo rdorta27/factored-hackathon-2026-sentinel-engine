@@ -16,7 +16,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 2. Plain English
 
-- [ ] 2.1 Rewrite the five requirement files in ASD-STE100, with the header. Keep the headings and the `REQ-####` anchors. Evidence: the files and `grep -rl '^style: ASD-STE100'`.
+- [x] 2.1 Rewrite the five requirement files in ASD-STE100, with the header. Keep the headings and the `REQ-####` anchors. Evidence: the files and `grep -rl '^style: ASD-STE100'`.
 - [ ] 2.2 Rewrite `metrics.md`, `sizing_capacity.md`, `security.md`, `conversation.md` and `data_inventory.md` the same way. Evidence: the files.
 
 ## 3. Evidence index
