@@ -66,6 +66,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     from app.state.conversation import InMemoryConversationStore, SqliteConversationStore
     from app.tools.faults import apply_gold_fault, apply_model_fault, apply_store_fault
     from app.tools.gold_duckdb import select_gold
+    from app.tools.gold_strict import enforce_strict_gold, strict_enabled
 
     application = FastAPI(title="Sentinel AI Core", version="0.1.0")
 
@@ -113,6 +114,8 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     write_limiter = RateLimiter()
     service = SessionService(users, sessions, attempts, audit)
     gold, gold_source = select_gold(as_of=ref_date.isoformat())
+    # Strict mode refuses to start on missing or stale Gold (off by default).
+    enforce_strict_gold(gold_source)
     # Fault injection for the frozen robustness run (SENTINEL_FAULT_*):
     # off by default, so production serves the real adapters.
     gold = apply_gold_fault(gold)
@@ -156,6 +159,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
             "route": info.route,
             "prompt_version": info.prompt_version,
             "gold_source": gold_source,
+            "gold_required": "on" if strict_enabled() else "off",
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),
         }
