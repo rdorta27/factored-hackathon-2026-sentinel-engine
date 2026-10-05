@@ -62,6 +62,8 @@ The loop is Understand → Decide → Act → Verify → Escalate. See the [arch
 | The system resolves every case that the policy allows, and no other. The rest need a handoff or a question. | [`evaluation-runs/2024Q4-resolution-gap-v1`](../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) | `ceiling.router_v2.resolvable`, `ceiling.router_v2.resolved` | Simulation |
 | The router gains no resolution over the baseline in this run | [`evaluation-runs/2024Q4-resolution-v2`](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) | `paired_resolution.net` | Simulation |
 
+The public link serves `router_v2` (a prompted GLM 5.3 Flash, prompt `v2`). Its `/health` `bundle_hash` is `2efe5962…`, the hash of the sealed v8 measurement ([delivery](build/delivery.md)). The judge credentials come in the submission email.
+
 The [project site](../site/index.html) shows these numbers with their denominators. The [evidence index](../evidence/README.md) lists every run. A simulation is not a production measurement.
 
 ## What we do not claim
