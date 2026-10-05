@@ -27,6 +27,32 @@ Names come from environment variables with these defaults: `RESOURCE_GROUP=rg-se
 `LOCATION=eastus`, `ACR_NAME`, `APP_ENV`, `APP_NAME=sentinel-engine`, `IMAGE_NAME`. Override
 them on the command line to deploy somewhere else.
 
+## Judge credentials
+
+The public link has no one-click entry and no documented password. The judges
+receive one shared set of logins and passwords in the submission email.
+
+1. Write the users file and the password sheet:
+
+   ```bash
+   python3 scripts/make_judge_users.py
+   ```
+
+   The users file holds salted hashes only. The plain passwords go to an
+   ignored sheet. No password reaches the repository.
+
+2. Copy the users file to the share:
+
+   ```bash
+   ./deploy/azure/upload-users.sh
+   ```
+
+   Add `--dry-run` to print the commands and stop. `deploy.sh` sets
+   `SENTINEL_USERS_PATH` to `/mnt/sentinel/users.json` and
+   `SENTINEL_DEMO_PERSONAS=0`. The app reads the file and the one-click entry
+   answers 404. `SENTINEL_DEMO_AUTH=1` (Dockerfile) still loads the advisor
+   role, so the advisor login keeps its password.
+
 ## What it does
 
 1. Stages `sentinel-ai-core/` and `branding/` without tests, `eval/`, local state, data or `.env*`.
@@ -34,7 +60,7 @@ them on the command line to deploy somewhere else.
 3. Passes the model variables to the container; the API key and the session salt go in as **secrets**, never as plain values.
 4. Creates a Standard_LRS storage account and a 1 GiB classic file share, and links the share to the Container Apps environment.
 5. **Deletes and recreates the container app**, with `--min-replicas 1` and `--max-replicas 1`, then mounts the share at `/mnt/sentinel` for uid 10001 (the image user).
-6. Sets `SENTINEL_VAR_DIR` and `SENTINEL_DB_PATH` on that mount, `SENTINEL_SQLITE_JOURNAL=DELETE` (WAL needs shared memory a share does not have) and `SENTINEL_LOG_STDOUT=1`, so each turn record is one JSON line on standard output and Container Apps sends it to Log Analytics. Prints the link. The share is not deleted, so the SQLite file and the turn log survive the recreate.
+6. Sets `SENTINEL_VAR_DIR` and `SENTINEL_DB_PATH` on that mount, `SENTINEL_SQLITE_JOURNAL=DELETE` (WAL needs shared memory a share does not have) and `SENTINEL_LOG_STDOUT=1`, so each turn record is one JSON line on standard output and Container Apps sends it to Log Analytics. Sets `SENTINEL_USERS_PATH=/mnt/sentinel/users.json` and `SENTINEL_DEMO_PERSONAS=0` for judge access. Prints the link. The share is not deleted, so the SQLite file and the turn log survive the recreate.
 
 The link is down for a few seconds while the app is recreated. Do not redeploy during the evaluation
 unless a fix is critical. If the script prints `deployed: https://` with no host, the
