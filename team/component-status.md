@@ -82,4 +82,4 @@ flowchart TB
 
 The team merged and archived these plans: `dispute-answers`, `resolution-eval`, `chat-loop`, `real-gold`, `runtime-and-ci`, `quality-report`, `ui-product`, `evaluation-final`, `flow-fixes`, `router-v3`, `bank-ui`, `chat-start`, `problem-evidence`, `trained-baseline`, `charge-ranker` and `robustness-evidence`.
 
-The plans that are still in `openspec/changes/` have their status in [tasks](tasks.md). The code is frozen. The final documents pass (`docs-followups-2`), the recording of the video and the tags are the remaining work.
+Every plan is in `openspec/changes/archive/`. The code is frozen. The recording of the video and the tags are the remaining work.

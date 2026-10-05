@@ -176,9 +176,7 @@ Write the README, the slides, the video script, `docs/` and `team/` in English. 
 - The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
 - The new pages [`CHANGELOG.md`](../../CHANGELOG.md) and [`CONTRIBUTING.md`](../../CONTRIBUTING.md) are in English, in ASD-STE100.
 
-Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
-
-Planned by [`docs-followups-2`](../../openspec/changes/docs-followups-2/tasks.md): a final pass after the release that matches the documents to the submitted build, checks the language, the links and the repository hygiene. The status changes only when that pass finds its evidence.
+Missing: the video ([REQ-0037](#req-0037)). The slides, the video script and the [pre-submission check](../build/delivery.md#language) are done.
 
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production
