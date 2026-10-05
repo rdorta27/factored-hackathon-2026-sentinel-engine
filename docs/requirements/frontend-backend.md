@@ -255,6 +255,8 @@ Give a simple way to use the system, such as a chat page. A dashboard is not req
 
 - **Demo clarity (change `demo-clarity`).** The example chips carry the label "Try an example" and show only when the demo is available and the account has a charge. A footer line reads `GET /api/v1/health` and names the model, the prompt version, the first 8 characters of `bundle_hash` and the Gold source. A closed panel on the entry page lists the three cases to try and the four simulated parts. The charges panel says when the account has no charges, and the claims panel shows five and one control for the rest. The tests are `tests/test_ui.py` and `tests/test_demo_prompts.py`. The screens are under [`docs/build/screenshots/ui-product/`](../build/screenshots/ui-product/).
 
+- **Page behavior (change `ui-behavior`).** One click starts one turn: every send control locks while a turn runs and unlocks on fail or timeout. The thread redraws after a locale load, and only the last locale request counts. The chips of a closed turn are disabled. The page scrolls to the newest message and focuses the input after a turn. Raw i18n keys stay hidden until the first locale loads. The advisor view shows country and language names and fetches the ticket and the trace in parallel. The tests are in `tests/test_ui.py`. The merge with `origin/main` is a fast-forward. The suite gives 949 passed and 2 skipped. `scripts/e2e_check.py` gives 8 PASS, the phone layout at 390 px included.
+
 <a id="req-0040"></a>
 ### REQ-0040 · Request for a person
 
