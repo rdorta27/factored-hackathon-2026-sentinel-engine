@@ -1,3 +1,9 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Data Source Inventory — Sentinel Engine
 
 **Version:** 1.0  
@@ -10,21 +16,21 @@
 
 ## Compliance Declaration — REQ-0031
 
-> **The Sentinel Engine operates exclusively on the synthetic dataset provided in the official Factored Datathon 2026 S3 bucket, supplemented by internal evaluation fixtures created by the team.**
+> **The Sentinel Engine operates only on the synthetic dataset in the official Factored Datathon 2026 S3 bucket. It adds internal evaluation fixtures that the team created.**
 >
-> No external real-world customer data, web-scraped datasets, production banking records, or unauthorized third-party data sources are used at any stage of the pipeline or LLM evaluation. Every dataset consumed by this system is labeled by origin as required by REQ-0031.
+> The system uses no external real-world customer data, no web-scraped datasets, no production banking records and no unauthorized third-party data sources. This applies at each stage of the pipeline and of the LLM evaluation. Each dataset that the system consumes has a label for its origin, as REQ-0031 requires.
 
-This document is the evidence artifact that satisfies the "Missing: the source inventory" gap noted in the requirements index. Once merged, REQ-0031 moves from **Pending** to **Done** and unblocks REQ-0015, REQ-0017, REQ-0020, REQ-0014, and REQ-0054.
+This document is the evidence artifact for REQ-0031. It closes the gap "Missing: the source inventory" that the requirements index noted. The [requirements index](requirements/requirements.md) holds the current status of each requirement. On 2026-10-05, REQ-0031, REQ-0014, REQ-0015 and REQ-0054 are all **Done**.
 
 ---
 
 ## 1. Data Source Inventory
 
-Dataset snapshot cutoff: **2026-06-17** (`DATASET_CUTOFF_DATE`).
+The dataset snapshot ends on **2026-06-17** (`DATASET_CUTOFF_DATE`).
 
 ### 1.1 Organizer-Provided Tables (Factored Datathon 2026 S3 Bucket)
 
-All 13 entities below are **fully synthetic** as declared in the official problem statement: *"no real customer information is included."* They are read from the organizer S3 bucket; the bucket name is stored in `.env` (gitignored) and is never written to the repository.
+All 13 entities below are **fully synthetic**. The official problem statement declares it: *"no real customer information is included."* The pipeline reads them from the organizer S3 bucket. The bucket name is in `.env` (gitignored). The team never writes it to the repository.
 
 | # | Entity / Table | Type | Approx. Rows | Business Domain | Purpose |
 |---|---|---|---|---|---|
@@ -48,9 +54,9 @@ All 13 entities below are **fully synthetic** as declared in the official proble
 |---|---|---|---|---|---|
 | F-1 | Dispute test cases — Spanish | Team-crafted | Synthetic / anonymized mock | ~200 | LLM policy evaluation in `es-419` (Latin American Spanish) |
 | F-2 | Dispute test cases — Portuguese | Team-crafted | Synthetic / anonymized mock | ~200 | LLM policy evaluation in `pt-BR` |
-| F-3 | Adversarial attack prompts | Team-crafted | Synthetic | ~50 | Robustness testing; produced by `tests/adversarial/` in `sentinel-ai-core/` |
+| F-3 | Adversarial attack prompts | Team-crafted | Synthetic | 42 | Robustness testing; produced by `tests/adversarial/` in `sentinel-ai-core/` |
 
-All fixtures are hand-crafted by the team; no real names, account numbers, or financial records appear in them.
+The team wrote all fixtures by hand. They hold no real names, no account numbers and no financial records.
 
 ---
 
@@ -88,23 +94,23 @@ S3 Bucket (organizer)
 
 `customers` · `transactions` · `products` · `daily_exchange_rates`
 
-The primary dispute-resolution evidence. Transactions feed `gold_dispute_eligible_transactions`. Customer attributes are joined only at the Gold layer, and credit score and name fields are stripped before any data reaches the LLM.
+These tables are the primary evidence for dispute resolution. Transactions feed `gold_dispute_eligible_transactions`. The pipeline joins customer attributes only at the Gold layer. It strips the credit score and the name fields before any data reaches the LLM.
 
 ### 2.2 Contact Center & Service
 
 `complaints` · `service_agents` · `call_center_interactions` · `satisfaction_surveys` · `call_transcripts`
 
-Provides the escalation context and conversation history that the AI core uses to understand whether a customer has already raised a dispute through the contact center.
+These tables give the escalation context and the conversation history. The AI core uses them to understand whether a customer already raised a dispute through the contact center.
 
 ### 2.3 Digital & Operational
 
 `digital_events` · `branches` · `marketing_campaigns` · `campaign_sends`
 
-Behavioral and operational context. Used for customer-360 enrichment in `gold_dispute_customer_360` and for eligibility heuristics.
+These tables give behavioral and operational context. The pipeline uses them for the customer-360 enrichment in `gold_dispute_customer_360` and for eligibility heuristics.
 
 ### 2.4 Evaluation & Test Fixtures
 
-Internal Spanish (`es-419`) and Portuguese (`pt-BR`) dispute scenarios and adversarial prompts. These are consumed only by the test suite in `sentinel-ai-core/tests/`; they never enter the data pipeline and are not loaded into BigQuery or DuckDB in production runs.
+The fixtures are the internal Spanish (`es-419`) and Portuguese (`pt-BR`) dispute scenarios and the adversarial prompts. Only the test suite in `sentinel-ai-core/tests/` consumes them. They never enter the data pipeline. Production runs do not load them into BigQuery or DuckDB.
 
 ---
 
@@ -112,19 +118,19 @@ Internal Spanish (`es-419`) and Portuguese (`pt-BR`) dispute scenarios and adver
 
 ### 3.1 Synthetic nature of the organizer dataset
 
-The Factored Datathon 2026 dataset was generated synthetically. According to the official problem statement, *"no real customer information is included."* Specifically:
+The organizers generated the Factored Datathon 2026 dataset synthetically. The official problem statement says: *"no real customer information is included."* In detail:
 
-- Customer first and last names are algorithmically generated.
-- National identity numbers (CURP — Mexico; DNI — Argentina; CC — Colombia; CPF — Brazil) are fictitious.
-- Addresses, phone numbers, and email addresses are artificial.
-- Credit scores are drawn from statistical distributions, not sourced from credit bureaus.
-- Transaction amounts, merchant names, and timestamps are procedurally generated to be statistically plausible but are not derived from any real financial event.
+- An algorithm generates the first and last names of the customers.
+- The national identity numbers (CURP — Mexico; DNI — Argentina; CC — Colombia; CPF — Brazil) are fictitious.
+- The addresses, phone numbers and email addresses are artificial.
+- The credit scores come from statistical distributions. They do not come from credit bureaus.
+- The transaction amounts, merchant names and timestamps are procedurally generated. They are statistically plausible. They do not come from any real financial event.
 
 ### 3.2 PII enforcement at the Gold layer
 
-Even though the upstream synthetic data was never real PII, the pipeline treats the fields that *structurally resemble* PII as sensitive and enforces their removal before any data reaches the LLM layer. This is governed by **ADR 023** (`docs/build/decisions/023-pii-gold-handling.md`).
+The upstream synthetic data was never real PII. Even so, the pipeline treats the fields that *structurally resemble* PII as sensitive. It removes them before any data reaches the LLM layer. **ADR 023** governs this (`docs/build/decisions/023-pii-gold-handling.md`).
 
-The view `v_service_dispute_eligible_transactions` is the **only surface** exposed to `sentinel-ai-core`. It explicitly drops:
+The view `v_service_dispute_eligible_transactions` is the **only surface** that `sentinel-ai-core` can read. It drops these columns:
 
 | Dropped column | Reason |
 |---|---|
@@ -132,13 +138,13 @@ The view `v_service_dispute_eligible_transactions` is the **only surface** expos
 | `customer_last_name` | Structurally PII — not needed for dispute eligibility |
 | `customer_credit_score` | Sensitive financial attribute — not relevant to inquiry resolution |
 
-All other columns in `gold_dispute_eligible_transactions` are retained in the view only if they carry no PII signal.
+The view keeps all other columns of `gold_dispute_eligible_transactions` only if they carry no PII signal.
 
 ### 3.3 No external data
 
-The following data sources are explicitly **not used** and are prohibited by REQ-0031:
+The system does **not** use these data sources. REQ-0031 prohibits them:
 
-- Public banking datasets (e.g., CFPB complaint database, Kaggle banking datasets)
+- Public banking datasets (for example, the CFPB complaint database and Kaggle banking datasets)
 - Web-scraped customer reviews or social media data
 - Third-party credit bureau feeds
 - Any real institution's transaction exports
@@ -148,10 +154,10 @@ The following data sources are explicitly **not used** and are prohibited by REQ
 
 ## 4. Requirement Traceability
 
-| Requirement | Status after this document | Notes |
+| Requirement | Status on 2026-10-05 | Notes |
 |---|---|---|
 | REQ-0031 — Approved data, labeled by origin | **Done** | This document is the evidence artifact |
-| REQ-0015 — Repeatable pipeline | In progress | Unblocked by REQ-0031 |
-| REQ-0014 — Analytics data-backed problem | In progress | Unblocked by REQ-0031 |
-| REQ-0054 — Justified external data | Pending | No external data used; requirement is satisfied by absence |
+| REQ-0015 — Repeatable pipeline | **Done** | REQ-0031 unblocked it |
+| REQ-0014 — Analytics data-backed problem | **Done** | REQ-0031 unblocked it |
+| REQ-0054 — Justified external data | **Done** | The system uses no external data. The absence satisfies the requirement |
 | ADR 023 — PII Gold handling | Implemented | `v_service_dispute_eligible_transactions` is live |

@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
+from time import time
 from typing import Any, Union
 
 
@@ -63,6 +64,9 @@ class PendingConfirmation:
     candidate_id: str
     action: str
     category: str
+    # Epoch seconds when the box opened. A confirmation older than
+    # CONFIRM_TTL_S (step.py) never writes; the loop asks again.
+    created_at: float = field(default_factory=time)
 
 
 @dataclass
@@ -129,6 +133,8 @@ class TurnOutput:
     # Explanation reply: a translation key plus verified values, no prose.
     explanation_key: str | None = None
     explanation_values: dict[str, Any] = field(default_factory=dict)
+    # Text reply: the reviewed template variant chosen for this turn.
+    message_key: str | None = None
 
 
 def phase_of(state: ConversationState, output: TurnOutput | None = None) -> Phase:

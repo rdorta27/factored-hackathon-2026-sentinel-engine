@@ -1,0 +1,35 @@
+{
+  "code_hash": "1b887c7c6e511781ed4b95261da581b0e56781c2ec4ff5ff895709110b458def",
+  "data_run": "charge-ranker/data-v1",
+  "data_type": "Simulation: weights fitted on team-generated descriptions of real Gold transactions.",
+  "examples_hash": "c7e2a30f0cf2b41e141126361f88945fbe0c00df91a1799a755bffebbe51b065",
+  "families_seen_in_training": [
+    "direct",
+    "question",
+    "terse"
+  ],
+  "model_sha256": "03b9997bff82fb76eea74e9bb41f6b433cb52aa0772964967882ee0bc3a9e1c7",
+  "penalties_tried": {
+    "0.0001": 0.018588,
+    "0.001": 0.027133,
+    "0.01": 0.082027
+  },
+  "penalty": 0.0001,
+  "run": "charge-ranker/train-v1",
+  "seed": 20261004,
+  "temperature": 0.75,
+  "test_split_read": false,
+  "threshold": 0.505465,
+  "train": {
+    "examples": 5998,
+    "log_loss": 0.019266018773271634,
+    "right_charge_first": 0.9949983327775925
+  },
+  "validation": {
+    "automatic_picks": 0.9996488764044944,
+    "examples": 2848,
+    "max_wrong_automatic_picks": 0.01,
+    "right_charge_first": 0.9971910112359551,
+    "wrong_automatic_picks": 0.0024578651685393258
+  }
+}

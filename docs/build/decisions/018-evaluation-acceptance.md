@@ -105,7 +105,7 @@ The rules and the verdicts above use the component block, so they do not change.
 ## Amendment · validation split and cut-off choice rule (added 2026-10-03)
 
 **Status:** Proposed (accepted only by a `2024Q4-calibration-*` run committed after this text). *Updated 10/4:* [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) applies it (`cutoffs.t_act`, `cutoffs.t_abstain`).
-**Change:** [`router-confidence`](../../../openspec/changes/router-confidence/design.md)
+**Change:** [`router-confidence`](../../../openspec/changes/archive/2026-10-04-router-confidence/design.md)
 
 The router now reports a confidence per label ([016](016-router-models.md#log-probability-spike-added-2026-10-03)). Two cut-offs map that confidence to act, clarify or abstain. Data chooses them, not the prompt, and the choice must not read the sealed set. This amendment fixes the split and the choice rule before any fit. The commit order is the proof.
 
@@ -131,7 +131,7 @@ The acceptance test stays the sealed `eval-v8` measurement, not the validation s
 ## Amendment · sealed v8 measurement for contract v3 (added 2026-10-04)
 
 **Status:** Proposed (accepted only by a `2024Q4-eval-v8` run committed after this text).
-**Change:** [`router-v3`](../../../openspec/changes/router-v3/design.md)
+**Change:** [`router-v3`](../../../openspec/changes/archive/2026-10-05-router-v3/design.md)
 
 This amendment extends the validation and cut-off amendment above. It keeps every gate of `eval-v7` (D4–D7). It is written before any v3 call on development and before the seal. The commit order is the proof.
 
@@ -159,3 +159,15 @@ This amendment extends the validation and cut-off amendment above. It keeps ever
 | Unsafe wording | 0 shown | 0 (absolute gate) |
 
 Slot match on development mixes labelled and unlabelled cases (old cases carry no `expected_slots`), so it stays descriptive: amount 4 of 4 on the labelled cases. The v3 cut-offs are `t_act` 1.0 and `t_abstain` 0.0 ([`2024Q4-calibration-v3`](../../../evidence/evaluation-runs/2024Q4-calibration-v3/summary.json)).
+
+**Development baselines (added 2026-10-05, from task 1.1, before the seal).** From [`2024Q4-dev-v8-v2`](../../../evidence/evaluation-runs/2024Q4-dev-v8-v2/summary.json) (198 development cases, fresh live calls, cap USD 1, spend USD 0.025202 over 190 calls). GLM 5.3 Flash on both routes, reasoning effort low, 400-token cap. Field paths are under `router_v2` unless stated.
+
+| Metric | Baseline | Router v2 |
+|---|---|---|
+| Kind accuracy | 0.5909 | 0.8144 |
+| Paired net vs baseline | — | +41 of 198 (0.2071), interval [0.0758, 0.3333], above zero |
+| Subtype accuracy | — | 0.0 (v2 emits no subtype; descriptive) |
+| Drafts returned / rejected | — | 0 / 0 |
+| Invalid / unavailable | — | 0 / 4 |
+
+V2 misses every `status` case (0.0 on 20 cases). The `status` kind is new in the v3 development set, and prompt v2 never learned it. This stays descriptive: it explains a v2 weakness, and it sets no gate. The v8 verdict still reads the sealed set only.

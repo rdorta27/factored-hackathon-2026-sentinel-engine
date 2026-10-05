@@ -11,11 +11,13 @@ from __future__ import annotations
 
 import json
 import secrets
+import threading
 from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Protocol
 
 from sqlalchemy import Engine, select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session as DbSession
 
 from app.models.dispute_case import DisputeCase
@@ -187,6 +189,10 @@ class CaseTools:
         self.used_tokens: set[str] = set()
         self.open_calls = 0
         self.lookup_failures_left = 0
+        # One case per idempotency key is a store fact, not a process lock:
+        # the lock serializes same-process confirmations, and the unique key
+        # plus the IntegrityError read-back below covers separate processes.
+        self._lock = threading.Lock()
 
     @property
     def by_key(self) -> dict[str, CaseRow]:
@@ -221,30 +227,39 @@ class CaseTools:
         idempotency_key: str,
     ) -> OpenResult:
         self.open_calls += 1
-        existing = self._repo.by_key(idempotency_key)
-        if existing is not None:
-            return OpenResult(status=ToolStatus.OK, record=_record(existing))
-        if not token or not token.strip() or token in self.used_tokens:
-            return OpenResult(status=ToolStatus.REJECTED)
-        self.used_tokens.add(token)
-        gold_row = self._gold.get(candidate_id, self._customer_id)
-        row = CaseRow(
-            case_id=new_case_id(),
-            customer_id=self._customer_id,
-            kind="dispute",
-            status=OPEN,
-            created_at=datetime.now(timezone.utc),
-            transaction_id=candidate_id,
-            amount=gold_row.amount if gold_row else None,
-            currency=gold_row.currency if gold_row else None,
-            merchant=gold_row.merchant if gold_row else None,
-            transaction_date=gold_row.date if gold_row else None,
-            category=category,
-            idempotency_key=idempotency_key,
-            reason=statement or None,
-        )
-        self._repo.add(row)
-        return OpenResult(status=ToolStatus.OK, record=_record(row))
+        with self._lock:
+            existing = self._repo.by_key(idempotency_key)
+            if existing is not None:
+                return OpenResult(status=ToolStatus.OK, record=_record(existing))
+            if not token or not token.strip() or token in self.used_tokens:
+                return OpenResult(status=ToolStatus.REJECTED)
+            self.used_tokens.add(token)
+            gold_row = self._gold.get(candidate_id, self._customer_id)
+            row = CaseRow(
+                case_id=new_case_id(),
+                customer_id=self._customer_id,
+                kind="dispute",
+                status=OPEN,
+                created_at=datetime.now(timezone.utc),
+                transaction_id=candidate_id,
+                amount=gold_row.amount if gold_row else None,
+                currency=gold_row.currency if gold_row else None,
+                merchant=gold_row.merchant if gold_row else None,
+                transaction_date=gold_row.date if gold_row else None,
+                category=category,
+                idempotency_key=idempotency_key,
+                reason=statement or None,
+            )
+            try:
+                self._repo.add(row)
+            except IntegrityError:
+                # Another process won the race on the unique key: read back
+                # the winner instead of opening a second case.
+                existing = self._repo.by_key(idempotency_key)
+                if existing is not None:
+                    return OpenResult(status=ToolStatus.OK, record=_record(existing))
+                raise
+            return OpenResult(status=ToolStatus.OK, record=_record(row))
 
     def lookup_dispute(self, dispute_id: str) -> DisputeRecord | None:
         if self.lookup_failures_left > 0:

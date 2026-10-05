@@ -14,7 +14,7 @@ The router SHALL classify each customer message into exactly one intent
 (`charge`, `missing`, `out_of_scope`, `person`) and detect the reply language
 (`es-419` or `pt-BR`), returning both through `ModelPort.understand`. A request
 for a person and a request out of scope SHALL be distinguished from a charge
-inquiry. Traces to REQ-0001 (P0, In progress) and REQ-0012 (P0, In progress).
+inquiry. Traces to REQ-0001 (P0, Done) and REQ-0012 (P0, Done).
 
 #### Scenario: Charge inquiry is understood
 
@@ -38,7 +38,7 @@ ambiguous or Portuguese turns may be served by different models, without
 changing the loop's behavior or outcomes. An unknown route SHALL fall back to a
 configured default model, never to no model. The rule that assigns a turn to a
 route SHALL be declared in a decision before it is measured, and SHALL be tuned
-on the development split only. Traces to REQ-0019 (P1, In progress) and
+on the development split only. Traces to REQ-0019 (P1, Done) and
 decision 016.
 
 #### Scenario: The route is chosen before the call
@@ -62,7 +62,7 @@ Every understanding call SHALL report its `model`, `route` and `prompt_version`
 through a single describe seam, and the `understand` record SHALL carry those
 real values plus `tokens_in`, `tokens_out` and `cost_usd`. No record SHALL keep
 the mock placeholders once a real model serves. Traces to REQ-0019 (P1,
-Pending) and REQ-0055 (P0, Pending).
+Done) and REQ-0055 (P0, Done).
 
 #### Scenario: Understand record carries identity and cost
 
@@ -84,7 +84,7 @@ charge fields it reasons over SHALL follow the service contract
 (numeric amount, no name, document or credit score). It SHALL NOT send the
 fraud score: the policy engine reads it from Gold, the model never needs it, and
 data the model does not need does not leave for an external provider. Traces to
-REQ-0047 (P0, In progress) and REQ-0033 (P0, Done).
+REQ-0047 (P0, Done) and REQ-0033 (P0, Done).
 
 #### Scenario: No identifier in the request
 
@@ -111,7 +111,7 @@ REQ-0047 (P0, In progress) and REQ-0033 (P0, Done).
 The router SHALL return understanding only. Eligibility, confirmation and every
 write SHALL stay in policy and code, so a model output or an injected
 instruction SHALL have no effect on permissions or on opening a dispute. Traces
-to REQ-0007 (P0, In progress) and REQ-0021 (P0, Done).
+to REQ-0007 (P0, Done) and REQ-0021 (P0, Done).
 
 #### Scenario: Injected instruction cannot open a dispute
 
@@ -127,7 +127,7 @@ to REQ-0007 (P0, In progress) and REQ-0021 (P0, Done).
 
 The system SHALL run with either the prompted router or the keyword baseline
 behind the same port, selected at startup, so the loop and its outcomes do not
-depend on which model serves. Traces to REQ-0032 (P1, In progress).
+depend on which model serves. Traces to REQ-0032 (P1, Done).
 
 #### Scenario: The baseline runs the same loop
 
@@ -147,7 +147,7 @@ response SHALL be keyed by model, prompt version, input and repetition index, so
 two models or two repetitions of the same input never share a recording. Each
 recorded response SHALL carry its `model`, `prompt_version` and repetition, and
 SHALL NOT contain personal data, request headers or credentials. Traces to
-REQ-0028 (P0, Done) and REQ-0019 (P1, In progress).
+REQ-0028 (P0, Done) and REQ-0019 (P1, Done).
 
 #### Scenario: No network call is attempted
 
@@ -183,7 +183,7 @@ handoff, never an unverified answer. Traces to REQ-0021 (P0, Done) and REQ-0026
 
 ### Requirement: Not-mine claim is reported, not decided
 
-The understanding step SHALL report whether the customer explicitly states the charge was not made by them (for example "no fui yo", "alguien usó mi tarjeta", "não fui eu", "clonaram meu cartão"). Saying a charge is not recognized ("no reconozco este cargo", "não reconheço esta cobrança") SHALL NOT count as that claim. The keyword baseline and the prompted router SHALL report it in the same field, in es-419 and pt-BR. The claim SHALL only feed the policy engine; the model SHALL NOT decide the handoff. Traces to REQ-0006 (P0, In progress), REQ-0012 (P0, In progress) and REQ-0033 (P0, Done); decision 25.
+The understanding step SHALL report whether the customer explicitly states the charge was not made by them (for example "no fui yo", "alguien usó mi tarjeta", "não fui eu", "clonaram meu cartão"). Saying a charge is not recognized ("no reconozco este cargo", "não reconheço esta cobrança") SHALL NOT count as that claim. The keyword baseline and the prompted router SHALL report it in the same field, in es-419 and pt-BR. The claim SHALL only feed the policy engine; the model SHALL NOT decide the handoff. Traces to REQ-0006 (P0, Done), REQ-0012 (P0, Done) and REQ-0033 (P0, Done); decision 25.
 
 #### Scenario: Spanish not-mine claim
 
@@ -225,7 +225,7 @@ The `cost_usd` of a live call SHALL be computed from the provider's reported
 token usage and the input and output price of the model that served it, taken
 from a declared price table dated with its source. A model without a declared
 price SHALL fail the call in recording mode rather than use a generic price.
-Traces to REQ-0055 (P0, In progress) and REQ-0057 (P1, In progress).
+Traces to REQ-0055 (P0, Done) and REQ-0057 (P1, Done).
 
 #### Scenario: Two models, two prices
 
@@ -242,7 +242,7 @@ Traces to REQ-0055 (P0, In progress) and REQ-0057 (P1, In progress).
 Each understanding call SHALL request JSON output and SHALL cap the output
 tokens, including any reasoning tokens the provider reports. A reply that is
 not valid JSON after the cap SHALL count as a JSON failure for model selection
-and SHALL degrade safely in the loop. Traces to REQ-0019 (P1, In progress) and
+and SHALL degrade safely in the loop. Traces to REQ-0019 (P1, Done) and
 REQ-0026 (P1, Done).
 
 #### Scenario: Capped reply
@@ -256,7 +256,7 @@ The router SHALL support a prompt version that adds a fixed block of examples
 before the customer message. Every example SHALL be a development case, and the
 example ids SHALL be recorded with the prompt version. The version without
 examples SHALL stay available, so both are measured on the same cases. Traces
-to REQ-0016 (P0, In progress) and REQ-0017 (P0, In progress).
+to REQ-0016 (P0, Done) and REQ-0017 (P0, Done).
 
 #### Scenario: Example block is traceable
 
@@ -295,3 +295,59 @@ When the cut-offs are enabled, a label with confidence at or above `t_act` SHALL
 
 - **WHEN** the setting is off
 - **THEN** the router behaves exactly as v2
+
+### Requirement: Contract v3 reads more without deciding
+
+The router SHALL return, in one call: `kind` (`charge`, `status`, `missing`, `out_of_scope`, `person`), an optional `subtype`, `language`, `not_mine`, optional `slots` (merchant words, a numeric amount, a date phrase, a "twice" flag), an optional `reply_draft` and `confidence`. Every new field SHALL be optional, so v1, v2 and the keyword baseline still fit. The keyword baseline SHALL NOT change. No field SHALL decide a permission, an eligibility, a confirmation or a handoff. Traces to REQ-0002 (P0, Done), REQ-0016 (P0, Done) and REQ-0033 (P0, Done).
+
+#### Scenario: Loan request
+
+- **WHEN** prompt v3 reads "quiero un préstamo"
+- **THEN** the result is `out_of_scope` with subtype `loan`
+
+#### Scenario: Amount in words
+
+- **WHEN** prompt v3 reads "un cobro de mil pesos"
+- **THEN** the amount slot is 1000
+
+#### Scenario: Status of a charge
+
+- **WHEN** prompt v3 reads "quiero ver el estado de mi último cargo"
+- **THEN** the result is `status`
+
+#### Scenario: The baseline is unchanged
+
+- **WHEN** the baseline reads any case of `2024Q4-eval-v7`
+- **THEN** its label is the same as in that run
+
+### Requirement: Drafts carry placeholders and pass a validator
+
+A `reply_draft` SHALL contain no value: merchants, amounts, dates and statuses SHALL appear only as placeholders that code fills from verified facts. A validator SHALL reject a draft with a digit outside a placeholder, an unknown placeholder, a name or date not in the verified facts, a promise, a wrong language or a length over the limit, and SHALL record the reason. A rejected draft SHALL fall back to the template. Turns that decide SHALL never use a draft. Traces to REQ-0003 (P0, Done), REQ-0005 (P0, Done) and REQ-0021 (P0, Done); decision 024.
+
+#### Scenario: Draft with an invented amount
+
+- **WHEN** a draft says "te devolveremos 500 pesos"
+- **THEN** the validator rejects it and the reply uses the template
+
+#### Scenario: Draft on a decision turn
+
+- **WHEN** the turn shows a confirm box
+- **THEN** the reply uses the template and ignores the draft
+
+### Requirement: Prompt v3 uses development examples only
+
+Prompt v3 SHALL define each intent, subtype and slot in one line, and SHALL use only development examples, whose ids are recorded with the version. Versions v1 and v2 SHALL stay available. Traces to REQ-0016 (P0, Done) and REQ-0017 (P0, Done).
+
+#### Scenario: Examples are development cases
+
+- **WHEN** v3 serves a call
+- **THEN** the record names v3 and every example id is in the development split
+
+### Requirement: v3 is served only after passing the amended rules
+
+The service SHALL serve v3 by default only after `2024Q4-eval-v8` is frozen and v3 meets every rule of the 018 amendment, including the v7 gates and zero unsafe wording. Otherwise v2 SHALL stay the default. Serving v3 SHALL fail at startup if its examples do not load, and a test SHALL pin the served example ids to the v8 summary. Traces to REQ-0016 (P0, Done) and REQ-0020 (P0, Done); decisions 016 and 018.
+
+#### Scenario: v3 fails a rule
+
+- **WHEN** v3 misses a gate in `eval-v8`
+- **THEN** v2 stays the default and the report states the failed rule

@@ -24,7 +24,7 @@ The policy is in `sentinel-ai-core/config/policy/{mx,co,ar}.yaml`, with `synthet
 
 | What the customer sees | Where it lives | Origin | State |
 |---|---|---|---|
-| "Outside the 90-day window" | `window_days: 90` in the three country files | team assumption, source unconfirmed ([003](../build/decisions/003-disputes-flow.md)); the team's own Gold view filters on the same 90 days ([sizing](../sizing_capacity.md#22-eligible-dispute-volume-90-day-window)), so it agrees with the policy but is not an independent source | same value for all three countries |
+| "Outside the 90-day window" | `window_days: 90` in the three country files | team assumption, source unconfirmed ([003](../build/decisions/003-disputes-flow.md)); the team's own Gold view filters on the same 90 days ([sizing](../sizing-capacity.md#22-eligible-dispute-volume-90-day-window)), so it agrees with the policy but is not an independent source | same value for all three countries |
 | "Because of the amount, an advisor will review" | `thresholds.high_amount` per currency | p95 of 2024Q4 charges ([011](../build/decisions/011-high-amount-threshold.md)) | a workload choice, not a business rule; MXN has no value |
 | A handoff on suspected fraud | `thresholds.fraud_score` and the "not me" wording ([010](../build/decisions/010-fraud-handoff-rule.md)) | p95 of 2024Q4 scores | the customer never sees the word fraud |
 | Which statuses can be disputed | `statuses:` in the country files | team decision | pending, reversed and declined are not disputable |

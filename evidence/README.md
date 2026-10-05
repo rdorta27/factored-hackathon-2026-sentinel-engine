@@ -30,12 +30,14 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Question | Current run | Field to cite |
 |---|---|---|
 | Which flow did we choose, and why? | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | `disputes.*`, `accounts.*` |
+| How big is the problem behind the flow? | [`problem/dev-v1`](problem/dev-v1/README.md) | `reasons.*`, `demand.*`, `hours.*`, `missing.*` |
 | Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `component.paired.*`, `component.versions.<version>.breakdown.*` |
 | How many cases does the system resolve safely? | [`evaluation-runs/2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.<version>.*` |
 | What are the confidence cut-offs? | [`evaluation-runs/2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | `cutoffs.t_act`, `cutoffs.t_abstain` |
-| Does the system resist attacks? | [`adversarial/20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
+| Does the system resist attacks? | [`adversarial/20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
 | What does monitoring by country show? | [`monitoring/2024Q4-resolution-v2-replay`](monitoring/2024Q4-resolution-v2-replay/summary.json) | `groups.<country>.<language>.*` |
 | What does the ROI projection use? | [`roi/2023-2026-callcenter-v1`](roi/2023-2026-callcenter-v1/summary.json) | `transactional_calls.*` |
+| Does the learned charge selector beat the rules? | [`charge-ranker/test-v1`](charge-ranker/test-v1/summary.json) | `configurations.<name>.all.*` |
 | Can the data support a charge investigation? | [`customer-360/dev-v1`](customer-360/dev-v1/README.md) and [`customer-360/dev-signals-v1`](customer-360/dev-signals-v1/README.md) | `balance.safe_to_show`, `complaints.charge_linkable`, `investigation.has_signal` |
 
 ## Flows
@@ -49,6 +51,26 @@ Why the team chose transaction disputes. Script: `measure_flow.py`. Data type: *
 | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | **Current** | Univariate learnability audit for the four targets | REQ-0014, REQ-0016, REQ-0017 |
 
 The raw data for these runs is not in the repository. `verify` needs the data at `evidence/flows/data/`.
+
+## Problem
+
+The measured problem behind the chosen flow. Script: `measure_problem.py`. Data type: **Dataset**, window the development zone (2023-06-17 to 2025-07-01), held-out cut 2025-07-01.
+
+| Run | Status | What it holds | Requirements |
+|---|---|---|---|
+| [`problem/dev-v1`](problem/dev-v1/README.md) | **Current** | First-contact resolution by reason, calls a day by workflow (mean, busy day, highest day), agent hours a month and missing values | REQ-0014, REQ-0053 |
+
+The reason-to-workflow mapping is in the run README and was committed before the first number. The raw data is not in the repository; `verify` needs the raw call files (see the run `MANIFEST.md`).
+
+## Charge selector
+
+The learned charge selector ([025](../docs/build/decisions/025-charge-selector.md)). Scripts: `sentinel-ai-core/eval/build_charge_splits.py`, `train_charge_ranker.py`, `eval_charge_ranker.py`. Data type: **Simulation**. The transactions are real Gold rows. The descriptions are team-generated. The runs need the local Gold file.
+
+| Run | Status | What it holds | Requirements |
+|---|---|---|---|
+| [`charge-ranker/data-v1`](charge-ranker/data-v1/README.md) | **Current** | Frozen splits: counts, hashes, seed, families | REQ-0017 |
+| [`charge-ranker/train-v1`](charge-ranker/train-v1/README.md) | **Current** | The weights file and its hash, the threshold, the validation result | REQ-0016, REQ-0017, REQ-0019 |
+| [`charge-ranker/test-v1`](charge-ranker/test-v1/README.md) | **Current** | Four configurations on the test split, measured once | REQ-0016, REQ-0017, REQ-0020 |
 
 ## Evaluation inputs
 
@@ -73,17 +95,23 @@ SENTINEL_LLM_STRONG_MODEL=accounts/fireworks/models/glm-5p3-flash \
 python3 -m eval.run verify <run-id>
 ```
 
-| Run | Kind | Status | What it measures | `verify` on 2026-10-04 | Requirements |
+| Run | Kind | Status | What it measures | `verify` on 2026-10-05 | Requirements |
 |---|---|---|---|---|---|
-| `2024Q4-eval-v1` to `2024Q4-eval-v6` | development | Superseded | Runner development. The router used baseline-mirrored fixtures, so the difference is zero by construction. | not checked | REQ-0016 |
-| [`2024Q4-select-v1`](evaluation-runs/2024Q4-select-v1/summary.json), [`2024Q4-select-v2`](evaluation-runs/2024Q4-select-v2/summary.json) | selection | Current (v2) | Model selection on the development split only ([016](../docs/build/decisions/016-router-models.md)) | not checked | REQ-0016, REQ-0020 |
+| `2024Q4-eval-v1` to `2024Q4-eval-v6` | development | Superseded | Runner development. The router used baseline-mirrored fixtures, so the difference is zero by construction. | not checked (`eval-v6` was refused: the case set differs from the one measured) | REQ-0016 |
+| [`2024Q4-select-v1`](evaluation-runs/2024Q4-select-v1/summary.json), [`2024Q4-select-v2`](evaluation-runs/2024Q4-select-v2/summary.json) | selection | Current (v2) | Model selection on the development split only ([016](../docs/build/decisions/016-router-models.md)) | refused: the case set differs from the one measured | REQ-0016, REQ-0020 |
 | [`2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | held-out | **Current** | Sealed held-out: 405 cases, baseline against router v1 and v2, attacks, noisy twins, system replay | DIFFERS: the component block matches; the system block moved with the loop ([metrics report §9](../docs/build/metrics-report.md#9-reproduction)) | REQ-0016, REQ-0017, REQ-0020, REQ-0022, REQ-0024 |
 | [`2024Q4-resolution-v1`](evaluation-runs/2024Q4-resolution-v1/summary.json) | resolution | Superseded | First multi-turn run that can resolve a case: 56 cases in 14 situations ([022](../docs/build/decisions/022-resolution-acceptance.md)) | matches | REQ-0055 |
 | [`2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | resolution | **Current** | The same set after the chat-loop change, with breakdown by variant and country | matches | REQ-0055, REQ-0024 |
-| [`2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | calibration | **Current** | Confidence cut-offs on the validation split (n = 26, descriptive) | matches | REQ-0002, REQ-0016 |
-| [`2024Q4-select-v3`](evaluation-runs/2024Q4-select-v3/summary.json), [`2024Q4-select-v3c`](evaluation-runs/2024Q4-select-v3c/summary.json) | selection | Superseded | Prompt v3 on development: 8 examples, then the refined prompt. Kept for the iteration history. | not checked | REQ-0016, REQ-0020 |
-| [`2024Q4-select-v3d`](evaluation-runs/2024Q4-select-v3d/summary.json) | selection | **Current (v3)** | Prompt v3 on development (198 cases, 32-example matrix): kind 0.9899, subtype 1.0, 94 drafts with 0 rejected. Offline replay of v3c with the kind-key confidence fix. | not checked | REQ-0016, REQ-0020 |
-| [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | not checked | REQ-0002, REQ-0016 |
+| [`2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | calibration | **Current** | Confidence cut-offs on the validation split (n = 26, descriptive) | DIFFERS: the development cases changed on 2026-10-04 (`a17ed3a`), after the run | REQ-0002, REQ-0016 |
+| [`2024Q4-select-v3`](evaluation-runs/2024Q4-select-v3/summary.json), [`2024Q4-select-v3c`](evaluation-runs/2024Q4-select-v3c/summary.json) | selection | Superseded | Prompt v3 on development: 8 examples, then the refined prompt. Kept for the iteration history. | refused: the case set differs from the one measured | REQ-0016, REQ-0020 |
+| [`2024Q4-select-v3d`](evaluation-runs/2024Q4-select-v3d/summary.json) | selection | **Current (v3)** | Prompt v3 on development (198 cases, 32-example matrix): kind 0.9899, subtype 1.0, 94 drafts with 0 rejected. Offline replay of v3c with the kind-key confidence fix. | refused: the case set differs from the one measured | REQ-0016, REQ-0020 |
+| [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | DIFFERS: the development cases changed on 2026-10-04 (`a17ed3a`), after the run | REQ-0002, REQ-0016 |
+| [`2024Q4-dev-v8-v2`](evaluation-runs/2024Q4-dev-v8-v2/summary.json) | development | **Current (v8)** | Baseline and router v2 on the router-v3 development split (198 cases, fresh live calls, cap USD 1): baseline kind 0.5909, v2 kind 0.8144, paired net +41, spend USD 0.025202 over 190 calls | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-train-v1`](evaluation-runs/2024Q4-train-v1/summary.json) | training | **Current** | The trained baseline: TF-IDF on character n-grams and a logistic regression. It trains on the development split. It tunes C on the validation split (`validation.by_c`, descriptive). The run holds the split ids, the model file `model.json` and its hash (`model.sha256`). It reads no held-out case. | matches (`python3 -m eval.run verify 2024Q4-train-v1`, scikit-learn 1.9.1 only) | REQ-0016, REQ-0019 |
+| [`2024Q4-rehearsal-v8`](evaluation-runs/2024Q4-rehearsal-v8/summary.json) | rehearsal | **Current (v8)** | Every candidate on the development split with the v8 metrics and the spend cap: v3 kind 0.9899, v2 kind 0.8182, trained baseline 1.0 (trains on dev). Judged nothing. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-ablation-v8`](evaluation-runs/2024Q4-ablation-v8/summary.json) | ablation | **Current (v8)** | Prompt v3 with 0, 4, 8 and 32 examples on the same development cases: kind 0.9848, 0.9747, 0.9798, 0.9899. Picks nothing. | not checked | REQ-0016 |
+
+On 2026-10-05, `verify` matches for `resolution-v1`, `resolution-v2` and `train-v1` only. `eval-v7` and both calibration runs differ from their frozen summary. The selection runs and `eval-v6` are refused, because the case set is not the one that the run measured. A frozen run is never edited. The cause of each difference is not yet confirmed.
 
 ## Adversarial
 
@@ -91,7 +119,8 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 
 | Run | Status | Attempted | Unsafe | No defense yet |
 |---|---|---|---|---|
-| [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | `20261002T195516Z` | Superseded | 42 | 0/42 | 3 |
 | `20261002T120107Z`, `20261001T222341Z` | Superseded | 36 | 0/36 | 3 |

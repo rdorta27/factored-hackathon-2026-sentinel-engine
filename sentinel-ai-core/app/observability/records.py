@@ -11,7 +11,7 @@ STEPS = frozenset({"understand", "decide", "act", "verify", "escalate", "session
 OUTCOMES = frozenset({"ok", "rejected", "failed", "timeout"})
 LANGUAGES = frozenset({"es-419", "pt-BR"})
 COUNTRIES = frozenset({"MX", "CO", "AR"})
-LABELS = frozenset({"charge", "missing", "out_of_scope", "person"})
+LABELS = frozenset({"charge", "status", "missing", "out_of_scope", "person"})
 HEX16 = re.compile(r"^[0-9a-f]{16}$")
 _CUSTOMER_ID = re.compile(r"CUST-\d+|CLI-[A-Z0-9]{8,}")
 _IPV4 = re.compile(r"\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b")
@@ -57,6 +57,11 @@ class StepRecord:
     # Country policy file version and whether it is the team's synthetic policy.
     policy_version: str | None = None
     policy_synthetic: bool | None = None
+    # Hash chain (REQ-0025, REQ-0029): the hash of the previous record and
+    # this record's own hash. The recorder fills both on emit; readers use
+    # ``app.observability.chain.verify_chain`` to find a break.
+    prev_hash: str = ""
+    record_hash: str = ""
 
     def __post_init__(self) -> None:
         if not HEX16.match(self.trace_id):

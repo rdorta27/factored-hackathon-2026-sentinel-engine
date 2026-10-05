@@ -23,7 +23,7 @@ A search on 2026-10-02 read what the regulators and the card networks publish. T
 - Colombia: no fixed window found.
 - Visa and Mastercard: time limits between banks, from secondary sources. They are not the window of the customer.
 
-The engine counts days from the transaction date. It has no bank obligation. Gold filters the eligible volume on the same 90 days ([sizing](../../sizing_capacity.md#22-eligible-dispute-volume-90-day-window)). So a change of the window also changes the volume that the analysis uses.
+The engine counts days from the transaction date. It has no bank obligation. Gold filters the eligible volume on the same 90 days ([sizing](../../sizing-capacity.md#22-eligible-dispute-volume-90-day-window)). So a change of the window also changes the volume that the analysis uses.
 
 ## Options
 
