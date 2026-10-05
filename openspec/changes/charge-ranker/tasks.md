@@ -24,9 +24,9 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 4. Measure and serve
 
-- [ ] 4.1 Wait for `chat-start` to merge (not for the code freeze), then measure the test set once. The result decides the switch before the freeze. Freeze the run. If `chat-start` is late, measure `rules_fixed` only and say so. Evidence: `evidence/charge-ranker/test-v1/summary.json`.
+- [x] 4.1 Wait for `chat-start` to merge (not for the code freeze), then measure the test set once. The result decides the switch before the freeze. Freeze the run. If `chat-start` is late, measure `rules_fixed` only and say so. Evidence: `evidence/charge-ranker/test-v1/summary.json`.
 - [x] 4.2 Add the switch `SENTINEL_CHARGE_RANKER` (off by default) and a test that "off" changes nothing. Turn it on by default only if the serving rule passes and the owner approves. Evidence: tests and the decision text.
 
 ## 5. Documents
 
-- [ ] 5.1 Write `docs/rationale/charge-selector.md` in plain English. Update the ML area, the evidence index and the evidence of REQ-0016 and REQ-0017. Evidence: those files.
+- [x] 5.1 Write `docs/rationale/charge-selector.md` in plain English. Update the ML area, the evidence index and the evidence of REQ-0016 and REQ-0017. Evidence: those files.

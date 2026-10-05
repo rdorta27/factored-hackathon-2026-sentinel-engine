@@ -73,5 +73,6 @@ For this reason the cases are **team-written text in es-419 and pt-BR**, declare
 | Experiment log | Done | One folder per run in [`evidence/evaluation-runs/`](../../../evidence/evaluation-runs/) ([013](../decisions/013-experiment-tracking.md)) |
 | Adversarial set and results | Done | [`evidence/adversarial/`](../../../evidence/adversarial/) and the attack block of `eval-v7` |
 | Confidence cut-offs | Done, off by default | [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) |
+| Charge selector against the rules, with exact labels | Done, off by default | [`charge-ranker/test-v1`](../../../evidence/charge-ranker/test-v1/summary.json), [025](../decisions/025-charge-selector.md), [rationale](../../rationale/charge-selector.md) |
 | Greetings and small talk | Open | [router v3 plan](../../../team/router-v3-plan.md) |
 | A trained baseline (TF-IDF and logistic regression) | Open | Planned. It gives a stronger comparison than keywords. |

@@ -1,0 +1,1744 @@
+{
+  "code_hash": "9c91f361b9db645cc9078a31f43d06a64d12fd5edaae11028187fa75bb884a67",
+  "configurations": {
+    "LLM": {
+      "all": {
+        "asks": {
+          "count": 116,
+          "range_95": [
+            0.5126,
+            0.6436
+          ],
+          "rate": 0.58
+        },
+        "n": 200,
+        "right_first": {
+          "count": 178,
+          "range_95": [
+            0.8439,
+            0.9337
+          ],
+          "rate": 0.89
+        },
+        "right_in_top3": {
+          "count": 200,
+          "range_95": [
+            1.0,
+            1.0
+          ],
+          "rate": 1.0
+        },
+        "wrong_automatic": {
+          "count": 0,
+          "range_95": [
+            0.0,
+            0.0
+          ],
+          "rate": 0.0
+        }
+      },
+      "breakdowns": {
+        "amount_in_words": {
+          "no": {
+            "asks": {
+              "count": 98,
+              "range_95": [
+                0.4696,
+                0.6087
+              ],
+              "rate": 0.5385
+            },
+            "n": 182,
+            "right_first": {
+              "count": 162,
+              "range_95": [
+                0.8378,
+                0.9385
+              ],
+              "rate": 0.8901
+            },
+            "right_in_top3": {
+              "count": 182,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 18,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "n": 18,
+            "right_first": {
+              "count": 16,
+              "range_95": [
+                0.7222,
+                1.0
+              ],
+              "rate": 0.8889
+            },
+            "right_in_top3": {
+              "count": 18,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "family": {
+          "direct": {
+            "asks": {
+              "count": 22,
+              "range_95": [
+                0.5667,
+                0.875
+              ],
+              "rate": 0.7333
+            },
+            "n": 30,
+            "right_first": {
+              "count": 23,
+              "range_95": [
+                0.5806,
+                0.931
+              ],
+              "rate": 0.7667
+            },
+            "right_in_top3": {
+              "count": 30,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "informal": {
+            "asks": {
+              "count": 19,
+              "range_95": [
+                0.3023,
+                0.5814
+              ],
+              "rate": 0.4419
+            },
+            "n": 43,
+            "right_first": {
+              "count": 33,
+              "range_95": [
+                0.6279,
+                0.8837
+              ],
+              "rate": 0.7674
+            },
+            "right_in_top3": {
+              "count": 43,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "question": {
+            "asks": {
+              "count": 31,
+              "range_95": [
+                0.5435,
+                0.8043
+              ],
+              "rate": 0.6739
+            },
+            "n": 46,
+            "right_first": {
+              "count": 44,
+              "range_95": [
+                0.8913,
+                1.0
+              ],
+              "rate": 0.9565
+            },
+            "right_in_top3": {
+              "count": 46,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "story": {
+            "asks": {
+              "count": 17,
+              "range_95": [
+                0.2895,
+                0.6053
+              ],
+              "rate": 0.4474
+            },
+            "n": 38,
+            "right_first": {
+              "count": 37,
+              "range_95": [
+                0.9211,
+                1.0
+              ],
+              "rate": 0.9737
+            },
+            "right_in_top3": {
+              "count": 38,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "terse": {
+            "asks": {
+              "count": 27,
+              "range_95": [
+                0.4884,
+                0.7727
+              ],
+              "rate": 0.6279
+            },
+            "n": 43,
+            "right_first": {
+              "count": 41,
+              "range_95": [
+                0.8837,
+                1.0
+              ],
+              "rate": 0.9535
+            },
+            "right_in_top3": {
+              "count": 43,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "locale": {
+          "es-419": {
+            "asks": {
+              "count": 69,
+              "range_95": [
+                0.5686,
+                0.7524
+              ],
+              "rate": 0.6635
+            },
+            "n": 104,
+            "right_first": {
+              "count": 93,
+              "range_95": [
+                0.8269,
+                0.9515
+              ],
+              "rate": 0.8942
+            },
+            "right_in_top3": {
+              "count": 104,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "pt-BR": {
+            "asks": {
+              "count": 47,
+              "range_95": [
+                0.3895,
+                0.5895
+              ],
+              "rate": 0.4896
+            },
+            "n": 96,
+            "right_first": {
+              "count": 85,
+              "range_95": [
+                0.8144,
+                0.9479
+              ],
+              "rate": 0.8854
+            },
+            "right_in_top3": {
+              "count": 96,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "mentions_merchant": {
+          "no": {
+            "asks": {
+              "count": 93,
+              "range_95": [
+                0.4817,
+                0.6341
+              ],
+              "rate": 0.5636
+            },
+            "n": 165,
+            "right_first": {
+              "count": 145,
+              "range_95": [
+                0.8232,
+                0.9286
+              ],
+              "rate": 0.8788
+            },
+            "right_in_top3": {
+              "count": 165,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 23,
+              "range_95": [
+                0.5143,
+                0.8
+              ],
+              "rate": 0.6571
+            },
+            "n": 35,
+            "right_first": {
+              "count": 33,
+              "range_95": [
+                0.8571,
+                1.0
+              ],
+              "rate": 0.9429
+            },
+            "right_in_top3": {
+              "count": 35,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        }
+      }
+    },
+    "learned": {
+      "all": {
+        "asks": {
+          "count": 1828,
+          "range_95": [
+            0.2928,
+            0.3186
+          ],
+          "rate": 0.3059
+        },
+        "n": 5976,
+        "right_first": {
+          "count": 5618,
+          "range_95": [
+            0.9336,
+            0.9458
+          ],
+          "rate": 0.9401
+        },
+        "right_in_top3": {
+          "count": 5951,
+          "range_95": [
+            0.9941,
+            0.9973
+          ],
+          "rate": 0.9958
+        },
+        "wrong_automatic": {
+          "count": 7,
+          "range_95": [
+            0.0003,
+            0.0022
+          ],
+          "rate": 0.0012
+        }
+      },
+      "breakdowns": {
+        "amount_in_words": {
+          "no": {
+            "asks": {
+              "count": 1340,
+              "range_95": [
+                0.2465,
+                0.2719
+              ],
+              "rate": 0.2589
+            },
+            "n": 5175,
+            "right_first": {
+              "count": 4905,
+              "range_95": [
+                0.9411,
+                0.9538
+              ],
+              "rate": 0.9478
+            },
+            "right_in_top3": {
+              "count": 5158,
+              "range_95": [
+                0.995,
+                0.9983
+              ],
+              "rate": 0.9967
+            },
+            "wrong_automatic": {
+              "count": 7,
+              "range_95": [
+                0.0004,
+                0.0025
+              ],
+              "rate": 0.0014
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 488,
+              "range_95": [
+                0.5764,
+                0.6412
+              ],
+              "rate": 0.6092
+            },
+            "n": 801,
+            "right_first": {
+              "count": 713,
+              "range_95": [
+                0.8695,
+                0.9121
+              ],
+              "rate": 0.8901
+            },
+            "right_in_top3": {
+              "count": 793,
+              "range_95": [
+                0.9827,
+                0.9962
+              ],
+              "rate": 0.99
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "family": {
+          "direct": {
+            "asks": {
+              "count": 361,
+              "range_95": [
+                0.2797,
+                0.3331
+              ],
+              "rate": 0.3065
+            },
+            "n": 1178,
+            "right_first": {
+              "count": 1114,
+              "range_95": [
+                0.9332,
+                0.9578
+              ],
+              "rate": 0.9457
+            },
+            "right_in_top3": {
+              "count": 1178,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 2,
+              "range_95": [
+                0.0,
+                0.0043
+              ],
+              "rate": 0.0017
+            }
+          },
+          "informal": {
+            "asks": {
+              "count": 366,
+              "range_95": [
+                0.2895,
+                0.3417
+              ],
+              "rate": 0.3152
+            },
+            "n": 1161,
+            "right_first": {
+              "count": 1084,
+              "range_95": [
+                0.9191,
+                0.9472
+              ],
+              "rate": 0.9337
+            },
+            "right_in_top3": {
+              "count": 1156,
+              "range_95": [
+                0.9915,
+                0.9991
+              ],
+              "rate": 0.9957
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "question": {
+            "asks": {
+              "count": 361,
+              "range_95": [
+                0.2712,
+                0.3252
+              ],
+              "rate": 0.2981
+            },
+            "n": 1211,
+            "right_first": {
+              "count": 1137,
+              "range_95": [
+                0.9252,
+                0.9524
+              ],
+              "rate": 0.9389
+            },
+            "right_in_top3": {
+              "count": 1203,
+              "range_95": [
+                0.9877,
+                0.9983
+              ],
+              "rate": 0.9934
+            },
+            "wrong_automatic": {
+              "count": 2,
+              "range_95": [
+                0.0,
+                0.0041
+              ],
+              "rate": 0.0017
+            }
+          },
+          "story": {
+            "asks": {
+              "count": 356,
+              "range_95": [
+                0.2754,
+                0.3305
+              ],
+              "rate": 0.3017
+            },
+            "n": 1180,
+            "right_first": {
+              "count": 1120,
+              "range_95": [
+                0.9352,
+                0.9604
+              ],
+              "rate": 0.9492
+            },
+            "right_in_top3": {
+              "count": 1175,
+              "range_95": [
+                0.9915,
+                0.9992
+              ],
+              "rate": 0.9958
+            },
+            "wrong_automatic": {
+              "count": 3,
+              "range_95": [
+                0.0,
+                0.0058
+              ],
+              "rate": 0.0025
+            }
+          },
+          "terse": {
+            "asks": {
+              "count": 384,
+              "range_95": [
+                0.2849,
+                0.3357
+              ],
+              "rate": 0.3082
+            },
+            "n": 1246,
+            "right_first": {
+              "count": 1163,
+              "range_95": [
+                0.9194,
+                0.9465
+              ],
+              "rate": 0.9334
+            },
+            "right_in_top3": {
+              "count": 1239,
+              "range_95": [
+                0.9897,
+                0.9984
+              ],
+              "rate": 0.9944
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "locale": {
+          "es-419": {
+            "asks": {
+              "count": 956,
+              "range_95": [
+                0.3083,
+                0.3407
+              ],
+              "rate": 0.3249
+            },
+            "n": 2942,
+            "right_first": {
+              "count": 2762,
+              "range_95": [
+                0.93,
+                0.9471
+              ],
+              "rate": 0.9388
+            },
+            "right_in_top3": {
+              "count": 2928,
+              "range_95": [
+                0.9925,
+                0.9976
+              ],
+              "rate": 0.9952
+            },
+            "wrong_automatic": {
+              "count": 3,
+              "range_95": [
+                0.0,
+                0.0024
+              ],
+              "rate": 0.001
+            }
+          },
+          "pt-BR": {
+            "asks": {
+              "count": 872,
+              "range_95": [
+                0.2716,
+                0.3032
+              ],
+              "rate": 0.2874
+            },
+            "n": 3034,
+            "right_first": {
+              "count": 2856,
+              "range_95": [
+                0.9336,
+                0.95
+              ],
+              "rate": 0.9413
+            },
+            "right_in_top3": {
+              "count": 3023,
+              "range_95": [
+                0.9941,
+                0.9984
+              ],
+              "rate": 0.9964
+            },
+            "wrong_automatic": {
+              "count": 4,
+              "range_95": [
+                0.0003,
+                0.0026
+              ],
+              "rate": 0.0013
+            }
+          }
+        },
+        "mentions_merchant": {
+          "no": {
+            "asks": {
+              "count": 1526,
+              "range_95": [
+                0.3025,
+                0.3299
+              ],
+              "rate": 0.3167
+            },
+            "n": 4818,
+            "right_first": {
+              "count": 4523,
+              "range_95": [
+                0.9321,
+                0.9454
+              ],
+              "rate": 0.9388
+            },
+            "right_in_top3": {
+              "count": 4798,
+              "range_95": [
+                0.994,
+                0.9975
+              ],
+              "rate": 0.9958
+            },
+            "wrong_automatic": {
+              "count": 6,
+              "range_95": [
+                0.0004,
+                0.0023
+              ],
+              "rate": 0.0012
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 302,
+              "range_95": [
+                0.2357,
+                0.2866
+              ],
+              "rate": 0.2608
+            },
+            "n": 1158,
+            "right_first": {
+              "count": 1095,
+              "range_95": [
+                0.9321,
+                0.9594
+              ],
+              "rate": 0.9456
+            },
+            "right_in_top3": {
+              "count": 1153,
+              "range_95": [
+                0.9913,
+                0.9991
+              ],
+              "rate": 0.9957
+            },
+            "wrong_automatic": {
+              "count": 1,
+              "range_95": [
+                0.0,
+                0.0026
+              ],
+              "rate": 0.0009
+            }
+          }
+        }
+      }
+    },
+    "rules_fixed": {
+      "all": {
+        "asks": {
+          "count": 2805,
+          "range_95": [
+            0.457,
+            0.4826
+          ],
+          "rate": 0.4694
+        },
+        "n": 5976,
+        "right_first": {
+          "count": 5520,
+          "range_95": [
+            0.9167,
+            0.9302
+          ],
+          "rate": 0.9237
+        },
+        "right_in_top3": {
+          "count": 5946,
+          "range_95": [
+            0.9931,
+            0.9965
+          ],
+          "rate": 0.995
+        },
+        "wrong_automatic": {
+          "count": 0,
+          "range_95": [
+            0.0,
+            0.0
+          ],
+          "rate": 0.0
+        }
+      },
+      "breakdowns": {
+        "amount_in_words": {
+          "no": {
+            "asks": {
+              "count": 2046,
+              "range_95": [
+                0.3809,
+                0.4089
+              ],
+              "rate": 0.3954
+            },
+            "n": 5175,
+            "right_first": {
+              "count": 4844,
+              "range_95": [
+                0.9289,
+                0.9425
+              ],
+              "rate": 0.936
+            },
+            "right_in_top3": {
+              "count": 5156,
+              "range_95": [
+                0.9946,
+                0.9979
+              ],
+              "rate": 0.9963
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 759,
+              "range_95": [
+                0.9329,
+                0.9626
+              ],
+              "rate": 0.9476
+            },
+            "n": 801,
+            "right_first": {
+              "count": 676,
+              "range_95": [
+                0.819,
+                0.8697
+              ],
+              "rate": 0.8439
+            },
+            "right_in_top3": {
+              "count": 790,
+              "range_95": [
+                0.9786,
+                0.9938
+              ],
+              "rate": 0.9863
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "family": {
+          "direct": {
+            "asks": {
+              "count": 559,
+              "range_95": [
+                0.4463,
+                0.5038
+              ],
+              "rate": 0.4745
+            },
+            "n": 1178,
+            "right_first": {
+              "count": 1095,
+              "range_95": [
+                0.9134,
+                0.9437
+              ],
+              "rate": 0.9295
+            },
+            "right_in_top3": {
+              "count": 1177,
+              "range_95": [
+                0.9974,
+                1.0
+              ],
+              "rate": 0.9992
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "informal": {
+            "asks": {
+              "count": 538,
+              "range_95": [
+                0.4348,
+                0.4909
+              ],
+              "rate": 0.4634
+            },
+            "n": 1161,
+            "right_first": {
+              "count": 1064,
+              "range_95": [
+                0.9008,
+                0.9315
+              ],
+              "rate": 0.9165
+            },
+            "right_in_top3": {
+              "count": 1155,
+              "range_95": [
+                0.9906,
+                0.9983
+              ],
+              "rate": 0.9948
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "question": {
+            "asks": {
+              "count": 555,
+              "range_95": [
+                0.4308,
+                0.4882
+              ],
+              "rate": 0.4583
+            },
+            "n": 1211,
+            "right_first": {
+              "count": 1112,
+              "range_95": [
+                0.9028,
+                0.9346
+              ],
+              "rate": 0.9182
+            },
+            "right_in_top3": {
+              "count": 1202,
+              "range_95": [
+                0.9867,
+                0.9975
+              ],
+              "rate": 0.9926
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "story": {
+            "asks": {
+              "count": 562,
+              "range_95": [
+                0.4482,
+                0.5055
+              ],
+              "rate": 0.4763
+            },
+            "n": 1180,
+            "right_first": {
+              "count": 1105,
+              "range_95": [
+                0.9214,
+                0.949
+              ],
+              "rate": 0.9364
+            },
+            "right_in_top3": {
+              "count": 1175,
+              "range_95": [
+                0.9915,
+                0.9992
+              ],
+              "rate": 0.9958
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "terse": {
+            "asks": {
+              "count": 591,
+              "range_95": [
+                0.4475,
+                0.5028
+              ],
+              "rate": 0.4743
+            },
+            "n": 1246,
+            "right_first": {
+              "count": 1144,
+              "range_95": [
+                0.9027,
+                0.9335
+              ],
+              "rate": 0.9181
+            },
+            "right_in_top3": {
+              "count": 1237,
+              "range_95": [
+                0.9873,
+                0.9976
+              ],
+              "rate": 0.9928
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "locale": {
+          "es-419": {
+            "asks": {
+              "count": 1457,
+              "range_95": [
+                0.4759,
+                0.5124
+              ],
+              "rate": 0.4952
+            },
+            "n": 2942,
+            "right_first": {
+              "count": 2718,
+              "range_95": [
+                0.9135,
+                0.9328
+              ],
+              "rate": 0.9239
+            },
+            "right_in_top3": {
+              "count": 2926,
+              "range_95": [
+                0.9918,
+                0.9973
+              ],
+              "rate": 0.9946
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "pt-BR": {
+            "asks": {
+              "count": 1348,
+              "range_95": [
+                0.4271,
+                0.4611
+              ],
+              "rate": 0.4443
+            },
+            "n": 3034,
+            "right_first": {
+              "count": 2802,
+              "range_95": [
+                0.9139,
+                0.9336
+              ],
+              "rate": 0.9235
+            },
+            "right_in_top3": {
+              "count": 3020,
+              "range_95": [
+                0.9928,
+                0.9977
+              ],
+              "rate": 0.9954
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "mentions_merchant": {
+          "no": {
+            "asks": {
+              "count": 2344,
+              "range_95": [
+                0.4724,
+                0.5003
+              ],
+              "rate": 0.4865
+            },
+            "n": 4818,
+            "right_first": {
+              "count": 4437,
+              "range_95": [
+                0.9134,
+                0.9285
+              ],
+              "rate": 0.9209
+            },
+            "right_in_top3": {
+              "count": 4793,
+              "range_95": [
+                0.9927,
+                0.9967
+              ],
+              "rate": 0.9948
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 461,
+              "range_95": [
+                0.3709,
+                0.4246
+              ],
+              "rate": 0.3981
+            },
+            "n": 1158,
+            "right_first": {
+              "count": 1083,
+              "range_95": [
+                0.9204,
+                0.95
+              ],
+              "rate": 0.9352
+            },
+            "right_in_top3": {
+              "count": 1153,
+              "range_95": [
+                0.9913,
+                0.9991
+              ],
+              "rate": 0.9957
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        }
+      }
+    },
+    "rules_tuned": {
+      "all": {
+        "asks": {
+          "count": 2824,
+          "range_95": [
+            0.4598,
+            0.4861
+          ],
+          "rate": 0.4726
+        },
+        "n": 5976,
+        "right_first": {
+          "count": 5519,
+          "range_95": [
+            0.9165,
+            0.9301
+          ],
+          "rate": 0.9235
+        },
+        "right_in_top3": {
+          "count": 5947,
+          "range_95": [
+            0.9933,
+            0.9967
+          ],
+          "rate": 0.9951
+        },
+        "wrong_automatic": {
+          "count": 0,
+          "range_95": [
+            0.0,
+            0.0
+          ],
+          "rate": 0.0
+        }
+      },
+      "breakdowns": {
+        "amount_in_words": {
+          "no": {
+            "asks": {
+              "count": 2046,
+              "range_95": [
+                0.3809,
+                0.4089
+              ],
+              "rate": 0.3954
+            },
+            "n": 5175,
+            "right_first": {
+              "count": 4844,
+              "range_95": [
+                0.9289,
+                0.9425
+              ],
+              "rate": 0.936
+            },
+            "right_in_top3": {
+              "count": 5156,
+              "range_95": [
+                0.9946,
+                0.9979
+              ],
+              "rate": 0.9963
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 778,
+              "range_95": [
+                0.9599,
+                0.9824
+              ],
+              "rate": 0.9713
+            },
+            "n": 801,
+            "right_first": {
+              "count": 675,
+              "range_95": [
+                0.8164,
+                0.8684
+              ],
+              "rate": 0.8427
+            },
+            "right_in_top3": {
+              "count": 791,
+              "range_95": [
+                0.9799,
+                0.9949
+              ],
+              "rate": 0.9875
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "family": {
+          "direct": {
+            "asks": {
+              "count": 563,
+              "range_95": [
+                0.45,
+                0.508
+              ],
+              "rate": 0.4779
+            },
+            "n": 1178,
+            "right_first": {
+              "count": 1094,
+              "range_95": [
+                0.913,
+                0.942
+              ],
+              "rate": 0.9287
+            },
+            "right_in_top3": {
+              "count": 1178,
+              "range_95": [
+                1.0,
+                1.0
+              ],
+              "rate": 1.0
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "informal": {
+            "asks": {
+              "count": 542,
+              "range_95": [
+                0.4382,
+                0.4945
+              ],
+              "rate": 0.4668
+            },
+            "n": 1161,
+            "right_first": {
+              "count": 1064,
+              "range_95": [
+                0.9008,
+                0.9315
+              ],
+              "rate": 0.9165
+            },
+            "right_in_top3": {
+              "count": 1155,
+              "range_95": [
+                0.9906,
+                0.9983
+              ],
+              "rate": 0.9948
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "question": {
+            "asks": {
+              "count": 560,
+              "range_95": [
+                0.435,
+                0.4911
+              ],
+              "rate": 0.4624
+            },
+            "n": 1211,
+            "right_first": {
+              "count": 1112,
+              "range_95": [
+                0.9028,
+                0.9346
+              ],
+              "rate": 0.9182
+            },
+            "right_in_top3": {
+              "count": 1202,
+              "range_95": [
+                0.9867,
+                0.9975
+              ],
+              "rate": 0.9926
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "story": {
+            "asks": {
+              "count": 565,
+              "range_95": [
+                0.4509,
+                0.5081
+              ],
+              "rate": 0.4788
+            },
+            "n": 1180,
+            "right_first": {
+              "count": 1105,
+              "range_95": [
+                0.9218,
+                0.9492
+              ],
+              "rate": 0.9364
+            },
+            "right_in_top3": {
+              "count": 1175,
+              "range_95": [
+                0.9915,
+                0.9992
+              ],
+              "rate": 0.9958
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "terse": {
+            "asks": {
+              "count": 594,
+              "range_95": [
+                0.4513,
+                0.5052
+              ],
+              "rate": 0.4767
+            },
+            "n": 1246,
+            "right_first": {
+              "count": 1144,
+              "range_95": [
+                0.9031,
+                0.9329
+              ],
+              "rate": 0.9181
+            },
+            "right_in_top3": {
+              "count": 1237,
+              "range_95": [
+                0.9873,
+                0.9976
+              ],
+              "rate": 0.9928
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "locale": {
+          "es-419": {
+            "asks": {
+              "count": 1464,
+              "range_95": [
+                0.4781,
+                0.5151
+              ],
+              "rate": 0.4976
+            },
+            "n": 2942,
+            "right_first": {
+              "count": 2716,
+              "range_95": [
+                0.9133,
+                0.9323
+              ],
+              "rate": 0.9232
+            },
+            "right_in_top3": {
+              "count": 2926,
+              "range_95": [
+                0.9918,
+                0.9973
+              ],
+              "rate": 0.9946
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "pt-BR": {
+            "asks": {
+              "count": 1360,
+              "range_95": [
+                0.4309,
+                0.4656
+              ],
+              "rate": 0.4483
+            },
+            "n": 3034,
+            "right_first": {
+              "count": 2803,
+              "range_95": [
+                0.9144,
+                0.9336
+              ],
+              "rate": 0.9239
+            },
+            "right_in_top3": {
+              "count": 3021,
+              "range_95": [
+                0.9931,
+                0.998
+              ],
+              "rate": 0.9957
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        },
+        "mentions_merchant": {
+          "no": {
+            "asks": {
+              "count": 2344,
+              "range_95": [
+                0.4724,
+                0.5003
+              ],
+              "rate": 0.4865
+            },
+            "n": 4818,
+            "right_first": {
+              "count": 4439,
+              "range_95": [
+                0.9139,
+                0.9287
+              ],
+              "rate": 0.9213
+            },
+            "right_in_top3": {
+              "count": 4794,
+              "range_95": [
+                0.9929,
+                0.9969
+              ],
+              "rate": 0.995
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          },
+          "yes": {
+            "asks": {
+              "count": 480,
+              "range_95": [
+                0.3873,
+                0.4422
+              ],
+              "rate": 0.4145
+            },
+            "n": 1158,
+            "right_first": {
+              "count": 1080,
+              "range_95": [
+                0.9176,
+                0.9476
+              ],
+              "rate": 0.9326
+            },
+            "right_in_top3": {
+              "count": 1153,
+              "range_95": [
+                0.9913,
+                0.9991
+              ],
+              "rate": 0.9957
+            },
+            "wrong_automatic": {
+              "count": 0,
+              "range_95": [
+                0.0,
+                0.0
+              ],
+              "rate": 0.0
+            }
+          }
+        }
+      }
+    }
+  },
+  "data_run": "charge-ranker/data-v1",
+  "data_type": "Simulation: team-generated descriptions of real Gold transactions.",
+  "examples_hash": "c7e2a30f0cf2b41e141126361f88945fbe0c00df91a1799a755bffebbe51b065",
+  "llm_sample": 200,
+  "model_sha256": "03b9997bff82fb76eea74e9bb41f6b433cb52aa0772964967882ee0bc3a9e1c7",
+  "notes": [],
+  "run": "charge-ranker/test-v1",
+  "seed": 20261004,
+  "shown_for_top_k": 3,
+  "split": "test",
+  "threshold": 0.505465
+}

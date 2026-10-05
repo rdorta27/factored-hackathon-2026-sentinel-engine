@@ -7,7 +7,7 @@ last_reviewed: 2026-10-04
 # 025 · A learned selector ranks the charges
 
 **Date:** 2026-10-04
-**Status:** Proposed
+**Status:** Accepted
 **Participants:** Rubén (owner)
 
 ## Context
@@ -85,3 +85,13 @@ The run records the hash of the model file, the seed, the family list and the th
 - Training reads raw transactions on this machine only. The repository holds no rows. The model file holds weights only.
 - The confirm box, the policy and the router do not change.
 - If the run is not frozen before the code freeze, the selector ships as an experiment and stays off.
+
+## Outcome
+
+*Added 10/4, after the run [`test-v1`](../../../evidence/charge-ranker/test-v1/README.md).*
+
+- The selector ranks the right charge first more often than the rules (`configurations.learned.all.right_first`).
+- The selector has more wrong automatic picks than the rules (`configurations.learned.all.wrong_automatic`). The rules have none.
+- The serving rule fails. The switch `SENTINEL_CHARGE_RANKER` stays off. The demo and `eval-v8` use the rules.
+- We did not change the threshold or the rule after the measurement.
+- The selector is the second learned part of the project, as an experiment with frozen evidence.
