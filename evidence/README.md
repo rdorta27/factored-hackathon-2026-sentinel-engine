@@ -108,6 +108,8 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | not checked | REQ-0002, REQ-0016 |
 | [`2024Q4-dev-v8-v2`](evaluation-runs/2024Q4-dev-v8-v2/summary.json) | development | **Current (v8)** | Baseline and router v2 on the router-v3 development split (198 cases, fresh live calls, cap USD 1): baseline kind 0.5909, v2 kind 0.8144, paired net +41, spend USD 0.025202 over 190 calls | not checked | REQ-0016, REQ-0020 |
 | [`2024Q4-train-v1`](evaluation-runs/2024Q4-train-v1/summary.json) | training | **Current** | The trained baseline: TF-IDF on character n-grams and a logistic regression. It trains on the development split. It tunes C on the validation split (`validation.by_c`, descriptive). The run holds the split ids, the model file `model.json` and its hash (`model.sha256`). It reads no held-out case. | matches (`python3 -m eval.run verify 2024Q4-train-v1`, scikit-learn 1.9.1 only) | REQ-0016, REQ-0019 |
+| [`2024Q4-rehearsal-v8`](evaluation-runs/2024Q4-rehearsal-v8/summary.json) | rehearsal | **Current (v8)** | Every candidate on the development split with the v8 metrics and the spend cap: v3 kind 0.9899, v2 kind 0.8182, trained baseline 1.0 (trains on dev). Judged nothing. | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-ablation-v8`](evaluation-runs/2024Q4-ablation-v8/summary.json) | ablation | **Current (v8)** | Prompt v3 with 0, 4, 8 and 32 examples on the same development cases: kind 0.9848, 0.9747, 0.9798, 0.9899. Picks nothing. | not checked | REQ-0016 |
 
 ## Adversarial
 

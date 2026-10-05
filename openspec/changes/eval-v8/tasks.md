@@ -30,8 +30,8 @@ Depends on `router-v3` (contract v3: task 1.1; development cases: task 2.1), `tr
 
 ## 3. Rehearsal
 
-- [ ] 3.1 Run every candidate on development data with the new metrics, the report and the spend cap; no sealed case is read. Evidence: a rehearsal run and a note of its cost and time.
-- [ ] 3.2 Run a prompt ablation on development data with the same model and cap: no examples, 4 examples, 8 examples and the v3 prompt, on the same cases. Report accuracy, subtype accuracy, cost and latency for each. The ablation picks nothing; the gates of the amendment decide. Evidence: a development run under `evidence/evaluation-runs/` and a section in `eval/review/rehearsal-v8.md`.
+- [x] 3.1 Run every candidate on development data with the new metrics, the report and the spend cap; no sealed case is read. Evidence: a rehearsal run and a note of its cost and time.
+- [x] 3.2 Run a prompt ablation on development data with the same model and cap: no examples, 4 examples, 8 examples and the v3 prompt, on the same cases. Report accuracy, subtype accuracy, cost and latency for each. The ablation picks nothing; the gates of the amendment decide. Evidence: a development run under `evidence/evaluation-runs/` and a section in `eval/review/rehearsal-v8.md`.
 
 ## Moved to `post-freeze`
 
