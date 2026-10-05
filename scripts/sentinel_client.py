@@ -1,6 +1,6 @@
 """Reusable HTTP client for a running Sentinel service.
 
-Other scripts import it: ``scripts/felix_replay.py`` for the manual test of
+Other scripts import it: ``scripts/manual_test_replay.py`` for the manual test of
 Felix, and the robustness and live-ops work for load and failure checks. It
 speaks to the API over HTTP only, so the same client serves a local process and
 a remote deployment.

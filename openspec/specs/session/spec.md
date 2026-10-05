@@ -8,7 +8,7 @@ Gives the submission app a server-side test session so every later call derives 
 
 ### Requirement: Test-session login
 
-The system SHALL authenticate a test customer with a documented false credential and SHALL return the same generic failure for an unknown user and for a wrong password. It SHALL NOT accept a client-supplied `customer_id` as the identity to use after login. Traces to REQ-0027 (P0, Pending) and REQ-0007 (P0, Pending).
+The system SHALL authenticate a test customer with a documented false credential and SHALL return the same generic failure for an unknown user and for a wrong password. It SHALL NOT accept a client-supplied `customer_id` as the identity to use after login. Traces to REQ-0027 (P0, Done) and REQ-0007 (P0, Done).
 
 #### Scenario: Successful login
 
@@ -27,7 +27,7 @@ The system SHALL authenticate a test customer with a documented false credential
 
 ### Requirement: Opaque server-side session with expiry and revocation
 
-The system SHALL issue an opaque random session token, SHALL reject expired sessions, and SHALL revoke the session on logout. Logout SHALL be idempotent. An expired or revoked session SHALL NOT call a tool. Traces to REQ-0027 (P0, Pending) and REQ-0007 (P0, Pending).
+The system SHALL issue an opaque random session token, SHALL reject expired sessions, and SHALL revoke the session on logout. Logout SHALL be idempotent. An expired or revoked session SHALL NOT call a tool. Traces to REQ-0027 (P0, Done) and REQ-0007 (P0, Done).
 
 #### Scenario: Current session identifies the customer
 
@@ -46,7 +46,7 @@ The system SHALL issue an opaque random session token, SHALL reject expired sess
 
 ### Requirement: Session-derived identity only
 
-The system SHALL derive `customer_id` exclusively from the validated session and SHALL reject any client-supplied `customer_id` in the login body. The login, logout, and current-session operations SHALL NOT be served on `/auth/*`. Traces to REQ-0047 (P0, Pending) and REQ-0027 (P0, Pending).
+The system SHALL derive `customer_id` exclusively from the validated session and SHALL reject any client-supplied `customer_id` in the login body. The login, logout, and current-session operations SHALL NOT be served on `/auth/*`. Traces to REQ-0047 (P0, Done) and REQ-0027 (P0, Done).
 
 #### Scenario: Foreign identifier in the login body is rejected
 
@@ -55,7 +55,7 @@ The system SHALL derive `customer_id` exclusively from the validated session and
 
 ### Requirement: Login attempt limiting
 
-The system SHALL lock out further login attempts for a customer and source IP after 5 consecutive failures for 15 minutes, and SHALL reset the counter on success. Traces to REQ-0007 (P0, Pending).
+The system SHALL lock out further login attempts for a customer and source IP after 5 consecutive failures for 15 minutes, and SHALL reset the counter on success. Traces to REQ-0007 (P0, Done).
 
 #### Scenario: Lockout after repeated failures
 
@@ -64,7 +64,7 @@ The system SHALL lock out further login attempts for a customer and source IP af
 
 ### Requirement: Authentication audit log
 
-The system SHALL append a JSON-lines record in the observability format with `step: session` for login success, login failure, lockout, logout, session expiry, and denied access. The record SHALL carry a salted `session_ref` hash instead of the customer, SHALL NOT contain the client IP, and SHALL never log passwords, confirmation tokens, or full session tokens. Traces to REQ-0007 (P0, In progress) and REQ-0047 (P0, In progress).
+The system SHALL append a JSON-lines record in the observability format with `step: session` for login success, login failure, lockout, logout, session expiry, and denied access. The record SHALL carry a salted `session_ref` hash instead of the customer, SHALL NOT contain the client IP, and SHALL never log passwords, confirmation tokens, or full session tokens. Traces to REQ-0007 (P0, Done) and REQ-0047 (P0, Done).
 
 #### Scenario: Audit record is complete and safe
 
@@ -73,7 +73,7 @@ The system SHALL append a JSON-lines record in the observability format with `st
 
 ### Requirement: Reference date is read once
 
-The system SHALL read its notion of today from `SENTINEL_REFERENCE_DATE`, defaulting to `2026-06-17` when the variable is unset, and SHALL use that value for the filing window, the transaction as-of mark, and the date shown to the customer. It SHALL NOT read the wall clock for that window. Traces to REQ-0039 (P0, Pending).
+The system SHALL read its notion of today from `SENTINEL_REFERENCE_DATE`, defaulting to `2026-06-17` when the variable is unset, and SHALL use that value for the filing window, the transaction as-of mark, and the date shown to the customer. It SHALL NOT read the wall clock for that window. Traces to REQ-0039 (P0, Done).
 
 #### Scenario: Default reference date is the dataset end
 
@@ -87,7 +87,7 @@ The system SHALL read its notion of today from `SENTINEL_REFERENCE_DATE`, defaul
 
 ### Requirement: Persistent state with retention
 
-Sessions, conversation state and cases SHALL be stored in a configurable backend (`SENTINEL_STATE_BACKEND`: `sqlite` by default at `SENTINEL_DB_PATH`, or `memory`), so a restart keeps live sessions, pending confirmations and cases. Stored session and conversation keys SHALL be hashes of the session token, never the token. The conversation state, which includes customer turns and `rejected_ids`, SHALL be deleted on logout and when an expired session is presented, and conversations without a live session SHALL be purged on login. Per-session `history` SHALL be bounded to 50 entries and `actions` to 200 entries with an `overflow` mark on discard. Login-attempt counters MAY stay per process. Traces to REQ-0027 (P0, In progress) and REQ-0001 (P0, In progress).
+Sessions, conversation state and cases SHALL be stored in a configurable backend (`SENTINEL_STATE_BACKEND`: `sqlite` by default at `SENTINEL_DB_PATH`, or `memory`), so a restart keeps live sessions, pending confirmations and cases. Stored session and conversation keys SHALL be hashes of the session token, never the token. The conversation state, which includes customer turns and `rejected_ids`, SHALL be deleted on logout and when an expired session is presented, and conversations without a live session SHALL be purged on login. Per-session `history` SHALL be bounded to 50 entries and `actions` to 200 entries with an `overflow` mark on discard. Login-attempt counters MAY stay per process. Traces to REQ-0027 (P0, Done) and REQ-0001 (P0, Done).
 
 #### Scenario: A restart keeps the conversation
 
@@ -111,7 +111,7 @@ Sessions, conversation state and cases SHALL be stored in a configurable backend
 
 ### Requirement: Roles and demo login
 
-The system SHALL expose `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` and `GET /api/v1/auth/me`, and SHALL always require a password; there SHALL be no login by customer number alone. The session SHALL store one role. Customer fixture users SHALL always load; non-customer demo users (the advisor) SHALL load only when `SENTINEL_DEMO_AUTH=1`, and otherwise SHALL fail like any unknown user. `me` SHALL return the role and country and SHALL NOT return `customer_id`. Traces to REQ-0027 (P0, In progress), REQ-0007 (P0, In progress), and REQ-0028 (P0, In progress).
+The system SHALL expose `POST /api/v1/auth/login`, `POST /api/v1/auth/logout` and `GET /api/v1/auth/me`, and SHALL always require a password; there SHALL be no login by customer number alone. The session SHALL store one role. Customer fixture users SHALL always load; non-customer demo users (the advisor) SHALL load only when `SENTINEL_DEMO_AUTH=1`, and otherwise SHALL fail like any unknown user. `me` SHALL return the role and country and SHALL NOT return `customer_id`. Traces to REQ-0027 (P0, Done), REQ-0007 (P0, Done), and REQ-0028 (P0, Done).
 
 #### Scenario: Advisor does not exist without the flag
 

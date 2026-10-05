@@ -8,13 +8,13 @@ last_reviewed: 2026-10-04
 
 This folder holds the challenge, the requirements, the design and the reasons for each choice. Team planning is in [`team/`](../team/). The measurement runs are in [`evidence/`](../evidence/README.md).
 
-All documents are in English ([language](build/delivery.md#language)). The official hackathon material is not in the repository. The one exception is the data dictionary in [understand/reference/](understand/reference/).
+All documents are in English ([language](build/delivery.md#language)). The official hackathon material is not in the repository. The one exception is the data dictionary in [data/reference/](data/reference/).
 
 ## Reading order
 
 Read these pages in this order. It takes about 20 minutes.
 
-1. [The challenge](understand/overview.md)
+1. [The challenge](overview.md)
 2. [Architecture](architecture/README.md): the demo next to the target
 3. [What is real and what is not](architecture/what-is-real.md)
 4. [Requirements](requirements/requirements.md): the summary table and the P0 rows
@@ -25,7 +25,7 @@ Read these pages in this order. It takes about 20 minutes.
 
 | Question | Document |
 |---|---|
-| What must we build, and when is it due? | [Overview](understand/overview.md) |
+| What must we build, and when is it due? | [Overview](overview.md) |
 | How do the parts of the system fit together? | [Architecture](architecture/README.md), then [system](architecture/system-architecture.md) |
 | What does the submission run? | [Demo architecture](architecture/demo-architecture.md) |
 | Which parts are mocks, and which numbers are simulations? | [What is real](architecture/what-is-real.md) |
@@ -40,8 +40,8 @@ Read these pages in this order. It takes about 20 minutes.
 | What can the model see? How do we stop unauthorized access? | [Security](build/security.md), [what the model never receives](rationale/model-data-minimization.md) |
 | How do we handle Portuguese? | [Conversation: languages](build/conversation.md#languages), [017](build/decisions/017-portuguese.md) |
 | What does the deployment cost? What is the capacity? | [Cost](build/cost.md), [sizing and capacity](sizing-capacity.md) |
-| Which data sources do we use, and where do they come from? | [Data inventory](data_inventory.md), [dataset](understand/dataset.md) |
-| What do CSAT, PQR and held-out mean? | [Glossary](understand/glossary/) |
+| Which data sources do we use, and where do they come from? | [Data inventory](data_inventory.md), [dataset](data/dataset.md) |
+| What do CSAT, PQR and held-out mean? | [Glossary](glossary/) |
 | What goes into the presentation and the video? | [Delivery](build/delivery.md) |
 | Who does what, and when? | [Plan](../team/plan.md), [tasks](../team/tasks.md), [pending decisions](../team/pending-decisions.md) |
 
@@ -50,7 +50,9 @@ Read these pages in this order. It takes about 20 minutes.
 | Folder or file | Purpose |
 |---|---|
 | [architecture/](architecture/) | The target, the demo and what is real |
-| [understand/](understand/) | The challenge and the data in one read |
+| [overview.md](overview.md) | The challenge in one read |
+| [data/](data/) | The dataset page and the official data dictionary |
+| [glossary/](glossary/) | The glossary of the locales (en-US, es-MX, es-CO, es-AR, pt-BR) |
 | [requirements/](requirements/) | What the system must do, with priority, area, evidence and status |
 | [rationale/](rationale/) | Why each choice, with its evidence and the slide sentence |
 | [build/](build/) | Areas, design rules, decisions, metrics and delivery |

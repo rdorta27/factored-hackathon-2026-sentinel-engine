@@ -105,7 +105,7 @@ The rules and the verdicts above use the component block, so they do not change.
 ## Amendment · validation split and cut-off choice rule (added 2026-10-03)
 
 **Status:** Proposed (accepted only by a `2024Q4-calibration-*` run committed after this text). *Updated 10/4:* [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) applies it (`cutoffs.t_act`, `cutoffs.t_abstain`).
-**Change:** [`router-confidence`](../../../openspec/changes/router-confidence/design.md)
+**Change:** [`router-confidence`](../../../openspec/changes/archive/2026-10-04-router-confidence/design.md)
 
 The router now reports a confidence per label ([016](016-router-models.md#log-probability-spike-added-2026-10-03)). Two cut-offs map that confidence to act, clarify or abstain. Data chooses them, not the prompt, and the choice must not read the sealed set. This amendment fixes the split and the choice rule before any fit. The commit order is the proof.
 
@@ -131,7 +131,7 @@ The acceptance test stays the sealed `eval-v8` measurement, not the validation s
 ## Amendment · sealed v8 measurement for contract v3 (added 2026-10-04)
 
 **Status:** Proposed (accepted only by a `2024Q4-eval-v8` run committed after this text).
-**Change:** [`router-v3`](../../../openspec/changes/router-v3/design.md)
+**Change:** [`router-v3`](../../../openspec/changes/archive/2026-10-05-router-v3/design.md)
 
 This amendment extends the validation and cut-off amendment above. It keeps every gate of `eval-v7` (D4–D7). It is written before any v3 call on development and before the seal. The commit order is the proof.
 

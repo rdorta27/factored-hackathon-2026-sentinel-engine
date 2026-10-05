@@ -8,7 +8,7 @@ last_reviewed: 2026-10-04
 
 ## Why
 
-[`router-v3`](../router-v3/proposal.md) builds the candidate: contract v3, prompt v3, the draft validator and the cut-offs. Judging it needs a different kind of work: rules written before the numbers, a sealed set written by isolated authors, one single measurement, and a verdict that decides what the service serves. That work has a different pace and different dependencies. The sealed set can be written, reviewed and sealed before the code freeze. Only the measurement must wait, because the runner refuses to measure a seal twice and the owner will review the chat before the freeze, so the prompt can still change.
+[`router-v3`](../archive/2026-10-05-router-v3/proposal.md) builds the candidate: contract v3, prompt v3, the draft validator and the cut-offs. Judging it needs a different kind of work: rules written before the numbers, a sealed set written by isolated authors, one single measurement, and a verdict that decides what the service serves. That work has a different pace and different dependencies. The sealed set can be written, reviewed and sealed before the code freeze. Only the measurement must wait, because the runner refuses to measure a seal twice and the owner will review the chat before the freeze, so the prompt can still change.
 
 ## What Changes
 

@@ -1,6 +1,6 @@
 # Delivery
 
-Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../understand/overview.md#deliverables).
+Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../overview.md#deliverables).
 
 ## Language
 
@@ -14,6 +14,7 @@ Everything, working material included, is written in **English from the first dr
 | Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Mon 10/5 (internal deadline) |
 | Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
 | `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
+| ASD-STE100 header on each Markdown page | English | In progress | Rubén | 76 of 221 pages on 2026-10-05, counted with the command in [AGENTS.md](../../AGENTS.md#asd-ste100) |
 
 We update it at each review, not at the end. Statuses: Pending, In progress, Done.
 

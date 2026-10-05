@@ -6,7 +6,7 @@ Every chat answer is exactly one variant: ``text``, ``clarification``,
 ``error`` (spec ``chat``).
 Replies carry raw values and translation keys, never authored prose; the
 client renders the keys in its locale. Shapes follow the former
-``sentinel-login`` chat contract (backend removed by decision 009), trimmed to
+chat contract of the removed mock backend (decision 009), trimmed to
 the spec: no priority, service-level date, queue status or receipt on a
 confirmation.
 
