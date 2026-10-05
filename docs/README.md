@@ -39,7 +39,7 @@ Read these pages in this order. It takes about 20 minutes.
 | What does the assistant say in each situation? | [Conversation](build/conversation.md) |
 | What can the model see? How do we stop unauthorized access? | [Security](build/security.md), [what the model never receives](rationale/model-data-minimization.md) |
 | How do we handle Portuguese? | [Conversation: languages](build/conversation.md#languages), [017](build/decisions/017-portuguese.md) |
-| What does the deployment cost? What is the capacity? | [Cost](build/cost.md), [sizing and capacity](sizing_capacity.md) |
+| What does the deployment cost? What is the capacity? | [Cost](build/cost.md), [sizing and capacity](sizing-capacity.md) |
 | Which data sources do we use, and where do they come from? | [Data inventory](data_inventory.md), [dataset](understand/dataset.md) |
 | What do CSAT, PQR and held-out mean? | [Glossary](understand/glossary/) |
 | What goes into the presentation and the video? | [Delivery](build/delivery.md) |
@@ -56,5 +56,5 @@ Read these pages in this order. It takes about 20 minutes.
 | [build/](build/) | Areas, design rules, decisions, metrics and delivery |
 | [reports/](reports/) | Generated reports for one requirement each (segments, country logs) |
 | [data_inventory.md](data_inventory.md) | Data sources and their origin |
-| [sizing_capacity.md](sizing_capacity.md) | Workload, capacity and latency targets |
+| [sizing-capacity.md](sizing-capacity.md) | Workload, capacity and latency targets |
 | [`../evidence/`](../evidence/README.md) | Frozen measurement runs that the documents cite |
