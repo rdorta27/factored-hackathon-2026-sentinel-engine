@@ -37,6 +37,7 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Does the system resist attacks? | [`adversarial/20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
 | What does monitoring by country show? | [`monitoring/2024Q4-resolution-v2-replay`](monitoring/2024Q4-resolution-v2-replay/summary.json) | `groups.<country>.<language>.*` |
 | What does the ROI projection use? | [`roi/2023-2026-callcenter-v1`](roi/2023-2026-callcenter-v1/summary.json) | `transactional_calls.*` |
+| Does the learned charge selector beat the rules? | [`charge-ranker/test-v1`](charge-ranker/test-v1/summary.json) | `configurations.<name>.all.*` |
 | Can the data support a charge investigation? | [`customer-360/dev-v1`](customer-360/dev-v1/README.md) and [`customer-360/dev-signals-v1`](customer-360/dev-signals-v1/README.md) | `balance.safe_to_show`, `complaints.charge_linkable`, `investigation.has_signal` |
 
 ## Flows
@@ -60,6 +61,16 @@ The measured problem behind the chosen flow. Script: `measure_problem.py`. Data 
 | [`problem/dev-v1`](problem/dev-v1/README.md) | **Current** | First-contact resolution by reason, calls a day by workflow (mean, busy day, highest day), agent hours a month and missing values | REQ-0014, REQ-0053 |
 
 The reason-to-workflow mapping is in the run README and was committed before the first number. The raw data is not in the repository; `verify` needs the raw call files (see the run `MANIFEST.md`).
+
+## Charge selector
+
+The learned charge selector ([025](../docs/build/decisions/025-charge-selector.md)). Scripts: `sentinel-ai-core/eval/build_charge_splits.py`, `train_charge_ranker.py`, `eval_charge_ranker.py`. Data type: **Simulation**. The transactions are real Gold rows. The descriptions are team-generated. The runs need the local Gold file.
+
+| Run | Status | What it holds | Requirements |
+|---|---|---|---|
+| [`charge-ranker/data-v1`](charge-ranker/data-v1/README.md) | **Current** | Frozen splits: counts, hashes, seed, families | REQ-0017 |
+| [`charge-ranker/train-v1`](charge-ranker/train-v1/README.md) | **Current** | The weights file and its hash, the threshold, the validation result | REQ-0016, REQ-0017, REQ-0019 |
+| [`charge-ranker/test-v1`](charge-ranker/test-v1/README.md) | **Current** | Four configurations on the test split, measured once | REQ-0016, REQ-0017, REQ-0020 |
 
 ## Evaluation inputs
 
@@ -96,6 +107,7 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-select-v3d`](evaluation-runs/2024Q4-select-v3d/summary.json) | selection | **Current (v3)** | Prompt v3 on development (198 cases, 32-example matrix): kind 0.9899, subtype 1.0, 94 drafts with 0 rejected. Offline replay of v3c with the kind-key confidence fix. | not checked | REQ-0016, REQ-0020 |
 | [`2024Q4-calibration-v3`](evaluation-runs/2024Q4-calibration-v3/summary.json) | calibration | **Current (v3)** | v3 cut-offs on the validation split by the 018 rule: `t_act` 1.0, `t_abstain` 0.0 (n = 26, descriptive) | not checked | REQ-0002, REQ-0016 |
 | [`2024Q4-dev-v8-v2`](evaluation-runs/2024Q4-dev-v8-v2/summary.json) | development | **Current (v8)** | Baseline and router v2 on the router-v3 development split (198 cases, fresh live calls, cap USD 1): baseline kind 0.5909, v2 kind 0.8144, paired net +41, spend USD 0.025202 over 190 calls | not checked | REQ-0016, REQ-0020 |
+| [`2024Q4-train-v1`](evaluation-runs/2024Q4-train-v1/summary.json) | training | **Current** | The trained baseline: TF-IDF on character n-grams and a logistic regression. It trains on the development split. It tunes C on the validation split (`validation.by_c`, descriptive). The run holds the split ids, the model file `model.json` and its hash (`model.sha256`). It reads no held-out case. | matches (`python3 -m eval.run verify 2024Q4-train-v1`, scikit-learn 1.9.1 only) | REQ-0016, REQ-0019 |
 
 ## Adversarial
 
