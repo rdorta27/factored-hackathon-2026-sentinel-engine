@@ -124,6 +124,8 @@ Only applies if a model judges the answers: its rubric must be documented and ch
 
 **Evidence:** Not used so far: answers are judged by deterministic checks. Close as not applicable if that holds.
 
+Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): a 20-label check by a person. The sample is prepared in `eval/review/human-check-v1.md` (task 3.3). It checks label quality. It is not an LLM judge, so this requirement stays not applicable.
+
 <a id="req-0031"></a>
 ### REQ-0031 · Approved data, labeled by origin
 

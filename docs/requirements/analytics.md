@@ -40,6 +40,8 @@ Every reported metric states how many cases it covers, their mix, the versions u
 
 Missing: nothing for the router component.
 
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): each summary reports the number of bases next to the number of cases (`bases` in `eval/metrics.py` and `eval/intervals.py`), and the intervals resample by base. The reports show both numbers. The gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) and the cut-off run [`2024Q4-cutoff-diagnosis-v1`](../../evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json) carry their `bases`. Remaining: the 20-label human check (task 3.3, sample prepared in `eval/review/human-check-v1.md`) and the three repeats of the final measurement (task 3.5, post-freeze).
+
 <a id="req-0024"></a>
 ### REQ-0024 · Breakdown by language, country and segment
 
@@ -95,6 +97,8 @@ Report the brief's outcome metrics: safe automated resolution (plus the share at
 **Evidence:** Proven by: the [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json), with every mandatory metric and its denominator (section 6); the final resolution run [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (with [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) beside it) measures safe automated resolution over 56 cases in 14 situations on the final loop (16 of 56 for both versions, 0 unsafe, 0 missed transfers, cost per resolution USD 0.000561 for `router_v2`), carries the per-variant and per-country breakdown with n, situation-level intervals and the descriptive label, and verifies offline; the router reports tokens and cost per turn (`tests/test_ai_router.py`).
 
 Stated limits, not missing work: the resolution rate is a simulation over a mock store, not a field resolution rate; the pending status is not covered (no `Pending` row in the mock store). The system block of `eval-v7` does not replay offline (report section 9); the resolution runs do.
+
+Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) states the ceiling of safe resolution (16 of 56) and the cases where the baseline and the router differ (0). The live timing rehearsal [`2024Q4-resolution-live-dev-v1`](../../evidence/evaluation-runs/2024Q4-resolution-live-dev-v1/summary.json) measures p50/p95 latency per model call and per conversation, and cost per attempted case and per resolution, from live model calls under a USD 1 cap. Remaining: the live run on the frozen build (task 2.4, post-freeze). Until then the latency of `resolution-v2` comes from a replay, and the report labels it as a replay.
 
 <a id="req-0057"></a>
 ### REQ-0057 · Business outcomes and ROI

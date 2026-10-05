@@ -57,6 +57,8 @@ Test the cases the brief names explicitly: bad or missing data, expired session,
 
 **Evidence:** Proven by: 42 attacks in `tests/adversarial/` against the chat, the disputes API and the advisor endpoint, with `unsafe_outcome_rate` `0/42` (38 `blocked_verified`, 3 `passes_on_mock`, 1 `documented`, 0 `no_defense_yet`) in [`evidence/adversarial/20261002T222323Z/summary.json`](../../evidence/adversarial/20261002T222323Z/summary.json). A3 refuses prompt extraction in code, A4b records injection without changing the reply, and D4 bounds Gold reads (`SENTINEL_GOLD_TIMEOUT_S`, default 2 s, above the measured 0.28 s cold read). Runner fault injection (Gold, session, tool) degrades safely in [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
 
+Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the three attack cases that pass on the stand-in model run against the real model, in a new adversarial run.
+
 <a id="req-0025"></a>
 ### REQ-0025 · Observability
 
@@ -127,7 +129,7 @@ Mock banking tools are allowed if their contracts and limitations are documented
 
 **Source:** Problem statement: Data and execution boundaries
 
-**Evidence:** Proven by: tool and Gold contracts in the [specification](../architecture/specification.md#tool-contracts); mock and DuckDB Gold behind one seam with fallback (`tests/test_gold_duckdb.py`); memory and SQLite state behind the same ports; mocks listed in the [demo architecture](../architecture/demo-architecture.md#mocked-components) and in [what is real](../architecture/what-is-real.md#components).
+**Evidence:** Proven by: tool and Gold contracts in the [specification](../architecture/specification.md#tool-contracts); mock and DuckDB Gold behind one seam with fallback (`tests/test_gold_duckdb.py`); memory and SQLite state behind the same ports; mocks listed in the [demo architecture](../architecture/demo-architecture.md#mocked-components) and in [what is real](../architecture/what-is-real.md#components); and the [mocks](../architecture/mocks.md) page, which gives the reason, the limit and the production backend of each mock.
 
 <a id="req-0047"></a>
 ### REQ-0047 · No personal data to the LLM

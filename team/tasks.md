@@ -60,6 +60,7 @@ Every open task, ordered by what the submission needs first. Each one cites the 
 | 5 | Report by country (latency, failures, escalations) from the JSONL logs | REQ-0050 | Unassigned | — | Path to production | Done: `sentinel-ai-core/eval/monitor.py`, aggregates only, frozen over the simulated replay workload ([evidence](../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)); a field run reads the Azure log with the same script |
 | 6 | Neutral Spanish: apply the glossary and add a case with another country's term | REQ-0044 | Unassigned | — | — | Pending |
 | 7 | Keep `amount_usd` in `silver_transactions` (filled in ~95% of ARS and COP charges, empty by design in USD) for cross-country comparisons | REQ-0024 | Unassigned | — | — | Done: `silver_transactions` keeps `amount_usd` |
+| 8 | Evidence hardening ([plan](../openspec/changes/evidence-hardening/tasks.md)): explain the resolution gap, measure latency and cost live, report bases and a 20-label human check, publish negative results | REQ-0022, REQ-0055, REQ-0021, REQ-0013 | Rubén | Before the slides close | Slides and site numbers (REQ-0036) | In progress: the gap run, the live rehearsal, `bases`, the negative-results page, the mocks page and the cut-off diagnosis are done. Remaining: the 20-label review, the live run on the frozen build (task 2.4), the three attack cases against the real model (task 4.2), the repeats (task 3.5) and the slide limits |
 
 ### Low: only if time remains (P2) or to confirm and close
 
