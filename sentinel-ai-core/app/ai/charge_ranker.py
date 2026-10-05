@@ -13,6 +13,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+import os
 import re
 from dataclasses import dataclass
 from datetime import date
@@ -240,3 +241,29 @@ def load_ranker(model_path: Path, expected_sha256: str) -> ChargeRanker:
     if tuple(body["features"]) != FEATURES:
         raise RankerHashMismatch("the clue list of the model differs from the clue list of the code")
     return ChargeRanker(tuple(body["weights"]), float(body["temperature"]), float(body["threshold"]))
+
+
+SWITCH = "SENTINEL_CHARGE_RANKER"
+RUN_DIR = "SENTINEL_CHARGE_RANKER_RUN"
+
+
+def enabled() -> bool:
+    """Off by default (decision 025). Only an explicit on value turns the selector on."""
+    return os.environ.get(SWITCH, "").strip().lower() in ("1", "true", "on", "yes")
+
+
+def default_run_dir() -> Path:
+    return Path(__file__).resolve().parents[3] / "evidence" / "charge-ranker" / "train-v1"
+
+
+def selector_from_env() -> ChargeRanker | None:
+    """None when the switch is off. When it is on, load the frozen model or raise.
+
+    The service never falls back to an unchecked file: a changed weights file
+    raises `RankerHashMismatch`, and the caller reports the reason.
+    """
+    if not enabled():
+        return None
+    run = Path(os.environ.get(RUN_DIR, "").strip() or default_run_dir())
+    recorded = json.loads((run / "summary.json").read_text(encoding="utf-8"))["model_sha256"]
+    return load_ranker(run / "model.json", recorded)

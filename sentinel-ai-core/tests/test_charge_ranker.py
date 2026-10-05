@@ -87,3 +87,37 @@ def test_the_service_refuses_a_changed_model_file(tmp_path) -> None:
     (tmp_path / "model.json").write_text((tmp_path / "model.json").read_text() + " ", encoding="utf-8")
     with pytest.raises(ranker.RankerHashMismatch):
         ranker.load_ranker(tmp_path / "model.json", digest)
+
+
+def _run_dir(tmp_path, tamper: bool = False):
+    digest = _write(tmp_path / "model.json", _model())
+    (tmp_path / "summary.json").write_text(json.dumps({"model_sha256": digest}), encoding="utf-8")
+    if tamper:
+        (tmp_path / "model.json").write_text((tmp_path / "model.json").read_text() + " ", encoding="utf-8")
+    return tmp_path
+
+
+def test_the_switch_is_off_by_default(monkeypatch) -> None:
+    monkeypatch.delenv(ranker.SWITCH, raising=False)
+    assert ranker.enabled() is False
+    assert ranker.selector_from_env() is None
+
+
+def test_the_switch_loads_the_frozen_model_when_on(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv(ranker.SWITCH, "on")
+    monkeypatch.setenv(ranker.RUN_DIR, str(_run_dir(tmp_path)))
+    assert ranker.selector_from_env() is not None
+
+
+def test_the_switch_refuses_a_changed_file_when_on(monkeypatch, tmp_path) -> None:
+    monkeypatch.setenv(ranker.SWITCH, "on")
+    monkeypatch.setenv(ranker.RUN_DIR, str(_run_dir(tmp_path, tamper=True)))
+    with pytest.raises(ranker.RankerHashMismatch):
+        ranker.selector_from_env()
+
+
+def test_the_loop_does_not_import_the_selector_yet() -> None:
+    from pathlib import Path
+
+    source = (Path(__file__).resolve().parents[1] / "app" / "orchestrator" / "step.py").read_text(encoding="utf-8")
+    assert "charge_ranker" not in source
