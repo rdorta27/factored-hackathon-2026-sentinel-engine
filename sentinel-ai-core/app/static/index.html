@@ -151,11 +151,14 @@
       </div>
     </section>
     <section id="view-queue" hidden>
-      <div id="queue-list">
-        <h3 class="chat-title" data-i18n="queueTitle">Escalated cases</h3>
+      <div id="queue-list" class="chat-panel">
+        <div class="queue-head">
+          <h3 class="chat-title"><span data-i18n="queueTitle">Escalated cases</span> <span id="queue-count" class="pill pill-neutral" data-testid="queue-count"></span></h3>
+          <button type="button" id="queue-refresh" class="theme-toggle" data-testid="queue-refresh" data-i18n="q_refresh">Refresh</button>
+        </div>
         <div id="queue" class="tx-list"></div>
       </div>
-      <div id="queue-detail" data-testid="queue-detail" hidden></div>
+      <div id="queue-detail" class="chat-panel" data-testid="queue-detail" aria-live="polite"></div>
     </section>
   </main>
   <footer id="build-info" class="chat-sub build-info" data-testid="build-info" hidden></footer>

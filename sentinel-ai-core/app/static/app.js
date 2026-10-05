@@ -163,6 +163,12 @@ async function loadLocale(locale) {
     paintCharges(lastTransactions);
     renderDemoPrompts(lastTransactions.transactions);
   }
+  // The advisor list and the open case follow the language too.
+  if (!document.getElementById("view-queue").hidden) {
+    loadQueue();
+    if (openCaseId) openTicket(openCaseId);
+    else showQueueList();
+  }
   // The thread follows the language too, even before the charges arrive
   // (the welcome of a demo persona is drawn before its locale loads).
   if (!document.getElementById("view-chat").hidden) renderThread();
@@ -171,6 +177,8 @@ async function loadLocale(locale) {
 async function api(path, options) {
   const response = await fetch(path, options);
   if (response.status === 401) {
+    sessionRole = null;
+    replaceRoute("/");
     clearThread();
     show("view-login");
     document.getElementById("login-error").textContent = t("sessionExpired");
@@ -244,6 +252,7 @@ function show(id) {
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
+  if (id !== "view-queue") stopQueueRefresh();
   document.getElementById("logout").hidden = id === "view-login";
   // The agent button lives in the chat column, away from the header flags.
   document.getElementById("agent").hidden = id !== "view-chat";
@@ -823,7 +832,8 @@ function renderDemoPrompts(transactions) {
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
    came (reason, country, language, age); the detail is read-only and adds the
-   handoff package and the trace of the turn that filed it. */
+   handoff package and the trace of the turn that filed it. On a wide screen the
+   list and the detail sit side by side; on a phone the detail replaces the list. */
 /* Country and language codes as words; an unknown code shows as it is. */
 function countryName(code) {
   return strings[`country.${code}`] || code;
@@ -833,30 +843,61 @@ function languageName(code) {
   return strings[`lang.${code}`] || code;
 }
 
+let openCaseId = null;
+
 function ticketRow(ticket) {
   const row = el("button", "candidate queue-row");
   row.type = "button";
   row.setAttribute("data-testid", "queue-row");
   row.setAttribute("data-case-id", ticket.case_id);
-  row.append(el("strong", "", ticket.case_id));
-  row.append(el("span", "chat-sub", ` · ${t("q_reason")}: ${t(ticket.reason_key)}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_country")}: ${countryName(ticket.country)}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_language")}: ${languageName(ticket.package.language)}`));
-  row.append(el("span", "chat-sub", ` · ${t("q_created")}: ${formatDate(ticket.created_at)}`));
-  row.addEventListener("click", () => openTicket(ticket.case_id));
+  if (ticket.case_id === openCaseId) row.setAttribute("aria-current", "true");
+  const top = el("span", "tx-line");
+  top.append(el("strong", "", ticket.case_id));
+  top.append(el("span", "chat-sub", `${t("q_created")}: ${formatDate(ticket.created_at)}`));
+  row.append(top);
+  const reason = el("strong", "queue-reason", t(ticket.reason_key));
+  reason.title = t("q_reason");
+  row.append(reason);
+  const tags = el("span", "queue-tags");
+  const country = el("span", "pill pill-neutral", countryName(ticket.country));
+  country.title = t("q_country");
+  const language = el("span", "pill pill-neutral", languageName(ticket.package.language));
+  language.title = t("q_language");
+  tags.append(country, language);
+  row.append(tags);
+  row.addEventListener("click", () => navigate(`/queue/${encodeURIComponent(ticket.case_id)}`));
   return row;
+}
+
+/* The list repaints on its own while the advisor watches it, so a case filed
+   in another tab shows up without a reload. The open detail stays as it is. */
+const QUEUE_REFRESH_MS = 15000;
+let queueTimer = null;
+
+function stopQueueRefresh() {
+  clearInterval(queueTimer);
+  queueTimer = null;
 }
 
 async function loadQueue() {
   const response = await api("/api/v1/handoffs");
   if (!response.ok) return;
   const tickets = await response.json();
-  document.getElementById("queue-detail").hidden = true;
-  document.getElementById("queue-list").hidden = false;
   const box = document.getElementById("queue");
   box.textContent = "";
+  document.getElementById("queue-count").textContent = String(tickets.length);
   if (!tickets.length) box.append(el("p", "chat-sub", t("q_empty")));
   tickets.forEach((ticket) => box.append(ticketRow(ticket)));
+  if (!queueTimer) queueTimer = setInterval(loadQueue, QUEUE_REFRESH_MS);
+}
+
+function showQueueList() {
+  openCaseId = null;
+  document.getElementById("view-queue").classList.remove("queue-open");
+  const detail = document.getElementById("queue-detail");
+  detail.textContent = "";
+  detail.append(el("p", "chat-sub queue-placeholder", t("q_select")));
+  document.querySelectorAll(".queue-row[aria-current]").forEach((row) => row.removeAttribute("aria-current"));
 }
 
 function field(labelKey, value) {
@@ -870,21 +911,33 @@ function traceBlock(trace) {
     card.append(el("p", "chat-sub", t("q_traceUnavailable")));
     return card;
   }
-  const list = el("ul", "chat-sub");
-  trace.steps.forEach((step) => {
-    const parts = [
-      step.step,
-      step.tool,
-      step.outcome,
-      `${t("q_latency")}: ${Number(step.latency_ms).toFixed(1)}`,
-      `${t("q_model")}: ${step.model}`,
-      `${t("q_prompt")}: ${step.prompt_version}`,
-      `${t("q_cost")}: ${Number(step.cost_usd).toFixed(4)}`,
-    ];
-    if (step.policy_version) parts.push(`${t("q_policyVersion")}: ${step.policy_version}`);
-    list.append(el("li", "", parts.filter(Boolean).join(" · ")));
+  // A table, one row per step: the columns line up, so the advisor compares steps.
+  const wrap = el("div", "trace-wrap");
+  const table = el("table", "metrics-table trace-table");
+  const head = el("tr");
+  ["q_step", "q_tool", "q_outcome", "q_latency", "q_model", "q_prompt", "q_cost", "q_policyVersion"].forEach((key) => {
+    head.append(el("th", "", t(key)));
   });
-  card.append(list);
+  const thead = el("thead");
+  thead.append(head);
+  const tbody = el("tbody");
+  trace.steps.forEach((step) => {
+    const row = el("tr");
+    [
+      step.step,
+      step.tool || "",
+      step.outcome || "",
+      Number(step.latency_ms).toFixed(1),
+      step.model || "",
+      step.prompt_version || "",
+      Number(step.cost_usd).toFixed(4),
+      step.policy_version || "",
+    ].forEach((value) => row.append(el("td", "", value)));
+    tbody.append(row);
+  });
+  table.append(thead, tbody);
+  wrap.append(table);
+  card.append(wrap);
   return card;
 }
 
@@ -928,29 +981,205 @@ function packageBlock(pkg) {
   return card;
 }
 
+/* The handoff as the system filed it, for the JSON tab. The screen never shows
+   a customer identifier (decision 009), so the export leaves that field out too. */
+function handoffExport(ticket, trace) {
+  const shown = { ...ticket };
+  delete shown["customer_id"];
+  return { ticket: shown, trace };
+}
+
+function jsonBlock(caseId, data) {
+  const box = el("div", "msg msg-audit json-block");
+  const text = JSON.stringify(data, null, 2);
+  const bar = el("div", "json-bar");
+  const copy = el("button", "theme-toggle", t("q_copy"));
+  copy.type = "button";
+  copy.setAttribute("data-testid", "json-copy");
+  copy.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      copy.textContent = t("q_copied");
+    } catch (error) {
+      copy.textContent = t("q_copyFailed");
+    }
+    setTimeout(() => {
+      copy.textContent = t("q_copy");
+    }, 1500);
+  });
+  const download = el("a", "theme-toggle", t("q_download"));
+  download.href = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+  download.download = `${caseId}.json`;
+  download.setAttribute("data-testid", "json-download");
+  bar.append(copy, download);
+  box.append(el("p", "chat-sub", t("q_jsonNote")), bar);
+  const pre = el("pre", "json-view", text);
+  pre.setAttribute("data-testid", "json-view");
+  pre.tabIndex = 0;
+  box.append(pre);
+  return box;
+}
+
+/* Three tabs: the summary for a person, the trace and the raw JSON. */
+const DETAIL_TABS = ["summary", "trace", "json"];
+let detailTab = "summary";
+
+function detailTabs(panels) {
+  const wrap = el("div", "detail-tabs");
+  const list = el("div", "tab-list");
+  list.setAttribute("role", "tablist");
+  const buttons = DETAIL_TABS.map((name) => {
+    const button = el("button", "theme-toggle tab", t(`q_tab.${name}`));
+    button.type = "button";
+    button.id = `tab-${name}`;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-controls", `panel-${name}`);
+    button.setAttribute("data-testid", `tab-${name}`);
+    list.append(button);
+    return button;
+  });
+  const select = (name) => {
+    detailTab = name;
+    DETAIL_TABS.forEach((other, index) => {
+      const on = other === name;
+      buttons[index].setAttribute("aria-selected", String(on));
+      buttons[index].tabIndex = on ? 0 : -1;
+      panels[other].hidden = !on;
+    });
+  };
+  buttons.forEach((button, index) => {
+    button.addEventListener("click", () => select(DETAIL_TABS[index]));
+    button.addEventListener("keydown", (event) => {
+      const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+      if (!step) return;
+      const next = (index + step + DETAIL_TABS.length) % DETAIL_TABS.length;
+      select(DETAIL_TABS[next]);
+      buttons[next].focus();
+    });
+  });
+  wrap.append(list);
+  DETAIL_TABS.forEach((name) => {
+    panels[name].id = `panel-${name}`;
+    panels[name].setAttribute("role", "tabpanel");
+    panels[name].setAttribute("aria-labelledby", `tab-${name}`);
+    wrap.append(panels[name]);
+  });
+  select(detailTab);
+  return wrap;
+}
+
 async function openTicket(caseId) {
   const detail = document.getElementById("queue-detail");
   const [response, traceResponse] = await Promise.all([
-    api(`/api/v1/handoffs/${caseId}`),
-    api(`/api/v1/handoffs/${caseId}/trace`),
+    api(`/api/v1/handoffs/${encodeURIComponent(caseId)}`),
+    api(`/api/v1/handoffs/${encodeURIComponent(caseId)}/trace`),
   ]);
-  if (!response.ok) return;
+  if (!response.ok) {
+    showQueueList();
+    detail.textContent = "";
+    detail.append(el("p", "chat-sub queue-placeholder", t("q_notFound")));
+    return;
+  }
   const ticket = await response.json();
   const trace = traceResponse.ok ? await traceResponse.json() : { available: false, steps: [] };
+  openCaseId = ticket.case_id;
+  document.querySelectorAll(".queue-row").forEach((row) => {
+    if (row.getAttribute("data-case-id") === openCaseId) row.setAttribute("aria-current", "true");
+    else row.removeAttribute("aria-current");
+  });
   detail.textContent = "";
-  const back = el("button", "theme-toggle", t("q_back"));
+  const back = el("button", "theme-toggle queue-back", t("q_back"));
   back.type = "button";
   back.setAttribute("data-testid", "queue-back");
-  back.addEventListener("click", loadQueue);
+  back.addEventListener("click", () => navigate("/queue"));
   detail.append(back);
   detail.append(el("h3", "chat-title", `${ticket.case_id} · ${codeLabel("ticketStatus", ticket.status) || ticket.status}`));
   // No customer identifier on the screen: the advisor gets facts, not an id.
-  detail.append(field("q_country", `${countryName(ticket.country)} · ${t("q_language")}: ${languageName(ticket.package.language)}`));
-  detail.append(field("q_reason", t(ticket.reason_key)));
-  detail.append(packageBlock(ticket.package));
-  detail.append(traceBlock(trace));
-  document.getElementById("queue-list").hidden = true;
-  detail.hidden = false;
+  const summary = el("div", "");
+  summary.append(field("q_country", `${countryName(ticket.country)} · ${t("q_language")}: ${languageName(ticket.package.language)}`));
+  summary.append(field("q_reason", t(ticket.reason_key)));
+  summary.append(packageBlock(ticket.package));
+  const traceTab = el("div", "");
+  traceTab.append(traceBlock(trace));
+  const jsonTab = el("div", "");
+  jsonTab.append(jsonBlock(ticket.case_id, handoffExport(ticket, trace)));
+  detail.append(detailTabs({ summary, trace: traceTab, json: jsonTab }));
+  document.getElementById("view-queue").classList.add("queue-open");
+}
+
+/* Navigation: the view lives in the URL hash, so a reload keeps it, the Back
+   button works and an advisor can share the link of a case.
+     #/          entry (login)
+     #/chat      the customer chat
+     #/queue     the advisor list
+     #/queue/ID  the advisor list with one case open */
+let sessionRole = null;
+
+function currentRoute() {
+  const path = location.hash.replace(/^#/, "") || "/";
+  const match = path.match(/^\/queue\/(.+)$/);
+  if (match) return { view: "queue", caseId: decodeURIComponent(match[1]) };
+  if (path === "/queue") return { view: "queue", caseId: null };
+  if (path === "/chat") return { view: "chat", caseId: null };
+  return { view: "login", caseId: null };
+}
+
+/* A new entry in the history: the Back button returns here. */
+function navigate(path) {
+  if (location.hash === `#${path}`) applyRoute();
+  else location.hash = path;
+}
+
+/* Same entry, new URL: for the moves the Back button must not undo (login, logout). */
+function replaceRoute(path) {
+  history.replaceState(null, "", `#${path}`);
+}
+
+async function applyRoute() {
+  const route = currentRoute();
+  if (sessionRole === "advisor") {
+    if (route.view !== "queue") {
+      replaceRoute("/queue");
+      return applyRoute();
+    }
+    if (document.getElementById("view-queue").hidden) {
+      show("view-queue");
+      await loadQueue();
+    }
+    if (route.caseId) await openTicket(route.caseId);
+    else showQueueList();
+  } else if (sessionRole === "customer") {
+    if (route.view !== "chat") replaceRoute("/chat");
+  }
+}
+
+window.addEventListener("hashchange", applyRoute);
+document.getElementById("queue-refresh").addEventListener("click", loadQueue);
+
+async function enterSession(role) {
+  sessionRole = role;
+  if (role === "advisor") {
+    // A shared case link opened before the login stays the target.
+    if (currentRoute().view !== "queue") replaceRoute("/queue");
+    await applyRoute();
+    return;
+  }
+  replaceRoute("/chat");
+  startThread();
+  show("view-chat");
+  await loadContext();
+  await loadTransactions();
+}
+
+/* A reload with a live session goes back to the same view, not to the login. */
+async function resumeSession() {
+  const response = await fetch("/api/v1/auth/me");
+  if (!response.ok) {
+    if (currentRoute().view === "chat") replaceRoute("/");
+    return;
+  }
+  const me = await response.json();
+  await enterSession(me.role);
 }
 
 document.getElementById("login-form").addEventListener("submit", async (event) => {
@@ -968,15 +1197,7 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     return;
   }
   const { role } = await response.json();
-  if (role === "advisor") {
-    show("view-queue");
-    loadQueue();
-    return;
-  }
-  startThread();
-  show("view-chat");
-  await loadContext();
-  await loadTransactions();
+  await enterSession(role);
 });
 
 document.getElementById("chat-form").addEventListener("submit", (event) => {
@@ -1001,6 +1222,8 @@ document.getElementById("logout").addEventListener("click", async () => {
   clearThread();
   show("view-login");
   document.getElementById("login-error").textContent = "";
+  sessionRole = null;
+  replaceRoute("/");
 });
 
 document.getElementById("locale-group").addEventListener("click", (event) => {
@@ -1037,6 +1260,8 @@ async function demoLogin(persona) {
     return;
   }
   const { locale } = await response.json();
+  sessionRole = "customer";
+  replaceRoute("/chat");
   startThread();
   show("view-chat");
   await loadContext();
@@ -1049,7 +1274,7 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
   if (button) demoLogin(button.getAttribute("data-persona"));
 });
 
-loadLocale("es-419");
+loadLocale("es-419").then(resumeSession);
 loadBrand();
 loadDemoEntry();
 loadDataNotice();
