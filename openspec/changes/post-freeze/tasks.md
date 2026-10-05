@@ -36,7 +36,7 @@ The measurement of `eval-v8`, its verdict, its reports and the error analysis mo
 
 ## 5. Close (after section 4)
 
-- [ ] 5.1 Regenerate `site/numbers.json` and update the slides with the frozen numbers. The diagrams of `pitch-site` 4.4 and 4.5 and the section 5.6 read the same file, so they update with it. Then run `python3 scripts/localize.py` and `python3 scripts/localize.py --check`, so the `es-419` and `pt-BR` copies and the three slide PDFs follow. From `pitch-site` 4.1. Evidence: the numbers test passes. Ref: REQ-0030.
+- [x] 5.1 Regenerate `site/numbers.json` and update the slides with the frozen numbers. The diagrams of `pitch-site` 4.4 and 4.5 and the section 5.6 read the same file, so they update with it. Then run `python3 scripts/localize.py` and `python3 scripts/localize.py --check`, so the `es-419` and `pt-BR` copies and the three slide PDFs follow. From `pitch-site` 4.1. Evidence: the numbers test passes. Ref: REQ-0030.
 - [ ] 5.2 Review the README (links, numbers with their fields, limits). Add the last pull requests to the changelog. Check each row of the submission checklist. From `release` 4.1. Evidence: the diff and the checklist. Ref: decision 019.
 - [ ] 5.3 Write the release notes for `v0.9-demo` and `v1.0-submission` with the final numbers, and give the owner the exact `git tag v0.9-demo`, `git tag v1.0-submission` and `gh release create` commands, after the redeploy. From `release` 2.1. Evidence: the notes and the commands in `docs/build/delivery.md`. The owner runs them.
 
