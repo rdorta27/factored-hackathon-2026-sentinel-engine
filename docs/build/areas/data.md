@@ -4,7 +4,7 @@
 
 **Requirements:** those in the `data` area in the [requirements table](../../requirements/requirements.md).
 
-**Related:** [dataset](../../understand/dataset.md) (tables and columns), [system](../../architecture/system-architecture.md), [`sentinel-data-engine/`](../../../sentinel-data-engine/README.md).
+**Related:** [dataset](../../data/dataset.md) (tables and columns), [system](../../architecture/system-architecture.md), [`sentinel-data-engine/`](../../../sentinel-data-engine/README.md).
 
 ## Implementation: `sentinel-data-engine`
 

@@ -8,7 +8,7 @@ Shows each role an interface where verified outcomes look verified, so the custo
 
 ### Requirement: Role-based landing
 
-After login the interface SHALL route each role to its view: the chat for customers and the read-only ticket view for the advisor. There is no admin view. The chat SHALL render a `handoff` reply as a card with the translated reason and the estimated date. Traces to REQ-0038 (P0, In progress) and REQ-0008 (P0, In progress).
+After login the interface SHALL route each role to its view: the chat for customers and the read-only ticket view for the advisor. There is no admin view. The chat SHALL render a `handoff` reply as a card with the translated reason and the estimated date. Traces to REQ-0038 (P0, Done) and REQ-0008 (P0, Done).
 
 #### Scenario: Login lands on the role view
 
@@ -17,7 +17,7 @@ After login the interface SHALL route each role to its view: the chat for custom
 
 ### Requirement: Receipt card with timeline
 
-A `case_confirmation` SHALL render as a receipt card whose first line states the outcome in plain language, followed by a large case number, then what happens next, and finally the detail. Amounts SHALL show the transaction's own currency with its code visible, dates SHALL follow one shared locale-aware format, and the card SHALL state that no funds were held or moved. The card SHALL show the reference date. The card SHALL NOT require a receipt download. Traces to REQ-0003 (P0, Pending), REQ-0041 (P0, Pending), and REQ-0004 (P0, Pending).
+A `case_confirmation` SHALL render as a receipt card whose first line states the outcome in plain language, followed by a large case number, then what happens next, and finally the detail. Amounts SHALL show the transaction's own currency with its code visible, dates SHALL follow one shared locale-aware format, and the card SHALL state that no funds were held or moved. The card SHALL show the reference date. The card SHALL NOT require a receipt download. Traces to REQ-0003 (P0, Done), REQ-0041 (P0, Done), and REQ-0004 (P0, Done).
 
 #### Scenario: Confirmation is visually distinct
 
@@ -36,7 +36,7 @@ A `case_confirmation` SHALL render as a receipt card whose first line states the
 
 ### Requirement: Always-visible agent button
 
-The customer chat SHALL keep a "talk to an agent" control visible at all times. The first activation SHALL offer help and SHALL NOT hand off. A later activation on the same session SHALL take the handoff path. Traces to REQ-0040 (P0, Pending).
+The customer chat SHALL keep a "talk to an agent" control visible at all times. The first activation SHALL offer help and SHALL NOT hand off. A later activation on the same session SHALL take the handoff path. Traces to REQ-0040 (P0, Done).
 
 #### Scenario: Agent button escalates
 
@@ -50,7 +50,7 @@ The customer chat SHALL keep a "talk to an agent" control visible at all times. 
 
 ### Requirement: Masked sensitive data
 
-The interface SHALL mask sensitive values (for example card numbers as `****1234`) and SHALL never render full identifiers. Traces to REQ-0047 (P0, Pending).
+The interface SHALL mask sensitive values (for example card numbers as `****1234`) and SHALL never render full identifiers. Traces to REQ-0047 (P0, Done).
 
 #### Scenario: No full identifier on screen
 
@@ -59,7 +59,7 @@ The interface SHALL mask sensitive values (for example card numbers as `****1234
 
 ### Requirement: Session and denial handling
 
-An expired session SHALL show a re-login notice and return to login; a 403 SHALL show a denied-access message without technical detail. Traces to REQ-0021 (P0, Pending).
+An expired session SHALL show a re-login notice and return to login; a 403 SHALL show a denied-access message without technical detail. Traces to REQ-0021 (P0, Done).
 
 #### Scenario: Expired session guides back to login
 
@@ -68,7 +68,7 @@ An expired session SHALL show a re-login notice and return to login; a 403 SHALL
 
 ### Requirement: Themes without session leakage
 
-The interface SHALL support light and dark themes through the brand variables only, defaulting to the OS preference with a toggle, and SHALL persist only the theme choice in browser storage, never session data. Theme selection SHALL be expressed as `data-theme` on the document element. Traces to REQ-0038 (P0, Pending).
+The interface SHALL support light and dark themes through the brand variables only, defaulting to the OS preference with a toggle, and SHALL persist only the theme choice in browser storage, never session data. Theme selection SHALL be expressed as `data-theme` on the document element. Traces to REQ-0038 (P0, Done).
 
 #### Scenario: Theme persists, session does not
 
@@ -82,7 +82,7 @@ The interface SHALL support light and dark themes through the brand variables on
 
 ### Requirement: Locales with fallback
 
-The interface SHALL offer `es-419` as the Spanish base with `es-MX`, `es-CO`, and `es-AR` overriding only changed strings, plus `pt-BR`, from separate translation files with a language selector, starting in the language that matches the customer's country. A missing regional string SHALL fall back to `es-419`. Traces to REQ-0012 (P0, Pending) and REQ-0044 (P1, Pending).
+The interface SHALL offer `es-419` as the Spanish base with `es-MX`, `es-CO`, and `es-AR` overriding only changed strings, plus `pt-BR`, from separate translation files with a language selector, starting in the language that matches the customer's country. A missing regional string SHALL fall back to `es-419`. Traces to REQ-0012 (P0, Done) and REQ-0044 (P1, Pending).
 
 #### Scenario: Regional fallback works
 
@@ -101,7 +101,7 @@ The interface SHALL offer `es-419` as the Spanish base with `es-MX`, `es-CO`, an
 
 ### Requirement: Customer-facing functional additions
 
-The interface SHALL add a transactions panel where tapping a charge selects exactly that charge, candidate quick-reply chips for clarifications, typing and loading states, a visible reference-date line, and a confirm box before any dispute write. A tap or a chip SHALL NOT open a dispute. Traces to REQ-0038 (P0, Pending) and REQ-0042 (P1, Pending).
+The interface SHALL add a transactions panel where tapping a charge selects exactly that charge, candidate quick-reply chips for clarifications, typing and loading states, a visible reference-date line, and a confirm box before any dispute write. A tap or a chip SHALL NOT open a dispute. Traces to REQ-0038 (P0, Done) and REQ-0042 (P1, Done).
 
 #### Scenario: Tapping a charge removes ambiguity
 
@@ -135,7 +135,7 @@ The interface SHALL add a transactions panel where tapping a charge selects exac
 
 ### Requirement: No internal identifiers on screen
 
-The interface SHALL never display an internal transaction identifier to the customer. Selecting a transaction SHALL send the identifier as a structured request field, and the conversation SHALL show a human-readable description instead. Traces to REQ-0047 (P0, Pending).
+The interface SHALL never display an internal transaction identifier to the customer. Selecting a transaction SHALL send the identifier as a structured request field, and the conversation SHALL show a human-readable description instead. Traces to REQ-0047 (P0, Done).
 
 #### Scenario: Selection is described, not coded
 
@@ -144,7 +144,7 @@ The interface SHALL never display an internal transaction identifier to the cust
 
 ### Requirement: Complete localization of visible text
 
-Every visible string SHALL come from the translation files for `es-419`, `es-MX`, `es-CO`, `es-AR`, and `pt-BR`; no raw keys and no untranslated English SHALL reach the screen, and server replies SHALL carry translation keys rather than authored prose. Traces to REQ-0012 (P0, Pending), REQ-0044 (P1, Pending), and REQ-0051 (P0, Pending).
+Every visible string SHALL come from the translation files for `es-419`, `es-MX`, `es-CO`, `es-AR`, and `pt-BR`; no raw keys and no untranslated English SHALL reach the screen, and server replies SHALL carry translation keys rather than authored prose. Traces to REQ-0012 (P0, Done), REQ-0044 (P1, Pending), and REQ-0051 (P0, In progress).
 
 #### Scenario: Missing card string fails the build
 
@@ -158,7 +158,7 @@ Every visible string SHALL come from the translation files for `es-419`, `es-MX`
 
 ### Requirement: XSS-safe rendering
 
-The interface SHALL insert all server and customer text via safe text methods, never as executable markup. Traces to REQ-0021 (P0, Pending).
+The interface SHALL insert all server and customer text via safe text methods, never as executable markup. Traces to REQ-0021 (P0, Done).
 
 #### Scenario: Markup in text is inert
 
@@ -167,7 +167,7 @@ The interface SHALL insert all server and customer text via safe text methods, n
 
 ### Requirement: Brand sheets as the only color and type source
 
-The interface SHALL load the team's brand stylesheets and SHALL take every color, font family, and font size from the variables they define. The application SHALL ship at most one local sheet, and it SHALL be limited to layout and positioning. Traces to REQ-0038 (P0, Pending) and REQ-0051 (P0, Pending).
+The interface SHALL load the team's brand stylesheets and SHALL take every color, font family, and font size from the variables they define. The application SHALL ship at most one local sheet, and it SHALL be limited to layout and positioning. Traces to REQ-0038 (P0, Done) and REQ-0051 (P0, In progress).
 
 #### Scenario: Brand stylesheets are served
 
@@ -186,7 +186,7 @@ The interface SHALL load the team's brand stylesheets and SHALL take every color
 
 ### Requirement: Contrast-safe text tokens
 
-The interface SHALL use AA-passing tokens for body text and SHALL NOT use the muted token for small text on light surfaces. Information SHALL never be carried by color alone. Traces to REQ-0038 (P0, Pending).
+The interface SHALL use AA-passing tokens for body text and SHALL NOT use the muted token for small text on light surfaces. Information SHALL never be carried by color alone. Traces to REQ-0038 (P0, Done).
 
 #### Scenario: Small text uses an AA token
 
@@ -200,7 +200,7 @@ The interface SHALL use AA-passing tokens for body text and SHALL NOT use the mu
 
 ### Requirement: Brand-class receipt and queue surfaces
 
-The verified receipt, the advisor queue cards, and the admin tables SHALL be composed from the classes the brand sheet provides, using the brand's table and callout variables, so all surfaces follow the active theme. Traces to REQ-0041 (P0, Pending) and REQ-0003 (P0, Pending).
+The verified receipt, the advisor queue cards, and the admin tables SHALL be composed from the classes the brand sheet provides, using the brand's table and callout variables, so all surfaces follow the active theme. Traces to REQ-0041 (P0, Done) and REQ-0003 (P0, Done).
 
 #### Scenario: Receipt follows the theme
 
@@ -256,9 +256,50 @@ The advisor's ticket detail SHALL show the handoff package and the trace of the 
 
 ### Requirement: The interface carries the product identity
 
-The interface SHALL show the product mark and the line stating its purpose, load fonts and assets only from `branding/`, use a success color distinct from the accent for verified states, and keep a text label on every status color. Traces to REQ-0038 (P0, Done).
+The interface SHALL show the Sentinel product mark and the line stating its purpose, load fonts and assets only from `branding/`, use the bank accent color for actions and the user's messages, use a success color distinct from the accent for verified states, and keep a text label on every status color. The Sentinel violet and rose SHALL appear only in the product mark. Traces to REQ-0038 (P0, Done).
 
 #### Scenario: No external font request
 
 - **WHEN** the page loads
 - **THEN** no font or asset is requested from outside the app
+
+#### Scenario: Bank accent, Sentinel mark
+
+- **WHEN** the page shows a button and the product mark
+- **THEN** the button uses the bank accent and the mark keeps the Sentinel colors
+
+### Requirement: Each recent charge shows its case state
+
+The recent-charges panel SHALL show a state for each charge from the server: eligible, in review, with an advisor, already disputed, outside the window, or not disputable. The page SHALL NOT compute the state. Traces to REQ-0038 (P0, Done) and REQ-0043 (P1, Done).
+
+#### Scenario: Charge with an open dispute
+
+- **WHEN** a charge has an open dispute
+- **THEN** the panel shows it as already disputed
+
+### Requirement: The page shows a bank shell without balances
+
+The header SHALL show the configured bank name, the product type and last four digits of the session product, the country, the language and the as-of date. It SHALL NOT show a balance. Traces to REQ-0038 (P0, Done) and REQ-0039 (P0, Done).
+
+#### Scenario: Header of a customer session
+
+- **WHEN** a customer logs in
+- **THEN** the header shows the masked product and the as-of date, and no balance
+
+### Requirement: The brand is configuration
+
+`SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT` SHALL set the bank name and the accent color. An accent that fails the contrast check SHALL fall back to the default. Traces to REQ-0049 (P2, Done).
+
+#### Scenario: Another bank
+
+- **WHEN** the service starts with another name and a valid accent
+- **THEN** the page shows that name and color
+
+### Requirement: The thread works on a phone
+
+At 390 px wide, the thread SHALL fill the screen, the side panels SHALL open from a button, and every control SHALL be at least 44 px high. Traces to REQ-0038 (P0, Done).
+
+#### Scenario: Phone width
+
+- **WHEN** the page is 390 px wide
+- **THEN** no horizontal scroll appears and the side panels open from a button

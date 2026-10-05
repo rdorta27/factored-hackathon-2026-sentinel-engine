@@ -108,6 +108,35 @@ async function loadBrand() {
   applyBrand();
 }
 
+/* The build line links the page to the measured build: the model, the prompt
+   version, the first 8 characters of the bundle hash and the Gold source. It
+   reads the public health endpoint once, needs no session and writes no state.
+   The line stays hidden when the request fails; the chat does not depend on it. */
+let buildInfo = null;
+
+function renderBuildInfo() {
+  if (!buildInfo) return;
+  const line = document.getElementById("build-info");
+  line.textContent = [
+    `${t("buildInfoModel")}: ${buildInfo.model}`,
+    `${t("buildInfoPrompt")}: ${buildInfo.prompt_version}`,
+    `${t("buildInfoBuild")}: ${String(buildInfo.bundle_hash || "").slice(0, 8)}`,
+    `${t("buildInfoGold")}: ${buildInfo.gold_source}`,
+  ].join(" · ");
+  line.hidden = false;
+}
+
+async function loadBuildInfo() {
+  try {
+    const response = await fetch("/api/v1/health");
+    if (!response.ok) return;
+    buildInfo = await response.json();
+    renderBuildInfo();
+  } catch (error) {
+    // The line stays hidden; the chat does not depend on the build line.
+  }
+}
+
 async function loadLocale(locale) {
   const response = await fetch(`/i18n/${locale}`);
   strings = await response.json();
@@ -117,6 +146,7 @@ async function loadLocale(locale) {
     node.textContent = t(node.getAttribute("data-i18n"));
   });
   applyBrand();
+  renderBuildInfo();
   // A customer session repaints its header and charges in the new language.
   if (lastTransactions && !document.getElementById("view-chat").hidden) {
     renderSessionContext(lastTransactions);
@@ -143,6 +173,7 @@ function clearThread() {
   document.getElementById("transactions").textContent = "";
   document.getElementById("cases").textContent = "";
   lastTransactions = null;
+  casesShowAll = false;
 }
 
 /* The thread is a log of what happened. Changing the language draws it again, so
@@ -177,16 +208,17 @@ function startThread() {
   logEntry({ type: "welcome" });
 }
 
-let demoAvailable = false;
+let simulatedData = false;
 
 function show(id) {
   ["view-login", "view-chat", "view-queue"].forEach((view) => {
     document.getElementById(view).hidden = id !== view;
   });
   document.getElementById("logout").hidden = id === "view-login";
+  // The agent button lives in the chat column, away from the header flags.
   document.getElementById("agent").hidden = id !== "view-chat";
-  // The demo banner is for the entry; a customer session has the data-date chip.
-  document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
+  // The "simulated data" banner follows Gold, not the one-click entry.
+  document.getElementById("demo-banner").hidden = id !== "view-login" || !simulatedData;
   // The session line and the data date belong to a customer session only.
   if (id !== "view-chat") {
     document.getElementById("session-context").hidden = true;
@@ -468,12 +500,12 @@ function drawReply(body, entry) {
     card.append(el("p", "chat-sub", `${t("field_referenceDate")}: ${formatDate(body.display.referenceDate)}`));
     thread.append(card);
   } else if (body.kind === "explanation") {
-    thread.append(el("div", "msg msg-bot", explanationText(body)));
+    thread.append(el("div", "msg msg-bot", body.text ? body.text : explanationText(body)));
     const why = whyCard(body);
     if (why) thread.append(why);
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
-    box.append(el("strong", "", fillTemplate(t(body.message_key), body.values)));
+    box.append(el("strong", "", body.text ? body.text : fillTemplate(t(body.message_key), body.values)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
@@ -481,7 +513,7 @@ function drawReply(body, entry) {
   } else if (body.kind === "error") {
     thread.append(el("div", "msg msg-audit", `${t(body.message_key)} (${body.trace_id})`));
   } else {
-    thread.append(el("div", "msg msg-bot", t(body.message_key)));
+    thread.append(el("div", "msg msg-bot", body.text ? body.text : t(body.message_key)));
   }
 }
 
@@ -544,7 +576,23 @@ function renderSessionContext(payload) {
 
 let lastTransactions = null;
 
-/* "Mis reclamos": the cases of this customer, from the case store. */
+/* "Mis reclamos": the cases of this customer, from the case store. The panel
+   shows the five most recent and one control for the rest. The API still sends
+   every case, so the page pages them itself and no request changes. */
+const CASES_PAGE = 5;
+let casesShowAll = false;
+
+function casesShowAllButton(total) {
+  const button = el("button", "theme-toggle cases-toggle", fill(t("casesShowAll"), { count: total }));
+  button.type = "button";
+  button.setAttribute("data-testid", "cases-show-all");
+  button.addEventListener("click", () => {
+    casesShowAll = true;
+    if (lastTransactions) renderCases(lastTransactions.cases || []);
+  });
+  return button;
+}
+
 function renderCases(cases) {
   const box = document.getElementById("cases");
   box.textContent = "";
@@ -552,7 +600,8 @@ function renderCases(cases) {
     box.append(el("p", "chat-sub", t("casesEmpty")));
     return;
   }
-  cases.forEach((item) => {
+  const shown = casesShowAll ? cases : cases.slice(0, CASES_PAGE);
+  shown.forEach((item) => {
     const card = el("div", "case-card");
     card.setAttribute("data-testid", "case-card");
     const top = el("span", "tx-line");
@@ -563,6 +612,9 @@ function renderCases(cases) {
     card.append(el("span", "chat-sub", what.filter(Boolean).join(" · ")));
     box.append(card);
   });
+  if (!casesShowAll && cases.length > CASES_PAGE) {
+    box.append(casesShowAllButton(cases.length));
+  }
 }
 
 function paintCharges(payload) {
@@ -570,7 +622,12 @@ function paintCharges(payload) {
   renderCases(payload.cases || []);
   const box = document.getElementById("transactions");
   box.textContent = "";
-  payload.transactions.forEach((tx) => box.append(renderCharge(tx)));
+  const rows = payload.transactions || [];
+  if (!rows.length) {
+    box.append(el("p", "chat-sub", t("txEmpty")));
+    return;
+  }
+  rows.forEach((tx) => box.append(renderCharge(tx)));
 }
 
 async function loadTransactions() {
@@ -675,7 +732,10 @@ function renderDemoPrompts(transactions) {
   if (merchant) prompts.push(fill(t("demoAmbiguous"), { merchant }));
   const blocked = rows.find((tx) => tx.case_state === "outside_window" && tx.currency === localCurrency());
   if (blocked) prompts.push(fill(t("demoWhy"), { merchant: blocked.merchant }));
-  prompts.push(t("demoPerson"));
+  // The person chip never stands alone. An account without a charge and
+  // without a repeated merchant has nothing to demo, so the page hides all
+  // chips instead of offering one button that only opens a handoff ticket.
+  if (prompts.length) prompts.push(t("demoPerson"));
 
   prompts.forEach((phrase) => {
     const chip = el("button", "candidate", phrase);
@@ -686,8 +746,9 @@ function renderDemoPrompts(transactions) {
     });
     box.append(chip);
   });
-  box.hidden = prompts.length === 0;
-  document.getElementById("demo-hint").hidden = prompts.length === 0;
+  const showExamples = demoAvailable && prompts.length > 0;
+  box.hidden = !showExamples;
+  document.getElementById("demo-hint").hidden = !showExamples;
 }
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
@@ -871,10 +932,18 @@ document.getElementById("locale-group").addEventListener("click", (event) => {
 async function loadDemoEntry() {
   const response = await fetch("/api/v1/auth/demo");
   const available = response.ok;
-  demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
-  document.getElementById("demo-banner").hidden = !available;
   document.getElementById("password-login").open = !available;
+}
+
+/* The "simulated data" notice follows Gold, not the one-click entry. It shows
+   on the entry page whenever Gold is a mock, with or without the personas. */
+async function loadDataNotice() {
+  const response = await fetch("/api/v1/health");
+  if (!response.ok) return;
+  const body = await response.json().catch(() => ({}));
+  simulatedData = body.gold_source === "mock";
+  document.getElementById("demo-banner").hidden = !simulatedData || document.getElementById("view-login").hidden;
 }
 
 async function demoLogin(persona) {
@@ -899,3 +968,5 @@ document.getElementById("demo-personas").addEventListener("click", (event) => {
 loadLocale("es-419");
 loadBrand();
 loadDemoEntry();
+loadDataNotice();
+loadBuildInfo();

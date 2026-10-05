@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Requirements
@@ -14,11 +14,11 @@ This page lists what the system must do to meet the hackathon brief. Each requir
 - the evidence that proves it,
 - its status.
 
-**Purpose:** set the priority of the work, find the evaluation criteria that still have no evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../understand/overview.md), [dataset](../understand/dataset.md), [glossary](../understand/glossary/), [evidence index](../../evidence/README.md), [what is real](../architecture/what-is-real.md).
+**Purpose:** set the priority of the work, find the evaluation criteria that still have no evidence, and see what blocks what ([dependencies](#dependencies)). **Related:** [The Challenge](../overview.md), [dataset](../data/dataset.md), [glossary](../glossary/), [evidence index](../../evidence/README.md), [what is real](../architecture/what-is-real.md).
 
 ## Hackathon material
 
-The requirements come from four official documents and from the clarifications in the help channel. The documents are not in the repository, except the data dictionary, kept as a column reference in [understand/reference/](../understand/reference/). Each teammate keeps a copy. We cite them by section or page.
+The requirements come from four official documents and from the clarifications in the help channel. The documents are not in the repository, except the data dictionary, kept as a column reference in [data/reference/](../data/reference/). Each teammate keeps a copy. We cite them by section or page.
 
 | Document | Cited as | What it defines | Requirements that cite it |
 |---|---|---|---|
@@ -28,7 +28,7 @@ The requirements come from four official documents and from the clarifications i
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | 1 |
 | Answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
-A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 10 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../understand/dataset.md). We cite them when a row depends on a declared property of the data.
+A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 8 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../data/dataset.md). We cite them when a row depends on a declared property of the data.
 
 ## Classification
 
@@ -171,11 +171,12 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 
 A requirement depends on another when we cannot meet it, or cannot produce its evidence, until the other one is met. Each requirement lists its direct dependencies in its table row, and with the reason in its card. Update them when you add a requirement or when its evidence changes.
 
-Chains that still block P0 work (status on 2026-10-04):
+Chains that still block P0 work (status on 2026-10-05):
 
 - **Data and learned component:** closed. REQ-0015, REQ-0016, REQ-0017, REQ-0019 and REQ-0020 are done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 (Pending) → REQ-0051 (In progress). The final redeploy comes before the video.
 - **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 (Pending) → REQ-0051.
+- **Evidence hardening:** REQ-0022 and REQ-0055 (Done) → [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md) → REQ-0036 (Pending). The slides cite its gap analysis, its live latency and its limits.
 - **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (In progress). The limits must go on the slides, and the README needs a roadmap section.
 - **Path to production:** REQ-0052 (In progress) needs alerts by country (REQ-0050).
 

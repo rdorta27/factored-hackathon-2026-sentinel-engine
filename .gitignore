@@ -7,6 +7,8 @@
 
 # Datos del hackathon (no se suben)
 data/
+# Excepción: docs/data/ guarda páginas de documentación (esquema, no filas)
+!docs/data/
 
 # Formatos de datos locales: nunca versionados, aunque vivan fuera de data/
 *.duckdb
@@ -27,3 +29,7 @@ __pycache__/
 
 # Notas locales, no se suben
 .local/
+
+# Judge credentials: salted hashes and the plain-password sheet (never committed)
+deploy/judge-users/users.json
+deploy/judge-users/passwords.csv

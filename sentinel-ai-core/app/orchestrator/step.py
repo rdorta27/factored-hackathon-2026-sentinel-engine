@@ -1,14 +1,22 @@
+import re
 from dataclasses import dataclass
 from datetime import date
-from time import perf_counter
+from time import perf_counter, time
 from uuid import uuid4
 
-from app.ai.grounding import extract_facts, extract_soft, ground, narrow_candidates, rank_candidates
+from app.ai.drafts import DraftFacts, fill_draft, validate_draft
+from app.ai.grounding import narrow, normalize_text
 from app.ai.guard import is_injection, refuse_extraction
-from app.ai.port import ModelInfo, ModelPort, UnderstandKind
+from app.ai.port import (
+    SUBTYPE_OUT_OF_SCOPE,
+    ModelInfo,
+    ModelPort,
+    UnderstandKind,
+    UnderstandResult,
+)
 from app.ai.transport import ModelUnavailable
 from app.observability.observer import TurnObserver
-from app.orchestrator.explanation import explanation_for, is_why_followup
+from app.orchestrator.explanation import asks_why, explanation_for, is_why_followup
 from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
@@ -27,6 +35,7 @@ from app.policy.engine import (
     Intent,
     PolicyHit,
     PolicyRequest,
+    _expired,
     decision_snapshot,
     evaluate,
 )
@@ -36,11 +45,104 @@ from app.tools.ports import ToolStatus, TransactionLookup
 
 MAX_ATTEMPTS = 3
 OPEN_ACTION = "open_dispute"
+# A pending confirm box expires five minutes after it opened (REQ-0005).
+# A late confirmation never writes; the loop shows the candidate again.
+CONFIRM_TTL_S = 300.0
 # At most two clarification rounds: the third vague turn hands off (REQ-0001).
 MAX_CLARIFICATIONS = 2
 # The stored turn window is bounded like the history: the model only reads the
 # last few turns, so an unbounded list would grow the session state forever.
 MAX_TURNS = 50
+
+# The words table (design 5). A turn that does not decide may show the model
+# draft; a turn that decides uses templates only.
+DRAFT_ALLOWED_KINDS = frozenset(
+    {OutcomeKind.EXPLAIN, OutcomeKind.OFFER, OutcomeKind.QUESTION}
+)
+TEMPLATE_ONLY_KINDS = frozenset(
+    {OutcomeKind.CONFIRM_BOX, OutcomeKind.CASE_NUMBER, OutcomeKind.HANDOFF, OutcomeKind.FAILURE}
+)
+
+# Opener subtypes (contract v3): small talk that never hands off. "unclear" is
+# not an opener: it still asks a clarifying question.
+OPENER_SUBTYPES = ("greeting", "thanks", "goodbye", "identity", "help")
+# Opener patterns are the fallback for v2 and the baseline (no subtype). They
+# run only on a `missing` result and only on a short message.
+OPENER_MAX_WORDS = 8
+_OPENER_PATTERNS = (
+    ("greeting", re.compile(
+        r"^(hola|buen[oa]s?\s+(d[ií]as|tardes|noches)|ol[aá]|oi|bom dia|boa tarde|boa noite|hey|hi)\b"
+    )),
+    ("thanks", re.compile(r"\b(gracias|muchas gracias|mil gracias|obrigad[oa]|valeu|agradecido)\b")),
+    ("goodbye", re.compile(r"\b(adi[oó]s|chau|hasta luego|hasta pronto|at[ée] logo|tchau|adeus)\b")),
+    ("identity", re.compile(
+        r"\b(eres un bot|es un bot|eres un robot|sos un bot|eres una persona|es una persona|"
+        r"eres humano|es humano|voc[êe] [eé] um (bot|rob[oô])|rob[oô]|um bot)\b"
+    )),
+    ("help", re.compile(
+        r"\b(en qu[ée] (puedo|te puedo|puedes) ayudar|qu[ée] puedes hacer|para qu[ée] sirves|"
+        r"c[oó]mo funcionas|como funciona|ajuda|em que (posso|pode) ajudar|o que voc[êe] faz)\b"
+    )),
+)
+# A charge noun marks a request even when the router reads the message as
+# `missing`: a greeting plus a request keeps the request.
+_CHARGE_NOUNS = (
+    "cargo", "cargos", "cobro", "cobros", "cobranca", "cobrança", "compra", "compras",
+    "consumo", "movimiento", "movimientos", "transaccion", "transacción", "reclamo",
+    "disputa", "contestacao", "contestação",
+)
+
+
+def _looks_like_request(text: str) -> bool:
+    normalized = normalize_text(text)
+    return any(noun in normalized for noun in _CHARGE_NOUNS)
+
+
+def _opener_subtype(text: str, understood: UnderstandResult) -> str | None:
+    """The opener subtype, or None. Never hides a charge request."""
+    if _looks_like_request(text):
+        return None
+    if understood.subtype in OPENER_SUBTYPES:
+        return understood.subtype
+    if understood.subtype is not None:
+        return None
+    if len(text.split()) > OPENER_MAX_WORDS:
+        return None
+    normalized = normalize_text(text)
+    for subtype, pattern in _OPENER_PATTERNS:
+        if pattern.search(normalized):
+            return subtype
+    return None
+
+
+def _variant_key(base: str, turn_count: int) -> str:
+    """One of two reviewed templates, chosen by turn count (design 6)."""
+    return base if turn_count % 2 == 0 else f"{base}.1"
+
+
+def _draft_text(
+    understood: UnderstandResult | None,
+    facts: DraftFacts,
+    state: ConversationState,
+    ports: "Ports",
+) -> str:
+    """The validated model words for this turn, or "" for the template.
+
+    A rejected draft falls back to the template and the turn record names the
+    reason (spec chat, decision 024).
+    """
+    if understood is None or not understood.reply_draft:
+        return ""
+    accepted, reason = validate_draft(understood.reply_draft, facts, state.language.value)
+    if accepted:
+        return fill_draft(understood.reply_draft, facts)
+    _emit(
+        ports,
+        state.language.value,
+        step="understand",
+        event=f"draft_rejected:{reason}",
+    )
+    return ""
 
 
 @dataclass
@@ -326,12 +428,9 @@ def _correction_target(turn: TextInput, state: ConversationState, ports: Ports) 
     except GoldTimeout:
         return None
     today = _today(ports)
-    facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
-    result = ground(facts, candidates)
-    if result.match is not None and result.match.candidate_id != pending.candidate_id:
-        return result.match
-    soft = extract_soft(turn.text, today, [item.merchant for item in candidates])
-    narrowed = narrow_candidates(facts, soft, candidates, today)
+    narrowed = narrow(turn.text, None, candidates, today)
+    if narrowed.match is not None and narrowed.match.candidate_id != pending.candidate_id:
+        return narrowed.match
     if narrowed.stated and len(narrowed.candidates) == 1:
         only = narrowed.candidates[0]
         if only.candidate_id != pending.candidate_id:
@@ -339,13 +438,56 @@ def _correction_target(turn: TextInput, state: ConversationState, ports: Ports) 
     return None
 
 
-def _searched_date(facts, soft) -> str | None:  # type: ignore[no-untyped-def]
-    """The single date the customer named, for the "no match" clarification."""
-    if facts.date_iso:
-        return facts.date_iso
-    if len(soft.dates) == 1:
-        return next(iter(soft.dates))
-    return None
+def _charge_status(
+    turn: TextInput, state: ConversationState, ports: Ports, understood: UnderstandResult
+) -> TurnOutput:
+    """Answer the status of the verified charge. Never opens a box (REQ-0003)."""
+    looked = _lookup_transactions(state, ports)
+    if isinstance(looked, TurnOutput):
+        return looked
+    today = _today(ports)
+    narrowed = narrow(turn.text, understood, looked, today)
+    candidate = narrowed.match
+    if candidate is None and narrowed.candidates:
+        # No charge named: the newest verified charge is "the last charge".
+        candidate = narrowed.candidates[0]
+    if candidate is None:
+        return TurnOutput(
+            kind=OutcomeKind.QUESTION,
+            language=state.language,
+            reason="charge.not_found",
+            text=_draft_text(understood, DraftFacts(), state, ports),
+        )
+    policy = load_country(ports.country)
+    eligible = bool(
+        policy
+        and policy.disputable.get(candidate.status.value, False)
+        and not _expired(candidate, today, policy.window_days)
+        and not candidate.is_disputed
+    )
+    state.candidates = [candidate]
+    _emit(ports, state.language.value, step="decide", policy_rule="charge.status")
+    facts = DraftFacts(
+        merchant=candidate.merchant,
+        amount=candidate.amount,
+        date=candidate.date,
+        status=candidate.status.value,
+    )
+    base = "charge.status" if eligible else "charge.statusIneligible"
+    return TurnOutput(
+        kind=OutcomeKind.EXPLANATION,
+        language=state.language,
+        reason="charge.status",
+        explanation_key=_variant_key(base, max(len(state.turns) - 1, 0)),
+        explanation_values={
+            "merchant": candidate.merchant,
+            "amount": candidate.amount,
+            "status": candidate.status.value,
+            "charge_date": candidate.date,
+            "eligible": eligible,
+        },
+        text=_draft_text(understood, facts, state, ports),
+    )
 
 
 def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOutput:
@@ -413,13 +555,32 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         state.scope_asks = 0
     if understood.not_mine:
         state.states_not_theirs = True
-    if understood.kind is UnderstandKind.MISSING:
+    # A why question that names a charge is grounded below, not clarified here.
+    if understood.kind is UnderstandKind.MISSING and not asks_why(turn.text):
+        subtype = _opener_subtype(turn.text, understood)
+        if subtype is not None:
+            base = f"opener.{subtype}"
+            return TurnOutput(
+                kind=OutcomeKind.EXPLAIN,
+                language=state.language,
+                reason=base,
+                message_key=_variant_key(base, max(len(state.turns) - 1, 0)),
+                text=_draft_text(understood, DraftFacts(), state, ports),
+            )
         capped = _capped(state, ports)
         if capped is not None:
             return capped
         state.clarification_count += 1
         _record_question(state, "missing")
-        return TurnOutput(kind=OutcomeKind.QUESTION, language=state.language)
+        return TurnOutput(
+            kind=OutcomeKind.QUESTION,
+            language=state.language,
+            text=_draft_text(understood, DraftFacts(), state, ports),
+        )
+    # A why question about a named charge is answered from the rule below, even
+    # when the model labels it as a status question.
+    if understood.kind is UnderstandKind.STATUS and not asks_why(turn.text):
+        return _charge_status(turn, state, ports, understood)
     if understood.kind is UnderstandKind.OUT_OF_SCOPE:
         # Decision 008: say what is out of scope and offer the advisor; a model
         # error costs a sentence, not a ticket. The customer can ask for the
@@ -427,8 +588,18 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         # row hands off.
         state.scope_asks += 1
         if state.scope_asks <= MAX_SCOPE_OFFERS:
-            _emit(ports, state.language.value, step="decide", policy_rule="out_of_scope.ask")
-            return TurnOutput(kind=OutcomeKind.OFFER, language=state.language, reason="out_of_scope.ask")
+            subtype = (
+                understood.subtype if understood.subtype in SUBTYPE_OUT_OF_SCOPE else None
+            )
+            base = f"out_of_scope.{subtype}" if subtype else "out_of_scope.ask"
+            _emit(ports, state.language.value, step="decide", policy_rule=base)
+            return TurnOutput(
+                kind=OutcomeKind.OFFER,
+                language=state.language,
+                reason=base,
+                message_key=_variant_key(base, max(len(state.turns) - 1, 0)),
+                text=_draft_text(understood, DraftFacts(), state, ports),
+            )
         _emit(ports, state.language.value, step="escalate", policy_rule=None)
         return TurnOutput(
             kind=OutcomeKind.HANDOFF,
@@ -445,9 +616,8 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         return looked
     candidates = looked
     today = _today(ports)
-    facts = extract_facts(turn.text, today.year, [item.merchant for item in candidates])
-    result = ground(facts, candidates)
-    if result.outcome != "matched" or result.match is None:
+    narrowed = narrow(turn.text, understood, candidates, today)
+    if narrowed.match is None:
         capped = _capped(state, ports)
         if capped is not None:
             return capped
@@ -456,31 +626,35 @@ def _on_text(turn: TextInput, state: ConversationState, ports: Ports) -> TurnOut
         if understood.not_mine:
             # The customer denied what was shown: never show it again.
             _remember_rejected(state, [item.candidate_id for item in state.candidates])
-        soft = extract_soft(turn.text, today, [item.merchant for item in candidates])
-        narrowed = narrow_candidates(facts, soft, candidates, today)
-        ranked = narrowed.candidates if narrowed.stated else rank_candidates(
-            facts, result.candidates or candidates, today
-        )
         state.candidates = [
-            item for item in ranked if item.candidate_id not in state.rejected_ids
+            item for item in narrowed.candidates if item.candidate_id not in state.rejected_ids
         ][:4]
-        searched = _searched_date(facts, soft)
         return TurnOutput(
             kind=OutcomeKind.QUESTION,
             language=state.language,
             reason="charge.not_found" if narrowed.not_found else None,
-            explanation_values={"searched_date": searched} if searched else {},
+            explanation_values=(
+                {"searched_date": narrowed.searched_date} if narrowed.searched_date else {}
+            ),
+            text=_draft_text(understood, DraftFacts(), state, ports),
         )
+    if asks_why(turn.text):
+        # Why about a named charge: ground it and decide. An explainable rule
+        # answers from the rule; a safety rule stays a new request, so naming
+        # the charge never skips verification (adversarial F6).
+        hit = _hit(state, ports, Intent.CHARGE, narrowed.match)
+        if hit.outcome is HitOutcome.EXPLAIN:
+            return _explanation(state, ports)
     # Repair: new facts re-anchor to this charge; any previously shown charge
     # that is not the match is superseded and joins the rejected list.
     _remember_rejected(
         state,
         [item.candidate_id for item in state.candidates],
-        keep=result.match.candidate_id,
+        keep=narrowed.match.candidate_id,
     )
-    _forget_rejected(state, result.match.candidate_id)
+    _forget_rejected(state, narrowed.match.candidate_id)
     state.candidates = candidates
-    return _after_policy(state, ports, Intent.CHARGE, result.match, turn.text)
+    return _after_policy(state, ports, Intent.CHARGE, narrowed.match, turn.text)
 
 
 def _confirm(
@@ -492,6 +666,10 @@ def _confirm(
         return TurnOutput(kind=OutcomeKind.FAILURE, language=state.language, reason="unknown_candidate")
     selected = shown_candidate(state, turn.candidate_id)
     if pending is None or turn.candidate_id != pending.candidate_id:
+        return _after_policy(state, ports, Intent.CHARGE, selected, "")
+    if time() - pending.created_at > CONFIRM_TTL_S:
+        # Late confirmation: never write, show the candidate again with a
+        # fresh box instead of the stale one.
         return _after_policy(state, ports, Intent.CHARGE, selected, "")
     # Pressing the button is the customer choosing the charge, not asking for a
     # person: an unanswered offer to help must not decide this turn. Clearing it
