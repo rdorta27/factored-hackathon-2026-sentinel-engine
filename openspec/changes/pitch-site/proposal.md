@@ -14,8 +14,10 @@ The organizers said that the pitch carries the most weight: slides are 60% produ
 
 - **Product statement:** `docs/product.md`, one page: the user, the problem with its demand data, the difference, the proof (each claim linked to the evidence index), and the tagline. Working tagline: "The AI converses. The rules decide."
 - **GitHub Pages site:** a static site in `site/`, in English, from the `Pages` artboard of the canvas: the product, how it works in five steps, the measured results with their sources, the four demo cases, links to the live demo, the architecture and the repository. A workflow publishes `site/` to GitHub Pages from `main`. Every number cites a `summary.json` field.
+- **Interactive diagrams:** standalone pages in `site/diagrams/`: the architecture (demo and production view), one chat turn, the three demo cases, and an evidence explorer. An optional page shows why a confidence cut-off does not decide.
+- **Judge sections:** try the demo (credentials come by email, never on the site), limits, path to production, reproduce a run, screenshots, responsible AI, team, judge questions and page details.
 - **Roadmap:** a `## Roadmap` section in the README, with each item not built and its evidence: Customer 360 (balances, history), the investigation of a charge, the feedback dataset, the spending assistant, policy retrieval, handoff routing (REQ-0030, REQ-0056).
-- **Slides (six):** why (the problem and its data), what (the product and the demo), how ("The AI converses. The rules decide."), proof (results and 0 unsafe outcomes), your brand (the white label of `bank-ui`), limits and roadmap. The three canvas slides become English; three are new. They are built as static HTML pages in `site/slides/` (1280×720) and exported to PDF with a headless browser, so any tool can edit them. The canvas stays a visual reference. They stay in the canvas; the repository links to them and to their export.
+- **Slides (six):** why (the problem and its data), what (the product and the demo), how ("The AI converses. The rules decide."), proof (results and 0 unsafe outcomes), your brand (the white label of `bank-ui`), limits and roadmap. The three canvas slides become English; three are new. They are static HTML pages in `site/slides/` (1280×720), exported to PDF with a headless browser. The canvas stays a visual reference.
 - **Video script:** Why → What → How, with the shots from the canvas mockups and the live demo. The production decision is open.
 
 ## Capabilities
@@ -32,6 +34,7 @@ The organizers said that the pitch carries the most weight: slides are 60% produ
 
 ## Non-goals
 
-- A site generator or a framework. Plain HTML and CSS.
+- A site generator, a framework or an external library. Plain HTML, CSS and a little JavaScript.
+- A password, key, bucket name or dataset row on the site.
 - Numbers that no frozen run contains, or a time saving that we did not measure.
 - Marketing claims about real banks or customers.
