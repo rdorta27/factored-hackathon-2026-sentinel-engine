@@ -41,6 +41,8 @@ At least one learned component evaluated against a simpler baseline on held-out 
 
 **Evidence:** Proven by: the prompted router (GLM 5.3 Flash, prompt v2) against the keyword baseline on the same 280 sealed held-out cases, measured once, in [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): net +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]), judged by D5 in [018](../build/decisions/018-evaluation-acceptance.md). The router also reports a confidence per label; the two cut-offs were calibrated on the development + validation split and frozen in [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive), behind `SENTINEL_LLM_CUTOFFS` and handed to router-v3 for the `eval-v8` measurement.
 
+A second learned component, the charge selector, has exact labels from real transactions: [`charge-ranker/test-v1`](../../evidence/charge-ranker/test-v1/summary.json) compares it with the rules on a customer-disjoint, later test split (`configurations.<name>.all.*`, [025](../build/decisions/025-charge-selector.md)). It stays off in the demo, because it fails the serving rule.
+
 A stronger opponent is trained and frozen: TF-IDF on character n-grams and a logistic regression, trained on development and tuned on validation in [`evidence/evaluation-runs/2024Q4-train-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) (`splits`, `model.regularization_c`, `validation.selected`, `model.sha256`; [007](../build/decisions/007-learned-component.md)). The sealed comparison with the router is the work of `eval-v8`.
 
 Missing: nothing for the brief; the cases are model-written simulation, a limit stated in [018](../build/decisions/018-evaluation-acceptance.md).
@@ -56,7 +58,7 @@ Labels must be trustworthy and the evaluation must not see information from the 
 
 **Depends on:** [REQ-0015](#req-0015). Labels come from the pipeline output.
 
-**Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json).
+**Evidence:** Proven by: 2024Q4 window with the held-out cut 2025-07-01 enforced in code (`evidence/evaluation/method.md`); leak check 5611/5611 in `evidence/evaluation/2024Q4-v1/summary.json`; dev and held-out splits with no shared ids in [`evidence/evaluation-runs/2024Q4-eval-v5/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v5/summary.json). The charge selector adds splits by customer and by date, with the frozen counts and hashes in [`charge-ranker/data-v1`](../../evidence/charge-ranker/data-v1/summary.json) (`checks.customers_in_two_splits` = 0, `checks.test_only_families_outside_test` = 0). The labels are exact: each description comes from one known transaction.
 
 The written justification of metrics, thresholds and splits is section 7 of the [metrics report](../build/metrics-report.md#7-justification-of-metrics-thresholds-and-splits-req-0017).
 

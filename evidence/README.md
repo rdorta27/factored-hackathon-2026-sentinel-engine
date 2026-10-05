@@ -37,6 +37,7 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Does the system resist attacks? | [`adversarial/20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
 | What does monitoring by country show? | [`monitoring/2024Q4-resolution-v2-replay`](monitoring/2024Q4-resolution-v2-replay/summary.json) | `groups.<country>.<language>.*` |
 | What does the ROI projection use? | [`roi/2023-2026-callcenter-v1`](roi/2023-2026-callcenter-v1/summary.json) | `transactional_calls.*` |
+| Does the learned charge selector beat the rules? | [`charge-ranker/test-v1`](charge-ranker/test-v1/summary.json) | `configurations.<name>.all.*` |
 | Can the data support a charge investigation? | [`customer-360/dev-v1`](customer-360/dev-v1/README.md) and [`customer-360/dev-signals-v1`](customer-360/dev-signals-v1/README.md) | `balance.safe_to_show`, `complaints.charge_linkable`, `investigation.has_signal` |
 
 ## Flows
@@ -60,6 +61,16 @@ The measured problem behind the chosen flow. Script: `measure_problem.py`. Data 
 | [`problem/dev-v1`](problem/dev-v1/README.md) | **Current** | First-contact resolution by reason, calls a day by workflow (mean, busy day, highest day), agent hours a month and missing values | REQ-0014, REQ-0053 |
 
 The reason-to-workflow mapping is in the run README and was committed before the first number. The raw data is not in the repository; `verify` needs the raw call files (see the run `MANIFEST.md`).
+
+## Charge selector
+
+The learned charge selector ([025](../docs/build/decisions/025-charge-selector.md)). Scripts: `sentinel-ai-core/eval/build_charge_splits.py`, `train_charge_ranker.py`, `eval_charge_ranker.py`. Data type: **Simulation**. The transactions are real Gold rows. The descriptions are team-generated. The runs need the local Gold file.
+
+| Run | Status | What it holds | Requirements |
+|---|---|---|---|
+| [`charge-ranker/data-v1`](charge-ranker/data-v1/README.md) | **Current** | Frozen splits: counts, hashes, seed, families | REQ-0017 |
+| [`charge-ranker/train-v1`](charge-ranker/train-v1/README.md) | **Current** | The weights file and its hash, the threshold, the validation result | REQ-0016, REQ-0017, REQ-0019 |
+| [`charge-ranker/test-v1`](charge-ranker/test-v1/README.md) | **Current** | Four configurations on the test split, measured once | REQ-0016, REQ-0017, REQ-0020 |
 
 ## Evaluation inputs
 
