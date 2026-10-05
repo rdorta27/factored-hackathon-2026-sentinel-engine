@@ -50,6 +50,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     ``memory`` so cases never share a database).
     """
     from app.ai.serving import model_from_env
+    from app.build_info import bundle_hash
     from app.observability import Recorder
     from app.routers.demo_chat import router as chat_router
     from app.routers.disputes import router as disputes_router
@@ -160,6 +161,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
             "prompt_version": info.prompt_version,
             "gold_source": gold_source,
             "gold_required": "on" if strict_enabled() else "off",
+            "bundle_hash": bundle_hash(),
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),
         }
