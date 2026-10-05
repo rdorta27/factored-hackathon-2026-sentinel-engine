@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Requirements
@@ -28,7 +28,7 @@ The requirements come from four official documents and from the clarifications i
 | Data dictionary (*LATAM Bank*) | Dictionary | Columns, partitions and relationships between tables | 1 |
 | Answers in the hackathon help channel | Help channel (*date*) | Clarifications: what counts as a learned component, cloud deployment, sizing, external data, deadline | 6 |
 
-A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 10 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../data/dataset.md). We cite them when a row depends on a declared property of the data.
+A requirement with no official source has the mark **Own**: a design decision of the team, with a link to its explanation. 8 requirements have only this source. Others combine it with an official source. The dataset documents shape the data requirements through [dataset](../data/dataset.md). We cite them when a row depends on a declared property of the data.
 
 ## Classification
 
@@ -171,7 +171,7 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 
 A requirement depends on another when we cannot meet it, or cannot produce its evidence, until the other one is met. Each requirement lists its direct dependencies in its table row, and with the reason in its card. Update them when you add a requirement or when its evidence changes.
 
-Chains that still block P0 work (status on 2026-10-04):
+Chains that still block P0 work (status on 2026-10-05):
 
 - **Data and learned component:** closed. REQ-0015, REQ-0016, REQ-0017, REQ-0019 and REQ-0020 are done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 (Pending) → REQ-0051 (In progress). The final redeploy comes before the video.
