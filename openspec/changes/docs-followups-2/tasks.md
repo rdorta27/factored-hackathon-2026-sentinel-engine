@@ -54,8 +54,8 @@ Out of scope: `docs/data/reference/latam-bank-data-dictionary.md` (official sour
 ## 6. Repository hygiene and submission
 
 - [ ] 6.1 Search the slides, `site/` and the video script for a password, key or bucket name (from `judge-access` 4.3). Scan the tracked files for secrets and data: API keys, the bucket name, account ids, dataset rows, `.env` files and plain passwords outside the documented local fixtures. Use fixed `git grep` commands and `git ls-files`. Evidence: the commands and the empty output in the commit body.
-- [ ] 6.2 Compare the delivery checklist in `docs/build/delivery.md` with the real items: the repository name (`factored-hackathon-2026-[team]`), the public link, the slides, the video and the email template with the credentials block. Do not write a real password. Mark the rows of the video, the tags and the email as owned by the `video` change. Evidence: the checklist with each row checked or marked.
-- [ ] 6.3 Write the exact `git tag v1.0-submission` and `gh release create` commands in `docs/build/delivery.md`. The owner runs them. Evidence: the file.
+- [x] 6.2 Compare the delivery checklist in `docs/build/delivery.md` with the real items: the repository name (`factored-hackathon-2026-[team]`), the public link, the slides, the video and the email template with the credentials block. Do not write a real password. Mark the rows of the video, the tags and the email as owned by the `video` change. Evidence: the checklist with each row checked or marked.
+- [x] 6.3 Write the exact `git tag v1.0-submission` and `gh release create` commands in `docs/build/delivery.md`. The owner runs them. Evidence: the file.
 
 ## 7. Pitch and presentation (first pass)
 
