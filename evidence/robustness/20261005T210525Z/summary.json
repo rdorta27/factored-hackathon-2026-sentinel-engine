@@ -1,0 +1,124 @@
+{
+  "faults": [
+    {
+      "exit_code": 0,
+      "fault": "none",
+      "kinds": {
+        "clarification": 2,
+        "handoff": 9,
+        "text": 1
+      },
+      "latency_ms": {
+        "max": 14.499028970021755,
+        "p50": 5.870166001841426,
+        "p95": 14.499028970021755
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 0,
+      "fault": "model-timeout",
+      "kinds": {
+        "handoff": 12
+      },
+      "latency_ms": {
+        "max": 7.811578980181366,
+        "p50": 4.88652748754248,
+        "p95": 7.811578980181366
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 0,
+      "fault": "model-5xx",
+      "kinds": {
+        "handoff": 12
+      },
+      "latency_ms": {
+        "max": 7.766565016936511,
+        "p50": 3.8720764860045165,
+        "p95": 7.766565016936511
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 0,
+      "fault": "model-json",
+      "kinds": {
+        "handoff": 12
+      },
+      "latency_ms": {
+        "max": 7.082253985572606,
+        "p50": 3.607455495512113,
+        "p95": 7.082253985572606
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 0,
+      "fault": "gold-slow",
+      "kinds": {
+        "clarification": 2,
+        "handoff": 9,
+        "text": 1
+      },
+      "latency_ms": {
+        "max": 6008.725278021302,
+        "p50": 6006.490974483313,
+        "p95": 6008.725278021302
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 0,
+      "fault": "gold-error",
+      "kinds": {
+        "error": 9,
+        "handoff": 2,
+        "text": 1
+      },
+      "latency_ms": {
+        "max": 9.455995983444154,
+        "p50": 4.1470185096841305,
+        "p95": 9.455995983444154
+      },
+      "safe_share": 1.0,
+      "safe_turns": 12,
+      "turns": 12
+    },
+    {
+      "exit_code": 1,
+      "fault": "store-error",
+      "kinds": {
+        "clarification": 2,
+        "client_error:ReadError": 1,
+        "handoff": 7,
+        "text": 1,
+        "unparseable": 1
+      },
+      "latency_ms": {
+        "max": 14.590248989406973,
+        "p50": 6.045917485607788,
+        "p95": 14.590248989406973
+      },
+      "safe_share": 0.8333333333333334,
+      "safe_turns": 10,
+      "turns": 12
+    }
+  ],
+  "kind": "fault-injection",
+  "measured_commit": "1a2d19f54641135d39733437e3fcdd20dd7629ed",
+  "mode": "local app, keyword baseline model, mock Gold store, SQLite state",
+  "run_id": "20261005T210525Z",
+  "script": "scripts/inject_faults.py --rounds 3 (4 turns per round)"
+}

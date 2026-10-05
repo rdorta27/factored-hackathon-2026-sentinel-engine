@@ -1,0 +1,25 @@
+// Saved queries for the public link (REQ-0035, REQ-0050).
+// Run them in the Log Analytics workspace of the Container Apps environment.
+// Each query returns aggregates only. It returns no trace id, no session ref
+// and no message text.
+
+// Turns, p50 and p95 latency, and cost by country, outcome and language.
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(4h)
+| where Log_s has '"step": "turn"'
+| extend rec = parse_json(Log_s)
+| summarize turns = count(),
+            p50_ms = round(percentile(toreal(rec.latency_ms), 50), 1),
+            p95_ms = round(percentile(toreal(rec.latency_ms), 95), 1),
+            cost_usd = round(sum(toreal(rec.cost_usd)), 6)
+  by country = tostring(rec.country), outcome = tostring(rec.outcome), language = tostring(rec.language)
+| order by country asc, outcome asc
+
+// Failed or timed-out steps and handoffs.
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(4h)
+| where Log_s has 'country'
+| extend rec = parse_json(Log_s)
+| summarize records = count(),
+            handoffs = countif(isnotempty(tostring(rec.handoff))),
+            bad_outcomes = countif(tostring(rec.outcome) in ('failed', 'timeout', 'error', 'unavailable'))

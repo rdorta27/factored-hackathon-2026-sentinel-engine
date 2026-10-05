@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from app.main import SESSION_COOKIE, create_app
 from app.session.clock import DEFAULT_REFERENCE_DATE
+from app.session.limits import MAX_FAILURES
 
 PASSWORD = "Testpass-001"
 LOGIN = "CUST-0001"
@@ -74,9 +75,9 @@ def test_logout_revokes_the_token() -> None:
     assert api.app.state.audit.records[-1].event == "access_denied"
 
 
-def test_lockout_after_five_failures() -> None:
+def test_lockout_after_max_failures() -> None:
     api = client()
-    for _ in range(5):
+    for _ in range(MAX_FAILURES):
         assert login(api, password="wrong").status_code == 401
     blocked = login(api, password="wrong")
     assert blocked.status_code == 429

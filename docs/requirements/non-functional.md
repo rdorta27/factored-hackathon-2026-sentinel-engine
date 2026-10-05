@@ -65,14 +65,13 @@ Test the cases that the brief names: bad or missing data, expired session, unaut
 
 **Depends on:** [REQ-0007](#req-0007), [REQ-0012](frontend-backend.md#req-0012), [REQ-0026](#req-0026), [REQ-0027](#req-0027). The attacks test permissions, languages, fallback and the session.
 
-**Evidence:** Proven by 42 attacks in `tests/adversarial/`. They target the chat, the disputes API and the advisor endpoint. The `unsafe_outcome_rate` is `0/42`: 38 `blocked_verified`, 3 `passes_on_mock`, 1 `documented` and 0 `no_defense_yet`. The source is [`evidence/adversarial/20261002T222323Z/summary.json`](../../evidence/adversarial/20261002T222323Z/summary.json).
+**Evidence:** Proven by 42 attacks in `tests/adversarial/`. They target the chat, the disputes API and the advisor endpoint. The `unsafe_outcome_rate` is `0/42`: 38 `blocked_verified`, 3 `passes_on_mock`, 1 `documented` and 0 `no_defense_yet`. The source is [`evidence/adversarial/20261005T014816Z/summary.json`](../../evidence/adversarial/20261005T014816Z/summary.json).
 
 - A3 refuses prompt extraction in code.
 - A4b records an injection and does not change the reply.
 - D4 bounds the Gold reads (`SENTINEL_GOLD_TIMEOUT_S`, default 2 s, above the measured cold read of 0.28 s).
-- Fault injection in the runner (Gold, session, tool) degrades safely. See [`evidence/evaluation-runs/2024Q4-eval-v6/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v6/summary.json).
-
-Planned by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the three attack cases that pass on the stand-in model run against the real model, in a new adversarial run.
+- The three attacks that pass on the stand-in model run against the real router model. All 3 pass, so `totals.unsafe_outcome_rate` is `0/3`. See [`evidence/adversarial/20261005T204313Z/summary.json`](../../evidence/adversarial/20261005T204313Z/summary.json).
+- The fault-injection run drives the app through seven faults. The baseline answers every model fault and the Gold faults; the store error leaves 2 of 12 unsafe turns. See [`evidence/robustness/20261005T210525Z/summary.json`](../../evidence/robustness/20261005T210525Z/summary.json) and [failure handling](../rationale/failure-handling.md).
 
 <a id="req-0025"></a>
 ### REQ-0025 · Observability
@@ -99,7 +98,7 @@ Retries have a limit. A failure falls back to a safe outcome, usually a handoff.
 
 **Depends on:** [REQ-0005](#req-0005). A retry is safe only when the system verifies the success.
 
-**Evidence:** Proven by tool-failure tests, the `ModelUnavailable` fallback and the idempotent creation of a dispute.
+**Evidence:** Proven by tool-failure tests, the `ModelUnavailable` fallback and the idempotent creation of a dispute. The fault run measures each fallback with counts: the model timeout, the model 5xx and the invalid JSON answer 12 of 12 turns through the baseline, and the store error answers 10 of 12 ([`evidence/robustness/20261005T210525Z/summary.json`](../../evidence/robustness/20261005T210525Z/summary.json), [failure handling](../rationale/failure-handling.md)). The daily budget caps the model spend (`app/ai/budget.py`, [cost guard](../rationale/cost-guard.md)).
 
 <a id="req-0027"></a>
 ### REQ-0027 · Authentication, isolation and retention

@@ -1,0 +1,1215 @@
+{
+  "bases": 14,
+  "case_mix": {
+    "by_country": {
+      "AR": 12,
+      "CO": 12,
+      "MX": 32
+    },
+    "by_locale": {
+      "es-419": 28,
+      "pt-BR": 28
+    },
+    "by_outcome": {
+      "case_confirmation": 16,
+      "handoff": 28,
+      "text": 12
+    },
+    "by_situation": {
+      "amount-ar-3002": 4,
+      "amount-co-2002": 4,
+      "amount-mx-1101": 4,
+      "disputed-mx-1004": 4,
+      "eligible-ar-3001": 4,
+      "eligible-co-2001": 4,
+      "eligible-mx-1001": 4,
+      "eligible-mx-1006": 4,
+      "fraud-ar-3003": 4,
+      "fraud-co-2003": 4,
+      "fraud-mx-1102": 4,
+      "notmine-mx-1001": 4,
+      "reversed-mx-1003": 4,
+      "window-mx-1002": 4
+    },
+    "by_variant": {
+      "es-AR": 6,
+      "es-CO": 6,
+      "es-MX": 16,
+      "pt-BR": 28
+    },
+    "n": 56
+  },
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "resolution",
+  "measured_commit": "a3db6bb687e28c299265f9bd9deb403306e90fef",
+  "n": 56,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Simulation over a mock store: not a field resolution rate (decision 022).",
+    "Baseline and router_v2 on the same cases, session, store and reference date; intervals resample situations.",
+    "The system block replays the loop at measured_commit; a later loop change means a new run (task 1.1)."
+  ],
+  "paired_resolution": {
+    "above_zero": false,
+    "broken": [],
+    "fixed": [],
+    "interval_95": [
+      0.0,
+      0.0
+    ],
+    "n": 56,
+    "net": 0,
+    "net_share": 0.0
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "run_id": "2024Q4-resolution-live-v1",
+  "situations": {
+    "ids": [
+      "amount-ar-3002",
+      "amount-co-2002",
+      "amount-mx-1101",
+      "disputed-mx-1004",
+      "eligible-ar-3001",
+      "eligible-co-2001",
+      "eligible-mx-1001",
+      "eligible-mx-1006",
+      "fraud-ar-3003",
+      "fraud-co-2003",
+      "fraud-mx-1102",
+      "notmine-mx-1001",
+      "reversed-mx-1003",
+      "window-mx-1002"
+    ],
+    "n": 14
+  },
+  "spend": {
+    "cap_usd": 1.0,
+    "capped": false,
+    "n": 56,
+    "spent_usd": 0.008977
+  },
+  "system": {
+    "baseline": {
+      "attempted_n": 56,
+      "bases": 14,
+      "by_country": {
+        "AR": {
+          "attempted_n": 12,
+          "bases": 3,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.74,
+            "p95": 1.02
+          },
+          "latency_per_conversation": {
+            "conversations": 12,
+            "mean": 0.7585,
+            "n": 12,
+            "p50": 0.74,
+            "p95": 1.02
+          },
+          "n": 12,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 12,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 12,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 12,
+            "n": 12,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 12,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "CO": {
+          "attempted_n": 12,
+          "bases": 3,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.67,
+            "p95": 1.03
+          },
+          "latency_per_conversation": {
+            "conversations": 12,
+            "mean": 0.7296,
+            "n": 12,
+            "p50": 0.67,
+            "p95": 1.03
+          },
+          "n": 12,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 12,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 12,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 12,
+            "n": 12,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 12,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "MX": {
+          "attempted_n": 32,
+          "bases": 8,
+          "containment": {
+            "contained": 20,
+            "n": 32,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 32,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 32,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 32,
+            "p50": 0.65,
+            "p95": 0.8
+          },
+          "latency_per_conversation": {
+            "conversations": 32,
+            "mean": 0.6113,
+            "n": 32,
+            "p50": 0.65,
+            "p95": 0.8
+          },
+          "n": 32,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 32,
+            "ceiling_share": 0.25,
+            "gap": 0,
+            "n": 32,
+            "resolvable": 8,
+            "resolved": 8
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 32,
+            "resolved": 8,
+            "share": 0.25
+          },
+          "system_outcome_match": {
+            "matched": 32,
+            "n": 32,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 32,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 32,
+            "rate": "0/32"
+          }
+        }
+      },
+      "by_variant": {
+        "es-AR": {
+          "attempted_n": 6,
+          "bases": 3,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.74,
+            "p95": 0.75
+          },
+          "latency_per_conversation": {
+            "conversations": 6,
+            "mean": 0.7171,
+            "n": 6,
+            "p50": 0.74,
+            "p95": 0.75
+          },
+          "n": 6,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 6,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 6,
+            "resolvable": 2,
+            "resolved": 2
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 6,
+            "n": 6,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 6,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-CO": {
+          "attempted_n": 6,
+          "bases": 3,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.69,
+            "p95": 0.79
+          },
+          "latency_per_conversation": {
+            "conversations": 6,
+            "mean": 0.6985,
+            "n": 6,
+            "p50": 0.69,
+            "p95": 0.79
+          },
+          "n": 6,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 6,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 6,
+            "resolvable": 2,
+            "resolved": 2
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 6,
+            "n": 6,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 6,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-MX": {
+          "attempted_n": 16,
+          "bases": 8,
+          "containment": {
+            "contained": 10,
+            "n": 16,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 16,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 16,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 16,
+            "p50": 0.65,
+            "p95": 0.79
+          },
+          "latency_per_conversation": {
+            "conversations": 16,
+            "mean": 0.6059,
+            "n": 16,
+            "p50": 0.65,
+            "p95": 0.79
+          },
+          "n": 16,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 16,
+            "ceiling_share": 0.25,
+            "gap": 0,
+            "n": 16,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 16,
+            "resolved": 4,
+            "share": 0.25
+          },
+          "system_outcome_match": {
+            "matched": 16,
+            "n": 16,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 16,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 16,
+            "rate": "0/16"
+          }
+        },
+        "pt-BR": {
+          "attempted_n": 28,
+          "bases": 14,
+          "containment": {
+            "contained": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "cost_usd": {
+            "n": 28,
+            "per_attempted": 0.0,
+            "per_resolution": 0.0,
+            "total": 0.0
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 28,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 28,
+            "p50": 0.67,
+            "p95": 1.04
+          },
+          "latency_per_conversation": {
+            "conversations": 28,
+            "mean": 0.6867,
+            "n": 28,
+            "p50": 0.67,
+            "p95": 1.04
+          },
+          "n": 28,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 28,
+            "ceiling_share": 0.2857,
+            "gap": 0,
+            "n": 28,
+            "resolvable": 8,
+            "resolved": 8
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0714,
+              0.5714
+            ],
+            "n": 28,
+            "resolved": 8,
+            "share": 0.2857
+          },
+          "system_outcome_match": {
+            "matched": 28,
+            "n": 28,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 28,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 28,
+            "rate": "0/28"
+          }
+        }
+      },
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.0,
+        "per_resolution": 0.0,
+        "total": 0.0
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.68,
+        "p95": 0.91
+      },
+      "latency_per_conversation": {
+        "conversations": 56,
+        "mean": 0.6682,
+        "n": 56,
+        "p50": 0.68,
+        "p95": 0.91
+      },
+      "n": 56,
+      "resolution_ceiling": {
+        "achieved_share": 1.0,
+        "attempted": 56,
+        "ceiling_share": 0.2857,
+        "gap": 0,
+        "n": 56,
+        "resolvable": 16,
+        "resolved": 16
+      },
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "system_outcome_match": {
+        "matched": 56,
+        "n": 56,
+        "share": 1.0
+      },
+      "unnecessary_handoff_rate": {
+        "cases": [],
+        "n": 56,
+        "rate": 0.0,
+        "unnecessary": 0
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    },
+    "router_v2": {
+      "attempted_n": 56,
+      "bases": 14,
+      "by_country": {
+        "AR": {
+          "attempted_n": 12,
+          "bases": 3,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000481,
+            "total": 0.001924
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.66,
+            "p95": 0.74
+          },
+          "latency_per_conversation": {
+            "conversations": 12,
+            "mean": 0.6564,
+            "n": 12,
+            "p50": 0.66,
+            "p95": 0.74
+          },
+          "n": 12,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 12,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 12,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 12,
+            "n": 12,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 12,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "CO": {
+          "attempted_n": 12,
+          "bases": 3,
+          "containment": {
+            "contained": 4,
+            "n": 12,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 12,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000481,
+            "total": 0.001923
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 12,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 12,
+            "p50": 0.78,
+            "p95": 1.67
+          },
+          "latency_per_conversation": {
+            "conversations": 12,
+            "mean": 0.9478,
+            "n": 12,
+            "p50": 0.78,
+            "p95": 1.67
+          },
+          "n": 12,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 12,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 12,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 12,
+            "resolved": 4,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 12,
+            "n": 12,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 12,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 12,
+            "rate": "0/12"
+          }
+        },
+        "MX": {
+          "attempted_n": 32,
+          "bases": 8,
+          "containment": {
+            "contained": 20,
+            "n": 32,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 32,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000641,
+            "total": 0.005129
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 32,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 32,
+            "p50": 0.68,
+            "p95": 1.15
+          },
+          "latency_per_conversation": {
+            "conversations": 32,
+            "mean": 0.676,
+            "n": 32,
+            "p50": 0.68,
+            "p95": 1.15
+          },
+          "n": 32,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 32,
+            "ceiling_share": 0.25,
+            "gap": 0,
+            "n": 32,
+            "resolvable": 8,
+            "resolved": 8
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 32,
+            "resolved": 8,
+            "share": 0.25
+          },
+          "system_outcome_match": {
+            "matched": 32,
+            "n": 32,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 32,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 32,
+            "rate": "0/32"
+          }
+        }
+      },
+      "by_variant": {
+        "es-AR": {
+          "attempted_n": 6,
+          "bases": 3,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.000161,
+            "per_resolution": 0.000484,
+            "total": 0.000968
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.64,
+            "p95": 0.71
+          },
+          "latency_per_conversation": {
+            "conversations": 6,
+            "mean": 0.6381,
+            "n": 6,
+            "p50": 0.64,
+            "p95": 0.71
+          },
+          "n": 6,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 6,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 6,
+            "resolvable": 2,
+            "resolved": 2
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 6,
+            "n": 6,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 6,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-CO": {
+          "attempted_n": 6,
+          "bases": 3,
+          "containment": {
+            "contained": 2,
+            "n": 6,
+            "share": 0.3333
+          },
+          "cost_usd": {
+            "n": 6,
+            "per_attempted": 0.000162,
+            "per_resolution": 0.000485,
+            "total": 0.00097
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 6,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 6,
+            "p50": 0.78,
+            "p95": 1.03
+          },
+          "latency_per_conversation": {
+            "conversations": 6,
+            "mean": 0.817,
+            "n": 6,
+            "p50": 0.78,
+            "p95": 1.03
+          },
+          "n": 6,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 6,
+            "ceiling_share": 0.3333,
+            "gap": 0,
+            "n": 6,
+            "resolvable": 2,
+            "resolved": 2
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              1.0
+            ],
+            "n": 6,
+            "resolved": 2,
+            "share": 0.3333
+          },
+          "system_outcome_match": {
+            "matched": 6,
+            "n": 6,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 6,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 6,
+            "rate": "0/6"
+          }
+        },
+        "es-MX": {
+          "attempted_n": 16,
+          "bases": 8,
+          "containment": {
+            "contained": 10,
+            "n": 16,
+            "share": 0.625
+          },
+          "cost_usd": {
+            "n": 16,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000641,
+            "total": 0.002563
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 16,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 16,
+            "p50": 0.73,
+            "p95": 1.28
+          },
+          "latency_per_conversation": {
+            "conversations": 16,
+            "mean": 0.7207,
+            "n": 16,
+            "p50": 0.73,
+            "p95": 1.28
+          },
+          "n": 16,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 16,
+            "ceiling_share": 0.25,
+            "gap": 0,
+            "n": 16,
+            "resolvable": 4,
+            "resolved": 4
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0,
+              0.625
+            ],
+            "n": 16,
+            "resolved": 4,
+            "share": 0.25
+          },
+          "system_outcome_match": {
+            "matched": 16,
+            "n": 16,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 16,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 16,
+            "rate": "0/16"
+          }
+        },
+        "pt-BR": {
+          "attempted_n": 28,
+          "bases": 14,
+          "containment": {
+            "contained": 14,
+            "n": 28,
+            "share": 0.5
+          },
+          "cost_usd": {
+            "n": 28,
+            "per_attempted": 0.00016,
+            "per_resolution": 0.000559,
+            "total": 0.004475
+          },
+          "escalation_quality": {
+            "missed_transfers": [],
+            "n": 28,
+            "unnecessary_transfers": []
+          },
+          "latency_ms": {
+            "n": 28,
+            "p50": 0.7,
+            "p95": 1.27
+          },
+          "latency_per_conversation": {
+            "conversations": 28,
+            "mean": 0.7364,
+            "n": 28,
+            "p50": 0.7,
+            "p95": 1.27
+          },
+          "n": 28,
+          "resolution_ceiling": {
+            "achieved_share": 1.0,
+            "attempted": 28,
+            "ceiling_share": 0.2857,
+            "gap": 0,
+            "n": 28,
+            "resolvable": 8,
+            "resolved": 8
+          },
+          "safe_resolution": {
+            "descriptive": true,
+            "interval_95": [
+              0.0714,
+              0.5714
+            ],
+            "n": 28,
+            "resolved": 8,
+            "share": 0.2857
+          },
+          "system_outcome_match": {
+            "matched": 28,
+            "n": 28,
+            "share": 1.0
+          },
+          "unnecessary_handoff_rate": {
+            "cases": [],
+            "n": 28,
+            "rate": 0.0,
+            "unnecessary": 0
+          },
+          "unsafe_outcomes": {
+            "cases": [],
+            "count": 0,
+            "n": 28,
+            "rate": "0/28"
+          }
+        }
+      },
+      "containment": {
+        "contained": 28,
+        "n": 56,
+        "share": 0.5
+      },
+      "cost_usd": {
+        "n": 56,
+        "per_attempted": 0.00016,
+        "per_resolution": 0.000561,
+        "total": 0.008977
+      },
+      "escalation_quality": {
+        "missed_transfers": [],
+        "n": 56,
+        "unnecessary_transfers": []
+      },
+      "latency_ms": {
+        "n": 56,
+        "p50": 0.7,
+        "p95": 1.28
+      },
+      "latency_per_conversation": {
+        "conversations": 56,
+        "mean": 0.73,
+        "n": 56,
+        "p50": 0.7,
+        "p95": 1.28
+      },
+      "n": 56,
+      "resolution_ceiling": {
+        "achieved_share": 1.0,
+        "attempted": 56,
+        "ceiling_share": 0.2857,
+        "gap": 0,
+        "n": 56,
+        "resolvable": 16,
+        "resolved": 16
+      },
+      "safe_resolution": {
+        "n": 56,
+        "resolved": 16,
+        "share": 0.2857
+      },
+      "system_outcome_match": {
+        "matched": 56,
+        "n": 56,
+        "share": 1.0
+      },
+      "unnecessary_handoff_rate": {
+        "cases": [],
+        "n": 56,
+        "rate": 0.0,
+        "unnecessary": 0
+      },
+      "unsafe_outcomes": {
+        "cases": [],
+        "count": 0,
+        "n": 56,
+        "rate": "0/56"
+      }
+    }
+  },
+  "timing": {
+    "cost": {
+      "per_attempted": 0.00016,
+      "per_resolution": 0.000561
+    },
+    "cost_source": "live",
+    "end_to_end": true,
+    "latency_source": "live",
+    "mode": "live",
+    "per_call": {
+      "n": 56,
+      "p50": 2087.89,
+      "p95": 5217.76
+    },
+    "per_conversation": {
+      "n": 56,
+      "p50": 2187.95,
+      "p95": 5310.84
+    }
+  }
+}

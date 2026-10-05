@@ -15,7 +15,11 @@ last_reviewed: 2026-10-05
 | Old chips | Disable the chips of closed turns | A pick from an old question opens the wrong confirm box |
 | Raw keys | Hide the text until the first locale loads | The visitor never sees `welcome.title` |
 | Advisor view | Names for country and language. Parallel fetch | The advisor reads names, not codes |
-| Scope | `app/static/` only | The measured behavior and the `bundle_hash` stay the same |
+| Scope | `app/static/`, plus three small backend edits | The measured behavior and the `bundle_hash` stay the same. The edits only dedupe tickets and add facts to a closed charge |
+| Navigation | URL hash, no library | The page stays one HTML file ([006](../../../docs/build/decisions/006-frontend.md)). A hash needs no server route |
+| Advisor JSON | Show the ticket and the trace without `customer_id` | The screen never shows the id ([009](../../../docs/build/decisions/009-demo-ui-and-advisor-view.md)), so the export does not either |
+| Closed charge | The server sends the window facts. The page computes no date | The page never re-derives a policy rule |
+| One ticket per charge | Look up the case store, not the conversation | The store outlives the session |
 
 ## Risks
 

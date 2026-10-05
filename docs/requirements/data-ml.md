@@ -54,13 +54,13 @@ Evaluate at least one learned component against a simpler baseline on held-out c
 
 **Depends on:** [REQ-0017](#req-0017), [REQ-0020](#req-0020). The comparison needs valid labels and a shared held-out set.
 
-**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It compares the prompted router (GLM 5.3 Flash, prompt v2) with the keyword baseline on the same 280 sealed held-out cases. The team measured once. The net result is +124 of 280 cases (`component.paired.router_v2_vs_baseline`, interval [0.3286, 0.55]). D5 in [018](../build/decisions/018-evaluation-acceptance.md) judges the result.
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). It compares six candidates on the same sealed sets: the keyword baseline, the trained baseline, router v2, v2 with cut-offs, router v3 and v3 with cut-offs. The team measured once. The verdict serves `router_v2`. It beats the keyword baseline (net +39 of 308, `paired.router_v2_vs_baseline`, interval [0.0617, 0.2045]). `router_v3` has the higher kind accuracy (0.974 against 0.8182, `candidates.<name>.intent.accuracy`), but it fails the zero-unsafe-wording gate (4/93) and the subtype gate (0.8971 against 0.95). D4 to D7 and the gates of [018](../build/decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05) judge the result. The [analysis run](../../evidence/evaluation-runs/2024Q4-analysis-v8/summary.json) is descriptive.
 
 The router also reports a confidence for each label. The team calibrated the two cut-offs on the development and validation split. [`evidence/evaluation-runs/2024Q4-calibration-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) freezes them (`cutoffs.t_act` = 0.86, `cutoffs.t_abstain` = 0.0; validation n = 26, descriptive). The variable `SENTINEL_LLM_CUTOFFS` switches them on. The `eval-v8` measurement uses them through router-v3.
 
 A second learned component is the charge selector. It has exact labels from real transactions. [`charge-ranker/test-v1`](../../evidence/charge-ranker/test-v1/summary.json) compares it with the rules on a later test split. No customer is in both the test split and another split (`configurations.<name>.all.*`, [025](../build/decisions/025-charge-selector.md)). It stays off in the demo, because it fails the serving rule.
 
-The team also trained and froze a stronger opponent: TF-IDF on character n-grams and a logistic regression. It trains on development and the team tunes it on validation. See [`evidence/evaluation-runs/2024Q4-train-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) (`splits`, `model.regularization_c`, `validation.selected`, `model.sha256`; [007](../build/decisions/007-learned-component.md)). The plan `eval-v8` does the sealed comparison with the router.
+The team also trained and froze a stronger opponent: TF-IDF on character n-grams and a logistic regression. It trains on development and the team tunes it on validation. The v8 measurement compares it with the router: it scores 0.9026 on the sealed main block (`candidates.trained_baseline.intent.accuracy`), above the served `router_v2` (0.8182) and below `router_v3` (0.974). It emits no subtype, slot or draft, so it cannot serve the full flow. See [`evidence/evaluation-runs/2024Q4-train-v1/summary.json`](../../evidence/evaluation-runs/2024Q4-train-v1/summary.json) (`splits`, `model.regularization_c`, `validation.selected`, `model.sha256`; [007](../build/decisions/007-learned-component.md)) and the [model card](../build/model-card.md).
 
 Missing: nothing for the brief. The cases are a model-written simulation. [018](../build/decisions/018-evaluation-acceptance.md) states this limit.
 
@@ -142,9 +142,9 @@ Compare the baseline and the system on exactly the same held-out cases. Make tha
 
 **Depends on:** [REQ-0017](#req-0017). The held-out set uses valid labels.
 
-**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) (`component.case_ids`). It runs the baseline, router v1 and router v2 on the same 280 sealed cases. The team measured once. [018](../build/decisions/018-evaluation-acceptance.md) declares the case mix and its model-written origin.
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json) (`candidates`, `paired`). It runs six candidates on the same sealed main block of 308 cases, and on the noisy, attack and top-up blocks. The team measured once. [018](../build/decisions/018-evaluation-acceptance.md) declares the case mix and its model-written origin.
 
-Missing: nothing for the brief. The mix is a designed simulation (70 bases by 4 variants, at least 25 per intent). [018](../build/decisions/018-evaluation-acceptance.md) states this as a limit.
+Missing: nothing for the brief. The mix is a designed simulation (77 bases by 4 variants, at least 28 per intent). [018](../build/decisions/018-evaluation-acceptance.md) states this as a limit.
 
 <a id="req-0023"></a>
 ### REQ-0023 · Validated LLM judge, if used

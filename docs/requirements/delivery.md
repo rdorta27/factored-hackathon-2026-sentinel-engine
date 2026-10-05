@@ -94,6 +94,7 @@ The team delivers the repository as public, with the name `factored-hackathon-20
 - The team never committed dataset rows. No commit has a `.csv`, `.parquet`, `.duckdb` or database blob, or a `data/` or `raw/` folder.
 - `.gitignore` covers `data/`, `.env` and the local data formats.
 - `.github/workflows/gitleaks.yml` scans the commits that each push and pull request adds. It catches a new secret when the secret enters the repository.
+- [`CONTRIBUTING.md`](../../CONTRIBUTING.md) states the rule for each person: no secret, no password, no dataset row and no bucket name in a commit.
 
 The review and its blind spot are in [security](../build/security.md#history-review-req-0034-101).
 
@@ -119,6 +120,7 @@ Give a link to the running tool, with usage limits and spending limits. A minima
 - **Usage and spending limits.** Hosting sits inside the Azure monthly free grant. The registry adds about USD 0.08 a day. All of it stays within the USD 200 trial credit ([cost](../build/cost.md)).
 - **Hardening of 10/02.** The deploy uses one replica, because SQLite is per instance. It uses a non-root user, with state under `/tmp/sentinel`. It has a container healthcheck. The health route answers 503 when the state store fails.
 - **Redeploy of 10/03.** It runs with that image and the Azure Files share mounted at `/mnt/sentinel`. A dispute and a handoff ticket opened before the restart were both still there after `az containerapp revision restart` (health 200). `CUST-0001` read its own cases again. `ADV-0001` saw the queued ticket in `/api/v1/handoffs`.
+- **Redeploy of 10/05.** The final redeploy runs the frozen code. `GET /api/v1/health` returns `model` `accounts/fireworks/models/glm-5p3-flash`, `prompt_version` `v2`, `gold_source` `mock` and `bundle_hash` `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`. That hash equals the hash of the sealed v8 measurement (decision 018), so the measured code is the served code. `scripts/e2e_check.py --access-check` passes nine of nine checks (the persona route answers 404, the fixture password fails, the four judge logins work). `scripts/e2e_check.py` passes the demo cases. The state is reset after the checks. The queries are in [deploy/azure/queries.kql](../../deploy/azure/queries.kql).
 - **Monitoring.** The app writes one JSON line per turn to standard output. The line reaches Log Analytics. The query counts turns with no identifier. For the two hours after the restart, it answered `MX | ok | 45`:
 
 ```
@@ -172,6 +174,7 @@ Write the README, the slides, the video script, `docs/` and `team/` in English. 
 - Every file under `docs/` and `team/` is in English.
 - `AGENTS.md` requires simplified technical English (ASD-STE100) for all documentation.
 - The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
+- The new pages [`CHANGELOG.md`](../../CHANGELOG.md) and [`CONTRIBUTING.md`](../../CONTRIBUTING.md) are in English, in ASD-STE100.
 
 Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
 

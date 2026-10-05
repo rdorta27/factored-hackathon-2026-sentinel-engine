@@ -201,7 +201,7 @@ trigger:
 
 The model targets come from the measured router latency. They are not an estimate. The router runs **first** on every text turn. It labels the intent before the loop reads Gold or checks eligibility. A turn that selects a charge from the list (a structured candidate id) does not call the model.
 
-The non-LLM path (eligibility check, customer lookup, idempotency gate) must complete in < 200 ms at p95 under peak load (1,000 inquiry calls/day ≈ 0.70 req/s sustained). These numbers are not a load test of `/api/v1/chat`. That test is still open.
+The non-LLM path (eligibility check, customer lookup, idempotency gate) must complete in < 200 ms at p95 under peak load (1,000 inquiry calls/day ≈ 0.70 req/s sustained). The load run [`20261005T211031Z`](../evidence/robustness/20261005T211031Z/summary.json) measures `/api/v1/chat` on one replica with recorded answers. At the deployed limits (0.5 vCPU, 1 GiB) the container reaches about 5 requests a second; the p95 rises to 918 ms at the target 20. The host serves 17.51 requests a second. The load test is done. The capacity page is [capacity and latency](rationale/capacity-and-latency.md).
 
 ### 4.4 Storage & Retention
 

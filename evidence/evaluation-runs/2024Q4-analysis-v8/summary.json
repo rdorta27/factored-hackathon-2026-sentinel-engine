@@ -1,0 +1,738 @@
+{
+  "M1_errors": {
+    "candidates": {
+      "router_v2": {
+        "by_country": {
+          "AR": {
+            "accuracy": 0.8043,
+            "n": 92
+          },
+          "CO": {
+            "accuracy": 0.8065,
+            "n": 93
+          },
+          "MX": {
+            "accuracy": 0.8374,
+            "n": 123
+          }
+        },
+        "by_locale": {
+          "es-419": {
+            "accuracy": 0.8182,
+            "n": 231
+          },
+          "pt-BR": {
+            "accuracy": 0.8182,
+            "n": 77
+          }
+        },
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 12,
+            "out_of_scope": 26,
+            "person": 2,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 28,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 12,
+            "missing": 0,
+            "out_of_scope": 16,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "failure_count": 56,
+        "failures": {
+          "missing->out_of_scope": [
+            "v8i-23-es-AR",
+            "v8i-23-es-CO",
+            "v8i-23-es-MX",
+            "v8i-23-pt-BR",
+            "v8i-24-es-AR",
+            "v8i-24-es-CO",
+            "v8i-24-es-MX",
+            "v8i-24-pt-BR",
+            "v8i-25-es-AR",
+            "v8i-25-es-CO",
+            "v8i-25-es-MX",
+            "v8i-25-pt-BR",
+            "v8i-26-es-AR",
+            "v8i-26-es-CO",
+            "v8i-26-es-MX",
+            "v8i-26-pt-BR",
+            "v8i-27-es-AR",
+            "v8i-27-es-CO",
+            "v8i-27-es-MX",
+            "v8i-27-pt-BR",
+            "v8i-28-es-CO",
+            "v8i-28-es-MX",
+            "v8i-29-es-AR",
+            "v8i-29-es-CO",
+            "v8i-29-es-MX",
+            "v8i-29-pt-BR"
+          ],
+          "missing->person": [
+            "v8i-28-es-AR",
+            "v8i-28-pt-BR"
+          ],
+          "status->charge": [
+            "v8i-33-es-AR",
+            "v8i-33-es-CO",
+            "v8i-33-es-MX",
+            "v8i-35-pt-BR",
+            "v8i-36-es-AR",
+            "v8i-36-es-CO",
+            "v8i-36-es-MX",
+            "v8i-36-pt-BR",
+            "v8i-37-es-AR",
+            "v8i-37-es-CO",
+            "v8i-37-es-MX",
+            "v8i-37-pt-BR"
+          ],
+          "status->out_of_scope": [
+            "v8i-33-pt-BR",
+            "v8i-34-es-AR",
+            "v8i-34-es-CO",
+            "v8i-34-es-MX",
+            "v8i-34-pt-BR",
+            "v8i-35-es-AR",
+            "v8i-35-es-CO",
+            "v8i-35-es-MX",
+            "v8i-52-es-AR",
+            "v8i-52-es-CO",
+            "v8i-52-es-MX",
+            "v8i-52-pt-BR",
+            "v8i-53-es-AR",
+            "v8i-53-es-CO",
+            "v8i-53-es-MX",
+            "v8i-53-pt-BR"
+          ]
+        },
+        "n": 308
+      },
+      "router_v3": {
+        "by_country": {
+          "AR": {
+            "accuracy": 0.9891,
+            "n": 92
+          },
+          "CO": {
+            "accuracy": 0.9892,
+            "n": 93
+          },
+          "MX": {
+            "accuracy": 0.9837,
+            "n": 123
+          }
+        },
+        "by_locale": {
+          "es-419": {
+            "accuracy": 0.987,
+            "n": 231
+          },
+          "pt-BR": {
+            "accuracy": 0.987,
+            "n": 77
+          }
+        },
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 40,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 28,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 4,
+            "person": 0,
+            "status": 24
+          }
+        },
+        "failure_count": 4,
+        "failures": {
+          "status->out_of_scope": [
+            "v8i-52-es-AR",
+            "v8i-52-es-CO",
+            "v8i-52-es-MX",
+            "v8i-52-pt-BR"
+          ]
+        },
+        "n": 308
+      },
+      "trained_baseline": {
+        "by_country": {
+          "AR": {
+            "accuracy": 0.9022,
+            "n": 92
+          },
+          "CO": {
+            "accuracy": 0.9032,
+            "n": 93
+          },
+          "MX": {
+            "accuracy": 0.9024,
+            "n": 123
+          }
+        },
+        "by_locale": {
+          "es-419": {
+            "accuracy": 0.9091,
+            "n": 231
+          },
+          "pt-BR": {
+            "accuracy": 0.8831,
+            "n": 77
+          }
+        },
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 40,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 3,
+            "missing": 2,
+            "out_of_scope": 23,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 15,
+            "missing": 1,
+            "out_of_scope": 8,
+            "person": 1,
+            "status": 3
+          }
+        },
+        "failure_count": 30,
+        "failures": {
+          "out_of_scope->charge": [
+            "v8i-44-es-CO",
+            "v8i-44-es-MX",
+            "v8i-44-pt-BR"
+          ],
+          "out_of_scope->missing": [
+            "v8i-41-pt-BR",
+            "v8i-44-es-AR"
+          ],
+          "status->charge": [
+            "v8i-33-pt-BR",
+            "v8i-35-es-AR",
+            "v8i-35-es-CO",
+            "v8i-35-es-MX",
+            "v8i-35-pt-BR",
+            "v8i-36-es-AR",
+            "v8i-36-es-CO",
+            "v8i-36-es-MX",
+            "v8i-36-pt-BR",
+            "v8i-37-es-AR",
+            "v8i-37-es-CO",
+            "v8i-37-es-MX",
+            "v8i-37-pt-BR",
+            "v8i-53-es-CO",
+            "v8i-53-es-MX"
+          ],
+          "status->missing": [
+            "v8i-34-pt-BR"
+          ],
+          "status->out_of_scope": [
+            "v8i-34-es-AR",
+            "v8i-34-es-CO",
+            "v8i-34-es-MX",
+            "v8i-52-es-AR",
+            "v8i-52-es-MX",
+            "v8i-52-pt-BR",
+            "v8i-53-es-AR",
+            "v8i-53-pt-BR"
+          ],
+          "status->person": [
+            "v8i-52-es-CO"
+          ]
+        },
+        "n": 308
+      }
+    },
+    "n": 308
+  },
+  "M2_ngrams": {
+    "labels": {
+      "charge": [
+        {
+          "term": "eco",
+          "weight": 0.9073
+        },
+        {
+          "term": "·de",
+          "weight": 0.843
+        },
+        {
+          "term": "·cob",
+          "weight": 0.8231
+        },
+        {
+          "term": "·cobr",
+          "weight": 0.8231
+        },
+        {
+          "term": "cob",
+          "weight": 0.8231
+        },
+        {
+          "term": "cobr",
+          "weight": 0.8231
+        },
+        {
+          "term": "obr",
+          "weight": 0.8128
+        },
+        {
+          "term": "rec",
+          "weight": 0.7449
+        },
+        {
+          "term": "·rec",
+          "weight": 0.7358
+        },
+        {
+          "term": "·re",
+          "weight": 0.7357
+        },
+        {
+          "term": "·reco",
+          "weight": 0.6945
+        },
+        {
+          "term": "econ",
+          "weight": 0.6945
+        }
+      ],
+      "missing": [
+        {
+          "term": "rob",
+          "weight": 0.6637
+        },
+        {
+          "term": "uda",
+          "weight": 0.6543
+        },
+        {
+          "term": "·algo",
+          "weight": 0.6441
+        },
+        {
+          "term": "algo",
+          "weight": 0.6441
+        },
+        {
+          "term": "algo·",
+          "weight": 0.6441
+        },
+        {
+          "term": "lgo",
+          "weight": 0.6441
+        },
+        {
+          "term": "lgo·",
+          "weight": 0.6441
+        },
+        {
+          "term": "ema·",
+          "weight": 0.57
+        },
+        {
+          "term": "ias",
+          "weight": 0.5343
+        },
+        {
+          "term": "·prob",
+          "weight": 0.4948
+        },
+        {
+          "term": "blem",
+          "weight": 0.4948
+        },
+        {
+          "term": "blema",
+          "weight": 0.4948
+        }
+      ],
+      "out_of_scope": [
+        {
+          "term": "al·",
+          "weight": 0.5975
+        },
+        {
+          "term": "edi",
+          "weight": 0.5819
+        },
+        {
+          "term": "·sald",
+          "weight": 0.5801
+        },
+        {
+          "term": "ald",
+          "weight": 0.5801
+        },
+        {
+          "term": "aldo",
+          "weight": 0.5801
+        },
+        {
+          "term": "aldo·",
+          "weight": 0.5801
+        },
+        {
+          "term": "ldo",
+          "weight": 0.5801
+        },
+        {
+          "term": "ldo·",
+          "weight": 0.5801
+        },
+        {
+          "term": "sald",
+          "weight": 0.5801
+        },
+        {
+          "term": "saldo",
+          "weight": 0.5801
+        },
+        {
+          "term": "ta·",
+          "weight": 0.5796
+        },
+        {
+          "term": "pres",
+          "weight": 0.5661
+        }
+      ],
+      "person": [
+        {
+          "term": "or·",
+          "weight": 1.1552
+        },
+        {
+          "term": "end",
+          "weight": 0.7769
+        },
+        {
+          "term": "lar·",
+          "weight": 0.6599
+        },
+        {
+          "term": "·at",
+          "weight": 0.6591
+        },
+        {
+          "term": "ende",
+          "weight": 0.6089
+        },
+        {
+          "term": "ente·",
+          "weight": 0.5867
+        },
+        {
+          "term": "nte·",
+          "weight": 0.5867
+        },
+        {
+          "term": "me·",
+          "weight": 0.5818
+        },
+        {
+          "term": "ente",
+          "weight": 0.5766
+        },
+        {
+          "term": "·hu",
+          "weight": 0.5706
+        },
+        {
+          "term": "·hum",
+          "weight": 0.5706
+        },
+        {
+          "term": "·huma",
+          "weight": 0.5706
+        }
+      ],
+      "status": [
+        {
+          "term": "·ul",
+          "weight": 0.7693
+        },
+        {
+          "term": "·ult",
+          "weight": 0.7693
+        },
+        {
+          "term": "·ulti",
+          "weight": 0.7693
+        },
+        {
+          "term": "lti",
+          "weight": 0.7693
+        },
+        {
+          "term": "ltim",
+          "weight": 0.7693
+        },
+        {
+          "term": "ult",
+          "weight": 0.7693
+        },
+        {
+          "term": "ulti",
+          "weight": 0.7693
+        },
+        {
+          "term": "ultim",
+          "weight": 0.7693
+        },
+        {
+          "term": "·esta",
+          "weight": 0.7446
+        },
+        {
+          "term": "estad",
+          "weight": 0.7354
+        },
+        {
+          "term": "stad",
+          "weight": 0.7354
+        },
+        {
+          "term": "stado",
+          "weight": 0.7354
+        }
+      ]
+    },
+    "n": 4171
+  },
+  "M4_complementarity": {
+    "n": 308,
+    "pairs": {
+      "router_v2_vs_trained_baseline": {
+        "above_zero": false,
+        "both_right": 247,
+        "both_wrong": 25,
+        "interval_95": [
+          -0.1591,
+          -0.013
+        ],
+        "n": 308,
+        "net": -26,
+        "only_router": 5,
+        "only_router_ids": [
+          "v8i-41-pt-BR",
+          "v8i-44-es-AR",
+          "v8i-44-es-CO",
+          "v8i-44-es-MX",
+          "v8i-44-pt-BR"
+        ],
+        "only_trained_baseline": 31,
+        "only_trained_baseline_ids": [
+          "v8i-23-es-AR",
+          "v8i-23-es-CO",
+          "v8i-23-es-MX",
+          "v8i-23-pt-BR",
+          "v8i-24-es-AR",
+          "v8i-24-es-CO",
+          "v8i-24-es-MX",
+          "v8i-24-pt-BR",
+          "v8i-25-es-AR",
+          "v8i-25-es-CO",
+          "v8i-25-es-MX",
+          "v8i-25-pt-BR",
+          "v8i-26-es-AR",
+          "v8i-26-es-CO",
+          "v8i-26-es-MX",
+          "v8i-26-pt-BR",
+          "v8i-27-es-AR",
+          "v8i-27-es-CO",
+          "v8i-27-es-MX",
+          "v8i-27-pt-BR",
+          "v8i-28-es-AR",
+          "v8i-28-es-CO",
+          "v8i-28-es-MX",
+          "v8i-28-pt-BR",
+          "v8i-29-es-AR",
+          "v8i-29-es-CO",
+          "v8i-29-es-MX",
+          "v8i-29-pt-BR",
+          "v8i-33-es-AR",
+          "v8i-33-es-CO",
+          "v8i-33-es-MX"
+        ]
+      },
+      "router_v3_vs_trained_baseline": {
+        "above_zero": true,
+        "both_right": 274,
+        "both_wrong": 4,
+        "interval_95": [
+          0.0097,
+          0.1364
+        ],
+        "n": 308,
+        "net": 22,
+        "only_router": 26,
+        "only_router_ids": [
+          "v8i-33-pt-BR",
+          "v8i-34-es-AR",
+          "v8i-34-es-CO",
+          "v8i-34-es-MX",
+          "v8i-34-pt-BR",
+          "v8i-35-es-AR",
+          "v8i-35-es-CO",
+          "v8i-35-es-MX",
+          "v8i-35-pt-BR",
+          "v8i-36-es-AR",
+          "v8i-36-es-CO",
+          "v8i-36-es-MX",
+          "v8i-36-pt-BR",
+          "v8i-37-es-AR",
+          "v8i-37-es-CO",
+          "v8i-37-es-MX",
+          "v8i-37-pt-BR",
+          "v8i-41-pt-BR",
+          "v8i-44-es-AR",
+          "v8i-44-es-CO",
+          "v8i-44-es-MX",
+          "v8i-44-pt-BR",
+          "v8i-53-es-AR",
+          "v8i-53-es-CO",
+          "v8i-53-es-MX",
+          "v8i-53-pt-BR"
+        ],
+        "only_trained_baseline": 4,
+        "only_trained_baseline_ids": [
+          "v8i-09-es-AR",
+          "v8i-30-es-CO",
+          "v8i-30-es-MX",
+          "v8i-30-pt-BR"
+        ]
+      }
+    }
+  },
+  "elapsed_s": 2.4,
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "analysis",
+  "measured_commit": "8ee457536f681f039cd0538c1cb93bce2b22c9d1",
+  "n": 308,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Post hoc and descriptive: the analysis reads the frozen 2024Q4-eval-v8 run and its recordings. It makes no live call and changes no gate.",
+    "The case text stays in the sealed set. This page names cases by id only.",
+    "The replay turns the rows that the frozen summary labels unavailable into predictions. The sensitivity section keeps the frozen view."
+  ],
+  "run_id": "2024Q4-analysis-v8",
+  "sensitivity": {
+    "blocks": {
+      "attacks": {
+        "kind_accuracy_all": 0.8095,
+        "kind_accuracy_without_unavailable": 0.8718,
+        "n": 84,
+        "subtype_accuracy_all": "not defined",
+        "subtype_accuracy_without_unavailable": null,
+        "subtype_n": 0,
+        "subtype_unavailable": 1,
+        "unavailable": 6
+      },
+      "candidates": {
+        "kind_accuracy_all": 0.974,
+        "kind_accuracy_without_unavailable": 0.9868,
+        "n": 308,
+        "subtype_accuracy_all": 0.8971,
+        "subtype_accuracy_without_unavailable": 0.9385,
+        "subtype_n": 68,
+        "subtype_unavailable": 3,
+        "unavailable": 4
+      },
+      "noisy": {
+        "kind_accuracy_all": 0.9423,
+        "kind_accuracy_without_unavailable": 1.0,
+        "n": 52,
+        "subtype_accuracy_all": "not defined",
+        "subtype_accuracy_without_unavailable": null,
+        "subtype_n": 0,
+        "subtype_unavailable": 0,
+        "unavailable": 3
+      },
+      "topup": {
+        "kind_accuracy_all": 0.7717,
+        "kind_accuracy_without_unavailable": 0.9467,
+        "n": 92,
+        "subtype_accuracy_all": "not defined",
+        "subtype_accuracy_without_unavailable": null,
+        "subtype_n": 0,
+        "subtype_unavailable": 0,
+        "unavailable": 17
+      }
+    },
+    "n": 0
+  },
+  "source_run": "2024Q4-eval-v8"
+}

@@ -46,7 +46,7 @@ Each reported metric states how many cases it covers, the mix of the cases, the 
 
 **Depends on:** [REQ-0020](data-ml.md#req-0020), [REQ-0055](#req-0055). The page reports the held-out metrics with n and failures.
 
-**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v7/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It holds n, the case mix, the model and prompt versions, the failures and the base-level 95% intervals. It also holds the stability over 3 recorded repetitions on 100 cases (`component.versions.router_v2.stability`).
+**Evidence:** Proven by [`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). It holds n, the case mix, the model and prompt versions, the failures and the base-level 95% intervals. It also holds the stability over 3 recorded repetitions on the high-risk subset (`high_risk_repeats`) and the v8 metrics per candidate (`candidates.<name>.subtype`, `slots`, `drafts`, `unsafe_wording`). The [analysis run](../../evidence/evaluation-runs/2024Q4-analysis-v8/summary.json) adds the confusion by intent, language and country (`M1_errors`).
 
 Missing: nothing for the router component.
 
@@ -86,6 +86,7 @@ Monitor latency, failures, escalations and complaints for each country.
 
 1. The [country log analytics report](../reports/req_0050_country_logs_report.md). It covers the digital event volumes (11.9M across México, Colombia and Argentina), the call center interaction counts and sentiment scores by country and channel, and the customer satisfaction survey averages. The sources are `bronze_digital_events`, `silver_call_center_interactions` and `silver_satisfaction_surveys` in `sentinel-data-engine/data/gold_bank.duckdb`.
 2. The monitoring of the system itself. The script `sentinel-ai-core/eval/monitor.py` aggregates the app turn log for each country and language. It reports turns, p50 and p95 latency, failed or timed-out steps, escalations, handoffs, fallback turns and cost. It keeps aggregates only and is write-once. The run [`evidence/monitoring/2024Q4-resolution-v2-replay/summary.json`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) freezes the result for the simulated replay workload (256 turns, 888 records). The [metrics report](../build/metrics-report.md) shows it.
+3. The saved queries for the public link, [`deploy/azure/queries.kql`](../../deploy/azure/queries.kql). They run in the Log Analytics workspace of the Container Apps environment. They report turns, p50 and p95 latency and cost by country, outcome and language, and the failed or timed-out steps and the handoffs. They return aggregates only, with no identifier.
 
 <a id="req-0053"></a>
 ### REQ-0053 · Sizing and its limits
@@ -103,8 +104,9 @@ State how many disputes a day appear in the data. State the capacity that the pr
 - The latency targets use the router latency that [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) measures.
 - [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) measures the busy-day load: `demand.account_or_payment_inquiry.busy_day_p95` = 292 and `demand.transaction_dispute.busy_day_p95` = 145. The highest days are 332 and 169.
 - The event peaks stay projections.
+- The load run [`20261005T211031Z`](../../evidence/robustness/20261005T211031Z/summary.json) measures `/api/v1/chat` on one replica with recorded answers. At the deployed limits (0.5 vCPU, 1 GiB) the container reaches about 5 requests a second; the p95 rises to 918 ms at the target 20. The host reaches 17.51 requests a second. The small live run reaches 0.66 requests a second at the target 2. See [capacity and latency](../rationale/capacity-and-latency.md).
 
-Limit: no load test of `/api/v1/chat` exists yet. The requests per second of one replica are not measured.
+Limit: the load run uses a laptop or a local container, not the cloud replica. The live part is small. The event peaks stay projections.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics
@@ -126,7 +128,7 @@ Report the outcome metrics that the brief requires:
 
 **Evidence:** Proven by:
 
-- The [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). It gives each mandatory metric with its denominator (section 6).
+- The [metrics report](../build/metrics-report.md) on the frozen run [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). It gives the v8 component metrics per candidate: kind accuracy, subtype accuracy, slot precision, rejected drafts, unsafe wording, cost and latency, each with its denominator (`candidates.<name>.*`). The attack block reports the unsafe wording of each candidate (`attacks.candidates.<name>.unsafe_wording`).
 - The final resolution run [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json), with [`2024Q4-resolution-v1`](../../evidence/evaluation-runs/2024Q4-resolution-v1/summary.json) beside it. It measures safe automated resolution over 56 cases in 14 situations on the final loop. Both versions resolve 16 of 56 cases, with 0 unsafe outcomes and 0 missed transfers. The cost per resolution is USD 0.000561 for `router_v2`. The run has the breakdown by variant and by country, with n, situation-level intervals and the label "descriptive". It verifies offline.
 - The router reports tokens and cost for each turn (`tests/test_ai_router.py`).
 
