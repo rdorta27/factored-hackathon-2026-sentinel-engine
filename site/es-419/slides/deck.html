@@ -59,7 +59,7 @@
       <div class="card"><span class="eyebrow">Monto alto</span><p>El sistema traspasa con los datos verificados.</p></div>
       <div class="card"><span class="eyebrow">No fui yo</span><p>El sistema no juzga el fraude. Lo hace un asesor.</p></div>
     </div>
-    <p class="foot">Demo en vivo: enlace en el README. Los datos de la demo son sintéticos.</p>
+    <p class="foot">Repositorio: <code>github.com/rdorta27/factored-hackathon-2026-sentinel-engine</code> · Sitio: <code>rdorta27.github.io/factored-hackathon-2026-sentinel-engine</code> · Demo en vivo: el enlace y las credenciales de prueba están en el correo de la entrega. Los datos de la demo son sintéticos.</p>
   </div>
 </div>
 </section>
@@ -68,7 +68,12 @@
 <span class="eyebrow">3 · Cómo</span>
 <h1>La IA conversa. <span>Las reglas deciden.</span></h1>
 <div class="how"><img src="../diagrams/architecture-light.svg" alt="Arquitectura de Sentinel. El modelo etiqueta la intención. El código enmascara, decide, actúa y verifica. Las partes están marcadas como reales o mock."></div>
-<p class="motto">El modelo solo etiqueta la intención. El código enmascara, decide, actúa y verifica.</p>
+<div class="decisions" aria-label="Decisiones técnicas clave">
+  <div><b>Política en código</b><span>La política, la sesión y la idempotencia viven en el código, no en el modelo. Decisión 005.</span></div>
+  <div><b>Enmascarar primero</b><span>El código enmascara los datos personales antes de cualquier llamada al modelo. Decisión 004.</span></div>
+  <div><b>Un enrutador pequeño</b><span>Un LLM con instrucciones etiqueta la intención. Si falla, responde una línea base de palabras clave. Decisión 016.</span></div>
+  <div><b>Un solo servicio</b><span>Un servicio FastAPI en Azure Container Apps. Decisiones 005 y 019.</span></div>
+</div>
 </section>
 <section class="slide" id="s4" aria-label="Prueba">
 <div class="bar"><img src="../../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackatón 2026 · 4 / 6</span></div>

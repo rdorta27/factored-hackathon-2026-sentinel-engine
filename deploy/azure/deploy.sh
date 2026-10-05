@@ -3,8 +3,9 @@ set -euo pipefail
 
 # Builds the Sentinel Engine image in Azure Container Registry and deploys
 # it to Azure Container Apps. Requires an active Azure login (az login) on
-# the target subscription. Reads SENTINEL_SESSION_SALT from the repo .env
-# when set; otherwise generates a random one per run. The LLM router variables
+# the target subscription. Reads SENTINEL_SESSION_SALT from the environment
+# or the repo .env and stops when it is missing: a generated salt dies with
+# the deploy and breaks session_ref continuity across redeploys. The LLM router variables
 # (SENTINEL_LLM_*) are read from the same .env and passed through when set; the
 # API key goes in as a secret. With the base URL and the key set, the app serves
 # router_v2 (prompt v2 with its examples) and answers a turn with the keyword
@@ -22,6 +23,18 @@ set -euo pipefail
 # the advisor role, so the advisor login keeps its password.
 
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+
+# Stop before any Azure call when the salt is missing. The salt keeps
+# session_ref continuous across redeploys, so the deploy never generates one.
+salt="${SENTINEL_SESSION_SALT:-}"
+if [[ -z "$salt" && -f "$REPO_DIR/.env" ]]; then
+	salt="$(sed -n 's/^SENTINEL_SESSION_SALT=//p' "$REPO_DIR/.env" | tail -n 1)"
+fi
+if [[ -z "$salt" ]]; then
+	echo "error: SENTINEL_SESSION_SALT is missing." >&2
+	echo "Set it in the environment or in .env. The deploy does not generate a salt." >&2
+	exit 1
+fi
 
 LOCATION="${LOCATION:-eastus}"
 RESOURCE_GROUP="${RESOURCE_GROUP:-rg-sentinel-demo}"
@@ -112,11 +125,6 @@ az containerapp env storage set \
 	--access-mode ReadWrite \
 	--output none
 unset storage_key
-
-salt="$(sed -n 's/^SENTINEL_SESSION_SALT=//p' "$REPO_DIR/.env" | tail -n 1)"
-if [[ -z "$salt" ]]; then
-	salt="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
-fi
 
 env_value() {
 	sed -n "s/^$1=//p" "$REPO_DIR/.env" | tail -n 1

@@ -233,3 +233,13 @@ def test_verify_ignores_the_breakdown_view() -> None:
                                           "by_variant": {"es-MX": {"n": 2}},
                                           "by_country": {"MX": {"n": 2}}}}}
     assert run._comparable(replayed) == run._comparable(frozen)
+
+
+def test_verify_ignores_a_metric_added_after_the_run() -> None:
+    """A frozen run without a later metric still verifies: the replay carries
+    one more key, which is not drift. A key the frozen run holds is compared."""
+    frozen = {"system": {"router_v2": {"safe_resolution": {"n": 2}}}}
+    replayed = {"system": {"router_v2": {"safe_resolution": {"n": 2}, "resolution_ceiling": {"resolvable": 1}}}}
+    assert run._same(replayed, frozen)
+    replayed["system"]["router_v2"]["safe_resolution"]["n"] = 3
+    assert not run._same(replayed, frozen)

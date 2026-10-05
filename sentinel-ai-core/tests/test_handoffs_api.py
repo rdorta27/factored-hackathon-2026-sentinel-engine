@@ -167,3 +167,25 @@ def test_trace_reports_unavailable_when_the_row_has_none(demo_auth) -> None:  # 
     login(api, "ADV-0001", ADVISOR_PASSWORD)
     body = api.get("/api/v1/handoffs/HO-old/trace").json()
     assert body["available"] is False and body["steps"] == []
+
+
+def test_a_charge_with_an_advisor_files_one_ticket_across_sessions(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    """Regression: a new session forgot the ticket, so the same charge filed a second one."""
+    api = TestClient(create_app())
+    first = escalate(api)
+    second = escalate(api)
+    assert second["reference"] == first["reference"]
+    assert login(api, "ADV-0001", ADVISOR_PASSWORD) == 200
+    tickets = [t for t in api.get("/api/v1/handoffs").json() if t["package"]["verified_facts"]]
+    refs = [t["package"]["verified_facts"]["transaction_id"] for t in tickets]
+    assert refs.count("TXN-1003") == 1
+
+
+def test_a_charge_with_an_advisor_is_not_selectable(demo_auth) -> None:  # type: ignore[no-untyped-def]
+    api = TestClient(create_app())
+    escalate(api)
+    assert login(api, "CUST-0001", CUSTOMER_PASSWORD) == 200
+    rows = {row["reference"]: row for row in api.get("/api/v1/transactions").json()["transactions"]}
+    assert rows["TXN-1003"]["case_state"] == "with_advisor"
+    assert rows["TXN-1003"]["eligible"] is False
+    assert rows["TXN-1003"]["ineligibleKey"] == "candidateWithAdvisor"

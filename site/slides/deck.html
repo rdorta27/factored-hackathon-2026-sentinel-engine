@@ -59,7 +59,7 @@
       <div class="card"><span class="eyebrow">High amount</span><p>The system hands off with the verified facts.</p></div>
       <div class="card"><span class="eyebrow">Not me</span><p>The system does not judge fraud. An advisor does.</p></div>
     </div>
-    <p class="foot">Live demo: link in the README. Demo data is synthetic.</p>
+    <p class="foot">Repository: <code>github.com/rdorta27/factored-hackathon-2026-sentinel-engine</code> · Site: <code>rdorta27.github.io/factored-hackathon-2026-sentinel-engine</code> · Live demo: the link and the test credentials are in the submission email. Demo data is synthetic.</p>
   </div>
 </div>
 </section>
@@ -68,7 +68,12 @@
 <span class="eyebrow">3 · How</span>
 <h1>The AI converses. <span>The rules decide.</span></h1>
 <div class="how"><img src="../diagrams/architecture-light.svg" alt="Architecture of Sentinel. The model labels the intent. The code masks, decides, acts and verifies. Parts are marked real or mock."></div>
-<p class="motto">The model only labels the intent. The code masks, decides, acts and verifies.</p>
+<div class="decisions" aria-label="Key technical decisions">
+  <div><b>Policy in code</b><span>Policy, session and idempotency live in code, not in the model. Decision 005.</span></div>
+  <div><b>Masking first</b><span>Code masks personal data before any model call. Decision 004.</span></div>
+  <div><b>A small router</b><span>A prompted LLM labels the intent. A keyword baseline answers if it fails. Decision 016.</span></div>
+  <div><b>One service</b><span>One FastAPI service on Azure Container Apps. Decisions 005 and 019.</span></div>
+</div>
 </section>
 <section class="slide" id="s4" aria-label="Proof">
 <div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 4 / 6</span></div>

@@ -17,7 +17,7 @@ from datetime import date
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from app.orchestrator.types import Candidate
-from app.policy.engine import _expired
+from app.policy.engine import _expired, decision_snapshot
 from app.policy.load import load_country
 from app.schemas.chat import CandidateTransaction, OwnCase, ProductView, TransactionList
 from app.session.models import Session
@@ -46,7 +46,16 @@ def candidate_view(candidate: Candidate, country: str, today: date) -> Candidate
         key = "candidateOutOfWindow"
     elif candidate.is_disputed:
         key = "candidateDisputed"
+    window: dict[str, object] = {}
+    if key == "candidateOutOfWindow" and policy is not None:
+        # The same figures the "why" card reads, from the same policy function.
+        snapshot = decision_snapshot("window.expired", candidate, today, policy)
+        window = {
+            "window_days": snapshot.get("window_days"),
+            "last_eligible_date": snapshot.get("last_eligible_date"),
+        }
     return CandidateTransaction(
+        **window,
         reference=candidate.candidate_id,
         amount=candidate.amount,
         currency=candidate.currency,
@@ -78,12 +87,22 @@ def case_state(view: CandidateTransaction, in_review: set[str], with_advisor: se
     return _STATE_BY_KEY.get(view.ineligibleKey, "not_disputable")
 
 
-def _with_state(view: CandidateTransaction, in_review: set[str], with_advisor: set[str]) -> CandidateTransaction:
+def _with_state(
+    view: CandidateTransaction,
+    in_review: set[str],
+    with_advisor: set[str],
+    case_ids: dict[str, str],
+) -> CandidateTransaction:
     state = case_state(view, in_review, with_advisor)
     update: dict[str, object] = {"case_state": state}
+    if state in ("in_review", "with_advisor") and view.reference in case_ids:
+        update["case_id"] = case_ids[view.reference]
     if state == "in_review":
         # A dispute opened here closes the charge to a second dispute.
         update.update(eligible=False, ineligibleKey="candidateDisputed")
+    elif state == "with_advisor":
+        # An advisor already has the charge: a tap must not file a second ticket.
+        update.update(eligible=False, ineligibleKey="candidateWithAdvisor")
     return view.model_copy(update=update)
 
 
@@ -101,6 +120,11 @@ def list_transactions(
     cases = request.app.state.cases.for_customer(session.customer_id)
     in_review = {c.transaction_id for c in cases if c.kind == "dispute" and c.status == OPEN and c.transaction_id}
     with_advisor = {c.transaction_id for c in cases if c.kind == "handoff" and c.transaction_id}
+    # The case that holds each charge: an open dispute wins over a handoff ticket.
+    case_ids = {c.transaction_id: c.case_id for c in cases if c.kind == "handoff" and c.transaction_id}
+    case_ids.update(
+        {c.transaction_id: c.case_id for c in cases if c.kind == "dispute" and c.status == OPEN and c.transaction_id}
+    )
     views = [candidate_view(to_candidate(row), session.country, ref_date) for row in rows]
     # Only a Gold source that holds product data gives a product. Never invent digits.
     lookup = getattr(gold, "product_for", None)
@@ -122,5 +146,5 @@ def list_transactions(
         product=ProductView(kind=info.kind, last4=info.last4) if info else None,
         as_of=ref_date.isoformat(),
         # Raw Gold vocabulary never reaches the API: rows go through the candidate adapter.
-        transactions=[_with_state(view, in_review, with_advisor) for view in views],
+        transactions=[_with_state(view, in_review, with_advisor, case_ids) for view in views],
     )

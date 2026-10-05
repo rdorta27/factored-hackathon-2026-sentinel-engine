@@ -565,6 +565,22 @@ def run_turn(turn: TurnContext, turn_input: TextInput | CandidateIdInput) -> tup
     return output, reply
 
 
+def _filed_handoff(request: Request, turn: TurnContext, reply: Handoff) -> CaseRow | None:
+    """The ticket already filed for this customer on the same charge, if any.
+
+    The conversation keeps its own ticket, but a new session starts empty. The
+    case store outlives the session, so it decides whether the charge is already
+    with an advisor. A handoff that names no charge never matches.
+    """
+    facts = reply.package.verified_facts
+    if facts is None or not facts.transaction_id:
+        return None
+    for case in request.app.state.cases.for_customer(turn.session.customer_id):
+        if case.kind == "handoff" and case.transaction_id == facts.transaction_id:
+            return case
+    return None
+
+
 def _save_ticket(request: Request, turn: TurnContext, reply: Handoff) -> None:
     facts = reply.package.verified_facts
     request.app.state.cases.add(
@@ -728,8 +744,18 @@ def finish_turn(
     new_ticket = False
     if isinstance(reply, Handoff):
         if turn.state.handoff_reference is None:
-            turn.state.handoff_reference = reply.reference
-            new_ticket = True
+            filed = _filed_handoff(request, turn, reply)
+            if filed is not None:
+                # The charge already has a ticket from an earlier session: point at
+                # it and keep its reason, so one charge never files two tickets.
+                turn.state.handoff_reference = filed.case_id
+                update = {"reference": filed.case_id}
+                if filed.reason_key:
+                    update["reason_key"] = filed.reason_key
+                reply = reply.model_copy(update=update)
+            else:
+                turn.state.handoff_reference = reply.reference
+                new_ticket = True
         else:
             # Already handed off: the advisor has the case, so repeated turns do
             # not file another ticket and keep pointing at the first one. The
