@@ -98,8 +98,7 @@
             </ul>
           </div>
         </details>
-        <details id="password-login">
-          <summary data-i18n="passwordLoginLink">Use user and password</summary>
+        <div id="password-login">
           <form id="login-form" class="login-form">
             <h2 class="chat-title" data-i18n="loginTitle">Test login</h2>
             <label>
@@ -108,12 +107,15 @@
             </label>
             <label>
               <span data-i18n="passwordLabel">Password</span>
-              <input id="login-pass" type="password" autocomplete="current-password" required>
+              <span class="pass-field">
+                <input id="login-pass" type="password" autocomplete="current-password" required>
+                <button type="button" id="toggle-pass" class="theme-toggle" aria-controls="login-pass" aria-pressed="false" data-testid="toggle-pass" data-i18n="showPassword">Show</button>
+              </span>
             </label>
             <button class="confirm-button" type="submit" data-i18n="loginButton">Log in</button>
             <p id="login-error" class="chat-sub" role="alert"></p>
           </form>
-        </details>
+        </div>
       </div>
     </section>
     <section id="view-chat" hidden>

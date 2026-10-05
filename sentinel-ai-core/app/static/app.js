@@ -215,6 +215,7 @@ function drawEntry(entry) {
   else if (entry.type === "welcome") thread.append(el("div", "msg msg-bot", t("welcome")));
   else if (entry.type === "error") drawError(entry.body, entry.status);
   else if (entry.type === "reply") drawReply(entry.body, entry);
+  else if (entry.type === "info") document.getElementById("thread").append(chargeInfoCard(entry.tx));
 }
 
 function renderThread() {
@@ -520,6 +521,29 @@ function handoffCard(body) {
   return card;
 }
 
+/* Information card of a closed charge: its state, why it is closed and the
+   verified facts the server sends (the case, or the window and its last day).
+   The page computes no date: every value comes from the listing. */
+function chargeInfoCard(tx) {
+  const state = tx.case_state || "not_disputable";
+  const card = el("div", "msg msg-audit charge-info");
+  card.setAttribute("data-testid", "charge-info");
+  const head = el("div", "handoff-head");
+  head.append(el("span", `pill pill-${STATE_TONES[state] || "neutral"}`, stateLabel(tx)));
+  if (tx.merchant) head.append(el("strong", "", tx.merchant));
+  card.append(head);
+  if (tx.merchant && tx.amount) card.append(el("p", "", receiptCharge(tx)));
+  const text = strings[`chargeInfo.${state}`];
+  if (text) card.append(el("p", "", fillTemplate(text, tx)));
+  const grid = el("div", "card-grid");
+  if (tx.case_id) grid.append(cardField("field_reference", tx.case_id));
+  if (state === "not_disputable" && tx.status) grid.append(cardField("chargeInfoStatus", statusLabel(tx.status)));
+  if (tx.window_days) grid.append(cardField("chargeInfoWindow", fill(t("chargeInfoDays"), { days: tx.window_days })));
+  if (tx.last_eligible_date) grid.append(cardField("whyLastDay", formatDate(tx.last_eligible_date)));
+  if (grid.childElementCount) card.append(grid);
+  return card;
+}
+
 /* "Por qué decidí esto": the rule behind a refusal, with the verified dates. */
 function whyCard(body) {
   const values = body.values;
@@ -619,12 +643,16 @@ function renderCharge(tx) {
   bottom.append(el("span", `pill pill-${STATE_TONES[tx.case_state] || "neutral"} tx-status`, stateLabel(tx)));
   item.append(top, bottom);
   if (!tx.eligible) {
-    item.disabled = true;
-    item.setAttribute("aria-disabled", "true");
-    // A tooltip does not show on a touch screen, so the reason is also text.
+    // A closed charge cannot start a dispute, but a tap still tells the customer
+    // why: an information card in the thread, with no turn sent to the chat.
+    item.classList.add("tx-closed");
     const reason = t(tx.ineligibleKey || "candidateOutOfWindow");
     item.title = reason;
     item.append(el("span", "chat-sub tx-reason", reason));
+    item.addEventListener("click", () => {
+      closeDrawers();
+      logEntry({ type: "info", tx });
+    });
   } else {
     item.setAttribute("data-eligible", "");
     item.disabled = isBusy();
@@ -670,6 +698,14 @@ function casesShowAllButton(total) {
   return button;
 }
 
+/* The charge behind a claim, from the listing; a claim with no charge (a
+   handoff that named none) shows its own facts. */
+function caseInfo(item) {
+  const rows = (lastTransactions && lastTransactions.transactions) || [];
+  const tx = rows.find((row) => row.case_id === item.case_id);
+  return tx || { ...item, status: "" };
+}
+
 function renderCases(cases) {
   const box = document.getElementById("cases");
   box.textContent = "";
@@ -679,8 +715,14 @@ function renderCases(cases) {
   }
   const shown = casesShowAll ? cases : cases.slice(0, CASES_PAGE);
   shown.forEach((item) => {
-    const card = el("div", "case-card");
+    // A claim opens the same information card as its charge in the list.
+    const card = el("button", "candidate case-card");
+    card.type = "button";
     card.setAttribute("data-testid", "case-card");
+    card.addEventListener("click", () => {
+      closeDrawers();
+      logEntry({ type: "info", tx: caseInfo(item) });
+    });
     const top = el("span", "tx-line");
     top.append(el("strong", "case-id", item.case_id));
     top.append(el("span", `pill pill-${STATE_TONES[item.case_state] || "neutral"}`, t(`state.${item.case_state}`)));
@@ -1197,7 +1239,29 @@ document.getElementById("login-form").addEventListener("submit", async (event) =
     return;
   }
   const { role } = await response.json();
+  resetPassword();
   await enterSession(role);
+});
+
+function resetPassword() {
+  const field = document.getElementById("login-pass");
+  field.value = "";
+  field.type = "password";
+  const button = document.getElementById("toggle-pass");
+  button.setAttribute("aria-pressed", "false");
+  button.setAttribute("data-i18n", "showPassword");
+  button.textContent = t("showPassword");
+}
+
+/* Show or hide the password: the field changes type, the button says what it does next. */
+document.getElementById("toggle-pass").addEventListener("click", (event) => {
+  const field = document.getElementById("login-pass");
+  const show = field.type === "password";
+  field.type = show ? "text" : "password";
+  event.currentTarget.setAttribute("aria-pressed", String(show));
+  event.currentTarget.setAttribute("data-i18n", show ? "hidePassword" : "showPassword");
+  event.currentTarget.textContent = t(show ? "hidePassword" : "showPassword");
+  field.focus();
 });
 
 document.getElementById("chat-form").addEventListener("submit", (event) => {
@@ -1222,6 +1286,7 @@ document.getElementById("logout").addEventListener("click", async () => {
   clearThread();
   show("view-login");
   document.getElementById("login-error").textContent = "";
+  resetPassword();
   sessionRole = null;
   replaceRoute("/");
 });
@@ -1240,7 +1305,7 @@ async function loadDemoEntry() {
   const available = response.ok;
   demoAvailable = available;
   document.getElementById("demo-personas").hidden = !available;
-  document.getElementById("password-login").open = !available;
+  // The password form stays visible with or without the personas.
 }
 
 /* The "simulated data" notice follows Gold, not the one-click entry. It shows

@@ -156,13 +156,6 @@ main {
   max-width: 26rem;
 }
 
-#password-login summary {
-  cursor: pointer;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-
 /* --- Login ------------------------------------------------------------ */
 
 .login-card {
@@ -536,13 +529,8 @@ main {
 }
 
 @media (max-width: 700px) {
-  .login-form input,
-  #password-login summary {
+  .login-form input {
     min-height: 44px;
-  }
-  #password-login summary {
-    display: flex;
-    align-items: center;
   }
 }
 
@@ -728,4 +716,30 @@ body[data-loading] main {
   .queue-back {
     display: inline-block;
   }
+}
+
+/* Password field with its show/hide button on the same line. */
+.pass-field {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.pass-field input {
+  flex: 1;
+  min-width: 0;
+}
+
+.pass-field > .theme-toggle {
+  margin-left: 0;
+}
+
+/* A closed charge reads as information, not as an action. */
+.tx-card.tx-closed {
+  opacity: 0.8;
+}
+
+.case-card.candidate {
+  width: 100%;
+  text-align: start;
 }
