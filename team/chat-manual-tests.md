@@ -235,6 +235,15 @@ Points 4 and 8 depend on the model and stay out of scope for this change.
 
 <!-- felix-replay:end -->
 
+### Proof behind points 6 and 10 (2026-10-05)
+
+The script checks only part of points 6 and 10. This table adds the proof that each point needs. The script does not write it.
+
+| Point | Status | Proof |
+|---|---|---|
+| 6 | passed (chat-start) | The direct question "¿Por qué no puedo reclamar el de enero?" returns `explanation.window.expired` in the four variants CT-11 (es-MX, es-CO, es-AR, pt-BR). The model was real. See the chat transcripts below |
+| 10 | passed (bank-ui) | The phone screenshots at 390×844 in `docs/build/screenshots/ui-product/` (for example `chat-es-MX-phone.png`) show the thread at full width, with no sideways scroll. MT-10 records the review of the owner on a phone |
+
 <!-- chat-transcripts:start -->
 ## Chat transcripts (automated)
 

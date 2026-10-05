@@ -10,7 +10,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 1. Correct what is wrong now
 
-- [ ] 1.1 In `team/chat-manual-tests.md`, `bank-ui` and `chat-start` are merged. Change point 10 to "passed (bank-ui)" if the phone screenshots at 390 px prove it, or to "pending (bank-ui)" if they do not. Change point 6 to "passed" only if the direct "why" question passes in the `chat-start` conversation report. Otherwise write "partial (chat-start)". Evidence: the file and the screenshot names.
+- [x] 1.1 In `team/chat-manual-tests.md`, `bank-ui` and `chat-start` are merged. Change point 10 to "passed (bank-ui)" if the phone screenshots at 390 px prove it, or to "pending (bank-ui)" if they do not. Change point 6 to "passed" only if the direct "why" question passes in the `chat-start` conversation report. Otherwise write "partial (chat-start)". Evidence: the file and the screenshot names.
 - [ ] 1.2 Add the missing scenario to the `flow-fixes` spec: after two requests for an advisor, a request about another charge continues the normal flow, and a third request for an advisor escalates. Evidence: `openspec validate flow-fixes --strict`.
 - [ ] 1.3 Write a script that prints each cited status in `openspec/specs/` that differs from `docs/requirements/requirements.md`, and fix the 59 citations. Evidence: the script prints no difference.
 
