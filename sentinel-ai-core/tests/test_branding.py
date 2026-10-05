@@ -59,3 +59,59 @@ def test_app_styles_carry_layout_only() -> None:
     assert "font-size" not in code and "font-weight" not in code, "type lives in branding/"
     for match in re.finditer(r"font-family\s*:\s*([^;]+);", code):
         assert "var(--font-mono)" in match.group(1), "only the brand mono variable may be referenced"
+
+
+def _luminance(color: str) -> float:
+    digits = color.lstrip("#")
+    channels = [int(digits[i : i + 2], 16) / 255 for i in (0, 2, 4)]
+    linear = [c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4 for c in channels]
+    return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+
+def _contrast(foreground: str, background: str) -> float:
+    high, low = sorted((_luminance(foreground), _luminance(background)), reverse=True)
+    return (high + 0.05) / (low + 0.05)
+
+
+def _themes() -> dict[str, str]:
+    light, dark = BRAND_CSS.split('[data-theme="dark"] {')
+    return {"light": light, "dark": dark.split("@media")[0]}
+
+
+def test_accent_is_the_bank_blue_in_both_themes() -> None:
+    themes = _themes()
+    assert _var(themes["light"], "--accent") == "#1f4fa3"
+    assert _var(themes["dark"], "--accent") != _var(themes["light"], "--accent")
+
+
+def test_accent_passes_aa_in_both_themes() -> None:
+    # White text sits on the accent fill (buttons, user bubbles).
+    # The accent text token sits on the page and card surfaces.
+    for name, theme in _themes().items():
+        accent = _var(theme, "--accent")
+        accent_text = _var(theme, "--accent-text")
+        assert _contrast("#ffffff", accent) >= 4.5, f"white on the {name} accent"
+        for surface in ("--bg", "--bg-elev"):
+            assert _contrast(accent_text, _var(theme, surface)) >= 4.5, f"{name} accent text on {surface}"
+        for token in ("--text", "--muted"):
+            assert _contrast(_var(theme, token), _var(theme, "--bg-elev")) >= 4.5, f"{name} {token}"
+
+
+def test_sentinel_violet_and_rose_stay_in_the_mark_only() -> None:
+    for theme in _themes().values():
+        assert _var(theme, "--sentinel-violet") and _var(theme, "--sentinel-rose")
+        assert _var(theme, "--accent").lower() not in {
+            _var(theme, "--sentinel-violet").lower(),
+            _var(theme, "--sentinel-rose").lower(),
+        }
+    uses = [line for line in CHAT_CSS.splitlines() if "--sentinel-" in line]
+    assert len(uses) == 1 and "linear-gradient" in uses[0], "only the product mark uses the Sentinel colors"
+
+
+def test_status_pills_pass_aa_in_both_themes() -> None:
+    for name, theme in _themes().items():
+        for pill in ("ok", "warn", "info", "neutral", "bad"):
+            fill = _var(theme, f"--pill-{pill}-bg")
+            text = _var(theme, f"--pill-{pill}-text")
+            assert _contrast(text, fill) >= 4.5, f"{name} pill {pill}"
+        assert _contrast(_var(theme, "--demo-text"), _var(theme, "--demo-bg")) >= 4.5, f"{name} demo chip"

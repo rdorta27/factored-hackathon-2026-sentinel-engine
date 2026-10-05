@@ -2,9 +2,11 @@ import json
 import re
 from pathlib import Path
 
-from fastapi import APIRouter, status
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Request, status
+from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
+
+from app.branding import brand_css, load_brand
 
 router = APIRouter(tags=["ui"])
 
@@ -41,8 +43,33 @@ def get_locale(locale: str) -> JSONResponse:
     return JSONResponse(status_code=status.HTTP_200_OK, content=strings)
 
 
+@router.get("/ui/brand.json")
+def get_brand(request: Request) -> JSONResponse:
+    brand = request.app.state.brand
+    return JSONResponse({"name": brand.name, "accent": brand.accent, "customized": brand.customized})
+
+
+@router.get("/ui/brand.css")
+def get_brand_css(request: Request) -> Response:
+    return Response(brand_css(request.app.state.brand), media_type="text/css")
+
+
+class RevalidatedFiles(StaticFiles):
+    """Static files that the browser must revalidate on every load.
+
+    Without this a browser keeps an old app.js or styles.css next to a new
+    index.html, and the page mixes two versions. The ETag keeps it cheap.
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        response.headers["Cache-Control"] = "no-cache"
+        return response
+
+
 def mount_ui(app) -> None:
+    app.state.brand = load_brand()
     app.include_router(router)
     if BRANDING_DIR.is_dir():
-        app.mount("/branding", StaticFiles(directory=str(BRANDING_DIR)), name="branding")
-    app.mount("/ui", StaticFiles(directory=str(STATIC_DIR), html=True), name="ui")
+        app.mount("/branding", RevalidatedFiles(directory=str(BRANDING_DIR)), name="branding")
+    app.mount("/ui", RevalidatedFiles(directory=str(STATIC_DIR), html=True), name="ui")
