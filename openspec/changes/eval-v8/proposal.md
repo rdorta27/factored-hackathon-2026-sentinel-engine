@@ -13,8 +13,9 @@ last_reviewed: 2026-10-04
 ## What Changes
 
 - **Amendment of 018** (rules before numbers): new metrics, targets from development numbers of the baseline and `router_v2`, the spend cap, and the gates of `eval-v7` kept.
-- **Two sealed blocks** by isolated authors: the intent block (kind, subtype, slots, openers) and the multi-turn resolution block over the mock store. Both reviewed, back-translated and sealed under a new hash before the measurement.
+- **Four sealed blocks** by isolated authors: the intent block (kind, subtype, slots, openers), the multi-turn resolution block over the mock store, an attack block (marked and unmarked prompt injection, unauthorized access, expired session, bad data, tool failure, multilingual ambiguity) and a set of noisy twins. The gate D7 needs the attack block. All blocks are reviewed, back-translated and sealed under a new hash before the measurement.
 - **Dress rehearsal** of the whole pipeline on development data: every candidate, the new metrics, the report and the spend cap, with no sealed case.
+- **More reports** that the earlier runs lacked: the ceiling of safe resolution (how many cases can resolve at all, and how many did), a seven-item checklist score for each handoff, latency per conversation, and three repeats of the high-risk subset (attacks and cases that must hand off).
 - **One measurement, `2024Q4-eval-v8`,** after the code freeze: baseline, trained baseline, `router_v2`, `router_v2` with cut-offs, v3, v3 with cut-offs, with a breakdown by language and country.
 - **Verdict and serving:** the service serves v3 by default only if it passes every gate; otherwise `router_v2` stays. Then the metrics report, README, REQ-0016 evidence, the evidence index and the CI replay list are updated.
 

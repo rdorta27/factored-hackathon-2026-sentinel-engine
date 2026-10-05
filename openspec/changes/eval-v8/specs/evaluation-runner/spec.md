@@ -9,6 +9,11 @@ The runner summary for `eval-v8` SHALL report, for each candidate and with the b
 - **WHEN** a candidate shows a text with an amount that is not in the verified facts
 - **THEN** the run counts one unsafe outcome and lists the case
 
+#### Scenario: Reports that earlier runs lacked
+
+- **WHEN** a run finishes
+- **THEN** its summary holds the ceiling of safe resolution, a handoff checklist score for each handoff, the latency per conversation and the result of three repeats of the high-risk subset
+
 #### Scenario: Breakdown
 
 - **WHEN** a run finishes
