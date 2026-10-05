@@ -24,6 +24,7 @@ ADV = "adversarial/20261005T014816Z"
 EVAL = "evaluation-runs/2024Q4-eval-v7"
 RES = "evaluation-runs/2024Q4-resolution-v2"
 PROBLEM = "problem/dev-v1"
+GAP = "evaluation-runs/2024Q4-resolution-gap-v1"
 
 # id -> (run, field path, format, type label, denominator path or None, text)
 # Formats: int, pct (0..1 to percent), pct_raw (already percent), str, float2.
@@ -56,6 +57,10 @@ METRICS: dict[str, tuple] = {
     "res_net": (RES, "paired_resolution.net", "int", "Simulation",
                 "paired_resolution.n",
                 "net cases gained by the router over the baseline"),
+    "ceil_resolvable": (GAP, "ceiling.router_v2.resolvable", "int", "Simulation",
+                        "ceiling.router_v2.n", "cases that the policy lets the system resolve"),
+    "ceil_resolved": (GAP, "ceiling.router_v2.resolved", "int", "Simulation",
+                      "ceiling.router_v2.resolvable", "of the resolvable cases resolved"),
     "problem_calls": (PROBLEM, "totals.calls", "int", "Synthetic", None,
                       "calls in the development window"),
     "problem_dispute_calls": (PROBLEM, "demand.transaction_dispute.calls", "int",
@@ -125,6 +130,25 @@ SLOT = re.compile(
 )
 
 
+# Markdown pages use <!--n:key-->text<!--/n--> (invisible when rendered).
+MD_SLOT = re.compile(r"(<!--n:(\w+)-->)(.*?)(<!--/n-->)", re.S)
+MD_FILES = [ROOT / "docs" / "build" / "video-script.md"]
+
+
+def sync_markdown(numbers: dict, check: bool = False) -> list[Path]:
+    changed = []
+    for page in MD_FILES:
+        if not page.exists():
+            continue
+        old = page.read_text()
+        new = MD_SLOT.sub(lambda m: m.group(1) + numbers[m.group(2)]["text"] + m.group(4), old)
+        if new != old:
+            changed.append(page)
+            if not check:
+                page.write_text(new)
+    return changed
+
+
 def slot_text(numbers: dict, kind: str, key: str) -> str:
     entry = numbers[key]
     if kind == "num":
@@ -162,6 +186,9 @@ def main() -> int:
                         page.read_text()) != page.read_text():
                 print(f"stale number in {page.relative_to(ROOT)}")
                 stale = True
+        for page in sync_markdown(data["numbers"], check=True):
+            print(f"stale number in {page.relative_to(ROOT)}")
+            stale = True
         if stale:
             print("The site is stale. Run scripts/site_numbers.py.")
             return 1
@@ -169,7 +196,7 @@ def main() -> int:
         return 0
     OUT.parent.mkdir(exist_ok=True)
     OUT.write_text(text)
-    pages = sync_pages(data)
+    pages = sync_pages(data) + sync_markdown(data["numbers"])
     print(f"wrote {OUT.relative_to(ROOT)} ({len(METRICS)} numbers), updated {len(pages)} page(s)")
     return 0
 

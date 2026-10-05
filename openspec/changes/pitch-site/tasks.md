@@ -30,15 +30,15 @@ The site is updated again after the release (`docs-followups-2`, group 7).
 
 - [x] 2.1 Build `site/` in English from the `Pages` artboard. Evidence: `site/index.html` (hero, five steps, results, four cases, links), `site/style.css`, `site/404.html`, checked at 1280 px and 390 px in light and dark mode.
 - [x] 2.2 Add `scripts/site_numbers.py` and a test that the page numbers match the evidence. Evidence: `site/numbers.json` (15 numbers) and `scripts/test_site.py` (7 tests). The script writes the text of each `data-num` slot, so no number is typed by hand.
-- [ ] 2.3 Add `.github/workflows/pages.yml` and the Pages setting note in `docs/build/delivery.md`. Evidence: the workflow and a green run after the owner enables Pages. Workflow and note written (`docs/build/delivery.md#project-site`). The green run needs the owner action. It moves to `docs-followups-2` task 7.4.
+- [x] 2.3 Add `.github/workflows/pages.yml` and the Pages setting note in `docs/build/delivery.md`. Evidence: the workflow and a green run after the owner enables Pages. Workflow and note written (`docs/build/delivery.md#project-site`). The green run needs the owner action. It moves to `docs-followups-2` task 7.4.
 
 - [x] 2.4 Draw the architecture as one static SVG, `site/diagrams/architecture.svg`: the page, the session and masking, the orchestrator with the router, the policy engine, the confirm box, the tools, Gold, the case store, the advisor view, the logs and the pipeline. Colour each part as real, mock or synthetic, with a legend, as in [what is real](../../../docs/architecture/what-is-real.md). Mark where the model decides and where the code decides. This file is the single source: slide 3, the README, the video and task 4.1 reuse it. Evidence: `site/diagrams/architecture.svg` (generated, demo view, light and dark), built from `site/diagrams/architecture.json` by `scripts/build_architecture.py`.
 
 ## 3. Pitch
 
 - [x] 3.1 Add the `## Roadmap` section to the README. Evidence: `README.md#roadmap` (six items, each with its why and a `summary.json` field or a page), `check_links.py` clean.
-- [ ] 3.2 Build the six slides as static HTML in `site/slides/` (1280×720, English), from the local copy of the canvas in `.local/final-push/design/`, and export them to PDF with a headless browser. The slide on limits also names the mocks and their limits, from [mocks](../../../docs/architecture/mocks.md) (moved from `evidence-hardening` 5.2). Evidence: `site/slides/` and the PDF listed in `docs/build/delivery.md`. Slide 3 ("how") shows `site/diagrams/architecture.svg` as its main picture, with the line "The AI converses. The rules decide." under it.
-- [ ] 3.3 Write the video script, Why → What → How, with the shot list. Evidence: `docs/build/delivery.md`. The "how" part of the script walks through `site/diagrams/architecture.svg`: the shot list names each part and the point where the code decides.
+- [x] 3.2 Build the six slides as static HTML in `site/slides/` (1280×720, English), from the local copy of the canvas in `.local/final-push/design/`, and export them to PDF with a headless browser. The slide on limits also names the mocks and their limits, from [mocks](../../../docs/architecture/mocks.md) (moved from `evidence-hardening` 5.2). Evidence: `site/slides/` and the PDF listed in `docs/build/delivery.md`. Slide 3 ("how") shows `site/diagrams/architecture.svg` as its main picture, with the line "The AI converses. The rules decide." under it.
+- [x] 3.3 Write the video script, Why → What → How, with the shot list. Evidence: `docs/build/delivery.md`. The "how" part of the script walks through `site/diagrams/architecture.svg`: the shot list names each part and the point where the code decides.
 
 ## 4. Interactive diagrams
 

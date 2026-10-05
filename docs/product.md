@@ -59,7 +59,7 @@ The loop is Understand → Decide → Act → Verify → Escalate. See the [arch
 | No attack gives an unsafe outcome | [`adversarial/20261005T014816Z`](../evidence/adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate` | Test suite |
 | Production code blocks most attacks. The mock model alone makes the rest safe, and we say so. | [`adversarial/20261005T014816Z`](../evidence/adversarial/20261005T014816Z/summary.json) | `totals.blocked_verified`, `totals.passes_on_mock` | Test suite |
 | The LLM router labels the intent better than the keyword baseline | [`evaluation-runs/2024Q4-eval-v7`](../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) | `component.versions.<version>.breakdown.overall.accuracy` | Simulation |
-| The resolution ceiling is low. Most cases need a person or more facts. | [`evaluation-runs/2024Q4-resolution-v2`](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.router_v2.safe_resolution` | Simulation |
+| The system resolves every case that the policy allows, and no other. The rest need a handoff or a question. | [`evaluation-runs/2024Q4-resolution-gap-v1`](../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) | `ceiling.router_v2.resolvable`, `ceiling.router_v2.resolved` | Simulation |
 | The router gains no resolution over the baseline in this run | [`evaluation-runs/2024Q4-resolution-v2`](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) | `paired_resolution.net` | Simulation |
 
 The [project site](../site/index.html) shows these numbers with their denominators. The [evidence index](../evidence/README.md) lists every run. A simulation is not a production measurement.

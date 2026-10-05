@@ -25,6 +25,7 @@ ROOT = sn.ROOT
 DIR = ROOT / "site" / "diagrams"
 SRC = DIR / "architecture.json"
 SVG = DIR / "architecture.svg"
+SVG_LIGHT = DIR / "architecture-light.svg"
 PAGE = DIR / "architecture.html"
 
 STATUS = {"real": "Real", "mock": "Mock", "synthetic": "Synthetic"}
@@ -158,12 +159,13 @@ def svg_body(data, interactive: bool) -> str:
     return "\n".join(['<rect class="bg" width="100%" height="100%" rx="12"/>', svg_edges(data), svg_nodes(data, interactive), legend(data)])
 
 
-def build_svg(data) -> str:
+def build_svg(data, dark: bool = True) -> str:
     W, H = data["viewBox"]
+    style = STYLE if dark else "\n".join(l for l in STYLE.splitlines() if not l.startswith("@media"))
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" class="arch" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
         f'role="img" aria-label="Sentinel architecture. Demo view. Each part is marked real or mock, and as model, code or person.">\n'
-        f"<style>\n{STYLE}\n</style>\n{svg_body(data, False)}\n</svg>\n"
+        f"<style>\n{style}\n</style>\n{svg_body(data, False)}\n</svg>\n"
     )
 
 
@@ -348,6 +350,7 @@ def outputs() -> dict[Path, str]:
     data = load()
     return {
         SVG: build_svg(data),
+        SVG_LIGHT: build_svg(data, dark=False),
         PAGE: build_page(data),
         DIR / "diagram.css": CSS,
         DIR / "architecture.js": JS,

@@ -20,24 +20,32 @@ We update it at each review, not at the end. Statuses: Pending, In progress, Don
 
 ## Presentation
 
-4 to 6 slides.
+Six slides, in English, as static HTML pages: [`site/slides/deck.html`](../../site/slides/deck.html) (1280×720). Open the page in a browser. The arrow keys move between slides and `f` opens full screen. Each number comes from `site/numbers.json` with its type.
 
 | # | Slide | Source |
 |---|---|---|
-| 1 | Problem and chosen flow, backed by data | [flow selection](flows/03-flow-selection.md), [decisions](decisions/) |
-| 2 | Architecture (core principle and layers) | [architecture](../architecture/README.md), [decisions](decisions/) |
-| 3 | Security and control: permissions, handoff, when NOT to act | [security](security.md), [conversation](conversation.md) |
-| 4 | Results: baseline vs system (top metrics, by language) | [metrics](metrics.md) |
-| 5 | Limitations and path to production | [demo](../architecture/demo-architecture.md), [path to production](../architecture/specification.md#path-to-production), [data assumptions](../rationale/data-assumptions.md) |
+| 1 | Why: the problem and its data | [problem and demand](../rationale/problem-and-demand.md), [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) |
+| 2 | What: the product and the four demo cases | [product](../product.md), [demo replay](../../sentinel-ai-core/eval/demo/replay.md) |
+| 3 | How: "The AI converses. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
+| 4 | Proof: results and 0 unsafe outcomes | [evidence index](../../evidence/README.md), [metrics](metrics.md) |
+| 5 | Your brand: the white label | [branding](../../sentinel-ai-core/app/branding.py) |
+| 6 | Limits and roadmap, with the mocks | [mocks](../architecture/mocks.md), [README roadmap](../../README.md#roadmap) |
+
+Build the PDF before the submission:
+
+```bash
+python3 scripts/export_slides.py
+```
+
+The PDF is `site/slides/sentinel-slides.pdf`. Git ignores it. It holds one page for each slide.
 
 - The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
-- We show the 3 top metrics: safe resolution, unsafe outcomes, cost.
-- Each figure with n and measurement type (offline, simulation, projection).
-- We include failures and limitations; hiding them counts against us.
+- Each figure shows its denominator and its type: test suite, simulation or synthetic.
+- We include failures and limitations. Hiding them counts against us.
 
 ## Video pitch
 
-Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions.
+Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions. The full script, Why → What → How, with the shot list, is in [video script](video-script.md).
 
 1. The problem, in one sentence and with one data point.
 2. Demo of the **normal case** (es-419; type the es-MX line in [replay](../../sentinel-ai-core/eval/demo/replay.md)).

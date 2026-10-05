@@ -21,6 +21,7 @@
       <a href="#how">How it works</a>
       <a href="#proof">Results</a>
       <a href="#demo">Demo</a>
+      <a href="slides/deck.html">Slides</a>
       <a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">View on GitHub</a>
     </nav>
   </header>
@@ -89,10 +90,10 @@
           <span class="src">evaluation-runs/2024Q4-eval-v7 · breakdown.overall.accuracy</span>
         </div>
         <div class="card">
-          <span class="tag" data-num-type="res_resolved">Simulation</span>
-          <span class="big"><span data-num="res_resolved">16</span> of <span data-num-den="res_resolved">56</span></span>
-          <p>cases end in a safe resolution. The other cases need a person or more facts. The router gains <span data-num="res_net">0</span> net cases over the baseline here. <span data-num="res_unsafe">0/56</span> end unsafe.</p>
-          <span class="src">evaluation-runs/2024Q4-resolution-v2 · system.router_v2</span>
+          <span class="tag" data-num-type="ceil_resolved">Simulation</span>
+          <span class="big"><span data-num="ceil_resolved">16</span> of <span data-num-den="ceil_resolved">16</span></span>
+          <p>resolvable cases resolved. The policy lets <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span> cases resolve. The others need a handoff or a question. <span data-num="res_unsafe">0/56</span> end unsafe. The router adds <span data-num="res_net">0</span> cases over the baseline: the baseline reaches the same ceiling.</p>
+          <span class="src">evaluation-runs/2024Q4-resolution-gap-v1 · ceiling.router_v2</span>
         </div>
         <div class="card">
           <span class="tag data" data-num-type="problem_dispute_calls">Synthetic</span>

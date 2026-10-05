@@ -165,3 +165,56 @@ def test_architecture_page_in_the_browser():
         browser.close()
     assert not errors
     assert all(u.startswith("file:") for u in requests), requests
+
+
+# --- slides (task 3.2) ---
+
+DECK = SITE / "slides" / "deck.html"
+
+
+def test_deck_has_six_slides_with_the_right_order():
+    html = DECK.read_text()
+    assert html.count('<section class="slide"') == 6
+    labels = re.findall(r'<section class="slide" id="s\d" aria-label="([^"]+)"', html)
+    assert labels == ["Why", "What", "How", "Proof", "Your brand", "Limits and roadmap"]
+    assert "The AI converses." in html and "The rules decide." in html
+    assert "architecture-light.svg" in html
+
+
+def test_deck_numbers_only_in_number_slots():
+    html = DECK.read_text()
+    outside = sn.SLOT.sub("", html)
+    outside = re.sub(r"<style.*?</style>|<script.*?</script>", "", outside, flags=re.S)
+    for key, entry in json.loads(sn.OUT.read_text())["numbers"].items():
+        text = entry["text"]
+        if len(text) >= 3:
+            assert text not in outside, f"{key} ({text}) is typed by hand in the deck"
+
+
+def test_deck_in_the_browser_and_pdf():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        page = browser.new_page(viewport={"width": 1280, "height": 784})
+        errors = []
+        page.on("pageerror", lambda e: errors.append(str(e)))
+        page.goto(DECK.as_uri())
+        assert page.locator(".slide.on").count() == 1
+        for _ in range(7):
+            page.keyboard.press("ArrowRight")
+        assert page.locator(".slide.on").get_attribute("id") == "s6"
+        page.keyboard.press("Home")
+        assert page.locator(".slide.on").get_attribute("id") == "s1"
+        page.emulate_media(media="print")
+        assert page.locator(".slide").evaluate_all("els => els.every(e => getComputedStyle(e).display !== 'none')")
+        browser.close()
+    assert not errors
+
+
+def test_markdown_number_marks_match_the_evidence():
+    assert sn.sync_markdown(json.loads(sn.OUT.read_text())["numbers"], check=True) == []
+    assert "<!--n:" in (sn.ROOT / "docs/build/video-script.md").read_text()

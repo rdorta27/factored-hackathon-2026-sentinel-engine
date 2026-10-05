@@ -101,6 +101,26 @@
       "denominator": 56,
       "denominator_field": "paired_resolution.n"
     },
+    "ceil_resolvable": {
+      "text": "16",
+      "value": 16,
+      "type": "Simulation",
+      "label": "cases that the policy lets the system resolve",
+      "source": "evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json",
+      "field": "ceiling.router_v2.resolvable",
+      "denominator": 56,
+      "denominator_field": "ceiling.router_v2.n"
+    },
+    "ceil_resolved": {
+      "text": "16",
+      "value": 16,
+      "type": "Simulation",
+      "label": "of the resolvable cases resolved",
+      "source": "evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json",
+      "field": "ceiling.router_v2.resolved",
+      "denominator": 16,
+      "denominator_field": "ceiling.router_v2.resolvable"
+    },
     "problem_calls": {
       "text": "464,791",
       "value": 464791,
