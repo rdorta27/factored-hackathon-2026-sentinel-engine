@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from enum import StrEnum
+from time import time
 from typing import Any, Union
 
 
@@ -63,6 +64,9 @@ class PendingConfirmation:
     candidate_id: str
     action: str
     category: str
+    # Epoch seconds when the box opened. A confirmation older than
+    # CONFIRM_TTL_S (step.py) never writes; the loop asks again.
+    created_at: float = field(default_factory=time)
 
 
 @dataclass

@@ -1,7 +1,9 @@
+from dataclasses import replace
 from datetime import date
+from time import time
 
 from app.ai.port import UnderstandKind, UnderstandResult
-from app.orchestrator.step import Ports, step
+from app.orchestrator.step import CONFIRM_TTL_S, Ports, step
 from app.orchestrator.types import (
     Candidate,
     CandidateIdInput,
@@ -84,3 +86,32 @@ def test_three_failed_lookups_hand_off_without_case_number() -> None:
     assert result.case_number is None
     assert result.attempt == 3
     assert len(tools.by_key) == 1
+
+
+def test_late_confirmation_never_writes_and_asks_again() -> None:
+    tools = InMemoryTools([_candidate()])
+    state = ConversationState(language=Language.ES_419)
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
+    assert state.pending_confirmation is not None
+    state.pending_confirmation = replace(
+        state.pending_confirmation, created_at=time() - CONFIRM_TTL_S - 60.0
+    )
+    result = step(CandidateIdInput("c1"), state, ports)
+    assert result.kind is OutcomeKind.CONFIRM_BOX
+    assert result.case_number is None
+    assert tools.open_calls == 0
+    assert state.pending_confirmation is not None
+    assert state.pending_confirmation.created_at > time() - CONFIRM_TTL_S
+
+
+def test_fresh_confirmation_still_opens() -> None:
+    tools = InMemoryTools([_candidate()])
+    state = ConversationState(language=Language.ES_419)
+    ports = Ports(idempotency_scope="s1", tools=tools, model=ScriptModel(), today=date(2024, 12, 1))
+    step(TextInput("no reconozco este cargo Exito 85.000 2024-10-01"), state, ports)
+    assert state.pending_confirmation is not None
+    state.pending_confirmation = replace(state.pending_confirmation, created_at=time())
+    result = step(CandidateIdInput("c1"), state, ports)
+    assert result.kind is OutcomeKind.CASE_NUMBER
+    assert tools.open_calls == 1
