@@ -10,6 +10,7 @@ import secrets
 import sys
 from pathlib import Path
 
+from app.observability.chain import GENESIS, chain_record
 from app.observability.records import StepRecord
 
 logger = logging.getLogger("sentinel.observability")
@@ -76,6 +77,7 @@ class Recorder:
         self._path = Path(path) if path is not None else None
         self.salt, self.ephemeral_salt = self._resolve_salt(salt)
         self._records: list[StepRecord] = []
+        self._last_hash = GENESIS
         if self._path is not None:
             require_writable(self._path.parent)
             _touch_private(self._path)
@@ -118,8 +120,10 @@ class Recorder:
         return digest[:16]
 
     def emit(self, record: StepRecord) -> None:
-        self._records.append(record)
-        line = record.to_json()
+        chained = chain_record(record, self._last_hash)
+        self._last_hash = chained.record_hash
+        self._records.append(chained)
+        line = chained.to_json()
         if self._path is not None:
             with self._path.open("a", encoding="utf-8") as handle:
                 handle.write(line + "\n")

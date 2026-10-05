@@ -707,7 +707,7 @@ All other Gold columns are retained only if they carry no PII signal.
 | Document | Path | Covers |
 |---|---|---|
 | Data Source Inventory | [`../docs/data_inventory.md`](../docs/data_inventory.md) | All 13 source tables, internal evaluation fixtures, REQ-0031 compliance declaration |
-| Sizing & Capacity Spec | [`../docs/sizing_capacity.md`](../docs/sizing_capacity.md) | Dispute volume projections, local DuckDB benchmarks, Azure Databricks scaling roadmap (REQ-0053) |
+| Sizing & Capacity Spec | [`../docs/sizing-capacity.md`](../docs/sizing-capacity.md) | Dispute volume projections, local DuckDB benchmarks, Azure Databricks scaling roadmap (REQ-0053) |
 | Medallion Health Report | [`data_quality_report.md`](data_quality_report.md) | Auto-generated: row counts per layer, deduplication metrics, country normalization stats, PII-free view audit |
 
 ---

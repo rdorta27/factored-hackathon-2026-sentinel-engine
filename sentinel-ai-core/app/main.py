@@ -50,6 +50,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     ``memory`` so cases never share a database).
     """
     from app.ai.serving import model_from_env
+    from app.build_info import bundle_hash
     from app.observability import Recorder
     from app.routers.demo_chat import router as chat_router
     from app.routers.disputes import router as disputes_router
@@ -64,7 +65,9 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     from app.session.store import InMemorySessionStore, JsonUserRepository, SqliteSessionStore
     from app.state.cases import InMemoryCaseRepository, SqliteCaseRepository
     from app.state.conversation import InMemoryConversationStore, SqliteConversationStore
+    from app.tools.faults import apply_gold_fault, apply_model_fault, apply_store_fault
     from app.tools.gold_duckdb import select_gold
+    from app.tools.gold_strict import enforce_strict_gold, strict_enabled
 
     application = FastAPI(title="Sentinel AI Core", version="0.1.0")
 
@@ -112,10 +115,15 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     write_limiter = RateLimiter()
     service = SessionService(users, sessions, attempts, audit)
     gold, gold_source = select_gold(as_of=ref_date.isoformat())
+    # Strict mode refuses to start on missing or stale Gold (off by default).
+    enforce_strict_gold(gold_source)
+    # Fault injection for the frozen robustness run (SENTINEL_FAULT_*):
+    # off by default, so production serves the real adapters.
+    gold = apply_gold_fault(gold)
 
     application.state.recorder = recorder
     application.state.audit = audit
-    application.state.model = model if model is not None else model_from_env()
+    application.state.model = apply_model_fault(model if model is not None else model_from_env())
     application.state.session_service = service
     application.state.write_limiter = write_limiter
     application.state.gold = gold
@@ -124,7 +132,7 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
     application.state.state_backend = state_backend
     application.state.engine = engine
     application.state.conversation_store = conversation_store
-    application.state.cases = cases
+    application.state.cases = apply_store_fault(cases)
     # In memory, the live conversations dict (tests count threads through it).
     application.state.conversations = getattr(conversation_store, "items", {})
     # One CaseTools per customer (opaque key): write side of the tool port.
@@ -152,6 +160,8 @@ def create_app(model: ModelPort | None = None, state_backend: str | None = None)
             "route": info.route,
             "prompt_version": info.prompt_version,
             "gold_source": gold_source,
+            "gold_required": "on" if strict_enabled() else "off",
+            "bundle_hash": bundle_hash(),
             "state_backend": state_backend,
             "reference_date": ref_date.isoformat(),
         }
