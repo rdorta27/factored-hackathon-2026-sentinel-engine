@@ -29,6 +29,7 @@ Read these pages in this order. It takes about 20 minutes.
 | How do the parts of the system fit together? | [Architecture](architecture/README.md), then [system](architecture/system-architecture.md) |
 | What does the submission run? | [Demo architecture](architecture/demo-architecture.md) |
 | Which parts are mocks, and which numbers are simulations? | [What is real](architecture/what-is-real.md) |
+| What is each mock, why does it exist and can we remove it? | [Mocks](architecture/mocks.md) |
 | Which run proves a claim? | [Evidence index](../evidence/README.md) |
 | Why is it built this way? What do we say on each slide? | [Rationale](rationale/README.md) |
 | Which requirement is done, and what proves it? | [Requirements](requirements/requirements.md) |

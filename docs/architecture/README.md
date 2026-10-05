@@ -10,6 +10,7 @@ last_reviewed: 2026-10-04
 |---|---|
 | [System Architecture](system-architecture.md) | The target: layers, components, a case end to end, the learned component, stack, repository layout |
 | [Demo Architecture](demo-architecture.md) | The same page for the hackathon submission, with the mocks marked |
+| [Mocks](mocks.md) | What each mock is, why it exists, what the brief says, and why the public link keeps the Gold mock |
 | [What is real](what-is-real.md) | Which parts are real, mocks, synthetic or team-generated, and which numbers are simulations or projections |
 | [Architecture Specification](specification.md) | Contracts and rules: tools, confirmation, policy, personal data, failure handling, observability, evaluation, operations |
 
