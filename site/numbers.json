@@ -335,6 +335,37 @@
       ]
     },
     {
+      "id": "cutoff",
+      "title": "Confidence cut-off",
+      "type": "Simulation",
+      "kind": "rate",
+      "about": "Kind accuracy of the router with and without a confidence cut-off. The confidence of the model is saturated near the top. A cut-off near the top removes correct answers, not errors. The run holds three settings and no curve, so this page shows the three settings and no slider. The cut-offs stay off.",
+      "source": "evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json",
+      "rows": [
+        {
+          "label": "No cut-offs (our setting)",
+          "value": 0.9899,
+          "n": 198,
+          "field": "kind_accuracy.no_cutoffs.kind_accuracy",
+          "n_field": "kind_accuracy.no_cutoffs.n"
+        },
+        {
+          "label": "Cut-off rounded to the top",
+          "value": 0.5404,
+          "n": 198,
+          "field": "kind_accuracy.t_act_1_0.kind_accuracy",
+          "n_field": "kind_accuracy.t_act_1_0.n"
+        },
+        {
+          "label": "Cut-off before rounding",
+          "value": 0.7778,
+          "n": 198,
+          "field": "kind_accuracy.t_act_unrounded.kind_accuracy",
+          "n_field": "kind_accuracy.t_act_unrounded.n"
+        }
+      ]
+    },
+    {
       "id": "attacks",
       "title": "Attacks",
       "type": "Test suite",

@@ -25,6 +25,7 @@ EVAL = "evaluation-runs/2024Q4-eval-v7"
 RES = "evaluation-runs/2024Q4-resolution-v2"
 PROBLEM = "problem/dev-v1"
 GAP = "evaluation-runs/2024Q4-resolution-gap-v1"
+CUT = "evaluation-runs/2024Q4-cutoff-diagnosis-v1"
 
 # id -> (run, field path, format, type label, denominator path or None, text)
 # Formats: int, pct (0..1 to percent), pct_raw (already percent), str, float2.
@@ -108,6 +109,15 @@ SERIES: list[dict] = [
             ("Cases the policy lets resolve", "ceiling.router_v2.resolvable", "ceiling.router_v2.n"),
             ("Resolved by the baseline", "ceiling.baseline.resolved", "ceiling.baseline.n"),
             ("Resolved by the LLM router", "ceiling.router_v2.resolved", "ceiling.router_v2.n"),
+        ],
+    },
+    {
+        "id": "cutoff", "title": "Confidence cut-off", "type": "Simulation", "run": CUT, "kind": "rate",
+        "about": "Kind accuracy of the router with and without a confidence cut-off. The confidence of the model is saturated near the top. A cut-off near the top removes correct answers, not errors. The run holds three settings and no curve, so this page shows the three settings and no slider. The cut-offs stay off.",
+        "rows": [
+            ("No cut-offs (our setting)", "kind_accuracy.no_cutoffs.kind_accuracy", "kind_accuracy.no_cutoffs.n"),
+            ("Cut-off rounded to the top", "kind_accuracy.t_act_1_0.kind_accuracy", "kind_accuracy.t_act_1_0.n"),
+            ("Cut-off before rounding", "kind_accuracy.t_act_unrounded.kind_accuracy", "kind_accuracy.t_act_unrounded.n"),
         ],
     },
     {
