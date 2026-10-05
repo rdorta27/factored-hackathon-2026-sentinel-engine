@@ -257,7 +257,22 @@ def test_chips_only_for_supported_flows() -> None:
     block = APP_JS[start:end]
     assert "if (charge)" in block and "if (merchant)" in block
     assert 'prompts.push(t("demoPerson"))' in block
-    assert "box.hidden = prompts.length === 0" in block
+    assert "box.hidden = !showExamples" in block
+
+
+def test_example_chips_show_only_when_the_demo_is_available() -> None:
+    """The chips and their label follow the demo banner's `demoAvailable` flag.
+
+    A bank deployment (demo auth off) opens the password form and shows no
+    example buttons. The label and the chips share the one condition, so they
+    always appear and disappear together.
+    """
+    start = APP_JS.index("function renderDemoPrompts")
+    end = APP_JS.index("/* Advisor view")
+    block = APP_JS[start:end]
+    assert "const showExamples = demoAvailable && prompts.length > 0" in block
+    assert "box.hidden = !showExamples" in block
+    assert 'document.getElementById("demo-hint").hidden = !showExamples' in block
 
 
 def test_app_does_not_post_chat_while_building_the_chips() -> None:

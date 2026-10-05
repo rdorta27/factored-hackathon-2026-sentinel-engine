@@ -184,7 +184,8 @@ function show(id) {
     document.getElementById(view).hidden = id !== view;
   });
   document.getElementById("logout").hidden = id === "view-login";
-  document.getElementById("agent").hidden = id !== "view-chat";
+  // The top-bar agent button stays hidden: the chat offers the person case.
+  // The id and the handler stay for the tests and the locale keys.
   // The demo banner is for the entry; a customer session has the data-date chip.
   document.getElementById("demo-banner").hidden = id !== "view-login" || !demoAvailable;
   // The session line and the data date belong to a customer session only.
@@ -686,8 +687,9 @@ function renderDemoPrompts(transactions) {
     });
     box.append(chip);
   });
-  box.hidden = prompts.length === 0;
-  document.getElementById("demo-hint").hidden = prompts.length === 0;
+  const showExamples = demoAvailable && prompts.length > 0;
+  box.hidden = !showExamples;
+  document.getElementById("demo-hint").hidden = !showExamples;
 }
 
 /* Advisor view: escalated tickets, newest first. The list shows why each case
