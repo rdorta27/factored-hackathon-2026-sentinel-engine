@@ -17,6 +17,7 @@ Several documents drifted while the code moved. A check of `origin/main` on 2026
 - 38 pages in `docs/` and `team/` are not yet in simplified technical English.
 - Seven remote branches are merged and no longer needed.
 - The `sentinel-login/` folder is a reference page that nothing serves. Eight files still name it.
+- The `docs/understand/` folder mixes four kinds of page: the challenge overview, the dataset, the glossary and the official data dictionary. The name hides what each page holds. 23 files link to it.
 
 Evaluators read these pages first. A wrong "passed" or an old status costs trust, and the brief gives weight to honest limits.
 
@@ -30,6 +31,7 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 - **Evidence index.** Add each new run to `evidence/README.md` as it lands, with its status and data type.
 - **Branch list.** List the merged remote branches. The owner deletes them.
 - **Cleanup.** Remove `sentinel-login/`, rewrite the references to it, record the removal in decision 009, and add a link check to the CI workflow.
+- **Move `docs/understand/`.** Move its pages to `docs/overview.md`, `docs/data/` and `docs/glossary/`, fix the links, update `AGENTS.md` and `team/`, and remove the folder. The pages keep their content and anchors.
 
 ## Capabilities
 
@@ -42,7 +44,7 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 
 ## Impact
 
-- `team/chat-manual-tests.md`, `openspec/specs/` and `openspec/changes/`, `docs/requirements/`, `docs/build/`, `evidence/README.md`.
+- `team/` (tests report, plan, tasks and pending decisions), `AGENTS.md`, `openspec/specs/` and `openspec/changes/`, `docs/requirements/`, `docs/build/`, `evidence/README.md`.
 - No application code changes. One comment in `sentinel-ai-core/app/schemas/chat.py` changes. `sentinel-login/` is removed.
 
 ## Non-goals
@@ -50,3 +52,4 @@ Evaluators read these pages first. A wrong "passed" or an old status costs trust
 - Deleting archived OpenSpec changes that name `sentinel-login`.
 - Rewriting all 38 pages. Only the pages that the evaluators read first.
 - Deleting remote branches or pushing. The owner does both.
+- Rewriting the content of the moved pages. The move changes paths and links only.

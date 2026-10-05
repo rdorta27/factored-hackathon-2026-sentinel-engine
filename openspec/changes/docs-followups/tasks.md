@@ -10,7 +10,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 1. Correct what is wrong now
 
-- [ ] 1.1 In `team/chat-manual-tests.md`, change point 10 to "passed (bank-ui)" if the phone screenshots at 390 px prove it, or to "pending (bank-ui)" if they do not. Change point 6 to "partial (chat-start)". Evidence: the file and the screenshot names.
+- [ ] 1.1 In `team/chat-manual-tests.md`, `bank-ui` and `chat-start` are merged. Change point 10 to "passed (bank-ui)" if the phone screenshots at 390 px prove it, or to "pending (bank-ui)" if they do not. Change point 6 to "passed" only if the direct "why" question passes in the `chat-start` conversation report. Otherwise write "partial (chat-start)". Evidence: the file and the screenshot names.
 - [ ] 1.2 Add the missing scenario to the `flow-fixes` spec: after two requests for an advisor, a request about another charge continues the normal flow, and a third request for an advisor escalates. Evidence: `openspec validate flow-fixes --strict`.
 - [ ] 1.3 Write a script that prints each cited status in `openspec/specs/` that differs from `docs/requirements/requirements.md`, and fix the 59 citations. Evidence: the script prints no difference.
 
@@ -21,12 +21,12 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 
 ## 3. Evidence index
 
-- [ ] 3.1 Add each run that exists now (`select-v3d`, `calibration-v3`, the problem run, the charge-ranker runs and `train-v1`) to `evidence/README.md` with its status and data type. Update the sentence on which runs verify offline. The `eval-v8` and robustness runs are added by `post-freeze` (tasks 2.4 and 3.3). Evidence: the file.
+- [ ] 3.1 Add each run that exists now (`select-v3d`, `calibration-v3`, the problem run, the charge-ranker runs, `train-v1` and the runs of `robustness-evidence`) to `evidence/README.md` with its status and data type. Update the sentence on which runs verify offline. The `eval-v8` and robustness runs are added by `post-freeze` (tasks 2.4 and 3.3). Evidence: the file.
 
 ## 4. Archive and branches (when the owner asks)
 
-- [ ] 4.1 Archive `flow-fixes`, `router-v3` and `bank-ui` in that order, after tasks 1.2 and 1.3. Evidence: `openspec/changes/archive/` and the synced main specs.
-- [ ] 4.2 List the merged remote branches for the owner to delete: `feat/flow-fixes`, `feat/router-v3`, `feat/bank-ui`, `feat/ui-product`, `feat/router-confidence`, `feat/evaluation-final` and `evidence/customer-signals`. Evidence: the list in the pull request description.
+- [ ] 4.1 Archive the merged plans in this order: `flow-fixes`, `router-v3`, `bank-ui`, `chat-start`, `problem-evidence`, `trained-baseline`, `charge-ranker` and `robustness-evidence`. Do it after tasks 1.2 and 1.3. Evidence: `openspec/changes/archive/` and the synced main specs.
+- [ ] 4.2 List the merged remote branches for the owner to delete. Build the list with `git branch -r --merged origin/main`, so it includes the plans merged after 2026-10-04. Evidence: the list in the pull request description.
 
 ## 5. Cleanup
 
@@ -34,3 +34,14 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 - [ ] 5.2 Remove the folder with `git rm -r sentinel-login`. Add a short note to decision 009 that the reference page is removed and why. Evidence: the diff and both test suites green.
 - [ ] 5.3 Remove or rewrite each reference: `AGENTS.md` (layout table), `README.md`, `docs/architecture/system-architecture.md`, `sentinel-ai-core/README.md`, the comment in `sentinel-ai-core/app/schemas/chat.py`, `team/plan.md`, `team/tasks.md` and `team/pending-decisions.md`. Leave `openspec/changes/archive/` unchanged. Evidence: `grep -rI sentinel-login` finds only the archive.
 - [ ] 5.4 Add `scripts/check_links.py`: it checks that each relative link in the Markdown files outside the archive points to a file, and it runs in the CI workflow. Fix the links it finds. Evidence: the script prints no broken link.
+
+## 6. Move the `docs/understand/` folder
+
+Run this group last. Other plans add links to the old paths until they merge. Task 5.4 must be done first, because it finds every broken link.
+
+- [ ] 6.1 Confirm the destinations with the owner (see the open row in `team/pending-decisions.md`). The default is: `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, and `glossary/` to `docs/glossary/`. Evidence: the decision row moved to "Decided".
+- [ ] 6.2 Move the files with `git mv`. Keep the content, the headings and the anchors. Change only the relative links inside the moved files. Evidence: the rename list in `git status`.
+- [ ] 6.3 Fix every link to the old paths. The files that name them are `AGENTS.md`, `README.md`, `docs/README.md`, the requirement files, the decisions 008, 010, 011 and 017, the area pages, `docs/build/` pages, `docs/rationale/` pages, `docs/architecture/` pages and `team/tasks.md`. Evidence: `scripts/check_links.py` prints no broken link, and `grep -rI "understand/"` finds only `openspec/changes/archive/`.
+- [ ] 6.4 Update `AGENTS.md`: the layout table, the glossary path in the language section, and the data dictionary path in the rule on data. Update the sentence about the exception in `docs/README.md`, its reading order and its index, and the rules in the moved `reference/README.md`. Evidence: the diff.
+- [ ] 6.5 Remove the empty `docs/understand/` folder. Evidence: `ls docs` does not list it.
+- [ ] 6.6 Update `team/`: the two links in `team/tasks.md`, a row in the decisions table of `team/plan.md`, and the decision in `team/pending-decisions.md`. Evidence: the three files.

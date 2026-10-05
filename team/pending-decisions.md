@@ -13,7 +13,11 @@ Open choices, each with its options, supporting material and deadline. The list 
 
 ## Open
 
-None. New choices are added here with their options, supporting material and deadline.
+| # | Decision | Options | Supporting material | Deadline |
+|---|---|---|---|---|
+| 1 | Where the pages of `docs/understand/` go | Default: `overview.md` to `docs/overview.md`, `dataset.md` to `docs/data/dataset.md`, `reference/` to `docs/data/reference/`, `glossary/` to `docs/glossary/`. Other option: also move `docs/data_inventory.md` and `docs/sizing-capacity.md` into `docs/data/` | [`docs-followups`](../openspec/changes/docs-followups/tasks.md) group 6 | Before task 6.2 |
+
+New choices are added here with their options, supporting material and deadline.
 
 ## Decided
 

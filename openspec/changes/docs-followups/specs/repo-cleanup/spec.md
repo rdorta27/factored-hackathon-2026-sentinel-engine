@@ -13,3 +13,17 @@ The repository SHALL NOT keep the `sentinel-login/` folder once nothing serves, 
 
 - **WHEN** the links of the Markdown files outside `openspec/changes/archive/` are checked
 - **THEN** no relative link points to a missing file
+
+### Requirement: The documentation layout names what each page holds
+
+The repository SHALL NOT keep a `docs/understand/` folder. The overview, the dataset page, the glossary and the official data dictionary SHALL live in folders that name their content. `AGENTS.md`, `README.md`, `docs/README.md` and `team/` SHALL use the new paths. Traces to REQ-0034 (P0, Done) and REQ-0051 (P0, In progress).
+
+#### Scenario: Old path
+
+- **WHEN** a file outside `openspec/changes/archive/` names `docs/understand/`
+- **THEN** the link check fails
+
+#### Scenario: Anchors
+
+- **WHEN** a page moves
+- **THEN** its headings and anchors stay the same
