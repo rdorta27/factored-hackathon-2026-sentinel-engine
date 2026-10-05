@@ -19,7 +19,7 @@ The measurement of `eval-v8`, its verdict, its reports and the error analysis mo
 
 ## 3. Robustness runs (after the gate)
 
-- [ ] 3.1 Freeze the fault-injection run. From `robustness-evidence` 2.1. Evidence: `evidence/robustness/<run-id>/summary.json`. Ref: decision 019.
+- [x] 3.1 Freeze the fault-injection run. From `robustness-evidence` 2.1. Evidence: `evidence/robustness/<run-id>/summary.json`. Ref: decision 019.
 - [ ] 3.2 Freeze the load run (recorded answers, 0.5 vCPU, 1 GiB) and the small live run. From `robustness-evidence` 2.2. Evidence: `evidence/robustness/<run-id>/summary.json`. Ref: decision 019.
 - [ ] 3.3 Write the four rationale pages (`failure-handling`, `capacity-and-latency`, `cost-guard`, `attack-coverage`). Update the sizing page, the metrics catalog, the evidence index, REQ-0021, REQ-0026 and REQ-0053. From `robustness-evidence` 3.1. Add each robustness run that verifies offline to the CI replay list of `.github/workflows/tests.yml` (from `live-ops` 1.2). Evidence: those files. Ref: ml area.
 - [x] 3.4 Within the spend of input (b). Run the 3 attack cases that pass on the stand-in model against the real router model. Write a new adversarial run with `SENTINEL_WRITE_EVIDENCE=1` from `sentinel-ai-core/` and add it to `evidence/README.md`. From `evidence-hardening` 4.2. Evidence: `evidence/adversarial/<run-id>/summary.json`. Ref: REQ-0021.

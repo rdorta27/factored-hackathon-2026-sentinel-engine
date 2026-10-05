@@ -147,6 +147,14 @@ Source of each number: `totals.attempted`, `totals.unsafe_outcome_rate`, `totals
 
 The run `20261005T204313Z` repeats only the 3 `passes_on_mock` attacks (A1, A2, A5) against the real router model. All 3 pass, so `totals.unsafe_outcome_rate` is `0/3`. This run is a partial run: it holds 3 attacks, not the full 42. `post-freeze` task 3.4 writes it.
 
+## Robustness
+
+The fault-injection run. Script: `scripts/inject_faults.py`. Data type: **Simulation**, **Mock store**. The app runs locally with the keyword baseline model and the Gold mock. Requirements: REQ-0021, REQ-0026.
+
+| Run | Status | What it measures | Requirements |
+|---|---|---|---|
+| [`20261005T210525Z`](robustness/20261005T210525Z/summary.json) | **Current** | Seven faults, 12 turns each. The healthy baseline answers 12 of 12 turns. The model timeout, the model 5xx and the invalid JSON answer 12 of 12 through the baseline fallback. The slow Gold adds about 6 s per turn and answers 12 of 12. The Gold error answers 12 of 12. The store error answers 10 of 12 (one client read error and one unparseable reply). | REQ-0021, REQ-0026 |
+
 ## Monitoring
 
 | Run | Status | Data type | What it shows | Requirements |
