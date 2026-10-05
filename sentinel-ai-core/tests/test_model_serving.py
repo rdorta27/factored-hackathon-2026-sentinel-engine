@@ -170,3 +170,45 @@ def test_the_served_examples_equal_what_the_eval_loader_builds() -> None:
     expected = build_examples(load_dir(serving.EXAMPLES_PATH.parents[2] / "eval" / "cases"), eval_ids)
     assert serving.load_examples() == expected
     assert [row["case_id"] for row in ids["examples"]] == list(EVAL_V7_EXAMPLE_IDS)
+
+
+EVAL_V3_EXAMPLE_IDS = (
+    "v3-greet-es-MX", "v3-greet-es-CO", "v3-greet-es-AR", "v3-greet-pt-BR",
+    "v3-thanks-es-MX", "v3-thanks-es-CO", "v3-thanks-es-AR", "v3-thanks-pt-BR",
+    "v3-identity-es-MX", "v3-identity-es-CO", "v3-identity-es-AR", "v3-identity-pt-BR",
+    "v3-unclear-es-MX", "v3-unclear-es-CO", "v3-unclear-es-AR", "v3-unclear-pt-BR",
+    "v3-status-es-MX", "v3-status-es-CO", "v3-status-es-AR", "v3-status-pt-BR",
+    "v3-loan-es-MX", "v3-loan-es-CO", "v3-loan-es-AR", "v3-loan-pt-BR",
+    "v3-balance-es-MX", "v3-balance-es-CO", "v3-balance-es-AR", "v3-balance-pt-BR",
+    "v3-amount-es-MX", "v3-amount-es-CO", "v3-amount-es-AR", "v3-amount-pt-BR",
+)
+
+
+def test_the_v3_served_examples_equal_what_the_eval_loader_builds() -> None:
+    """The v3 image copy matches the v3 eval loader; both stay development."""
+    from eval.cases import load_dir
+    from eval.examples import build_examples_v3
+
+    rows = json.loads(serving.EXAMPLES_V3_PATH.read_text(encoding="utf-8"))["examples"]
+    spec = json.loads((serving.EXAMPLES_V3_PATH.parents[2] / "eval" / "examples_v3.json").read_text(encoding="utf-8"))
+    expected = build_examples_v3(
+        load_dir(serving.EXAMPLES_V3_PATH.parents[2] / "eval" / "cases"), spec["ids"], spec.get("drafts")
+    )
+    assert serving.load_examples_v3() == expected
+    assert [row["case_id"] for row in rows] == list(EVAL_V3_EXAMPLE_IDS)
+
+
+def test_prompt_v3_is_served_only_behind_the_v3_flag(monkeypatch: pytest.MonkeyPatch) -> None:
+    from app.ai.llm import SYSTEM_PROMPT, SYSTEM_PROMPT_V3
+
+    monkeypatch.setenv("SENTINEL_LLM_BASE_URL", "https://llm.example/v1")
+    monkeypatch.setenv("SENTINEL_LLM_API_KEY", KEY)
+    for name in ("CHEAP", "STRONG", "DEFAULT"):
+        monkeypatch.setenv(f"SENTINEL_LLM_{name}_MODEL", MODEL)
+    monkeypatch.setenv("SENTINEL_LLM_PROMPT_VERSION", "v3")
+    config = serving.router_config()
+    assert config.example_ids == EVAL_V3_EXAMPLE_IDS
+    assert config.system_prompt == SYSTEM_PROMPT_V3
+    assert config.system_prompt != SYSTEM_PROMPT
+    monkeypatch.setenv("SENTINEL_LLM_PROMPT_VERSION", "v2")
+    assert serving.router_config().system_prompt == SYSTEM_PROMPT
