@@ -138,7 +138,7 @@ Not reached on Tuesday and moved to Wednesday: the backend skeleton, the chat, t
 | Source inventory: every input labeled by origin, no external data ([inventory](../docs/data_inventory.md)) | Natalia | Done: REQ-0031, REQ-0054 |
 | Pipeline run end to end on the full dataset with a quality report; Silver normalizes `México`; Gold uses the 2026-06-17 cutoff | Natalia | Done: `data/gold_bank.duckdb` (gitignored), [report](../sentinel-data-engine/data_quality_report.md); quality metrics still incomplete (open task) |
 | Labelled incremental fixture: late arrival, duplicate and schema change | Natalia | Done: `sentinel-data-engine/tests/test_incremental_fixture.py` (REQ-0018) |
-| Sizing and capacity specification | Natalia | Done: [sizing](../docs/sizing_capacity.md) (REQ-0053) |
+| Homologate file names | Rubén | Done: renamed the sizing page to [sizing-capacity](../docs/sizing-capacity.md) (REQ-0053) |
 | Data setup in two steps: sync the raw tables, build the DuckDB file | Natalia | Done: [quickstart](../sentinel-data-engine/README.md#9-local-development-quickstart) (REQ-0028) |
 | Mask personal identifiers in free text before the model | Felix | Done: `app/privacy/`, `tests/privacy/`; adversarial A9 blocked in `evidence/adversarial/20261002T120107Z/summary.json` (REQ-0047) |
 | Data findings for thresholds: Mexican accounts are USD only, `Mexico` names purchases in Mexico, Silver drops `amount_usd` | Rubén | Done: [dataset assumptions](../docs/understand/dataset.md#assumptions); asked in the help channel |

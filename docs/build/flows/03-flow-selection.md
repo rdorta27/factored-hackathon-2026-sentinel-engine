@@ -12,6 +12,8 @@ Why the data supports the chosen flow. Last of three flow documents: [candidate 
 
 Data used: the development window only (2024-10-01 to 2024-12-31, by event date). Data from 2025-07-01 is reserved for the final evaluation and was not read.
 
+The measured problem behind the flow is in [`evidence/problem/dev-v1`](../../../evidence/problem/dev-v1/README.md) and the [problem and demand](../../rationale/problem-and-demand.md) page: first-contact resolution by reason, calls a day by workflow, and agent hours a month over the whole development zone (2023-06-17 to 2025-07-01).
+
 **Terms.** *Handoff*: passing a case to a human advisor with a structured package. *Held-out*: data kept aside to measure the finished system. *Leak*: a field that already contains the answer or is only known afterwards.
 
 ## Method
