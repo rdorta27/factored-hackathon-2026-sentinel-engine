@@ -83,6 +83,14 @@ The owner asked for one navigation on every page and for the pitch in English, S
 - [x] 6.9 State in the section "Limits and roadmap" of the site and in the README `## Limitations` that the Spanish and Portuguese copies are model-written and that no native speaker reviewed them, as for the evaluation cases ([018](../../../docs/build/decisions/018-evaluation-acceptance.md)). Evidence: `site/index.html#limits` (item "Translations", in the three languages) and the README `## Limitations` (item "Site translations").
 - [x] 6.10 Add to the delivery notes the commands that rebuild the copies after any change to the English text or to `site/numbers.json`: `python3 scripts/localize.py`, `python3 scripts/localize.py --check` and `python3 scripts/export_slides.py`. Evidence: `docs/build/delivery.md#project-site` (row "Rebuild the copies").
 
+## 7. Final adjustments (2026-10-05, after the message of the organizers)
+
+The organizers ask for 4 to 6 slides on the approach, the results and the key technical decisions, and for a video in the own voice of the team, in English, of 3 minutes at most.
+
+- [x] 7.1 Slide 3 shows four key technical decisions with their decision numbers (005, 004, 016, 019). Slide 2 shows the repository, the site and where the live demo link and the test credentials are (the submission email, never the slides). Evidence: `site/slides/deck.html`, three languages, `scripts/audit_overflow.py` with no finding.
+- [x] 7.2 The video script runs 2 minutes 30 seconds. The voice is a person, in English, and the script says so. Evidence: `docs/build/video-script.md`, `docs/build/delivery.md`.
+- [x] 7.3 The link for the judges, with `?lang=en`, opens English whatever the browser language. Evidence: `site/lang.js`, `test_language_in_the_address_wins_over_the_browser`, `docs/build/delivery.md#project-site`.
+
 ## Moved to `post-freeze`
 
 The final numbers (old 4.1) now live in the `post-freeze` change, after the measurement and the runs. This plan closes when the site, the slides, the product page and the video script are merged.
