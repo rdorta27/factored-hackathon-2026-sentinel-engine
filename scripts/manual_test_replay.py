@@ -11,8 +11,8 @@ Points 4 and 8 depend on the model: they stay out of scope for this change
 
 Usage::
 
-    python3 scripts/felix_replay.py
-    python3 scripts/felix_replay.py --base-url https://example.test --no-spawn
+    python3 scripts/manual_test_replay.py
+    python3 scripts/manual_test_replay.py --base-url https://example.test --no-spawn
 
 The default base URL is http://127.0.0.1:8002. On a loopback base URL the
 script starts one local uvicorn process per point, on the port of the base URL,
@@ -47,8 +47,8 @@ CORE_DIR = REPO_ROOT / "sentinel-ai-core"
 REPORT = REPO_ROOT / "team" / "chat-manual-tests.md"
 DEFAULT_BASE_URL = "http://127.0.0.1:8002"
 REFERENCE_DATE = "2026-06-17"
-START = "<!-- felix-replay:start -->"
-END = "<!-- felix-replay:end -->"
+START = "<!-- manual-test-replay:start -->"
+END = "<!-- manual-test-replay:end -->"
 
 OUT_OF_SCOPE_ROUTER = "out of scope (router-v3)"
 
@@ -195,7 +195,7 @@ def wait_for_health(base_url: str, timeout: float = 20.0) -> None:
 
 @contextlib.contextmanager
 def local_server(port: int):
-    with tempfile.TemporaryDirectory(prefix="felix-replay-") as folder:
+    with tempfile.TemporaryDirectory(prefix="manual-test-replay-") as folder:
         env = os.environ.copy()
         env.update(
             {
@@ -272,9 +272,9 @@ def render_block(results: list[Result], base_url: str, manage_server: bool) -> s
     return "\n".join(
         [
             START,
-            "## Felix replay (automated)",
+            "## Manual test replay (automated)",
             "",
-            f"Run: `python3 scripts/felix_replay.py --base-url {base_url}`. {setup}",
+            f"Run: `python3 scripts/manual_test_replay.py --base-url {base_url}`. {setup}",
             "The script repeats the ten points of the manual test of Felix on 2026-10-04.",
             "Points 4 and 8 depend on the model and stay out of scope for this change.",
             "",

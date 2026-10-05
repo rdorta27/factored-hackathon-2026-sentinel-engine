@@ -46,7 +46,7 @@ The system remembers what the customer said earlier in the conversation: the cha
 - The conversation state of each session (turns, candidates, pending confirmation, language). It is stored in SQLite and restored after a restart (`tests/test_state_sqlite.py::test_session_conversation_and_case_survive_a_restart`).
 - The history of each turn, carried in the handoff (`tests/test_handoff_package.py`).
 - The router context behind `ModelPort` (`tests/test_ai_router.py`).
-- The handoff reference and reason. They belong to the case. A later request about another charge continues the flow, and a filed reason does not change. A correction with the box open grounds the new charge (`tests/test_flow_fixes.py`; Felix replay points 1 and 3 in [`team/chat-manual-tests.md`](../../team/chat-manual-tests.md)).
+- The handoff reference and reason. They belong to the case. A later request about another charge continues the flow, and a filed reason does not change. A correction with the box open grounds the new charge (`tests/test_flow_fixes.py`; manual test replay points 1 and 3 in [`team/chat-manual-tests.md`](../../team/chat-manual-tests.md)).
 
 <a id="req-0002"></a>
 ### REQ-0002 · Clarify or abstain
@@ -116,7 +116,7 @@ Written rules say what the system answers alone. They say which actions need the
 - The [conversation rules](../build/conversation.md), the policy engine and the confirm box.
 - A handoff when the customer insists on a person, when a write is not verified, when the request is out of scope and when the charge is unknown.
 - Rules for suspected fraud (`fraud.claim`, `fraud.score`) and for a high amount (`amount.high`), for each account country and currency ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)). The values come from `evidence/evaluation/2024Q4-v2/summary.json`. One demo charge exists for each rule (`tests/test_not_mine_claim.py`, `tests/test_policy_files.py`). The rules are replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`.
-- A status question about a dispute. The system answers it from the case store before the model. A correction replaces the open box (`tests/test_flow_fixes.py`; Felix replay points 2 and 3).
+- A status question about a dispute. The system answers it from the case store before the model. A correction replaces the open box (`tests/test_flow_fixes.py`; manual test replay points 2 and 3).
 
 Two rules stay off or empty: Mexican MXN has no threshold, because the data has no MXN accounts. The staleness rule (decision 27) stays off.
 
@@ -315,7 +315,7 @@ Before the system opens a dispute, it checks whether the charge is pending, reve
 **Evidence:** Proven by:
 
 - The system explains Pending, Reversed and Declined charges and never disputes them. The raw status `Refunded` maps to Reversed (`tests/test_transactions.py`, `tests/test_disputes_api.py::test_preview_runs_the_policy`).
-- The system reports an open dispute before the box. A status question never opens a case (`tests/test_flow_fixes.py`; Felix replay points 2 and 5).
+- The system reports an open dispute before the box. A status question never opens a case (`tests/test_flow_fixes.py`; manual test replay points 2 and 5).
 
 <a id="req-0044"></a>
 ### REQ-0044 · Neutral Spanish with local terms

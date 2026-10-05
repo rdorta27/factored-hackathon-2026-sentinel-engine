@@ -213,17 +213,17 @@ on the mock.
   second each: this is staging, not a measure of time. Open: the wording of
   the system answers belongs to `flow-fixes` and `chat-start`.
 
-<!-- felix-replay:start -->
-## Felix replay (automated)
+<!-- manual-test-replay:start -->
+## Manual test replay (automated)
 
-Run: `python3 scripts/felix_replay.py --base-url http://127.0.0.1:8002`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per point, and one clean temporary SQLite file per point.
+Run: `python3 scripts/manual_test_replay.py --base-url http://127.0.0.1:8002`. Setup: mock Gold, reference date 2026-06-17, customer `CUST-0001`, one new session per point, and one clean temporary SQLite file per point.
 The script repeats the ten points of the manual test of Felix on 2026-10-04.
 Points 4 and 8 depend on the model and stay out of scope for this change.
 
 | Point | What Felix tested | Result | Detail |
 |---|---|---|---|
 | 1 | After a handoff, the same ticket and a changing reason | PASA | a new charge continues; the filed reference and reason stay fixed |
-| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-E815978F); no new case |
+| 2 | A dispute-status question opens another case | PASA | answered from the case store (D-B6EF2275); no new case |
 | 3 | A correction with the box open is ignored | PASA | the box moved from TXN-1001 to TXN-1006 |
 | 4 | A loan request enters the dispute flow | out of scope (router-v3) | depends on the model |
 | 5 | A box opens for a charge with an open dispute | PASA | no box and no second case |
@@ -233,7 +233,7 @@ Points 4 and 8 depend on the model and stay out of scope for this change.
 | 9 | A date with no match gives no clear answer | PASA | the clarification names 2026-06-16 |
 | 10 | The page is not responsive | PASA | the viewport meta tag and a responsive media query are served |
 
-<!-- felix-replay:end -->
+<!-- manual-test-replay:end -->
 
 ### Proof behind points 6 and 10 (2026-10-05)
 
