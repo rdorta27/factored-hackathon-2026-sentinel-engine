@@ -291,6 +291,18 @@ Run: `python3 scripts/chat_transcripts.py --base-url http://127.0.0.1:8004`. Set
 
 No finding. Every case matched its expected kind and key.
 
+### Review notes (G2)
+
+Reviewer: an agent, at the request of the owner. The owner did not read the report.
+
+| Point | Result |
+|---|---|
+| Kind and key of each case | 44 of 44 match |
+| Handoff on an opener | None |
+| Language of each draft | Matches the variant |
+| Loan replies (CT-08) | The wording "Te explico qué puedo hacer por tu préstamo" promises more than the bot does. Follow-up: tighten the draft rule. |
+| Report cells `opener.help` and `confirmCharge` | The cell shows a key, because the reply has no draft. The page shows the locale text. |
+
 <!-- chat-transcripts:end -->
 
 ## How to add an entry
