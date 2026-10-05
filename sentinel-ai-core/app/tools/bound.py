@@ -79,3 +79,8 @@ class SessionBoundLookup:
 
     def lookup_dispute(self, dispute_id: str):
         return self._memory.lookup_dispute(dispute_id)
+
+    def disputes(self):
+        """The customer's disputes when the memory knows them, else none."""
+        method = getattr(self._memory, "disputes", None)
+        return method() if callable(method) else []

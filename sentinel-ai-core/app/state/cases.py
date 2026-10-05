@@ -204,6 +204,14 @@ class CaseTools:
             if row.kind == "dispute" and row.status == OPEN and row.transaction_id
         }
 
+    def disputes(self) -> list[CaseRow]:
+        """The customer's disputes, newest first, for a status question."""
+        return [
+            row
+            for row in self._repo.for_customer(self._customer_id)
+            if row.kind == "dispute"
+        ]
+
     def open_dispute(
         self,
         candidate_id: str,

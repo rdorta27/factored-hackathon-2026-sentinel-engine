@@ -35,7 +35,7 @@ The system remembers what was said earlier in the conversation (the charge under
 
 **Depends on:** [REQ-0027](non-functional.md#req-0027). Context is kept per authenticated session.
 
-**Evidence:** Proven by: conversation state per session (turns, candidates, pending confirmation, language) stored in SQLite and restored after a restart (`tests/test_state_sqlite.py::test_session_conversation_and_case_survive_a_restart`); per-turn history carried in the handoff (`tests/test_handoff_package.py`); router context behind `ModelPort` (`tests/test_ai_router.py`).
+**Evidence:** Proven by: conversation state per session (turns, candidates, pending confirmation, language) stored in SQLite and restored after a restart (`tests/test_state_sqlite.py::test_session_conversation_and_case_survive_a_restart`); per-turn history carried in the handoff (`tests/test_handoff_package.py`); router context behind `ModelPort` (`tests/test_ai_router.py`); the handoff reference and reason belong to the case, so a later request about another charge continues the flow and a filed reason does not change, and a correction with the box open grounds the new charge (`tests/test_flow_fixes.py`; Felix replay points 1 and 3 in [`team/chat-manual-tests.md`](../../team/chat-manual-tests.md)).
 
 <a id="req-0002"></a>
 ### REQ-0002 · Clarify or abstain
@@ -87,7 +87,7 @@ Written rules say what the system answers alone, which actions need the customer
 
 **Depends on:** [REQ-0007](non-functional.md#req-0007), [REQ-0033](#req-0033). The answer/confirm/escalate split is policy in code.
 
-**Evidence:** Proven by: the [conversation rules](../build/conversation.md), the policy engine and the confirm box; handoff on person insist, unverified write, out of scope and unknown charge; suspected fraud (`fraud.claim`, `fraud.score`) and high amount (`amount.high`) per account country and currency ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)), with values from `evidence/evaluation/2024Q4-v2/summary.json` and one demo charge per rule (`tests/test_not_mine_claim.py`, `tests/test_policy_files.py`); replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`. Mexican MXN has no threshold (no MXN accounts in the data); staleness (decision 27) stays off.
+**Evidence:** Proven by: the [conversation rules](../build/conversation.md), the policy engine and the confirm box; handoff on person insist, unverified write, out of scope and unknown charge; suspected fraud (`fraud.claim`, `fraud.score`) and high amount (`amount.high`) per account country and currency ([010](../build/decisions/010-fraud-handoff-rule.md), [011](../build/decisions/011-high-amount-threshold.md)), with values from `evidence/evaluation/2024Q4-v2/summary.json` and one demo charge per rule (`tests/test_not_mine_claim.py`, `tests/test_policy_files.py`); replayed in `evidence/evaluation-runs/2024Q4-eval-v6/summary.json`. Mexican MXN has no threshold (no MXN accounts in the data); staleness (decision 27) stays off. A dispute-status question is answered from the case store before the model, and a correction replaces the open box (`tests/test_flow_fixes.py`; Felix replay points 2 and 3).
 
 <a id="req-0008"></a>
 ### REQ-0008 · Structured handoff package
@@ -244,7 +244,7 @@ Before opening a dispute, check whether the charge is pending, reversed or decli
 
 **Depends on:** [REQ-0003](#req-0003), [REQ-0015](data-ml.md#req-0015). Charge status is a verified Gold field.
 
-**Evidence:** Proven by: Pending, Reversed and Declined are explained and never disputed; raw `Refunded` maps to Reversed (`tests/test_transactions.py`, `tests/test_disputes_api.py::test_preview_runs_the_policy`).
+**Evidence:** Proven by: Pending, Reversed and Declined are explained and never disputed; raw `Refunded` maps to Reversed (`tests/test_transactions.py`, `tests/test_disputes_api.py::test_preview_runs_the_policy`); an open dispute is reported before the box and a status question never opens a case (`tests/test_flow_fixes.py`; Felix replay points 2 and 5).
 
 <a id="req-0044"></a>
 ### REQ-0044 · Neutral Spanish with local terms

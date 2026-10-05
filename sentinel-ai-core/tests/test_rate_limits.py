@@ -27,7 +27,10 @@ def test_chat_is_throttled_after_the_write_budget_is_spent() -> None:
     assert codes == {200, 429}, "the 61st write in the window must be throttled"
     blocked = api.post("/api/v1/chat", json={"message": "hola"})
     assert blocked.status_code == 429
-    assert blocked.json() == {"detail": "Too many requests"}
+    body = blocked.json()
+    assert body["detail"] == "Too many requests"
+    # The body carries the trace id, so the error bubble can show the reference.
+    assert body["trace_id"] == blocked.headers["X-Trace-Id"]
     # The throttle is auditable without naming the customer.
     events = [record.event for record in api.app.state.audit.records]
     assert "rate_limited" in events
