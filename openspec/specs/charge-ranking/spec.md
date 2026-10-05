@@ -1,7 +1,7 @@
 # charge-ranking Specification
 
 ## Purpose
-TBD - created by archiving change charge-ranker. Update Purpose after archive.
+Define the learned charge selector. A model ranks the charges of the session customer against what the customer wrote. The spec sets the rules for a fair comparison with the rules, for the model file and for serving. The selector stays off until it passes the serving rule.
 
 ## Requirements
 

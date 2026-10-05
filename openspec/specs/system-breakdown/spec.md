@@ -1,7 +1,7 @@
 # system-breakdown Specification
 
 ## Purpose
-TBD - created by archiving change evaluation-final. Update Purpose after archive.
+Define how a system run reports its outcomes by language variant and by account country. The spec also covers the country monitoring that reads the turn log. It states that the customer segment is declared and never invented.
 
 ## Requirements
 

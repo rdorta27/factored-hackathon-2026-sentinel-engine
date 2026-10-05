@@ -1,7 +1,7 @@
 # problem-evidence Specification
 
 ## Purpose
-TBD - created by archiving change problem-evidence. Update Purpose after archive.
+Define the evidence for the size of the problem. A frozen run reports the call numbers for the development zone only. A page explains these numbers in plain words. Each rate shows its count and its range.
 
 ## Requirements
 

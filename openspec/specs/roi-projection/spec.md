@@ -1,7 +1,7 @@
 # roi-projection Specification
 
 ## Purpose
-TBD - created by archiving change evaluation-final. Update Purpose after archive.
+Define the ROI projection. Each input has a label for its origin. The projection gives a break-even safe-resolution rate. It never states a measured saving. The call-center aggregates behind it hold no rows.
 
 ## Requirements
 
