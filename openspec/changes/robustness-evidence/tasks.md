@@ -20,7 +20,7 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [016](../../../docs/bui
 - [ ] 1.10 Add `bundle_hash` to `/health`: one hash of the policy files, the prompt examples and the cut-offs. Evidence: `tests/test_health.py`.
 - [ ] 1.11 In `sentinel-data-engine/tests`, add a test that an incremental load gives the same rows as a full load, row by row. Evidence: the test.
 - [ ] 1.5 Add the load-test script with recorded answers and a container limit option. Evidence: `scripts/load_chat.py` and a dry run.
-- [ ] 1.6 Remove unused dependencies from `pyproject.toml`. Evidence: a clean install and the full test suite.
+- [x] 1.6 Remove unused dependencies from `pyproject.toml`. Evidence: a clean install and the full test suite.
 
 ## 2. Runs (after the code freeze)
 
