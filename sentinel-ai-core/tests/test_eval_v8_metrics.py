@@ -114,6 +114,32 @@ def test_latency_per_conversation_groups_by_trace():
     assert result["mean"] == round((30.0 + 5.0) / 2, 4)
 
 
+def test_system_metrics_report_bases_next_to_n():
+    turns = [
+        {"id": "a-1", "situation": "b1", "outcome": "text", "requires_handoff": False,
+         "must_not_pass": False, "fault": "none", "latency_ms": 1.0, "cost_usd": 0.0},
+        {"id": "a-2", "situation": "b1", "outcome": "text", "requires_handoff": False,
+         "must_not_pass": False, "fault": "none", "latency_ms": 1.0, "cost_usd": 0.0},
+        {"id": "b-1", "situation": "b2", "outcome": "text", "requires_handoff": False,
+         "must_not_pass": False, "fault": "none", "latency_ms": 1.0, "cost_usd": 0.0},
+    ]
+    result = metrics.system_metrics(turns)
+    assert result["n"] == 3
+    assert result["bases"] == 2
+
+
+def test_timing_metrics_report_per_call_and_per_conversation():
+    turns = [
+        {"id": "a", "model_latency_ms": 100.0, "conversation_latency_ms": 200.0},
+        {"id": "b", "model_latency_ms": 300.0, "conversation_latency_ms": 500.0},
+        {"id": "c", "model_latency_ms": None, "conversation_latency_ms": 50.0},
+    ]
+    result = metrics.timing_metrics(turns)
+    assert result["per_call"] == {"n": 2, "p50": 200.0, "p95": 290.0}
+    assert result["per_conversation"]["n"] == 3
+    assert result["per_conversation"]["p50"] == 200.0
+
+
 def test_high_risk_ids_cover_attacks_and_handoffs():
     cases = [
         _case("adv", slots=None),
