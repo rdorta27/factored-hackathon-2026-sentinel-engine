@@ -25,4 +25,4 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 4. Documents
 
-- [ ] 4.1 Update the ML area, the evidence index and REQ-0016 and REQ-0019 evidence. Evidence: those files.
+- [x] 4.1 Update the ML area, the evidence index and REQ-0016 and REQ-0019 evidence. Evidence: those files.
