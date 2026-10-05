@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sentinel slides</title>
+<meta name="description" content="Six slides: why, what, how, proof, your brand, limits and roadmap.">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="deck.css">
+<!--site:alt--><link rel="alternate" hreflang="en" data-lang="en" href="deck.html"><link rel="alternate" hreflang="es-419" data-lang="es-419" href="../es-419/slides/deck.html"><link rel="alternate" hreflang="pt-BR" data-lang="pt-br" href="../pt-br/slides/deck.html"><script src="../lang.js"></script><!--/site:alt-->
+</head>
+<body>
+<main class="deck">
+<section class="slide" id="s1" aria-label="Why">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 1 / 6</span></div>
+<span class="eyebrow">1 · Why</span>
+<h1>A customer sees a charge they do not recognize. <span>Who answers?</span></h1>
+<div class="cols">
+  <div class="col">
+    <h2>Two things can go wrong</h2>
+    <div class="card"><p><b>A chatbot can invent.</b> It may state a fact that it did not check. It may say that a case exists when it does not.</p></div>
+    <div class="card"><p><b>An advisor can start again.</b> A handoff with no verified facts makes the customer repeat everything.</p></div>
+    <div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok" style="background:#fdeedd;color:#8a4a0b">&ldquo;I do not recognize this charge.&rdquo; Demo data.</span></div>
+    <p class="foot">Users: bank customers in México, Colombia and Argentina, in Spanish and Portuguese.</p>
+  </div>
+  <div class="col">
+    <h2>What the data says</h2>
+    <div class="card"><span class="tag data" data-num-type="problem_dispute_calls">Synthetic</span>
+      <span class="big" data-num="problem_dispute_calls">79,191</span>
+      <p>dispute calls in the development window, of <span data-num-den="problem_dispute_calls">464,791</span>.</p></div>
+    <div class="grid2">
+      <div class="card"><span class="big" data-num="problem_dispute_hours">390.8</span><p>agent hours a month on disputes</p></div>
+      <div class="card"><span class="big" data-num="problem_dispute_resolved">43.6%</span><p>of dispute calls end resolved</p></div>
+    </div>
+    <p class="srcnote"><code>evidence/problem/dev-v1/summary.json</code> · <code>demand, hours, reasons</code>. The dataset is synthetic.</p>
+  </div>
+</div>
+</section>
+<section class="slide" id="s2" aria-label="What">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 2 / 6</span></div>
+<span class="eyebrow">2 · What</span>
+<h1>Sentinel turns it into a verified case, <span>or a well-informed advisor.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="panel"><span class="eyebrow">Inside the bank</span>
+      <div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div>
+      <span class="ok">Fact verified on your account</span><div class="fake" aria-hidden="true">Yes, open the dispute</div></div></div>
+    <ul>
+      <li>Spanish (es-MX, es-CO, es-AR) and Portuguese (pt-BR).</li>
+      <li>It opens a dispute only when the policy allows it and the customer confirms.</li>
+      <li>It says that a case exists only after it reads the case back.</li>
+    </ul>
+  </div>
+  <div class="col">
+    <h2>Four demo cases</h2>
+    <div class="grid2">
+      <div class="card"><span class="eyebrow">Normal</span><p>One charge, one confirmation, one case number.</p></div>
+      <div class="card"><span class="eyebrow">Ambiguous</span><p>Equal purchases. The system asks which one.</p></div>
+      <div class="card"><span class="eyebrow">High amount</span><p>The system hands off with the verified facts.</p></div>
+      <div class="card"><span class="eyebrow">Not me</span><p>The system does not judge fraud. An advisor does.</p></div>
+    </div>
+    <p class="foot">Live demo: link in the README. Demo data is synthetic.</p>
+  </div>
+</div>
+</section>
+<section class="slide" id="s3" aria-label="How">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 3 / 6</span></div>
+<span class="eyebrow">3 · How</span>
+<h1>The AI converses. <span>The rules decide.</span></h1>
+<div class="how"><img src="../diagrams/architecture-light.svg" alt="Architecture of Sentinel. The model labels the intent. The code masks, decides, acts and verifies. Parts are marked real or mock."></div>
+<p class="motto">The model only labels the intent. The code masks, decides, acts and verifies.</p>
+</section>
+<section class="slide" id="s4" aria-label="Proof">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 4 / 6</span></div>
+<span class="eyebrow">4 · Proof</span>
+<h1>We do not say it. <span>We measure it.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="card"><span class="tag test" data-num-type="adv_attempted">Test suite</span>
+      <span class="big" data-num="adv_rate">0/42</span>
+      <p>attacks with an unsafe outcome, of <span data-num="adv_attempted">42</span> tried.</p></div>
+    <div class="grid2">
+      <div class="card"><span class="big" data-num="adv_blocked">38</span><p>of <span data-num-den="adv_blocked">42</span> stopped by production code</p></div>
+      <div class="card"><span class="big" data-num="adv_mock">3</span><p>of <span data-num-den="adv_mock">42</span> safe only with the mock model. We say so.</p></div>
+    </div>
+  </div>
+  <div class="col">
+    <div class="card"><span class="tag" data-num-type="intent_router">Simulation</span>
+      <span class="big" data-num="intent_router">98.2%</span>
+      <p>intent accuracy of the LLM router on <span data-num-den="intent_router">280</span> held-out turns. The keyword baseline scores <span data-num="intent_baseline">53.9%</span>.</p></div>
+    <div class="card"><span class="tag" data-num-type="ceil_resolved">Simulation</span>
+      <span class="big"><span data-num="ceil_resolved">16</span> <small>of <span data-num-den="ceil_resolved">16</span> resolvable cases resolved</small></span>
+      <p>The policy lets <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span> cases resolve. The others need a handoff or a question. <span data-num="res_unsafe">0/56</span> end unsafe. The router adds <span data-num="res_net">0</span> resolved cases over the baseline: the baseline reaches the same ceiling.</p></div>
+  </div>
+</div>
+<p class="foot srcnote">Sources: <code>evidence/adversarial</code>, <code>evaluation-runs/2024Q4-eval-v7</code>, <code>evaluation-runs/2024Q4-resolution-v2</code> and <code>-gap-v1</code>. A simulation is not a production measurement.</p>
+</section>
+<section class="slide" id="s5" aria-label="Your brand">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 5 / 6</span></div>
+<span class="eyebrow">5 · Your brand</span>
+<h1>Your brand. <span>Our trust layer.</span></h1>
+<div class="cols">
+  <div class="col">
+    <div class="stack">
+      <div class="panel" style="--b:#1f4fa3"><span class="eyebrow">Bank A</span><div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok">Fact verified on your account</span><div class="fake" aria-hidden="true">Yes, open the dispute</div></div></div>
+      <div class="panel" style="--b:#0f7a55"><span class="eyebrow">Bank B</span><div class="mini"><div class="line"><span>Cafe Central</span><span>320.00 MXN</span></div><span class="ok">Fact verified on your account</span><div class="fake" aria-hidden="true">Yes, open the dispute</div></div></div>
+    </div>
+    <p class="foot">Mock-up of two brands on the same screen. Same code, same policy.</p>
+  </div>
+  <div class="col">
+    <ul>
+      <li>The bank name and the accent color come from two environment variables, not from code. An accent that fails the contrast check falls back to the default.</li>
+      <li>The trust layer does not change: the same policy, the same checks, the same read-back.</li>
+      <li>The advisor gets a package: the request, the verified facts, the actions that the system tried and the trace of each step.</li>
+      <li>The model never sees the customer id.</li>
+    </ul>
+  </div>
+</div>
+</section>
+<section class="slide" id="s6" aria-label="Limits and roadmap">
+<div class="bar"><img src="../favicon.svg" alt=""><span>Sentinel</span><span class="meta">Hackathon 2026 · 6 / 6</span></div>
+<span class="eyebrow">6 · Limits and roadmap</span>
+<h1>What we did not build, <span>and why.</span></h1>
+<div class="cols">
+  <div class="col lim">
+    <h2>Limits</h2>
+    <ul>
+      <li><b>Data:</b> synthetic, Spanish only, three countries. Portuguese cases are model-written.</li>
+      <li><b>Ceiling:</b> the policy lets <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span> simulated cases resolve (<span data-num-type="ceil_resolvable">Simulation</span>). The system resolves all of them. It resolves none beyond them.</li>
+      <li><b>Mocks:</b> Gold store, login and session, advisor, case store and policy values. Each has a production replacement.</li>
+      <li><b>Numbers:</b> no number here is a production measurement.</li>
+    </ul>
+  </div>
+  <div class="col road">
+    <h2>Roadmap</h2>
+    <ul>
+      <li><b>Customer 360:</b> the balance has no usable as-of date.</li>
+      <li><b>Charge investigation:</b> needs real bank data.</li>
+      <li><b>Feedback dataset:</b> outcomes of advisor handoffs.</li>
+      <li><b>Spending assistant:</b> needs balances and history.</li>
+      <li><b>Policy retrieval:</b> needs the bank policy documents.</li>
+      <li><b>Handoff routing:</b> by language and specialty.</li>
+    </ul>
+    <p class="src">README.md#roadmap · docs/architecture/mocks.md</p>
+  </div>
+</div>
+<div class="mockrow">
+  <h2>Each mock, in production</h2>
+  <div class="chips">
+    <span><b>Gold store</b> → Gold on Databricks</span>
+    <span><b>Login</b> → bank identity provider</span>
+    <span><b>Advisor view</b> → human advisor and bank CRM</span>
+    <span><b>Case store</b> → PostgreSQL</span>
+    <span><b>Policy values</b> → bank approved policy</span>
+  </div>
+</div>
+
+</section>
+</main>
+<nav class="hud" aria-label="Slides">
+  <a href="../">Site</a>
+  <!--site:hudlang--><div class="hudlang" role="group" aria-label="Language" data-t="keep"><a lang="en" hreflang="en" data-lang="en" aria-current="true" href="deck.html" title="English (United States)">English (US)</a><a lang="es-419" hreflang="es-419" data-lang="es-419" href="../es-419/slides/deck.html" title="Español (Latinoamérica)">Español (LA)</a><a lang="pt-BR" hreflang="pt-BR" data-lang="pt-br" href="../pt-br/slides/deck.html" title="Português (Brasil)">Português (BR)</a></div><!--/site:hudlang-->
+  <button type="button" id="prev" aria-label="Previous slide">&larr;</button>
+  <span id="pos" style="color:#f1eefb;align-self:center;font:600 14px system-ui">1 / 6</span>
+  <button type="button" id="next" aria-label="Next slide">&rarr;</button>
+</nav>
+<script src="deck.js"></script>
+</body>
+</html>
