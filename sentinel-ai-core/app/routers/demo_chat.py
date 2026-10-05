@@ -335,14 +335,19 @@ def _to_reply(
                 candidate_view(item, session.country, ref_date) for item in shown
             ],
             values=ClarificationValues(searched_date=searched),
+            text=output.text or None,
         )
     if kind in (OutcomeKind.EXPLAIN, OutcomeKind.OFFER):
-        return TextReply(message_key=_TEXT_KEYS.get(output.reason or "", "greetingHelp"))
+        return TextReply(
+            message_key=output.message_key or _TEXT_KEYS.get(output.reason or "", "greetingHelp"),
+            text=output.text or None,
+        )
     if kind is OutcomeKind.EXPLANATION:
         return Explanation(
             message_key=output.explanation_key or "explanation.none",
             rule_id=output.reason,
             values=ExplanationValues(**output.explanation_values),
+            text=output.text or None,
         )
     if kind is OutcomeKind.CONFIRM_BOX and output.candidate is not None:
         return ConfirmBox(
@@ -588,6 +593,8 @@ _CUSTOMER_PHRASES = {
     "selected_unknown_charge": "selected a charge not in their account",
     "asked_for_person": "asked for a person",
     "asked_why": "asked why a decision was made",
+    "asked_status": "asked for a charge status",
+    "small_talk": "made small talk",
     "out_of_scope": "asked for something outside disputes",
     "not_understood": "sent a message the system could not understand",
 }
@@ -614,6 +621,10 @@ def _turn_entry(
         customer = "out_of_scope"
     elif reason == "model_unavailable":
         customer = "not_understood"
+    elif reason and reason.startswith("opener."):
+        customer = "small_talk"
+    elif reason == "charge.status":
+        customer = "asked_status"
     elif isinstance(reply, Explanation):
         customer = "asked_why"
     elif isinstance(reply, Clarification):

@@ -1,7 +1,7 @@
 # Sizing & Capacity Specification — Sentinel Engine
 
 **Version:** 1.0  
-**Date:** 2026-10-01  
+**Date:** 2026-10-05  
 **Author:** Natalia Restrepo — Lead Data Engineer  
 **Requirement:** REQ-0053 · Sizing and capacity plan  
 **Related decisions:** [ADR 001](build/decisions/001-azure-platform.md) · [ADR 005](build/decisions/005-backend.md)
@@ -54,22 +54,36 @@ Customers who call the contact center to inquire about a transaction before fili
 |---|---|---|
 | Total call center interactions (90-day window) | ~54,900 | `silver_call_center_interactions` |
 | Dispute-related inquiry share | ~35% | Complaints-to-interaction ratio |
-| Average dispute inquiry calls per day | **~213 / day** | 0.35 × 54,900 / 90 |
+| Average account-inquiry calls per day | **218.48 / day** | [`problem/dev-v1`](../evidence/problem/dev-v1/summary.json): `demand.account_or_payment_inquiry.per_day_mean` |
+| Busy day (p95) | **292 / day** | `demand.account_or_payment_inquiry.busy_day_p95` |
+| Highest day | **332 / day** | `demand.account_or_payment_inquiry.highest_day` |
 
-Each inquiry triggers one Sentinel AI Core `/api/v1/chat` request. At steady state, the system must sustain **~213 requests/day (~0.15 req/s)** with end-to-end response times inside the targets of section 4.3.
+Each inquiry triggers one Sentinel AI Core `/api/v1/chat` request. At steady state, the system must sustain **~218 requests/day** with end-to-end response times inside the targets of section 4.3.
 
-### 2.4 Peak Workload Projections
+### 2.4 Peak Workload
 
-High-volume commercial events (Hot Sale, CyberMonday, end-of-month billing cycles) produce transaction spikes that translate into dispute spikes 24–72 hours later.
+The problem run measures the calls a day on the development zone
+([`problem/dev-v1`](../evidence/problem/dev-v1/summary.json), event dates
+2023-06-17 to 2025-07-01). A busy day is the 95th percentile of the daily
+counts: 95 of 100 days are below it. The highest day is the maximum.
+
+| Workload | Mean a day | Busy day (p95) | Highest day | Source |
+|---|---|---|---|---|
+| Account inquiry (flow entry) | 218.48 | 292 [289, 296] | 332 [316, 332] | `demand.account_or_payment_inquiry.*` |
+| Transaction dispute | 106.3 | 145 [142, 148] | 169 [162, 169] | `demand.transaction_dispute.*` |
+
+The scenarios below are **projections**. The dataset has no campaign calendar,
+so the team cannot measure a commercial event. Each row multiplies the
+measured busy day by an assumed event factor.
 
 | Scenario | Formal Disputes | Inquiry Calls | Chat API Req/s |
 |---|---|---|---|
-| Steady state (avg) | ~3 / day | ~213 / day | ~0.15 |
+| Busy day (measured) | — | 292 / day | ~0.20 |
 | Moderate peak (weekday billing cycle) | ~8 / day | ~500 / day | ~0.35 |
 | High-volume event (Hot Sale / CyberMonday) | **15–20 / day** | **~1,000 / day** | **~0.70** |
 | Stress ceiling (10× steady state) | ~30 / day | ~2,100 / day | ~1.5 |
 
-The stress ceiling represents the design target for auto-scaling: the system must handle a 10× burst without service degradation and return to steady-state resource usage within 5 minutes of the peak subsiding.
+The stress ceiling represents the design target for auto-scaling: the system must handle a 10× burst without service degradation and return to steady-state resource usage within 5 minutes of the peak subsiding. The formal-dispute counts stay projections: the dataset does not separate dispute calls from other account inquiries.
 
 ---
 
@@ -211,8 +225,8 @@ The model targets come from the measured router latency, not from an estimate. T
 - [x] Baseline transaction and customer volumes documented from the pipeline run
 - [x] Eligible dispute volume quantified (373,443 transactions, 8.4% eligibility rate)
 - [x] Daily average formal dispute rate derived from empirical complaint data (~3/day)
-- [x] Daily average inquiry load derived from call center data (~213/day)
-- [x] Peak workload projections defined (Hot Sale / CyberMonday: 15–20 disputes/day, ~1,000 calls/day)
+- [x] Daily average inquiry load measured on the development zone (218.48/day, busy day 292, highest day 332; [`problem/dev-v1`](../evidence/problem/dev-v1/summary.json))
+- [x] Peak workload projections defined (Hot Sale / CyberMonday: 15–20 disputes/day, ~1,000 calls/day), labelled as projections
 - [x] Local prototype benchmarks measured (19M records, ~10 min pipeline, < 50 ms query latency)
 - [x] Production data lakehouse architecture specified (Databricks + Delta Lake + Auto Loader)
 - [x] Production operational store specified (Azure PostgreSQL — Flexible Server)

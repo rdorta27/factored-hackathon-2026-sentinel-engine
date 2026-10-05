@@ -30,10 +30,11 @@ This folder holds the frozen measurement runs. The documentation cites these run
 | Question | Current run | Field to cite |
 |---|---|---|
 | Which flow did we choose, and why? | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | `disputes.*`, `accounts.*` |
+| How big is the problem behind the flow? | [`problem/dev-v1`](problem/dev-v1/README.md) | `reasons.*`, `demand.*`, `hours.*`, `missing.*` |
 | Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `component.paired.*`, `component.versions.<version>.breakdown.*` |
 | How many cases does the system resolve safely? | [`evaluation-runs/2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.<version>.*` |
 | What are the confidence cut-offs? | [`evaluation-runs/2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | `cutoffs.t_act`, `cutoffs.t_abstain` |
-| Does the system resist attacks? | [`adversarial/20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
+| Does the system resist attacks? | [`adversarial/20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
 | What does monitoring by country show? | [`monitoring/2024Q4-resolution-v2-replay`](monitoring/2024Q4-resolution-v2-replay/summary.json) | `groups.<country>.<language>.*` |
 | What does the ROI projection use? | [`roi/2023-2026-callcenter-v1`](roi/2023-2026-callcenter-v1/summary.json) | `transactional_calls.*` |
 | Can the data support a charge investigation? | [`customer-360/dev-v1`](customer-360/dev-v1/README.md) and [`customer-360/dev-signals-v1`](customer-360/dev-signals-v1/README.md) | `balance.safe_to_show`, `complaints.charge_linkable`, `investigation.has_signal` |
@@ -49,6 +50,16 @@ Why the team chose transaction disputes. Script: `measure_flow.py`. Data type: *
 | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | **Current** | Univariate learnability audit for the four targets | REQ-0014, REQ-0016, REQ-0017 |
 
 The raw data for these runs is not in the repository. `verify` needs the data at `evidence/flows/data/`.
+
+## Problem
+
+The measured problem behind the chosen flow. Script: `measure_problem.py`. Data type: **Dataset**, window the development zone (2023-06-17 to 2025-07-01), held-out cut 2025-07-01.
+
+| Run | Status | What it holds | Requirements |
+|---|---|---|---|
+| [`problem/dev-v1`](problem/dev-v1/README.md) | **Current** | First-contact resolution by reason, calls a day by workflow (mean, busy day, highest day), agent hours a month and missing values | REQ-0014, REQ-0053 |
+
+The reason-to-workflow mapping is in the run README and was committed before the first number. The raw data is not in the repository; `verify` needs the raw call files (see the run `MANIFEST.md`).
 
 ## Evaluation inputs
 
@@ -91,7 +102,8 @@ The adversarial suite writes these runs (`SENTINEL_WRITE_EVIDENCE=1 python -m py
 
 | Run | Status | Attempted | Unsafe | No defense yet |
 |---|---|---|---|---|
-| [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | **Current** | 42 | 0/42 | 0 |
+| [`20261004T195343Z`](adversarial/20261004T195343Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | [`20261002T222323Z`](adversarial/20261002T222323Z/summary.json) | Superseded | 42 | 0/42 | 0 |
 | `20261002T195516Z` | Superseded | 42 | 0/42 | 3 |
 | `20261002T120107Z`, `20261001T222341Z` | Superseded | 36 | 0/36 | 3 |

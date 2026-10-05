@@ -1,0 +1,268 @@
+{
+  "demand": {
+    "account_or_payment_inquiry": {
+      "busy_day_p95": 292,
+      "busy_day_p95_ci95": [
+        289,
+        296
+      ],
+      "calls": 162770,
+      "days": 745,
+      "highest_day": 332,
+      "highest_day_ci95": [
+        316,
+        332
+      ],
+      "per_day_mean": 218.48
+    },
+    "card_support": {
+      "busy_day_p95": 185,
+      "busy_day_p95_ci95": [
+        183,
+        188
+      ],
+      "calls": 102236,
+      "days": 745,
+      "highest_day": 213,
+      "highest_day_ci95": [
+        201,
+        213
+      ],
+      "per_day_mean": 137.23
+    },
+    "credit_information": {
+      "busy_day_p95": 0,
+      "busy_day_p95_ci95": [
+        0,
+        0
+      ],
+      "calls": 0,
+      "days": 745,
+      "highest_day": 0,
+      "highest_day_ci95": [
+        0,
+        0
+      ],
+      "per_day_mean": 0.0
+    },
+    "other": {
+      "busy_day_p95": 216,
+      "busy_day_p95_ci95": [
+        213,
+        219
+      ],
+      "calls": 120594,
+      "days": 745,
+      "highest_day": 236,
+      "highest_day_ci95": [
+        229,
+        236
+      ],
+      "per_day_mean": 161.87
+    },
+    "transaction_dispute": {
+      "busy_day_p95": 145,
+      "busy_day_p95_ci95": [
+        142,
+        148
+      ],
+      "calls": 79191,
+      "days": 745,
+      "highest_day": 169,
+      "highest_day_ci95": [
+        162,
+        169
+      ],
+      "per_day_mean": 106.3
+    }
+  },
+  "held_out_cut": "2025-07-01",
+  "hours": {
+    "account_or_payment_inquiry": {
+      "calls": 162770,
+      "calls_per_month": 6649.1,
+      "hours_per_month": 408.03,
+      "mean_minutes": 3.682,
+      "missing_duration": 22763,
+      "n_with_duration": 140007,
+      "rank": 1
+    },
+    "card_support": {
+      "calls": 102236,
+      "calls_per_month": 4176.31,
+      "hours_per_month": 309.46,
+      "mean_minutes": 4.446,
+      "missing_duration": 14378,
+      "n_with_duration": 87858,
+      "rank": 3
+    },
+    "credit_information": {
+      "calls": 0,
+      "calls_per_month": 0.0,
+      "hours_per_month": 0.0,
+      "mean_minutes": null,
+      "missing_duration": 0,
+      "n_with_duration": 0,
+      "rank": 4
+    },
+    "other": {
+      "calls": 120594,
+      "calls_per_month": 4926.23,
+      "hours_per_month": 587.29,
+      "mean_minutes": 7.153,
+      "missing_duration": 16861,
+      "n_with_duration": 103733,
+      "rank": null
+    },
+    "transaction_dispute": {
+      "calls": 79191,
+      "calls_per_month": 3234.93,
+      "hours_per_month": 390.78,
+      "mean_minutes": 7.248,
+      "missing_duration": 11055,
+      "n_with_duration": 68136,
+      "rank": 2
+    }
+  },
+  "kind": "problem_evidence",
+  "mapping": {
+    "Comercial": "other",
+    "Producto": "card_support",
+    "Queja": "transaction_dispute",
+    "Retención": "other",
+    "Transaccional": "account_or_payment_inquiry",
+    "Técnico": "other"
+  },
+  "missing": {
+    "contact_reason": {
+      "ci95_pct": [
+        0.0,
+        0.0
+      ],
+      "missing": 0,
+      "n": 464791,
+      "share_pct": 0.0
+    },
+    "duration_seconds": {
+      "ci95_pct": [
+        13.9,
+        14.1
+      ],
+      "missing": 65057,
+      "n": 464791,
+      "share_pct": 14.0
+    },
+    "reason_category": {
+      "ci95_pct": [
+        0.0,
+        0.0
+      ],
+      "missing": 0,
+      "n": 464791,
+      "share_pct": 0.0
+    },
+    "was_resolved": {
+      "ci95_pct": [
+        0.0,
+        0.0
+      ],
+      "missing": 0,
+      "n": 464791,
+      "share_pct": 0.0
+    }
+  },
+  "notes": [
+    "The dataset is synthetic. The numbers describe the dataset, not a real bank.",
+    "First contact means the dataset field was_resolved; the dataset does not tell if the customer called again.",
+    "The busy-day level is the 95th percentile of the daily counts; the range comes from a bootstrap over the days.",
+    "Mean handling time uses only the calls with a duration; the calls without one are counted, not filled.",
+    "The mapping is a judgment; a different mapping can change the ranking.",
+    "The product field is empty on most transactional calls, so the mapping uses the reason only.",
+    "Aggregates only: no row, identifier or text is written."
+  ],
+  "reasons": {
+    "Comercial": {
+      "ci95_pct": [
+        64.57,
+        65.54
+      ],
+      "n": 37052,
+      "resolved": 24104,
+      "share_pct": 65.05,
+      "workflow": "other"
+    },
+    "Producto": {
+      "ci95_pct": [
+        89.41,
+        89.78
+      ],
+      "n": 102236,
+      "resolved": 91599,
+      "share_pct": 89.6,
+      "workflow": "card_support"
+    },
+    "Queja": {
+      "ci95_pct": [
+        43.29,
+        43.98
+      ],
+      "n": 79191,
+      "resolved": 34557,
+      "share_pct": 43.64,
+      "workflow": "transaction_dispute"
+    },
+    "Retención": {
+      "ci95_pct": [
+        59.31,
+        60.93
+      ],
+      "n": 13958,
+      "resolved": 8392,
+      "share_pct": 60.12,
+      "workflow": "other"
+    },
+    "Transaccional": {
+      "ci95_pct": [
+        91.3,
+        91.57
+      ],
+      "n": 162770,
+      "resolved": 148832,
+      "share_pct": 91.44,
+      "workflow": "account_or_payment_inquiry"
+    },
+    "Técnico": {
+      "ci95_pct": [
+        69.74,
+        70.42
+      ],
+      "n": 69584,
+      "resolved": 48768,
+      "share_pct": 70.09,
+      "workflow": "other"
+    }
+  },
+  "script_version": "2026-10-05+problem-dev-v1",
+  "source": {
+    "field": "contact_reason",
+    "origin": "measured",
+    "table": "call_center_interactions"
+  },
+  "totals": {
+    "calls": 464791,
+    "calls_read": 465008,
+    "days": 745,
+    "excluded_heldout": 217,
+    "months": 24.48
+  },
+  "window": "dev",
+  "window_end": "2025-07-01",
+  "window_start": "2023-06-17",
+  "workflow_labels": {
+    "account_or_payment_inquiry": "Account or payment inquiry",
+    "card_support": "Card support",
+    "credit_information": "Credit information",
+    "other": "Other",
+    "transaction_dispute": "Transaction dispute"
+  }
+}

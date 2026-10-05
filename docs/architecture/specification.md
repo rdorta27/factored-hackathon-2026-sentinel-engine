@@ -238,7 +238,7 @@ REQ-0056. Where we use AI and where we do not.
 
 ## Path to production
 
-REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code. [Mocked components](demo-architecture.md#mocked-components) and [what is real](what-is-real.md) list the mocks. This table lists only what must change, or what we must decide, before operation. The [sizing and capacity specification](../sizing_capacity.md) gives the volumes, the prototype capacity and the scaling plan (REQ-0053).
+REQ-0052. Cloud deployment is not mandatory (REQ-0035). The demo runs the same code. [Mocked components](demo-architecture.md#mocked-components) and [what is real](what-is-real.md) list the mocks. This table lists only what must change, or what we must decide, before operation. The [sizing and capacity specification](../sizing-capacity.md) gives the volumes, the prototype capacity and the scaling plan (REQ-0053).
 
 | Area | Work before production |
 |---|---|

@@ -69,6 +69,45 @@ REQ-0002 (clarify or abstain). When a date phrase matches no charge, the reply n
 
 > "No encontré cargos del 2026-06-16. Estos son los más recientes." ("I found no charges on 2026-06-16. These are the newest.")
 
+## When the customer greets or makes small talk
+
+REQ-0002 (clarify or abstain) and REQ-0012 (Spanish and Portuguese). A greeting, a thank you, a goodbye, an identity question or a help question is an **opener**. The router reads it as `missing` with a subtype. The reply is friendly and says what the assistant can do. An opener never hands off.
+
+> "¡Hola! Puedo revisar un cargo que no reconozcas. Cuéntame cuál es." ("Hello! I can review a charge that you do not recognise. Tell me which one.")
+
+A greeting that also names a charge is a **request**, not an opener. The assistant keeps the request.
+
+When the model has no subtype (contract v2 or the baseline), short patterns in code find the opener. The patterns run only on a `missing` result and only on a short message.
+
+## Status of a charge
+
+REQ-0003 (verified records) and REQ-0043 (check the charge status). A question about the status of a charge is the `status` label. The reply gives the status, the date and the dispute eligibility of the verified charge. It **never opens a confirm box**.
+
+> "Tu cargo en Cafe Central por 320.00 del 2026-06-12 está Approved y puedes reclamarlo." ("Your charge at Cafe Central for 320.00 on 2026-06-12 is Approved and you can dispute it.")
+
+When the message names no charge, the assistant uses the newest verified charge.
+
+## When the request is outside disputes
+
+Decision [008](decisions/008-account-inquiry-scope.md). The router reads the request as `out_of_scope` with a subtype: balance, loan, card, address, transfer or other. The reply names what is not possible and what is possible. Then the assistant offers the advisor, as before.
+
+> "No puedo tramitar préstamos. Sí puedo revisar un cargo que no reconozcas." ("I cannot process loans. I can review a charge that you do not recognise.")
+
+## Why a named charge cannot be disputed
+
+REQ-0029 (explain a decision). When the customer asks why a named charge cannot be disputed, the assistant grounds the charge and reads the policy rule. The reply gives the rule and its verified values: the window, the charge date and the last eligible date.
+
+> "¿Por qué no puedo reclamar el de enero?" ("Why can't I dispute the January one?")
+> "Para reclamar un cargo hay un plazo de 90 días desde la fecha del cargo. Este cargo es del 2026-01-15, así que la última fecha para reclamar fue el 2026-04-15." ("To dispute a charge there is a 90-day window from the charge date. This charge is from 2026-01-15, so the last date to dispute was 2026-04-15.")
+
+A why question that names a **safety** charge stays a new request. The assistant does not disclose a threshold, a score or the rule name (adversarial F6).
+
+## Model words and templates
+
+Decision [024](decisions/024-model-wording.md). On a turn that does not decide, the reply may show words that the model wrote, with placeholders only. Code fills each placeholder from the verified facts. The validator refuses a draft with a figure, a name, a promise or the wrong language. A refused draft falls back to a reviewed template. The reply names the refusal reason on the turn record.
+
+A turn that decides uses templates only: the confirm box, the case confirmation, the policy refusal, the handoff and the error. The assistant offers two reviewed templates for the other turns and picks one by turn count, so a replay gives the same text.
+
 ## When the customer asks to speak to a person
 
 REQ-0040 (advisor request). The policy in code decides, not the predictor or the LLM.

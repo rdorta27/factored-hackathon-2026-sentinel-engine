@@ -23,7 +23,7 @@ Use the dataset to show the chosen flow matters: contact reasons, demand, data q
 
 **Depends on:** [REQ-0031](data-ml.md#req-0031). The analysis uses approved, labeled data.
 
-**Evidence:** Proven by: the reproducible [flow measurements](../build/flows/02-flow-measurements.md) and [flow selection](../build/flows/03-flow-selection.md).
+**Evidence:** Proven by: the reproducible [flow measurements](../build/flows/02-flow-measurements.md) and [flow selection](../build/flows/03-flow-selection.md); and the problem run [`evidence/problem/dev-v1`](../../evidence/problem/dev-v1/README.md): first-contact resolution by reason, calls a day by workflow (mean, busy day and highest day), agent hours a month and missing values on the development zone, with a reason-to-workflow mapping committed before the first number.
 
 <a id="req-0022"></a>
 ### REQ-0022 · Metrics with n, mix and variability
@@ -79,7 +79,7 @@ How many disputes per day appear in the data, what capacity the prototype is des
 
 **Depends on:** [REQ-0014](#req-0014). Sizing uses the dispute volumes from the analysis.
 
-**Evidence:** Proven by: the [sizing and capacity specification](../sizing_capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume. The latency targets use the router latency measured in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). Limit: no load test of `/api/v1/chat` exists yet, so the requests per second of one replica are not measured.
+**Evidence:** Proven by: the [sizing and capacity specification](../sizing-capacity.md): dispute volume and daily load from the data, prototype capacity (DuckDB, SQLite, one instance) and what changes at real volume. The latency targets use the router latency measured in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The busy-day load is measured in [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json): `demand.account_or_payment_inquiry.busy_day_p95` = 292 and `demand.transaction_dispute.busy_day_p95` = 145, with the highest days 332 and 169; the event peaks stay projections. Limit: no load test of `/api/v1/chat` exists yet, so the requests per second of one replica are not measured.
 
 <a id="req-0055"></a>
 ### REQ-0055 · Mandatory outcome metrics
