@@ -66,6 +66,7 @@ The static site is in `site/`. It holds plain HTML and CSS, with no build step. 
 | Numbers | `python3 scripts/site_numbers.py` writes `site/numbers.json` and the number slots of each page from the frozen `summary.json` runs |
 | Check | `python3 scripts/site_numbers.py --check` and `python3 -m pytest scripts/test_site.py -q` fail when a number differs from the evidence |
 | Rebuild the copies | After any change to the English text or to `site/numbers.json`, run `python3 scripts/site_numbers.py`, then `python3 scripts/localize.py`, then `python3 scripts/export_slides.py`. Run `python3 scripts/localize.py --check` to see if a copy is stale |
+| Link for the judges | Use `https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en`. It opens English whatever the language of the browser, and the browser keeps the choice. Without `?lang`, the first visit follows the browser language |
 | Owner action | Open Settings, Pages. Set Source to GitHub Actions. Run the `pages` workflow once |
 | Status | Site and workflow written. The first green run waits for the owner action |
 

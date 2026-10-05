@@ -537,3 +537,31 @@ def test_screenshots_are_on_the_home_page():
     assert len(shots) == 4
     for src, alt in shots:
         assert (SITE / src).exists() and len(alt) > 20, src
+
+
+def test_language_in_the_address_wins_over_the_browser():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    home = (SITE / "index.html").as_uri()
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        # A Spanish browser that opens the link with ?lang=en reads English, and the choice is kept.
+        ctx = browser.new_context(locale="es-MX")
+        page = ctx.new_page()
+        page.goto(home + "?lang=en")
+        assert page.url.split("?")[0].endswith("/site/index.html")
+        page.goto(home)
+        assert page.url.endswith("/site/index.html"), page.url
+        ctx.close()
+        # The address can also ask for another language, even from a translated page.
+        ctx = browser.new_context(locale="en-US")
+        page = ctx.new_page()
+        page.goto(home + "?lang=pt")
+        assert "/pt-br/index.html" in page.url, page.url
+        page.goto((SITE / "pt-br" / "index.html").as_uri() + "?lang=es")
+        assert "/es-419/index.html" in page.url, page.url
+        ctx.close()
+        browser.close()

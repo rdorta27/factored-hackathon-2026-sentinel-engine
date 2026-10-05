@@ -688,6 +688,26 @@ def _comparable(summary: dict) -> dict:
     return _strip(body)
 
 
+def _align(node, reference):  # type: ignore[no-untyped-def]
+    """Drop the keys that the frozen summary does not hold.
+
+    A metric added after a run was frozen makes the replay carry one more key.
+    That is not drift, so it does not count as a difference. A key that the
+    frozen summary holds stays, and its value is still compared.
+    """
+    if isinstance(node, dict) and isinstance(reference, dict):
+        return {key: _align(value, reference[key]) for key, value in node.items() if key in reference}
+    if isinstance(node, list) and isinstance(reference, list) and len(node) == len(reference):
+        return [_align(value, reference[index]) for index, value in enumerate(node)]
+    return node
+
+
+def _same(replayed: dict, frozen: dict) -> bool:
+    """Compare a replay with its frozen summary, ignoring additive keys."""
+    comparable = _comparable(frozen)
+    return _align(_comparable(replayed), comparable) == comparable
+
+
 def verify(run_id: str) -> bool:
     """Recompute a frozen run from recordings, offline, and compare."""
     frozen_path = REPO_ROOT / "evidence" / "evaluation-runs" / run_id / "summary.json"
@@ -698,15 +718,15 @@ def verify(run_id: str) -> bool:
         return training.verify(run_id)
     if frozen.get("kind") == "resolution":
         replayed = resolution(run_id, record=False, freeze=False)
-        return _comparable(replayed) == _comparable(frozen)
+        return _same(replayed, frozen)
     if frozen.get("kind") == "calibration":
         replayed = calibrate(run_id, record=False, freeze=False)
-        return _comparable(replayed) == _comparable(frozen)
+        return _same(replayed, frozen)
     seal_record = verify_seal(SEALED_DIR, SEAL_PATH)
     if frozen.get("seal", {}).get("hash") != seal_record["hash"]:
         raise SystemExit("the sealed set differs from the one this run measured")
     replayed = _held_out_summary(run_id, record=False, cap_usd=DEFAULT_CAP_USD, seal_record=seal_record)
-    return _comparable(replayed) == _comparable(frozen)
+    return _same(replayed, frozen)
 
 
 def _selection_report(summary: dict) -> str:
