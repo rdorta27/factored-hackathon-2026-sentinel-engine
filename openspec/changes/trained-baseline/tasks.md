@@ -10,7 +10,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 
 ## 1. Rules first
 
-- [x] 1.1 Amend 007 and 013 to add the trained baseline and its training run. Training reads development data only, so it does not wait for any other rule. The 018 amendment that names the trained baseline as a candidate belongs to [`eval-v8`](../eval-v8/proposal.md) (task 1.2), which needs only the name `trained_baseline` and the training split. Evidence: the decision files.
+- [x] 1.1 Amend 007 and 013 to add the trained baseline and its training run. Training reads development data only, so it does not wait for any other rule. The 018 amendment that names the trained baseline as a candidate belongs to `eval-v8` (task 1.2), which needs only the name `trained_baseline` and the training split. Evidence: the decision files.
 
 ## 2. Training
 

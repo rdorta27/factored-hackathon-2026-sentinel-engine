@@ -16,7 +16,7 @@ The learned component (the intent router) beats a keyword baseline in `2024Q4-ev
 - **A frozen training run:** `evidence/evaluation-runs/2024Q4-train-v1/` with the split ids, the parameter, the validation scores and a hash of the model file. The model file is committed (small, no data rows).
 - **A candidate in `eval-v8`:** the runner loads the frozen model as a version named `trained_baseline`. It needs no model key and costs nothing per case.
 - **Precision and recall per intent** for every version, in the runner summary and the metrics report.
-- **Amendments:** [007](../../../docs/build/decisions/007-learned-component.md) adds the trained baseline. [018](../../../docs/build/decisions/018-evaluation-acceptance.md) (through the amendment of [`eval-v8`](../eval-v8/proposal.md)) compares the router with the stronger baseline; this change does not write it. [013](../../../docs/build/decisions/013-experiment-tracking.md) records the training run.
+- **Amendments:** [007](../../../docs/build/decisions/007-learned-component.md) adds the trained baseline. [018](../../../docs/build/decisions/018-evaluation-acceptance.md) (through the amendment of `eval-v8`) compares the router with the stronger baseline; this change does not write it. [013](../../../docs/build/decisions/013-experiment-tracking.md) records the training run.
 
 ## Capabilities
 

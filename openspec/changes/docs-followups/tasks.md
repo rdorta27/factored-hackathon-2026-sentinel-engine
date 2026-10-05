@@ -33,7 +33,7 @@ Areas: [analysis](../../../docs/build/areas/analysis.md). Paths are relative to 
 - [x] 5.1 Find every use of `sentinel-login/`: imports, tests, the Dockerfile, the CI workflow and the docs. Confirm that nothing serves or tests it ([009](../../../docs/build/decisions/009-demo-ui-and-advisor-view.md)). Evidence: the `grep` output in the commit body.
 - [x] 5.2 Remove the folder with `git rm -r sentinel-login`. Add a short note to decision 009 that the reference page is removed and why. Evidence: the diff and both test suites green.
 - [x] 5.3 Remove or rewrite each reference: `AGENTS.md` (layout table), `README.md`, `docs/architecture/system-architecture.md`, `sentinel-ai-core/README.md`, the comment in `sentinel-ai-core/app/schemas/chat.py`, `team/plan.md`, `team/tasks.md` and `team/pending-decisions.md`. Leave `openspec/changes/archive/` unchanged. Evidence: `grep -rI sentinel-login` finds only the archive.
-- [ ] 5.4 Add `scripts/check_links.py`: it checks that each relative link in the Markdown files outside the archive points to a file, and it runs in the CI workflow. Fix the links it finds. Evidence: the script prints no broken link.
+- [x] 5.4 Add `scripts/check_links.py`: it checks that each relative link in the Markdown files outside the archive points to a file, and it runs in the CI workflow. Fix the links it finds. Evidence: the script prints no broken link.
 
 ## 6. Move the `docs/understand/` folder
 
