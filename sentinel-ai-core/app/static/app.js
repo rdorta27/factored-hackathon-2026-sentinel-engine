@@ -473,7 +473,7 @@ function drawReply(body, entry) {
     if (why) thread.append(why);
   } else if (body.kind === "clarification") {
     const box = el("div", "msg msg-audit");
-    box.append(el("strong", "", t(body.message_key)));
+    box.append(el("strong", "", fillTemplate(t(body.message_key), body.values)));
     renderCandidates(box, body.candidates);
     thread.append(box);
   } else if (body.kind === "handoff") {
