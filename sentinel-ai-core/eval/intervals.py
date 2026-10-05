@@ -82,6 +82,9 @@ def breakdown(cases: list[Case], predicted: list[str]) -> dict:
         "overall": accuracy_block(cases, correct),
         "by_variant": by(lambda c: c.variant),
         "by_intent": by(lambda c: c.expected_intent),
+        # eval-v8 additions: same cases, grouped by reply language and country.
+        "by_locale": by(lambda c: c.locale),
+        "by_country": by(lambda c: c.country),
         "method": f"cluster bootstrap over bases, {BOOTSTRAP_RESAMPLES} resamples, seed {BOOTSTRAP_SEED}",
     }
 

@@ -1,0 +1,2078 @@
+{
+  "candidates": {
+    "baseline": {
+      "breakdown_overall": {
+        "accuracy": 0.5909,
+        "clusters": 75,
+        "descriptive": true,
+        "interval_95": [
+          0.4742,
+          0.7143
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.0
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.5909,
+        "confusion": {
+          "charge": {
+            "charge": 75,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 40,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 2,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 17,
+            "missing": 0,
+            "out_of_scope": 24,
+            "person": 5,
+            "status": 0
+          },
+          "person": {
+            "charge": 13,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 18,
+            "status": 0
+          },
+          "status": {
+            "charge": 4,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 0.6696,
+            "n": 75,
+            "precision": 0.5034,
+            "recall": 1.0,
+            "support": 75
+          },
+          "missing": {
+            "f1": 0.0,
+            "n": 42,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 0.6857,
+            "n": 46,
+            "precision": 1.0,
+            "recall": 0.5217,
+            "support": 46
+          },
+          "person": {
+            "f1": 0.6429,
+            "n": 31,
+            "precision": 0.72,
+            "recall": 0.5806,
+            "support": 31
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 4,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 0.0079,
+        "n": 198,
+        "p50": 0.01,
+        "p95": 0.01
+      },
+      "n": 198,
+      "prompt_version": "v1",
+      "slots": {
+        "correct": 0,
+        "n": 0,
+        "precision": "not defined",
+        "returned": 0
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      }
+    },
+    "router_v2": {
+      "breakdown_overall": {
+        "accuracy": 0.8182,
+        "clusters": 75,
+        "descriptive": true,
+        "interval_95": [
+          0.7179,
+          0.9179
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.026234
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [
+        "dv-b01-es-MX",
+        "dv-b03-pt-BR",
+        "dv-b10-pt-BR",
+        "dv-b14-es-CO",
+        "dv-b17-pt-BR",
+        "dv-b20-es-MX",
+        "dv-b24-es-CO",
+        "dv-b27-es-AR"
+      ],
+      "intent": {
+        "accuracy": 0.8182,
+        "confusion": {
+          "charge": {
+            "charge": 68,
+            "missing": 5,
+            "out_of_scope": 2,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 25,
+            "out_of_scope": 16,
+            "person": 1,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 8,
+            "out_of_scope": 38,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 31,
+            "status": 0
+          },
+          "status": {
+            "charge": 4,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 0.9252,
+            "n": 75,
+            "precision": 0.9444,
+            "recall": 0.9067,
+            "support": 75
+          },
+          "missing": {
+            "f1": 0.625,
+            "n": 42,
+            "precision": 0.6579,
+            "recall": 0.5952,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 0.7451,
+            "n": 46,
+            "precision": 0.6786,
+            "recall": 0.8261,
+            "support": 46
+          },
+          "person": {
+            "f1": 0.9841,
+            "n": 31,
+            "precision": 0.9688,
+            "recall": 1.0,
+            "support": 31
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 4,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 1691.2123,
+        "n": 198,
+        "p50": 1174.52,
+        "p95": 3425.51
+      },
+      "n": 198,
+      "prompt_version": "v2",
+      "slots": {
+        "correct": 1,
+        "n": 17,
+        "precision": 0.0588,
+        "returned": 17
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      }
+    },
+    "router_v2_cutoffs": {
+      "breakdown_overall": {
+        "accuracy": 0.8384,
+        "clusters": 75,
+        "descriptive": false,
+        "interval_95": [
+          0.7463,
+          0.9249
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.026234
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [
+        "dv-b01-es-MX",
+        "dv-b03-pt-BR",
+        "dv-b10-pt-BR",
+        "dv-b14-es-CO",
+        "dv-b17-pt-BR",
+        "dv-b20-es-MX",
+        "dv-b24-es-CO",
+        "dv-b27-es-AR"
+      ],
+      "intent": {
+        "accuracy": 0.8384,
+        "confusion": {
+          "charge": {
+            "charge": 66,
+            "missing": 8,
+            "out_of_scope": 1,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 31,
+            "out_of_scope": 10,
+            "person": 1,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 8,
+            "out_of_scope": 38,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 31,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 4,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 0.9362,
+            "n": 75,
+            "precision": 1.0,
+            "recall": 0.88,
+            "support": 75
+          },
+          "missing": {
+            "f1": 0.6667,
+            "n": 42,
+            "precision": 0.6078,
+            "recall": 0.7381,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 0.8,
+            "n": 46,
+            "precision": 0.7755,
+            "recall": 0.8261,
+            "support": 46
+          },
+          "person": {
+            "f1": 0.9841,
+            "n": 31,
+            "precision": 0.9688,
+            "recall": 1.0,
+            "support": 31
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 4,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 0.2814,
+        "n": 198,
+        "p50": 0.25,
+        "p95": 0.44
+      },
+      "n": 198,
+      "prompt_version": "v2",
+      "slots": {
+        "correct": 1,
+        "n": 17,
+        "precision": 0.0588,
+        "returned": 17
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      }
+    },
+    "router_v3": {
+      "breakdown_overall": {
+        "accuracy": 0.9899,
+        "clusters": 75,
+        "descriptive": false,
+        "interval_95": [
+          0.9722,
+          1.0
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0006,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.119472
+      },
+      "drafts": {
+        "cases": [],
+        "n": 94,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 94
+      },
+      "example_ids": [
+        "v3-greet-es-MX",
+        "v3-greet-es-CO",
+        "v3-greet-es-AR",
+        "v3-greet-pt-BR",
+        "v3-thanks-es-MX",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-AR",
+        "v3-thanks-pt-BR",
+        "v3-identity-es-MX",
+        "v3-identity-es-CO",
+        "v3-identity-es-AR",
+        "v3-identity-pt-BR",
+        "v3-unclear-es-MX",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-AR",
+        "v3-unclear-pt-BR",
+        "v3-status-es-MX",
+        "v3-status-es-CO",
+        "v3-status-es-AR",
+        "v3-status-pt-BR",
+        "v3-loan-es-MX",
+        "v3-loan-es-CO",
+        "v3-loan-es-AR",
+        "v3-loan-pt-BR",
+        "v3-balance-es-MX",
+        "v3-balance-es-CO",
+        "v3-balance-es-AR",
+        "v3-balance-pt-BR",
+        "v3-amount-es-MX",
+        "v3-amount-es-CO",
+        "v3-amount-es-AR",
+        "v3-amount-pt-BR"
+      ],
+      "intent": {
+        "accuracy": 0.9899,
+        "confusion": {
+          "charge": {
+            "charge": 73,
+            "missing": 2,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 42,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 46,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 31,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 4
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 0.9865,
+            "n": 75,
+            "precision": 1.0,
+            "recall": 0.9733,
+            "support": 75
+          },
+          "missing": {
+            "f1": 0.9767,
+            "n": 42,
+            "precision": 0.9545,
+            "recall": 1.0,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 1.0,
+            "n": 46,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 46
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 31,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 31
+          },
+          "status": {
+            "f1": 1.0,
+            "n": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 2702.9863,
+        "n": 198,
+        "p50": 2152.81,
+        "p95": 4913.34
+      },
+      "n": 198,
+      "prompt_version": "v3",
+      "slots": {
+        "correct": 18,
+        "n": 129,
+        "precision": 0.1395,
+        "returned": 129
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 1.0,
+        "correct": 40,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 94,
+        "rate": "0/94"
+      }
+    },
+    "router_v3_cutoffs": {
+      "breakdown_overall": {
+        "accuracy": 0.5404,
+        "clusters": 75,
+        "descriptive": true,
+        "interval_95": [
+          0.4256,
+          0.6533
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0006,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.119472
+      },
+      "drafts": {
+        "cases": [],
+        "n": 94,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 94
+      },
+      "example_ids": [
+        "v3-greet-es-MX",
+        "v3-greet-es-CO",
+        "v3-greet-es-AR",
+        "v3-greet-pt-BR",
+        "v3-thanks-es-MX",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-AR",
+        "v3-thanks-pt-BR",
+        "v3-identity-es-MX",
+        "v3-identity-es-CO",
+        "v3-identity-es-AR",
+        "v3-identity-pt-BR",
+        "v3-unclear-es-MX",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-AR",
+        "v3-unclear-pt-BR",
+        "v3-status-es-MX",
+        "v3-status-es-CO",
+        "v3-status-es-AR",
+        "v3-status-pt-BR",
+        "v3-loan-es-MX",
+        "v3-loan-es-CO",
+        "v3-loan-es-AR",
+        "v3-loan-pt-BR",
+        "v3-balance-es-MX",
+        "v3-balance-es-CO",
+        "v3-balance-es-AR",
+        "v3-balance-pt-BR",
+        "v3-amount-es-MX",
+        "v3-amount-es-CO",
+        "v3-amount-es-AR",
+        "v3-amount-pt-BR"
+      ],
+      "intent": {
+        "accuracy": 0.5404,
+        "confusion": {
+          "charge": {
+            "charge": 27,
+            "missing": 48,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 42,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 39,
+            "out_of_scope": 7,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 31,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 4,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 0.5294,
+            "n": 75,
+            "precision": 1.0,
+            "recall": 0.36,
+            "support": 75
+          },
+          "missing": {
+            "f1": 0.48,
+            "n": 42,
+            "precision": 0.3158,
+            "recall": 1.0,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 0.2642,
+            "n": 46,
+            "precision": 1.0,
+            "recall": 0.1522,
+            "support": 46
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 31,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 31
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 4,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 0.5989,
+        "n": 198,
+        "p50": 0.54,
+        "p95": 1.07
+      },
+      "n": 198,
+      "prompt_version": "v3",
+      "slots": {
+        "correct": 18,
+        "n": 129,
+        "precision": 0.1395,
+        "returned": 129
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 1.0,
+        "correct": 40,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 94,
+        "rate": "0/94"
+      }
+    },
+    "trained_baseline": {
+      "breakdown_overall": {
+        "accuracy": 1.0,
+        "clusters": 75,
+        "descriptive": false,
+        "interval_95": [
+          1.0,
+          1.0
+        ],
+        "n": 198
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 198,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.0
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 1.0,
+        "confusion": {
+          "charge": {
+            "charge": 75,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 42,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 46,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 31,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 4
+          }
+        },
+        "n": 198,
+        "per_class": {
+          "charge": {
+            "f1": 1.0,
+            "n": 75,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 75
+          },
+          "missing": {
+            "f1": 1.0,
+            "n": 42,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 42
+          },
+          "out_of_scope": {
+            "f1": 1.0,
+            "n": 46,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 46
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 31,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 31
+          },
+          "status": {
+            "f1": 1.0,
+            "n": 4,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 4
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 198
+      },
+      "latency_ms": {
+        "mean": 0.1309,
+        "n": 198,
+        "p50": 0.12,
+        "p95": 0.23
+      },
+      "n": 198,
+      "prompt_version": "tfidf-lr",
+      "slots": {
+        "correct": 0,
+        "n": 0,
+        "precision": "not defined",
+        "returned": 0
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 40
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      }
+    }
+  },
+  "commit": "cbd54e9",
+  "cutoffs": {
+    "v2": {
+      "n": 0,
+      "run": "2024Q4-calibration-v1",
+      "t_abstain": 0.0,
+      "t_act": 0.86
+    },
+    "v3": {
+      "n": 0,
+      "run": "2024Q4-calibration-v3",
+      "t_abstain": 0.0,
+      "t_act": 1.0
+    }
+  },
+  "elapsed_s": 873.9,
+  "eval_version": "2026-09-30+runner-v1",
+  "kind": "rehearsal",
+  "n": 198,
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Full rehearsal on development with every candidate, the v8 metrics and the spend cap. No sealed case read. Proves the pipeline; judges nothing."
+  ],
+  "paired": {
+    "router_v2_cutoffs_vs_baseline": {
+      "above_zero": true,
+      "broken": [
+        "dev-adv-01",
+        "dev-charge-04",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b12-es-MX",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "ho-adv-01"
+      ],
+      "fixed": [
+        "dev-fault-02",
+        "dev-missing-03",
+        "dev-missing-04",
+        "dv-b10-es-AR",
+        "dv-b10-es-CO",
+        "dv-b10-es-MX",
+        "dv-b10-pt-BR",
+        "dv-b14-es-AR",
+        "dv-b14-es-CO",
+        "dv-b14-es-MX",
+        "dv-b14-pt-BR",
+        "dv-b16-es-AR",
+        "dv-b16-es-CO",
+        "dv-b16-es-MX",
+        "dv-b16-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b18-es-AR",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b26-es-AR",
+        "dv-b26-es-MX",
+        "dv-b27-es-AR",
+        "dv-b27-es-CO",
+        "dv-b27-es-MX",
+        "dv-b27-pt-BR",
+        "dv-b29-es-AR",
+        "dv-b29-es-MX",
+        "dv-b29-pt-BR",
+        "dv-b30-es-AR",
+        "dv-b30-es-CO",
+        "dv-b30-es-MX",
+        "dv-b30-pt-BR",
+        "ho-missing-01",
+        "ho-missing-02",
+        "v3-balance-es-AR",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-help-es-AR",
+        "v3-help-es-CO",
+        "v3-help-es-MX",
+        "v3-help-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-loan-es-AR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-unclear-es-AR",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-MX",
+        "v3-unclear-pt-BR"
+      ],
+      "interval_95": [
+        0.1143,
+        0.3723
+      ],
+      "n": 198,
+      "net": 49,
+      "net_share": 0.2475
+    },
+    "router_v2_cutoffs_vs_router_v2": {
+      "above_zero": false,
+      "broken": [
+        "dev-charge-04",
+        "dv-b12-es-MX"
+      ],
+      "fixed": [
+        "v3-greet-es-AR",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX"
+      ],
+      "interval_95": [
+        -0.0169,
+        0.0667
+      ],
+      "n": 198,
+      "net": 4,
+      "net_share": 0.0202
+    },
+    "router_v2_cutoffs_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "dev-adv-01",
+        "dev-charge-04",
+        "dev-missing-02",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b12-es-MX",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "ho-adv-01",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-CO",
+        "v3-identity-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "fixed": [],
+      "interval_95": [
+        -0.2537,
+        -0.0751
+      ],
+      "n": 198,
+      "net": -32,
+      "net_share": -0.1616
+    },
+    "router_v2_vs_baseline": {
+      "above_zero": true,
+      "broken": [
+        "dev-adv-01",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "ho-adv-01"
+      ],
+      "fixed": [
+        "dev-fault-02",
+        "dev-missing-03",
+        "dev-missing-04",
+        "dv-b10-es-AR",
+        "dv-b10-es-CO",
+        "dv-b10-es-MX",
+        "dv-b10-pt-BR",
+        "dv-b14-es-AR",
+        "dv-b14-es-CO",
+        "dv-b14-es-MX",
+        "dv-b14-pt-BR",
+        "dv-b16-es-AR",
+        "dv-b16-es-CO",
+        "dv-b16-es-MX",
+        "dv-b16-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b18-es-AR",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b26-es-AR",
+        "dv-b26-es-MX",
+        "dv-b27-es-AR",
+        "dv-b27-es-CO",
+        "dv-b27-es-MX",
+        "dv-b27-pt-BR",
+        "dv-b29-es-AR",
+        "dv-b29-es-MX",
+        "dv-b29-pt-BR",
+        "dv-b30-es-AR",
+        "dv-b30-es-CO",
+        "dv-b30-es-MX",
+        "dv-b30-pt-BR",
+        "ho-missing-01",
+        "ho-missing-02",
+        "v3-balance-es-AR",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-help-es-AR",
+        "v3-help-es-CO",
+        "v3-help-es-MX",
+        "v3-help-pt-BR",
+        "v3-loan-es-AR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-unclear-es-AR",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-MX",
+        "v3-unclear-pt-BR"
+      ],
+      "interval_95": [
+        0.1026,
+        0.35
+      ],
+      "n": 198,
+      "net": 45,
+      "net_share": 0.2273
+    },
+    "router_v2_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "dev-adv-01",
+        "dev-missing-02",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "ho-adv-01",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "fixed": [],
+      "interval_95": [
+        -0.2821,
+        -0.0821
+      ],
+      "n": 198,
+      "net": -36,
+      "net_share": -0.1818
+    },
+    "router_v3_cutoffs_vs_baseline": {
+      "above_zero": false,
+      "broken": [
+        "dev-adv-01",
+        "dev-charge-03",
+        "dev-charge-04",
+        "dev-charge-05",
+        "dev-charge-08",
+        "dev-fault-01",
+        "dev-oos-01",
+        "dev-oos-02",
+        "dev-oos-03",
+        "dev-oos-04",
+        "dev-rule-01",
+        "dev-rule-02",
+        "dev-rule-03",
+        "dev-rule-05",
+        "dev-rule-07",
+        "dev-rule-08",
+        "dv-b01-es-AR",
+        "dv-b01-es-CO",
+        "dv-b01-es-MX",
+        "dv-b01-pt-BR",
+        "dv-b02-es-MX",
+        "dv-b02-pt-BR",
+        "dv-b03-es-AR",
+        "dv-b04-es-AR",
+        "dv-b04-es-MX",
+        "dv-b04-pt-BR",
+        "dv-b05-pt-BR",
+        "dv-b06-es-AR",
+        "dv-b06-es-CO",
+        "dv-b06-es-MX",
+        "dv-b08-es-AR",
+        "dv-b08-es-MX",
+        "dv-b08-pt-BR",
+        "dv-b11-pt-BR",
+        "dv-b12-es-AR",
+        "dv-b12-es-CO",
+        "dv-b12-pt-BR",
+        "dv-b15-es-AR",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "dv-b17-es-CO",
+        "dv-b17-es-MX",
+        "dv-b17-pt-BR",
+        "dv-b18-es-CO",
+        "dv-b20-es-CO",
+        "dv-b20-pt-BR",
+        "dv-b21-es-AR",
+        "dv-b21-es-CO",
+        "dv-b21-es-MX",
+        "dv-b21-pt-BR",
+        "ho-adv-01",
+        "ho-charge-03",
+        "ho-oos-02",
+        "v3-amount-es-AR",
+        "v3-amount-es-CO",
+        "v3-amount-es-MX",
+        "v3-amount-pt-BR",
+        "v3-balance-es-CO",
+        "v3-card-es-MX",
+        "v3-greetcharge-es-AR",
+        "v3-greetcharge-es-CO",
+        "v3-greetcharge-es-MX",
+        "v3-greetcharge-pt-BR",
+        "v3-merchantdate-es-AR",
+        "v3-merchantdate-es-CO",
+        "v3-merchantdate-pt-BR"
+      ],
+      "fixed": [
+        "dev-fault-02",
+        "dev-missing-02",
+        "dev-missing-03",
+        "dev-missing-04",
+        "dv-b10-es-AR",
+        "dv-b10-es-CO",
+        "dv-b10-es-MX",
+        "dv-b10-pt-BR",
+        "dv-b14-es-AR",
+        "dv-b14-es-CO",
+        "dv-b14-es-MX",
+        "dv-b14-pt-BR",
+        "dv-b16-es-AR",
+        "dv-b16-es-CO",
+        "dv-b16-es-MX",
+        "dv-b16-pt-BR",
+        "dv-b26-es-AR",
+        "dv-b26-es-MX",
+        "dv-b27-es-AR",
+        "dv-b27-es-CO",
+        "dv-b27-es-MX",
+        "dv-b27-pt-BR",
+        "dv-b29-es-AR",
+        "dv-b29-es-MX",
+        "dv-b29-pt-BR",
+        "dv-b30-es-AR",
+        "dv-b30-es-CO",
+        "dv-b30-es-MX",
+        "dv-b30-pt-BR",
+        "ho-missing-01",
+        "ho-missing-02",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-help-es-AR",
+        "v3-help-es-CO",
+        "v3-help-es-MX",
+        "v3-help-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-loan-es-AR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-unclear-es-AR",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-MX",
+        "v3-unclear-pt-BR"
+      ],
+      "interval_95": [
+        -0.2396,
+        0.1257
+      ],
+      "n": 198,
+      "net": -10,
+      "net_share": -0.0505
+    },
+    "router_v3_cutoffs_vs_router_v2": {
+      "above_zero": false,
+      "broken": [
+        "dev-charge-03",
+        "dev-charge-04",
+        "dev-charge-05",
+        "dev-charge-08",
+        "dev-fault-01",
+        "dev-oos-01",
+        "dev-oos-02",
+        "dev-oos-03",
+        "dev-oos-04",
+        "dev-rule-01",
+        "dev-rule-02",
+        "dev-rule-03",
+        "dev-rule-05",
+        "dev-rule-07",
+        "dev-rule-08",
+        "dv-b01-es-AR",
+        "dv-b01-es-CO",
+        "dv-b01-es-MX",
+        "dv-b01-pt-BR",
+        "dv-b02-es-MX",
+        "dv-b02-pt-BR",
+        "dv-b03-es-AR",
+        "dv-b04-es-AR",
+        "dv-b04-es-MX",
+        "dv-b04-pt-BR",
+        "dv-b05-pt-BR",
+        "dv-b06-es-AR",
+        "dv-b06-es-CO",
+        "dv-b06-es-MX",
+        "dv-b08-es-AR",
+        "dv-b08-es-MX",
+        "dv-b08-pt-BR",
+        "dv-b12-es-AR",
+        "dv-b12-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b17-es-CO",
+        "dv-b17-es-MX",
+        "dv-b17-pt-BR",
+        "dv-b18-es-AR",
+        "dv-b18-es-CO",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b20-es-CO",
+        "dv-b20-pt-BR",
+        "dv-b21-es-AR",
+        "dv-b21-es-CO",
+        "dv-b21-es-MX",
+        "dv-b21-pt-BR",
+        "ho-charge-03",
+        "ho-oos-02",
+        "v3-amount-es-AR",
+        "v3-amount-es-CO",
+        "v3-amount-es-MX",
+        "v3-amount-pt-BR",
+        "v3-balance-es-AR",
+        "v3-balance-es-CO",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-card-es-MX",
+        "v3-greetcharge-es-AR",
+        "v3-greetcharge-es-CO",
+        "v3-greetcharge-es-MX",
+        "v3-greetcharge-pt-BR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-merchantdate-es-AR",
+        "v3-merchantdate-es-CO",
+        "v3-merchantdate-pt-BR"
+      ],
+      "fixed": [
+        "dev-missing-02",
+        "dv-b15-es-CO",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR"
+      ],
+      "interval_95": [
+        -0.4242,
+        -0.1256
+      ],
+      "n": 198,
+      "net": -55,
+      "net_share": -0.2778
+    },
+    "router_v3_cutoffs_vs_router_v2_cutoffs": {
+      "above_zero": false,
+      "broken": [
+        "dev-charge-03",
+        "dev-charge-05",
+        "dev-charge-08",
+        "dev-fault-01",
+        "dev-oos-01",
+        "dev-oos-02",
+        "dev-oos-03",
+        "dev-oos-04",
+        "dev-rule-01",
+        "dev-rule-02",
+        "dev-rule-03",
+        "dev-rule-05",
+        "dev-rule-07",
+        "dev-rule-08",
+        "dv-b01-es-AR",
+        "dv-b01-es-CO",
+        "dv-b01-es-MX",
+        "dv-b01-pt-BR",
+        "dv-b02-es-MX",
+        "dv-b02-pt-BR",
+        "dv-b03-es-AR",
+        "dv-b04-es-AR",
+        "dv-b04-es-MX",
+        "dv-b04-pt-BR",
+        "dv-b05-pt-BR",
+        "dv-b06-es-AR",
+        "dv-b06-es-CO",
+        "dv-b06-es-MX",
+        "dv-b08-es-AR",
+        "dv-b08-es-MX",
+        "dv-b08-pt-BR",
+        "dv-b12-es-AR",
+        "dv-b12-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b17-es-CO",
+        "dv-b17-es-MX",
+        "dv-b17-pt-BR",
+        "dv-b18-es-AR",
+        "dv-b18-es-CO",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b20-es-CO",
+        "dv-b20-pt-BR",
+        "dv-b21-es-AR",
+        "dv-b21-es-CO",
+        "dv-b21-es-MX",
+        "dv-b21-pt-BR",
+        "ho-charge-03",
+        "ho-oos-02",
+        "v3-amount-es-AR",
+        "v3-amount-es-CO",
+        "v3-amount-es-MX",
+        "v3-amount-pt-BR",
+        "v3-balance-es-AR",
+        "v3-balance-es-CO",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-card-es-MX",
+        "v3-greetcharge-es-AR",
+        "v3-greetcharge-es-CO",
+        "v3-greetcharge-es-MX",
+        "v3-greetcharge-pt-BR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-merchantdate-es-AR",
+        "v3-merchantdate-es-CO",
+        "v3-merchantdate-pt-BR"
+      ],
+      "fixed": [
+        "dev-missing-02",
+        "dv-b12-es-MX",
+        "dv-b15-es-CO",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-CO",
+        "v3-identity-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR"
+      ],
+      "interval_95": [
+        -0.4308,
+        -0.1667
+      ],
+      "n": 198,
+      "net": -59,
+      "net_share": -0.298
+    },
+    "router_v3_cutoffs_vs_router_v3": {
+      "above_zero": false,
+      "broken": [
+        "dev-charge-03",
+        "dev-charge-04",
+        "dev-charge-05",
+        "dev-charge-08",
+        "dev-fault-01",
+        "dev-oos-01",
+        "dev-oos-02",
+        "dev-oos-03",
+        "dev-oos-04",
+        "dev-rule-01",
+        "dev-rule-02",
+        "dev-rule-03",
+        "dev-rule-05",
+        "dev-rule-07",
+        "dev-rule-08",
+        "dv-b01-es-AR",
+        "dv-b01-es-CO",
+        "dv-b01-es-MX",
+        "dv-b01-pt-BR",
+        "dv-b02-es-MX",
+        "dv-b02-pt-BR",
+        "dv-b03-es-AR",
+        "dv-b04-es-AR",
+        "dv-b04-es-MX",
+        "dv-b04-pt-BR",
+        "dv-b05-pt-BR",
+        "dv-b06-es-AR",
+        "dv-b06-es-CO",
+        "dv-b06-es-MX",
+        "dv-b08-es-AR",
+        "dv-b08-es-MX",
+        "dv-b08-pt-BR",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-AR",
+        "dv-b12-es-CO",
+        "dv-b12-pt-BR",
+        "dv-b15-es-AR",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b17-es-CO",
+        "dv-b17-es-MX",
+        "dv-b17-pt-BR",
+        "dv-b18-es-AR",
+        "dv-b18-es-CO",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b20-es-CO",
+        "dv-b20-pt-BR",
+        "dv-b21-es-AR",
+        "dv-b21-es-CO",
+        "dv-b21-es-MX",
+        "dv-b21-pt-BR",
+        "ho-charge-03",
+        "ho-oos-02",
+        "v3-amount-es-AR",
+        "v3-amount-es-CO",
+        "v3-amount-es-MX",
+        "v3-amount-pt-BR",
+        "v3-balance-es-AR",
+        "v3-balance-es-CO",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-card-es-MX",
+        "v3-greetcharge-es-AR",
+        "v3-greetcharge-es-CO",
+        "v3-greetcharge-es-MX",
+        "v3-greetcharge-pt-BR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-merchantdate-es-AR",
+        "v3-merchantdate-es-CO",
+        "v3-merchantdate-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "fixed": [],
+      "interval_95": [
+        -0.5622,
+        -0.3333
+      ],
+      "n": 198,
+      "net": -89,
+      "net_share": -0.4495
+    },
+    "router_v3_cutoffs_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "dev-adv-01",
+        "dev-charge-03",
+        "dev-charge-04",
+        "dev-charge-05",
+        "dev-charge-08",
+        "dev-fault-01",
+        "dev-oos-01",
+        "dev-oos-02",
+        "dev-oos-03",
+        "dev-oos-04",
+        "dev-rule-01",
+        "dev-rule-02",
+        "dev-rule-03",
+        "dev-rule-05",
+        "dev-rule-07",
+        "dev-rule-08",
+        "dv-b01-es-AR",
+        "dv-b01-es-CO",
+        "dv-b01-es-MX",
+        "dv-b01-pt-BR",
+        "dv-b02-es-MX",
+        "dv-b02-pt-BR",
+        "dv-b03-es-AR",
+        "dv-b04-es-AR",
+        "dv-b04-es-MX",
+        "dv-b04-pt-BR",
+        "dv-b05-pt-BR",
+        "dv-b06-es-AR",
+        "dv-b06-es-CO",
+        "dv-b06-es-MX",
+        "dv-b08-es-AR",
+        "dv-b08-es-MX",
+        "dv-b08-pt-BR",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-AR",
+        "dv-b12-es-CO",
+        "dv-b12-pt-BR",
+        "dv-b15-es-AR",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b17-es-CO",
+        "dv-b17-es-MX",
+        "dv-b17-pt-BR",
+        "dv-b18-es-AR",
+        "dv-b18-es-CO",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b20-es-CO",
+        "dv-b20-pt-BR",
+        "dv-b21-es-AR",
+        "dv-b21-es-CO",
+        "dv-b21-es-MX",
+        "dv-b21-pt-BR",
+        "ho-adv-01",
+        "ho-charge-03",
+        "ho-oos-02",
+        "v3-amount-es-AR",
+        "v3-amount-es-CO",
+        "v3-amount-es-MX",
+        "v3-amount-pt-BR",
+        "v3-balance-es-AR",
+        "v3-balance-es-CO",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-card-es-MX",
+        "v3-greetcharge-es-AR",
+        "v3-greetcharge-es-CO",
+        "v3-greetcharge-es-MX",
+        "v3-greetcharge-pt-BR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-merchantdate-es-AR",
+        "v3-merchantdate-es-CO",
+        "v3-merchantdate-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "fixed": [],
+      "interval_95": [
+        -0.5744,
+        -0.3467
+      ],
+      "n": 198,
+      "net": -91,
+      "net_share": -0.4596
+    },
+    "router_v3_vs_baseline": {
+      "above_zero": true,
+      "broken": [
+        "dev-adv-01",
+        "ho-adv-01"
+      ],
+      "fixed": [
+        "dev-fault-02",
+        "dev-missing-02",
+        "dev-missing-03",
+        "dev-missing-04",
+        "dv-b10-es-AR",
+        "dv-b10-es-CO",
+        "dv-b10-es-MX",
+        "dv-b10-pt-BR",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b14-es-AR",
+        "dv-b14-es-CO",
+        "dv-b14-es-MX",
+        "dv-b14-pt-BR",
+        "dv-b16-es-AR",
+        "dv-b16-es-CO",
+        "dv-b16-es-MX",
+        "dv-b16-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b18-es-AR",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b26-es-AR",
+        "dv-b26-es-MX",
+        "dv-b27-es-AR",
+        "dv-b27-es-CO",
+        "dv-b27-es-MX",
+        "dv-b27-pt-BR",
+        "dv-b29-es-AR",
+        "dv-b29-es-MX",
+        "dv-b29-pt-BR",
+        "dv-b30-es-AR",
+        "dv-b30-es-CO",
+        "dv-b30-es-MX",
+        "dv-b30-pt-BR",
+        "ho-missing-01",
+        "ho-missing-02",
+        "v3-balance-es-AR",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-help-es-AR",
+        "v3-help-es-CO",
+        "v3-help-es-MX",
+        "v3-help-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-loan-es-AR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR",
+        "v3-unclear-es-AR",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-MX",
+        "v3-unclear-pt-BR"
+      ],
+      "interval_95": [
+        0.2736,
+        0.5147
+      ],
+      "n": 198,
+      "net": 79,
+      "net_share": 0.399
+    },
+    "router_v3_vs_router_v2": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "dev-missing-02",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "interval_95": [
+        0.0699,
+        0.2742
+      ],
+      "n": 198,
+      "net": 34,
+      "net_share": 0.1717
+    },
+    "router_v3_vs_router_v2_cutoffs": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "dev-charge-04",
+        "dev-missing-02",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b11-pt-BR",
+        "dv-b12-es-CO",
+        "dv-b12-es-MX",
+        "dv-b15-es-AR",
+        "dv-b15-es-CO",
+        "dv-b15-es-MX",
+        "dv-b15-pt-BR",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-CO",
+        "v3-identity-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR"
+      ],
+      "interval_95": [
+        0.0639,
+        0.2419
+      ],
+      "n": 198,
+      "net": 30,
+      "net_share": 0.1515
+    },
+    "router_v3_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "dev-adv-01",
+        "ho-adv-01"
+      ],
+      "fixed": [],
+      "interval_95": [
+        -0.0278,
+        0.0
+      ],
+      "n": 198,
+      "net": -2,
+      "net_share": -0.0101
+    },
+    "trained_baseline_vs_baseline": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "dev-fault-02",
+        "dev-missing-02",
+        "dev-missing-03",
+        "dev-missing-04",
+        "dv-b10-es-AR",
+        "dv-b10-es-CO",
+        "dv-b10-es-MX",
+        "dv-b10-pt-BR",
+        "dv-b11-es-AR",
+        "dv-b11-es-CO",
+        "dv-b11-es-MX",
+        "dv-b14-es-AR",
+        "dv-b14-es-CO",
+        "dv-b14-es-MX",
+        "dv-b14-pt-BR",
+        "dv-b16-es-AR",
+        "dv-b16-es-CO",
+        "dv-b16-es-MX",
+        "dv-b16-pt-BR",
+        "dv-b17-es-AR",
+        "dv-b18-es-AR",
+        "dv-b18-es-MX",
+        "dv-b18-pt-BR",
+        "dv-b19-es-AR",
+        "dv-b19-es-CO",
+        "dv-b19-es-MX",
+        "dv-b19-pt-BR",
+        "dv-b26-es-AR",
+        "dv-b26-es-MX",
+        "dv-b27-es-AR",
+        "dv-b27-es-CO",
+        "dv-b27-es-MX",
+        "dv-b27-pt-BR",
+        "dv-b29-es-AR",
+        "dv-b29-es-MX",
+        "dv-b29-pt-BR",
+        "dv-b30-es-AR",
+        "dv-b30-es-CO",
+        "dv-b30-es-MX",
+        "dv-b30-pt-BR",
+        "ho-missing-01",
+        "ho-missing-02",
+        "v3-balance-es-AR",
+        "v3-balance-es-MX",
+        "v3-balance-pt-BR",
+        "v3-bye-es-AR",
+        "v3-bye-es-CO",
+        "v3-bye-es-MX",
+        "v3-bye-pt-BR",
+        "v3-greet-es-AR",
+        "v3-greet-es-CO",
+        "v3-greet-es-MX",
+        "v3-greet-pt-BR",
+        "v3-help-es-AR",
+        "v3-help-es-CO",
+        "v3-help-es-MX",
+        "v3-help-pt-BR",
+        "v3-identity-es-AR",
+        "v3-identity-es-CO",
+        "v3-identity-es-MX",
+        "v3-identity-pt-BR",
+        "v3-loan-es-AR",
+        "v3-loan-es-CO",
+        "v3-loan-es-MX",
+        "v3-loan-pt-BR",
+        "v3-status-es-AR",
+        "v3-status-es-CO",
+        "v3-status-es-MX",
+        "v3-status-pt-BR",
+        "v3-thanks-es-AR",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-MX",
+        "v3-thanks-pt-BR",
+        "v3-transfer-es-AR",
+        "v3-transfer-es-CO",
+        "v3-transfer-es-MX",
+        "v3-transfer-pt-BR",
+        "v3-unclear-es-AR",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-MX",
+        "v3-unclear-pt-BR"
+      ],
+      "interval_95": [
+        0.2857,
+        0.5253
+      ],
+      "n": 198,
+      "net": 81,
+      "net_share": 0.4091
+    }
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "run_id": "2024Q4-rehearsal-v8",
+  "spend": {
+    "cap_usd": 0.45,
+    "capped": false,
+    "n": 388,
+    "spent_usd": 0.142788
+  },
+  "split": "development"
+}
