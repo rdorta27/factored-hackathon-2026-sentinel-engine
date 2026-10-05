@@ -706,6 +706,17 @@ def test_recording_hit_makes_no_live_call(tmp_path) -> None:  # type: ignore[no-
     assert recorder.spent_usd == pytest.approx(0.001)
 
 
+def test_force_live_ignores_a_hit_and_calls_every_time(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    from app.ai.recording import RecordingTransport
+
+    live = _CountingLive()
+    recorder = RecordingTransport(tmp_path, "v1", live, record=True, force_live=True)
+    recorder.complete(model="m", messages=_messages())
+    recorder.complete(model="m", messages=_messages())
+    assert live.calls == 2
+    assert recorder.spent_usd == pytest.approx(0.002)
+
+
 def test_recording_miss_outside_recording_mode_raises(tmp_path) -> None:  # type: ignore[no-untyped-def]
     from app.ai.recording import RecordingTransport
 
