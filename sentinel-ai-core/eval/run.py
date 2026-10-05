@@ -5,6 +5,7 @@ Usage from ``sentinel-ai-core/`` (load ``.env`` first, see README)::
     python3 -m eval.run select 2024Q4-select-v1 [--record]
     python3 -m eval.run measure 2024Q4-eval-v7 [--record]
     python3 -m eval.run verify 2024Q4-eval-v7
+    python3 -m eval.run train 2024Q4-train-v1
 
 ``select`` reads the development split only and fails on a held-out case.
 ``measure`` checks the seal hash and ``measured.json``, runs the baseline and
@@ -656,6 +657,10 @@ def verify(run_id: str) -> bool:
     """Recompute a frozen run from recordings, offline, and compare."""
     frozen_path = REPO_ROOT / "evidence" / "evaluation-runs" / run_id / "summary.json"
     frozen = json.loads(frozen_path.read_text(encoding="utf-8"))
+    if frozen.get("kind") == "training":
+        from eval import train as training
+
+        return training.verify(run_id)
     if frozen.get("kind") == "resolution":
         replayed = resolution(run_id, record=False, freeze=False)
         return _comparable(replayed) == _comparable(frozen)
@@ -700,7 +705,7 @@ def _measurement_report(summary: dict) -> str:
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Router evaluation: select on development, measure once.")
-    parser.add_argument("command", choices=("select", "measure", "verify", "resolution", "calibrate"))
+    parser.add_argument("command", choices=("select", "measure", "verify", "resolution", "calibrate", "train"))
     parser.add_argument("run_id")
     parser.add_argument("--record", action="store_true", help="call the live endpoint on a missing recording")
     parser.add_argument("--cap", type=float, default=DEFAULT_CAP_USD, help="spend cap in USD for live calls")
@@ -716,6 +721,11 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "resolution":
         summary = resolution(args.run_id, args.record, args.cap)
         print(f"[resolution] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
+    elif args.command == "train":
+        from eval import train as training
+
+        summary = training.train(args.run_id)
+        print(f"[train] froze {args.run_id}, validation accuracy {summary['validation']['selected']['accuracy']}")
     elif args.command == "calibrate":
         summary = calibrate(args.run_id, args.record, args.cap, prompt=args.prompt)
         print(f"[calibrate] froze {args.run_id}, spend USD {summary['spend']['spent_usd']}")
