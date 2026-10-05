@@ -350,13 +350,20 @@ async function postChat(payload) {
   document.getElementById("thread").append(typing);
   scrollToEnd();
   try {
-    const response = await api("/api/v1/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      // The selector's language rides with every turn, so the answer comes back
-      // in the language the customer chose, whatever the message looks like.
-      body: JSON.stringify({ ...payload, language: selectorLocale() }),
-    });
+    let response;
+    try {
+      response = await api("/api/v1/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // The selector's language rides with every turn, so the answer comes back
+        // in the language the customer chose, whatever the message looks like.
+        body: JSON.stringify({ ...payload, language: selectorLocale() }),
+      });
+    } catch (error) {
+      // The network dropped the turn: say so in the thread, and let `finally` unlock.
+      renderError({}, 0);
+      return;
+    }
     const body = await response.json().catch(() => ({}));
     if (!response.ok) {
       renderError(body, response.status);
