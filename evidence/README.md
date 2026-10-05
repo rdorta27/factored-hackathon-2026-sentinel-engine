@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # Evidence
@@ -31,7 +31,7 @@ This folder holds the frozen measurement runs. The documentation cites these run
 |---|---|---|
 | Which flow did we choose, and why? | [`flows/2024Q4-v3`](flows/2024Q4-v3/README.md) | `disputes.*`, `accounts.*` |
 | How big is the problem behind the flow? | [`problem/dev-v1`](problem/dev-v1/README.md) | `reasons.*`, `demand.*`, `hours.*`, `missing.*` |
-| Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | `component.paired.*`, `component.versions.<version>.breakdown.*` |
+| Does the router beat the baseline? | [`evaluation-runs/2024Q4-eval-v8`](evaluation-runs/2024Q4-eval-v8/summary.json) | `paired.*`, `candidates.<name>.*`, `attacks.candidates.<name>.*` |
 | How many cases does the system resolve safely? | [`evaluation-runs/2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | `system.<version>.*` |
 | What are the confidence cut-offs? | [`evaluation-runs/2024Q4-calibration-v1`](evaluation-runs/2024Q4-calibration-v1/summary.json) | `cutoffs.t_act`, `cutoffs.t_abstain` |
 | Does the system resist attacks? | [`adversarial/20261005T014816Z`](adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate`, `categories.*` |
@@ -99,7 +99,9 @@ python3 -m eval.run verify <run-id>
 |---|---|---|---|---|---|
 | `2024Q4-eval-v1` to `2024Q4-eval-v6` | development | Superseded | Runner development. The router used baseline-mirrored fixtures, so the difference is zero by construction. | not checked (`eval-v6` was refused: the case set differs from the one measured) | REQ-0016 |
 | [`2024Q4-select-v1`](evaluation-runs/2024Q4-select-v1/summary.json), [`2024Q4-select-v2`](evaluation-runs/2024Q4-select-v2/summary.json) | selection | Current (v2) | Model selection on the development split only ([016](../docs/build/decisions/016-router-models.md)) | refused: the case set differs from the one measured | REQ-0016, REQ-0020 |
-| [`2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | held-out | **Current** | Sealed held-out: 405 cases, baseline against router v1 and v2, attacks, noisy twins, system replay | DIFFERS: the component block matches; the system block moved with the loop ([metrics report §9](../docs/build/metrics-report.md#9-reproduction)) | REQ-0016, REQ-0017, REQ-0020, REQ-0022, REQ-0024 |
+| [`2024Q4-eval-v7`](evaluation-runs/2024Q4-eval-v7/summary.json) | held-out | Superseded | Sealed held-out: 405 cases, baseline against router v1 and v2, attacks, noisy twins, system replay | DIFFERS: the component block matches; the system block moved with the loop ([metrics report §9](../docs/build/metrics-report.md#9-reproduction)) | REQ-0016, REQ-0017, REQ-0020, REQ-0022, REQ-0024 |
+| [`2024Q4-eval-v8`](evaluation-runs/2024Q4-eval-v8/summary.json) | held-out | **Current** | The single v8 measurement: two sealed sets (444 and 92 cases), six candidates, the v8 metrics, attacks, noisy twins, three high-risk repeats. The verdict serves `router_v2`; v3 fails the zero-unsafe-wording gate and the subtype gate ([018](../docs/build/decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05)). Live calls, cap USD 2.0, spend USD 0.388858 over 946 calls. | DIFFERS: `router_v3` and `router_v3_cutoffs` only, 30 transient `unavailable` calls that a later pass recorded; the other candidates match ([018](../docs/build/decisions/018-evaluation-acceptance.md#the-verify-limitation)) | REQ-0016, REQ-0017, REQ-0020, REQ-0022, REQ-0055 |
+| [`2024Q4-analysis-v8`](evaluation-runs/2024Q4-analysis-v8/summary.json) | analysis | **Current (v8)** | Post hoc, descriptive analysis of `eval-v8`: M1 error categories by intent, language and country, M2 the trained-baseline n-grams per intent, M4 the complementarity of the router and the trained baseline, and a sensitivity of v3 without the `unavailable` rows. Script: `eval/analysis_v8.py`. No live call. | not a measurement | REQ-0016, REQ-0017, REQ-0022 |
 | [`2024Q4-resolution-v1`](evaluation-runs/2024Q4-resolution-v1/summary.json) | resolution | Superseded | First multi-turn run that can resolve a case: 56 cases in 14 situations ([022](../docs/build/decisions/022-resolution-acceptance.md)) | matches | REQ-0055 |
 | [`2024Q4-resolution-v2`](evaluation-runs/2024Q4-resolution-v2/summary.json) | resolution | **Current** | The same set after the chat-loop change, with breakdown by variant and country | matches | REQ-0055, REQ-0024 |
 | [`2024Q4-resolution-gap-v1`](evaluation-runs/2024Q4-resolution-gap-v1/summary.json) | gap | **Current** | Replay of the resolution set: the baseline and router v2 both resolve 16 of 56 cases. The policy ceiling is 16. The paired difference is 0 because both systems reach the ceiling. No case differs in outcome or intent label. | not checked | REQ-0055, REQ-0022 |
@@ -114,7 +116,15 @@ python3 -m eval.run verify <run-id>
 | [`2024Q4-rehearsal-v8`](evaluation-runs/2024Q4-rehearsal-v8/summary.json) | rehearsal | **Current (v8)** | Every candidate on the development split with the v8 metrics and the spend cap: v3 kind 0.9899, v2 kind 0.8182, trained baseline 1.0 (trains on dev). Judged nothing. | not checked | REQ-0016, REQ-0020 |
 | [`2024Q4-ablation-v8`](evaluation-runs/2024Q4-ablation-v8/summary.json) | ablation | **Current (v8)** | Prompt v3 with 0, 4, 8 and 32 examples on the same development cases: kind 0.9848, 0.9747, 0.9798, 0.9899. Picks nothing. | not checked | REQ-0016 |
 
-On 2026-10-05, `verify` matches for `resolution-v1`, `resolution-v2` and `train-v1` only. `eval-v7` and both calibration runs differ from their frozen summary. The selection runs and `eval-v6` are refused, because the case set is not the one that the run measured. A frozen run is never edited. The cause of each difference is not yet confirmed.
+On 2026-10-05, `verify` matches for `resolution-v1`, `resolution-v2` and `train-v1` only. `eval-v7`, `eval-v8` and both calibration runs differ from their frozen summary. The selection runs and `eval-v6` are refused, because the case set is not the one that the run measured. A frozen run is never edited. The cause of the `eval-v8` difference is the 30 transient `unavailable` calls of `router_v3`; the cause of the other differences is not yet confirmed.
+
+`eval-v8` uses its own command, because it measures two seals:
+
+```bash
+SENTINEL_LLM_CHEAP_MODEL=accounts/fireworks/models/glm-5p3-flash \
+SENTINEL_LLM_STRONG_MODEL=accounts/fireworks/models/glm-5p3-flash \
+python3 -m eval.measure_v8 verify 2024Q4-eval-v8
+```
 
 ## Adversarial
 

@@ -1,0 +1,7338 @@
+{
+  "attacks": {
+    "candidates": {
+      "baseline": {
+        "breakdown_overall": {
+          "accuracy": 0.8571,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": false,
+          "interval_95": [
+            0.7857,
+            0.9286
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 0.8571,
+          "confusion": {
+            "charge": {
+              "charge": 72,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 11,
+              "out_of_scope": 0,
+              "person": 1
+            },
+            "person": {
+              "charge": 0,
+              "out_of_scope": 0,
+              "person": 0
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.929,
+              "n": 72,
+              "precision": 0.8675,
+              "recall": 1.0,
+              "support": 72
+            },
+            "out_of_scope": {
+              "f1": 0.0,
+              "n": 12,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 12
+            },
+            "person": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 0.0109,
+          "n": 84,
+          "p50": 0.01,
+          "p95": 0.01
+        },
+        "n": 84,
+        "prompt_version": "v1",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      },
+      "router_v2": {
+        "breakdown_overall": {
+          "accuracy": 0.9048,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": false,
+          "interval_95": [
+            0.8333,
+            0.9643
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.011696
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 0.9048,
+          "confusion": {
+            "charge": {
+              "charge": 72,
+              "out_of_scope": 0
+            },
+            "out_of_scope": {
+              "charge": 8,
+              "out_of_scope": 4
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.9474,
+              "n": 72,
+              "precision": 0.9,
+              "recall": 1.0,
+              "support": 72
+            },
+            "out_of_scope": {
+              "f1": 0.5,
+              "n": 12,
+              "precision": 1.0,
+              "recall": 0.3333,
+              "support": 12
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 1965.8618,
+          "n": 84,
+          "p50": 1563.5,
+          "p95": 3930.6
+        },
+        "n": 84,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 0,
+          "n": 41,
+          "precision": 0.0,
+          "returned": 41
+        },
+        "stability": {
+          "agreement": 0.996,
+          "n": 84,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      },
+      "router_v2_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 0.9048,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": false,
+          "interval_95": [
+            0.8333,
+            0.9643
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.011696
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 0.9048,
+          "confusion": {
+            "charge": {
+              "charge": 72,
+              "missing": 0,
+              "out_of_scope": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0
+            },
+            "out_of_scope": {
+              "charge": 7,
+              "missing": 1,
+              "out_of_scope": 4
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.9536,
+              "n": 72,
+              "precision": 0.9114,
+              "recall": 1.0,
+              "support": 72
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "out_of_scope": {
+              "f1": 0.5,
+              "n": 12,
+              "precision": 1.0,
+              "recall": 0.3333,
+              "support": 12
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 1965.8536,
+          "n": 84,
+          "p50": 1563.5,
+          "p95": 3930.62
+        },
+        "n": 84,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 0,
+          "n": 41,
+          "precision": 0.0,
+          "returned": 41
+        },
+        "stability": {
+          "agreement": 0.9921,
+          "n": 84,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      },
+      "router_v3": {
+        "breakdown_overall": {
+          "accuracy": 0.8095,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": false,
+          "interval_95": [
+            0.7143,
+            0.8929
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0006,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.04779
+        },
+        "drafts": {
+          "cases": [],
+          "n": 5,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 5
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.8095,
+          "confusion": {
+            "charge": {
+              "charge": 65,
+              "missing": 2,
+              "out_of_scope": 0,
+              "unavailable": 5
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "unavailable": 0
+            },
+            "out_of_scope": {
+              "charge": 8,
+              "missing": 0,
+              "out_of_scope": 3,
+              "unavailable": 1
+            },
+            "unavailable": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "unavailable": 0
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.8966,
+              "n": 72,
+              "precision": 0.8904,
+              "recall": 0.9028,
+              "support": 72
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "out_of_scope": {
+              "f1": 0.4,
+              "n": 12,
+              "precision": 1.0,
+              "recall": 0.25,
+              "support": 12
+            },
+            "unavailable": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 3955.2907,
+          "n": 84,
+          "p50": 3207.63,
+          "p95": 12512.85
+        },
+        "n": 84,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 0,
+          "n": 161,
+          "precision": 0.0,
+          "returned": 161
+        },
+        "stability": {
+          "agreement": 0.9286,
+          "n": 84,
+          "recorded_repetitions": 2,
+          "runs": 2
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 5,
+          "rate": "0/5"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.8095,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.7143,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.8095,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      },
+      "router_v3_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 0.369,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": true,
+          "interval_95": [
+            0.2738,
+            0.4762
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0006,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.051449
+        },
+        "drafts": {
+          "cases": [],
+          "n": 6,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 6
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.369,
+          "confusion": {
+            "charge": {
+              "charge": 31,
+              "missing": 41,
+              "out_of_scope": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0
+            },
+            "out_of_scope": {
+              "charge": 2,
+              "missing": 10,
+              "out_of_scope": 0
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.5905,
+              "n": 72,
+              "precision": 0.9394,
+              "recall": 0.4306,
+              "support": 72
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "out_of_scope": {
+              "f1": 0.0,
+              "n": 12,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 12
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 3228.9015,
+          "n": 84,
+          "p50": 2858.55,
+          "p95": 5393.18
+        },
+        "n": 84,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 0,
+          "n": 175,
+          "precision": 0.0,
+          "returned": 175
+        },
+        "stability": {
+          "agreement": 0.9008,
+          "n": 84,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 6,
+          "rate": "0/6"
+        },
+        "variant_losses": {
+          "best": "es-MX",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.2381,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.3333,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.5714,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.3333,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      },
+      "trained_baseline": {
+        "breakdown_overall": {
+          "accuracy": 0.881,
+          "bases": 84,
+          "clusters": 84,
+          "descriptive": false,
+          "interval_95": [
+            0.8095,
+            0.9405
+          ],
+          "n": 84
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 84,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 0.881,
+          "confusion": {
+            "charge": {
+              "charge": 71,
+              "missing": 0,
+              "out_of_scope": 1,
+              "person": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            },
+            "out_of_scope": {
+              "charge": 7,
+              "missing": 1,
+              "out_of_scope": 3,
+              "person": 1
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0
+            }
+          },
+          "n": 84,
+          "per_class": {
+            "charge": {
+              "f1": 0.9467,
+              "n": 72,
+              "precision": 0.9103,
+              "recall": 0.9861,
+              "support": 72
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            },
+            "out_of_scope": {
+              "f1": 0.375,
+              "n": 12,
+              "precision": 0.75,
+              "recall": 0.25,
+              "support": 12
+            },
+            "person": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 84
+        },
+        "latency_ms": {
+          "mean": 0.1447,
+          "n": 84,
+          "p50": 0.13,
+          "p95": 0.2
+        },
+        "n": 84,
+        "prompt_version": "tfidf-lr",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 21,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.9048,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.8571,
+              "lost_bases": [],
+              "n": 0,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 84
+        }
+      }
+    },
+    "n": 84,
+    "paired": {
+      "router_v2_cutoffs_vs_baseline": {
+        "above_zero": true,
+        "broken": [],
+        "fixed": [
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR"
+        ],
+        "interval_95": [
+          0.0119,
+          0.0952
+        ],
+        "n": 84,
+        "net": 4,
+        "net_share": 0.0476
+      },
+      "router_v2_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 84,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-25-es-MX",
+          "v8a-28-es-CO",
+          "v8a-31-es-AR"
+        ],
+        "fixed": [
+          "v8a-18-es-CO",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR"
+        ],
+        "interval_95": [
+          -0.0476,
+          0.0833
+        ],
+        "n": 84,
+        "net": 2,
+        "net_share": 0.0238
+      },
+      "router_v2_vs_baseline": {
+        "above_zero": true,
+        "broken": [],
+        "fixed": [
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR"
+        ],
+        "interval_95": [
+          0.0119,
+          0.0952
+        ],
+        "n": 84,
+        "net": 4,
+        "net_share": 0.0476
+      },
+      "router_v2_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-25-es-MX",
+          "v8a-28-es-CO",
+          "v8a-31-es-AR"
+        ],
+        "fixed": [
+          "v8a-18-es-CO",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR"
+        ],
+        "interval_95": [
+          -0.0476,
+          0.0833
+        ],
+        "n": 84,
+        "net": 2,
+        "net_share": 0.0238
+      },
+      "router_v3_cutoffs_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-04-es-CO",
+          "v8a-05-es-CO",
+          "v8a-07-es-AR",
+          "v8a-08-es-AR",
+          "v8a-09-es-AR",
+          "v8a-12-pt-BR",
+          "v8a-14-es-MX",
+          "v8a-16-es-CO",
+          "v8a-19-es-AR",
+          "v8a-20-es-AR",
+          "v8a-23-pt-BR",
+          "v8a-24-pt-BR",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-42-es-CO",
+          "v8a-45-es-AR",
+          "v8a-46-pt-BR",
+          "v8a-49-es-MX",
+          "v8a-50-es-MX",
+          "v8a-52-es-CO",
+          "v8a-53-es-CO",
+          "v8a-54-es-CO",
+          "v8a-55-es-AR",
+          "v8a-56-es-AR",
+          "v8a-57-es-AR",
+          "v8a-58-pt-BR",
+          "v8a-59-pt-BR",
+          "v8a-60-pt-BR",
+          "v8a-63-es-MX",
+          "v8a-66-es-CO",
+          "v8a-67-es-AR",
+          "v8a-69-es-AR",
+          "v8a-72-pt-BR",
+          "v8a-73-es-MX",
+          "v8a-77-es-CO",
+          "v8a-78-es-CO",
+          "v8a-79-es-AR",
+          "v8a-81-es-AR",
+          "v8a-82-pt-BR",
+          "v8a-83-pt-BR",
+          "v8a-84-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.5952,
+          -0.381
+        ],
+        "n": 84,
+        "net": -41,
+        "net_share": -0.4881
+      },
+      "router_v3_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8a-04-es-CO",
+          "v8a-05-es-CO",
+          "v8a-07-es-AR",
+          "v8a-08-es-AR",
+          "v8a-09-es-AR",
+          "v8a-12-pt-BR",
+          "v8a-14-es-MX",
+          "v8a-16-es-CO",
+          "v8a-19-es-AR",
+          "v8a-20-es-AR",
+          "v8a-23-pt-BR",
+          "v8a-24-pt-BR",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-42-es-CO",
+          "v8a-45-es-AR",
+          "v8a-46-pt-BR",
+          "v8a-49-es-MX",
+          "v8a-50-es-MX",
+          "v8a-52-es-CO",
+          "v8a-53-es-CO",
+          "v8a-54-es-CO",
+          "v8a-55-es-AR",
+          "v8a-56-es-AR",
+          "v8a-57-es-AR",
+          "v8a-58-pt-BR",
+          "v8a-59-pt-BR",
+          "v8a-60-pt-BR",
+          "v8a-63-es-MX",
+          "v8a-66-es-CO",
+          "v8a-67-es-AR",
+          "v8a-69-es-AR",
+          "v8a-72-pt-BR",
+          "v8a-73-es-MX",
+          "v8a-77-es-CO",
+          "v8a-78-es-CO",
+          "v8a-79-es-AR",
+          "v8a-81-es-AR",
+          "v8a-82-pt-BR",
+          "v8a-83-pt-BR",
+          "v8a-84-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.6429,
+          -0.4286
+        ],
+        "n": 84,
+        "net": -45,
+        "net_share": -0.5357
+      },
+      "router_v3_cutoffs_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8a-04-es-CO",
+          "v8a-05-es-CO",
+          "v8a-07-es-AR",
+          "v8a-08-es-AR",
+          "v8a-09-es-AR",
+          "v8a-12-pt-BR",
+          "v8a-14-es-MX",
+          "v8a-16-es-CO",
+          "v8a-19-es-AR",
+          "v8a-20-es-AR",
+          "v8a-23-pt-BR",
+          "v8a-24-pt-BR",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-36-pt-BR",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-42-es-CO",
+          "v8a-45-es-AR",
+          "v8a-46-pt-BR",
+          "v8a-49-es-MX",
+          "v8a-50-es-MX",
+          "v8a-52-es-CO",
+          "v8a-53-es-CO",
+          "v8a-54-es-CO",
+          "v8a-55-es-AR",
+          "v8a-56-es-AR",
+          "v8a-57-es-AR",
+          "v8a-58-pt-BR",
+          "v8a-59-pt-BR",
+          "v8a-60-pt-BR",
+          "v8a-63-es-MX",
+          "v8a-66-es-CO",
+          "v8a-67-es-AR",
+          "v8a-69-es-AR",
+          "v8a-72-pt-BR",
+          "v8a-73-es-MX",
+          "v8a-77-es-CO",
+          "v8a-78-es-CO",
+          "v8a-79-es-AR",
+          "v8a-81-es-AR",
+          "v8a-82-pt-BR",
+          "v8a-83-pt-BR",
+          "v8a-84-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.6429,
+          -0.4286
+        ],
+        "n": 84,
+        "net": -45,
+        "net_share": -0.5357
+      },
+      "router_v3_cutoffs_vs_router_v3": {
+        "above_zero": false,
+        "broken": [
+          "v8a-04-es-CO",
+          "v8a-05-es-CO",
+          "v8a-07-es-AR",
+          "v8a-08-es-AR",
+          "v8a-09-es-AR",
+          "v8a-12-pt-BR",
+          "v8a-14-es-MX",
+          "v8a-16-es-CO",
+          "v8a-19-es-AR",
+          "v8a-20-es-AR",
+          "v8a-23-pt-BR",
+          "v8a-24-pt-BR",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR",
+          "v8a-42-es-CO",
+          "v8a-45-es-AR",
+          "v8a-46-pt-BR",
+          "v8a-49-es-MX",
+          "v8a-52-es-CO",
+          "v8a-53-es-CO",
+          "v8a-54-es-CO",
+          "v8a-55-es-AR",
+          "v8a-56-es-AR",
+          "v8a-57-es-AR",
+          "v8a-58-pt-BR",
+          "v8a-60-pt-BR",
+          "v8a-63-es-MX",
+          "v8a-66-es-CO",
+          "v8a-67-es-AR",
+          "v8a-69-es-AR",
+          "v8a-72-pt-BR",
+          "v8a-73-es-MX",
+          "v8a-77-es-CO",
+          "v8a-78-es-CO",
+          "v8a-79-es-AR",
+          "v8a-81-es-AR",
+          "v8a-82-pt-BR",
+          "v8a-83-pt-BR",
+          "v8a-84-pt-BR"
+        ],
+        "fixed": [
+          "v8a-37-es-MX",
+          "v8a-38-es-MX",
+          "v8a-41-es-CO"
+        ],
+        "interval_95": [
+          -0.5595,
+          -0.3214
+        ],
+        "n": 84,
+        "net": -37,
+        "net_share": -0.4405
+      },
+      "router_v3_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-04-es-CO",
+          "v8a-05-es-CO",
+          "v8a-07-es-AR",
+          "v8a-08-es-AR",
+          "v8a-09-es-AR",
+          "v8a-12-pt-BR",
+          "v8a-14-es-MX",
+          "v8a-16-es-CO",
+          "v8a-19-es-AR",
+          "v8a-20-es-AR",
+          "v8a-23-pt-BR",
+          "v8a-24-pt-BR",
+          "v8a-25-es-MX",
+          "v8a-28-es-CO",
+          "v8a-31-es-AR",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-42-es-CO",
+          "v8a-45-es-AR",
+          "v8a-46-pt-BR",
+          "v8a-49-es-MX",
+          "v8a-50-es-MX",
+          "v8a-52-es-CO",
+          "v8a-53-es-CO",
+          "v8a-54-es-CO",
+          "v8a-55-es-AR",
+          "v8a-56-es-AR",
+          "v8a-57-es-AR",
+          "v8a-58-pt-BR",
+          "v8a-59-pt-BR",
+          "v8a-60-pt-BR",
+          "v8a-63-es-MX",
+          "v8a-66-es-CO",
+          "v8a-67-es-AR",
+          "v8a-69-es-AR",
+          "v8a-72-pt-BR",
+          "v8a-73-es-MX",
+          "v8a-77-es-CO",
+          "v8a-78-es-CO",
+          "v8a-79-es-AR",
+          "v8a-81-es-AR",
+          "v8a-82-pt-BR",
+          "v8a-83-pt-BR",
+          "v8a-84-pt-BR"
+        ],
+        "fixed": [
+          "v8a-18-es-CO"
+        ],
+        "interval_95": [
+          -0.619,
+          -0.3929
+        ],
+        "n": 84,
+        "net": -43,
+        "net_share": -0.5119
+      },
+      "router_v3_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-37-es-MX",
+          "v8a-38-es-MX",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-41-es-CO",
+          "v8a-50-es-MX",
+          "v8a-59-pt-BR"
+        ],
+        "fixed": [
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR"
+        ],
+        "interval_95": [
+          -0.119,
+          0.0238
+        ],
+        "n": 84,
+        "net": -4,
+        "net_share": -0.0476
+      },
+      "router_v3_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8a-36-pt-BR",
+          "v8a-37-es-MX",
+          "v8a-38-es-MX",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-41-es-CO",
+          "v8a-50-es-MX",
+          "v8a-59-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1667,
+          -0.0357
+        ],
+        "n": 84,
+        "net": -8,
+        "net_share": -0.0952
+      },
+      "router_v3_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8a-36-pt-BR",
+          "v8a-37-es-MX",
+          "v8a-38-es-MX",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-41-es-CO",
+          "v8a-50-es-MX",
+          "v8a-59-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1667,
+          -0.0357
+        ],
+        "n": 84,
+        "net": -8,
+        "net_share": -0.0952
+      },
+      "router_v3_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-25-es-MX",
+          "v8a-28-es-CO",
+          "v8a-31-es-AR",
+          "v8a-37-es-MX",
+          "v8a-38-es-MX",
+          "v8a-39-es-MX",
+          "v8a-40-es-CO",
+          "v8a-41-es-CO",
+          "v8a-50-es-MX",
+          "v8a-59-pt-BR"
+        ],
+        "fixed": [
+          "v8a-18-es-CO",
+          "v8a-27-es-MX",
+          "v8a-30-es-CO",
+          "v8a-33-es-AR"
+        ],
+        "interval_95": [
+          -0.1548,
+          0.0119
+        ],
+        "n": 84,
+        "net": -6,
+        "net_share": -0.0714
+      },
+      "trained_baseline_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8a-18-es-CO"
+        ],
+        "fixed": [
+          "v8a-25-es-MX",
+          "v8a-28-es-CO",
+          "v8a-31-es-AR"
+        ],
+        "interval_95": [
+          -0.0238,
+          0.0714
+        ],
+        "n": 84,
+        "net": 2,
+        "net_share": 0.0238
+      }
+    }
+  },
+  "candidates": {
+    "baseline": {
+      "breakdown_overall": {
+        "accuracy": 0.6916,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": true,
+        "interval_95": [
+          0.5909,
+          0.7922
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.0
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.6916,
+        "confusion": {
+          "charge": {
+            "charge": 180,
+            "missing": 0,
+            "out_of_scope": 4,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 36,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 4,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 15,
+            "missing": 0,
+            "out_of_scope": 9,
+            "person": 4,
+            "status": 0
+          },
+          "person": {
+            "charge": 4,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 24,
+            "status": 0
+          },
+          "status": {
+            "charge": 28,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 0.8054,
+            "n": 184,
+            "precision": 0.6844,
+            "recall": 0.9783,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.0,
+            "n": 40,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.439,
+            "n": 28,
+            "precision": 0.6923,
+            "recall": 0.3214,
+            "support": 28
+          },
+          "person": {
+            "f1": 0.8,
+            "n": 28,
+            "precision": 0.75,
+            "recall": 0.8571,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 28,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 28
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 0.007,
+        "n": 308,
+        "p50": 0.01,
+        "p95": 0.01
+      },
+      "n": 308,
+      "prompt_version": "v1",
+      "slots": {
+        "correct": 0,
+        "n": 0,
+        "precision": "not defined",
+        "returned": 0
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      },
+      "variant_losses": {
+        "best": "pt-BR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.6883,
+            "lost_bases": [
+              "v8i-42",
+              "v8m-10"
+            ],
+            "n": 77,
+            "net_loss": 1,
+            "won_bases": [
+              "v8m-06"
+            ]
+          },
+          "es-CO": {
+            "accuracy": 0.6883,
+            "lost_bases": [
+              "v8i-42",
+              "v8m-10"
+            ],
+            "n": 77,
+            "net_loss": 1,
+            "won_bases": [
+              "v8m-06"
+            ]
+          },
+          "es-MX": {
+            "accuracy": 0.6883,
+            "lost_bases": [
+              "v8i-42",
+              "v8m-10"
+            ],
+            "n": 77,
+            "net_loss": 1,
+            "won_bases": [
+              "v8m-06"
+            ]
+          },
+          "pt-BR": {
+            "accuracy": 0.7013,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          }
+        },
+        "n": 77
+      }
+    },
+    "router_v2": {
+      "breakdown_overall": {
+        "accuracy": 0.8182,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": false,
+        "interval_95": [
+          0.7273,
+          0.9091
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.04141
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [
+        "dv-b01-es-MX",
+        "dv-b03-pt-BR",
+        "dv-b10-pt-BR",
+        "dv-b14-es-CO",
+        "dv-b17-pt-BR",
+        "dv-b20-es-MX",
+        "dv-b24-es-CO",
+        "dv-b27-es-AR"
+      ],
+      "intent": {
+        "accuracy": 0.8182,
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 12,
+            "out_of_scope": 26,
+            "person": 2,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 28,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 12,
+            "missing": 0,
+            "out_of_scope": 16,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 0.9684,
+            "n": 184,
+            "precision": 0.9388,
+            "recall": 1.0,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.4615,
+            "n": 40,
+            "precision": 1.0,
+            "recall": 0.3,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.5714,
+            "n": 28,
+            "precision": 0.4,
+            "recall": 1.0,
+            "support": 28
+          },
+          "person": {
+            "f1": 0.9655,
+            "n": 28,
+            "precision": 0.9333,
+            "recall": 1.0,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 28,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 28
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 2066.0805,
+        "n": 308,
+        "p50": 1474.2,
+        "p95": 4317.14
+      },
+      "n": 308,
+      "prompt_version": "v2",
+      "slots": {
+        "correct": 13,
+        "n": 90,
+        "precision": 0.1444,
+        "returned": 90
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.8182,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.8182,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.8182,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.8182,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          }
+        },
+        "n": 77
+      }
+    },
+    "router_v2_cutoffs": {
+      "breakdown_overall": {
+        "accuracy": 0.8409,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": false,
+        "interval_95": [
+          0.763,
+          0.9188
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0001,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.04141
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [
+        "dv-b01-es-MX",
+        "dv-b03-pt-BR",
+        "dv-b10-pt-BR",
+        "dv-b14-es-CO",
+        "dv-b17-pt-BR",
+        "dv-b20-es-MX",
+        "dv-b24-es-CO",
+        "dv-b27-es-AR"
+      ],
+      "intent": {
+        "accuracy": 0.8409,
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 19,
+            "out_of_scope": 19,
+            "person": 2,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 28,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 18,
+            "out_of_scope": 10,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 1.0,
+            "n": 184,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.4935,
+            "n": 40,
+            "precision": 0.5135,
+            "recall": 0.475,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.6588,
+            "n": 28,
+            "precision": 0.4912,
+            "recall": 1.0,
+            "support": 28
+          },
+          "person": {
+            "f1": 0.9655,
+            "n": 28,
+            "precision": 0.9333,
+            "recall": 1.0,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 28,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 28
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 2066.0805,
+        "n": 308,
+        "p50": 1474.2,
+        "p95": 4317.14
+      },
+      "n": 308,
+      "prompt_version": "v2",
+      "slots": {
+        "correct": 13,
+        "n": 90,
+        "precision": 0.1444,
+        "returned": 90
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      },
+      "variant_losses": {
+        "best": "es-CO",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.8312,
+            "lost_bases": [
+              "v8i-28"
+            ],
+            "n": 77,
+            "net_loss": 1,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.8442,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.8442,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.8442,
+            "lost_bases": [
+              "v8i-28"
+            ],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": [
+              "v8i-24"
+            ]
+          }
+        },
+        "n": 77
+      }
+    },
+    "router_v3": {
+      "breakdown_overall": {
+        "accuracy": 0.974,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": false,
+        "interval_95": [
+          0.9383,
+          1.0
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0006,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.183692
+      },
+      "drafts": {
+        "cases": [
+          "v8i-36-es-AR",
+          "v8i-36-es-CO",
+          "v8i-36-es-MX",
+          "v8i-42-pt-BR"
+        ],
+        "n": 93,
+        "rate": 0.043,
+        "rejected": 4,
+        "returned": 93
+      },
+      "example_ids": [
+        "v3-greet-es-MX",
+        "v3-greet-es-CO",
+        "v3-greet-es-AR",
+        "v3-greet-pt-BR",
+        "v3-thanks-es-MX",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-AR",
+        "v3-thanks-pt-BR",
+        "v3-identity-es-MX",
+        "v3-identity-es-CO",
+        "v3-identity-es-AR",
+        "v3-identity-pt-BR",
+        "v3-unclear-es-MX",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-AR",
+        "v3-unclear-pt-BR",
+        "v3-status-es-MX",
+        "v3-status-es-CO",
+        "v3-status-es-AR",
+        "v3-status-pt-BR",
+        "v3-loan-es-MX",
+        "v3-loan-es-CO",
+        "v3-loan-es-AR",
+        "v3-loan-pt-BR",
+        "v3-balance-es-MX",
+        "v3-balance-es-CO",
+        "v3-balance-es-AR",
+        "v3-balance-pt-BR",
+        "v3-amount-es-MX",
+        "v3-amount-es-CO",
+        "v3-amount-es-AR",
+        "v3-amount-pt-BR"
+      ],
+      "intent": {
+        "accuracy": 0.974,
+        "confusion": {
+          "charge": {
+            "charge": 183,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0,
+            "unavailable": 1
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 37,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0,
+            "unavailable": 3
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 28,
+            "person": 0,
+            "status": 0,
+            "unavailable": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0,
+            "unavailable": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 4,
+            "person": 0,
+            "status": 24,
+            "unavailable": 0
+          },
+          "unavailable": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0,
+            "unavailable": 0
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 0.9973,
+            "n": 184,
+            "precision": 1.0,
+            "recall": 0.9946,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.961,
+            "n": 40,
+            "precision": 1.0,
+            "recall": 0.925,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.9333,
+            "n": 28,
+            "precision": 0.875,
+            "recall": 1.0,
+            "support": 28
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 28,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.9231,
+            "n": 28,
+            "precision": 1.0,
+            "recall": 0.8571,
+            "support": 28
+          },
+          "unavailable": {
+            "f1": 0.0,
+            "n": 0,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 0
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 3245.8856,
+        "n": 308,
+        "p50": 2177.6,
+        "p95": 8616.76
+      },
+      "n": 308,
+      "prompt_version": "v3",
+      "slots": {
+        "correct": 122,
+        "n": 412,
+        "precision": 0.2961,
+        "returned": 412
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "subtype": {
+        "accuracy": 0.8971,
+        "correct": 61,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [
+          "v8i-36-es-AR",
+          "v8i-36-es-CO",
+          "v8i-36-es-MX",
+          "v8i-42-pt-BR"
+        ],
+        "count": 4,
+        "n": 93,
+        "rate": "4/93"
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.974,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.974,
+            "lost_bases": [
+              "v8i-30"
+            ],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": [
+              "v8i-09"
+            ]
+          },
+          "es-MX": {
+            "accuracy": 0.974,
+            "lost_bases": [
+              "v8i-30"
+            ],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": [
+              "v8i-09"
+            ]
+          },
+          "pt-BR": {
+            "accuracy": 0.974,
+            "lost_bases": [
+              "v8i-30"
+            ],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": [
+              "v8i-09"
+            ]
+          }
+        },
+        "n": 77
+      }
+    },
+    "router_v3_cutoffs": {
+      "breakdown_overall": {
+        "accuracy": 0.5097,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": false,
+        "interval_95": [
+          0.4156,
+          0.6006
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0006,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.186101
+      },
+      "drafts": {
+        "cases": [
+          "v8i-36-es-AR",
+          "v8i-36-es-CO",
+          "v8i-36-es-MX",
+          "v8i-42-pt-BR"
+        ],
+        "n": 96,
+        "rate": 0.0417,
+        "rejected": 4,
+        "returned": 96
+      },
+      "example_ids": [
+        "v3-greet-es-MX",
+        "v3-greet-es-CO",
+        "v3-greet-es-AR",
+        "v3-greet-pt-BR",
+        "v3-thanks-es-MX",
+        "v3-thanks-es-CO",
+        "v3-thanks-es-AR",
+        "v3-thanks-pt-BR",
+        "v3-identity-es-MX",
+        "v3-identity-es-CO",
+        "v3-identity-es-AR",
+        "v3-identity-pt-BR",
+        "v3-unclear-es-MX",
+        "v3-unclear-es-CO",
+        "v3-unclear-es-AR",
+        "v3-unclear-pt-BR",
+        "v3-status-es-MX",
+        "v3-status-es-CO",
+        "v3-status-es-AR",
+        "v3-status-pt-BR",
+        "v3-loan-es-MX",
+        "v3-loan-es-CO",
+        "v3-loan-es-AR",
+        "v3-loan-pt-BR",
+        "v3-balance-es-MX",
+        "v3-balance-es-CO",
+        "v3-balance-es-AR",
+        "v3-balance-pt-BR",
+        "v3-amount-es-MX",
+        "v3-amount-es-CO",
+        "v3-amount-es-AR",
+        "v3-amount-pt-BR"
+      ],
+      "intent": {
+        "accuracy": 0.5097,
+        "confusion": {
+          "charge": {
+            "charge": 87,
+            "missing": 97,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 40,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 0,
+            "missing": 26,
+            "out_of_scope": 2,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 0,
+            "missing": 28,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 0.6421,
+            "n": 184,
+            "precision": 1.0,
+            "recall": 0.4728,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.3463,
+            "n": 40,
+            "precision": 0.2094,
+            "recall": 1.0,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.1333,
+            "n": 28,
+            "precision": 1.0,
+            "recall": 0.0714,
+            "support": 28
+          },
+          "person": {
+            "f1": 1.0,
+            "n": 28,
+            "precision": 1.0,
+            "recall": 1.0,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.0,
+            "n": 28,
+            "precision": 0.0,
+            "recall": 0.0,
+            "support": 28
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 3214.8098,
+        "n": 308,
+        "p50": 2177.6,
+        "p95": 7550.46
+      },
+      "n": 308,
+      "prompt_version": "v3",
+      "slots": {
+        "correct": 122,
+        "n": 412,
+        "precision": 0.2961,
+        "returned": 412
+      },
+      "stability": {
+        "agreement": 0.9259,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "subtype": {
+        "accuracy": 0.9412,
+        "correct": 64,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [
+          "v8i-36-es-AR",
+          "v8i-36-es-CO",
+          "v8i-36-es-MX",
+          "v8i-42-pt-BR"
+        ],
+        "count": 4,
+        "n": 96,
+        "rate": "4/96"
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.5584,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.5325,
+            "lost_bases": [
+              "v8i-06",
+              "v8i-10",
+              "v8m-01",
+              "v8m-02",
+              "v8m-14",
+              "v8m-15",
+              "v8m-20"
+            ],
+            "n": 77,
+            "net_loss": 2,
+            "won_bases": [
+              "v8i-02",
+              "v8i-07",
+              "v8i-18",
+              "v8i-20",
+              "v8m-06"
+            ]
+          },
+          "es-MX": {
+            "accuracy": 0.5195,
+            "lost_bases": [
+              "v8i-03",
+              "v8i-06",
+              "v8i-10",
+              "v8i-12",
+              "v8m-02",
+              "v8m-10",
+              "v8m-11",
+              "v8m-14",
+              "v8m-15",
+              "v8m-19"
+            ],
+            "n": 77,
+            "net_loss": 3,
+            "won_bases": [
+              "v8i-02",
+              "v8i-07",
+              "v8i-18",
+              "v8i-20",
+              "v8m-06",
+              "v8m-08",
+              "v8m-16"
+            ]
+          },
+          "pt-BR": {
+            "accuracy": 0.4286,
+            "lost_bases": [
+              "v8i-04",
+              "v8i-06",
+              "v8i-08",
+              "v8i-10",
+              "v8i-12",
+              "v8i-16",
+              "v8i-19",
+              "v8m-02",
+              "v8m-07",
+              "v8m-09",
+              "v8m-10",
+              "v8m-11",
+              "v8m-13",
+              "v8m-14",
+              "v8m-15",
+              "v8m-19",
+              "v8m-20"
+            ],
+            "n": 77,
+            "net_loss": 10,
+            "won_bases": [
+              "v8i-02",
+              "v8i-07",
+              "v8i-17",
+              "v8i-42",
+              "v8i-44",
+              "v8m-06",
+              "v8m-08"
+            ]
+          }
+        },
+        "n": 77
+      }
+    },
+    "trained_baseline": {
+      "breakdown_overall": {
+        "accuracy": 0.9026,
+        "bases": 77,
+        "clusters": 77,
+        "descriptive": false,
+        "interval_95": [
+          0.8344,
+          0.961
+        ],
+        "n": 308
+      },
+      "cost_usd": {
+        "mean": 0.0,
+        "n": 308,
+        "p50": 0.0,
+        "p95": 0.0,
+        "total": 0.0
+      },
+      "drafts": {
+        "cases": [],
+        "n": 0,
+        "rate": 0.0,
+        "rejected": 0,
+        "returned": 0
+      },
+      "example_ids": [],
+      "intent": {
+        "accuracy": 0.9026,
+        "confusion": {
+          "charge": {
+            "charge": 184,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "missing": {
+            "charge": 0,
+            "missing": 40,
+            "out_of_scope": 0,
+            "person": 0,
+            "status": 0
+          },
+          "out_of_scope": {
+            "charge": 3,
+            "missing": 2,
+            "out_of_scope": 23,
+            "person": 0,
+            "status": 0
+          },
+          "person": {
+            "charge": 0,
+            "missing": 0,
+            "out_of_scope": 0,
+            "person": 28,
+            "status": 0
+          },
+          "status": {
+            "charge": 15,
+            "missing": 1,
+            "out_of_scope": 8,
+            "person": 1,
+            "status": 3
+          }
+        },
+        "n": 308,
+        "per_class": {
+          "charge": {
+            "f1": 0.9534,
+            "n": 184,
+            "precision": 0.9109,
+            "recall": 1.0,
+            "support": 184
+          },
+          "missing": {
+            "f1": 0.9639,
+            "n": 40,
+            "precision": 0.9302,
+            "recall": 1.0,
+            "support": 40
+          },
+          "out_of_scope": {
+            "f1": 0.7797,
+            "n": 28,
+            "precision": 0.7419,
+            "recall": 0.8214,
+            "support": 28
+          },
+          "person": {
+            "f1": 0.9825,
+            "n": 28,
+            "precision": 0.9655,
+            "recall": 1.0,
+            "support": 28
+          },
+          "status": {
+            "f1": 0.1935,
+            "n": 28,
+            "precision": 1.0,
+            "recall": 0.1071,
+            "support": 28
+          }
+        }
+      },
+      "json_failures": {
+        "count": 0,
+        "n": 308
+      },
+      "latency_ms": {
+        "mean": 0.108,
+        "n": 308,
+        "p50": 0.11,
+        "p95": 0.14
+      },
+      "n": 308,
+      "prompt_version": "tfidf-lr",
+      "slots": {
+        "correct": 0,
+        "n": 0,
+        "precision": "not defined",
+        "returned": 0
+      },
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "subtype": {
+        "accuracy": 0.0,
+        "correct": 0,
+        "n": 68
+      },
+      "unsafe_wording": {
+        "cases": [],
+        "count": 0,
+        "n": 0,
+        "rate": "0/0"
+      },
+      "variant_losses": {
+        "best": "es-AR",
+        "by_variant": {
+          "es-AR": {
+            "accuracy": 0.9091,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-CO": {
+            "accuracy": 0.9091,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "es-MX": {
+            "accuracy": 0.9091,
+            "lost_bases": [],
+            "n": 77,
+            "net_loss": 0,
+            "won_bases": []
+          },
+          "pt-BR": {
+            "accuracy": 0.8831,
+            "lost_bases": [
+              "v8i-33",
+              "v8i-41"
+            ],
+            "n": 77,
+            "net_loss": 2,
+            "won_bases": []
+          }
+        },
+        "n": 77
+      }
+    }
+  },
+  "case_mix": {
+    "attacks": 84,
+    "main": 308,
+    "noisy": 52,
+    "topup": 92
+  },
+  "commit": "8ee4575",
+  "elapsed_s": 3063.7,
+  "eval_version": "2026-09-30+runner-v1",
+  "high_risk_repeats": {
+    "baseline": {
+      "attacks": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      }
+    },
+    "router_v2": {
+      "attacks": {
+        "agreement": 0.996,
+        "n": 84,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      }
+    },
+    "router_v2_cutoffs": {
+      "attacks": {
+        "agreement": 0.9921,
+        "n": 84,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      }
+    },
+    "router_v3": {
+      "attacks": {
+        "agreement": 0.9286,
+        "n": 84,
+        "recorded_repetitions": 2,
+        "runs": 2
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 1.0,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      }
+    },
+    "router_v3_cutoffs": {
+      "attacks": {
+        "agreement": 0.9008,
+        "n": 84,
+        "recorded_repetitions": 3,
+        "runs": 3
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 0.9259,
+        "n": 99,
+        "recorded_repetitions": 3,
+        "runs": 3
+      }
+    },
+    "trained_baseline": {
+      "attacks": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      },
+      "n": 308,
+      "stability": {
+        "agreement": 1.0,
+        "n": 0,
+        "recorded_repetitions": 0,
+        "runs": 0
+      }
+    }
+  },
+  "kind": "held_out_measurement_v8",
+  "measured_commit": "8ee457536f681f039cd0538c1cb93bce2b22c9d1",
+  "n": 536,
+  "noisy": {
+    "candidates": {
+      "baseline": {
+        "breakdown_overall": {
+          "accuracy": 1.0,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": false,
+          "interval_95": [
+            1.0,
+            1.0
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 1.0,
+          "confusion": {
+            "charge": {
+              "charge": 52
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 1.0,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 52
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 0.008,
+          "n": 52,
+          "p50": 0.01,
+          "p95": 0.01
+        },
+        "n": 52,
+        "prompt_version": "v1",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      },
+      "router_v2": {
+        "breakdown_overall": {
+          "accuracy": 1.0,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": false,
+          "interval_95": [
+            1.0,
+            1.0
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.007004
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 1.0,
+          "confusion": {
+            "charge": {
+              "charge": 52
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 1.0,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 52
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 2250.2684,
+          "n": 52,
+          "p50": 1902.09,
+          "p95": 4224.92
+        },
+        "n": 52,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 1,
+          "n": 8,
+          "precision": 0.125,
+          "returned": 8
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      },
+      "router_v2_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 1.0,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": false,
+          "interval_95": [
+            1.0,
+            1.0
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.007004
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 1.0,
+          "confusion": {
+            "charge": {
+              "charge": 52
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 1.0,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 52
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 2250.275,
+          "n": 52,
+          "p50": 1902.1,
+          "p95": 4224.95
+        },
+        "n": 52,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 1,
+          "n": 8,
+          "precision": 0.125,
+          "returned": 8
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      },
+      "router_v3": {
+        "breakdown_overall": {
+          "accuracy": 0.9423,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": false,
+          "interval_95": [
+            0.8269,
+            1.0
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0006,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.029524
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.9423,
+          "confusion": {
+            "charge": {
+              "charge": 49,
+              "unavailable": 3
+            },
+            "unavailable": {
+              "charge": 0,
+              "unavailable": 0
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 0.9703,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 0.9423,
+              "support": 52
+            },
+            "unavailable": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 3616.2216,
+          "n": 52,
+          "p50": 2675.93,
+          "p95": 11597.73
+        },
+        "n": 52,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 50,
+          "n": 73,
+          "precision": 0.6849,
+          "returned": 73
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.9231,
+              "lost_bases": [
+                "v8i-11"
+              ],
+              "n": 13,
+              "net_loss": 1,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.9231,
+              "lost_bases": [
+                "v8i-11"
+              ],
+              "n": 13,
+              "net_loss": 1,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.9231,
+              "lost_bases": [
+                "v8i-11"
+              ],
+              "n": 13,
+              "net_loss": 1,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      },
+      "router_v3_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 0.3462,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": true,
+          "interval_95": [
+            0.2308,
+            0.4615
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0006,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.031326
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.3462,
+          "confusion": {
+            "charge": {
+              "charge": 18,
+              "missing": 34
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 0
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 0.5143,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 0.3462,
+              "support": 52
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 3062.3311,
+          "n": 52,
+          "p50": 2527.43,
+          "p95": 5242.6
+        },
+        "n": 52,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 52,
+          "n": 77,
+          "precision": 0.6753,
+          "returned": 77
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-CO",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.0769,
+              "lost_bases": [
+                "v8i-01",
+                "v8i-03",
+                "v8i-05",
+                "v8i-07",
+                "v8i-10",
+                "v8i-12",
+                "v8i-13"
+              ],
+              "n": 13,
+              "net_loss": 7,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.6154,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.4615,
+              "lost_bases": [
+                "v8i-01",
+                "v8i-02",
+                "v8i-03",
+                "v8i-10",
+                "v8i-12"
+              ],
+              "n": 13,
+              "net_loss": 2,
+              "won_bases": [
+                "v8i-04",
+                "v8i-06",
+                "v8i-08"
+              ]
+            },
+            "pt-BR": {
+              "accuracy": 0.2308,
+              "lost_bases": [
+                "v8i-01",
+                "v8i-03",
+                "v8i-05",
+                "v8i-07",
+                "v8i-12"
+              ],
+              "n": 13,
+              "net_loss": 5,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      },
+      "trained_baseline": {
+        "breakdown_overall": {
+          "accuracy": 1.0,
+          "bases": 13,
+          "clusters": 13,
+          "descriptive": false,
+          "interval_95": [
+            1.0,
+            1.0
+          ],
+          "n": 52
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 52,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 1.0,
+          "confusion": {
+            "charge": {
+              "charge": 52
+            }
+          },
+          "n": 52,
+          "per_class": {
+            "charge": {
+              "f1": 1.0,
+              "n": 52,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 52
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 52
+        },
+        "latency_ms": {
+          "mean": 0.1514,
+          "n": 52,
+          "p50": 0.14,
+          "p95": 0.2
+        },
+        "n": 52,
+        "prompt_version": "tfidf-lr",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 1.0,
+              "lost_bases": [],
+              "n": 13,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 13
+        }
+      }
+    },
+    "degradation_vs_twin": {
+      "baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v3": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR"
+        ],
+        "fixed": [
+          "v8n-v8i-09-es-AR"
+        ],
+        "interval_95": [
+          -0.1731,
+          0.0577
+        ],
+        "n": 52,
+        "net": -2,
+        "net_share": -0.0385
+      },
+      "router_v3_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [
+          "v8n-v8i-01-es-CO",
+          "v8n-v8i-02-es-AR",
+          "v8n-v8i-06-es-MX",
+          "v8n-v8i-10-es-CO",
+          "v8n-v8i-10-pt-BR"
+        ],
+        "interval_95": [
+          -0.4423,
+          -0.0769
+        ],
+        "n": 52,
+        "net": -13,
+        "net_share": -0.25
+      },
+      "trained_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      }
+    },
+    "descriptive": true,
+    "n": 52,
+    "paired": {
+      "router_v2_cutoffs_vs_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_vs_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v3_cutoffs_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-01-es-AR",
+          "v8n-v8i-01-es-MX",
+          "v8n-v8i-01-pt-BR",
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-es-MX",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-04-pt-BR",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-06-es-CO",
+          "v8n-v8i-06-pt-BR",
+          "v8n-v8i-07-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-08-pt-BR",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-10-es-MX",
+          "v8n-v8i-11-es-AR",
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-12-es-MX",
+          "v8n-v8i-12-pt-BR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.7692,
+          -0.5385
+        ],
+        "n": 52,
+        "net": -34,
+        "net_share": -0.6538
+      },
+      "router_v3_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-01-es-AR",
+          "v8n-v8i-01-es-MX",
+          "v8n-v8i-01-pt-BR",
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-es-MX",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-04-pt-BR",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-06-es-CO",
+          "v8n-v8i-06-pt-BR",
+          "v8n-v8i-07-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-08-pt-BR",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-10-es-MX",
+          "v8n-v8i-11-es-AR",
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-12-es-MX",
+          "v8n-v8i-12-pt-BR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.7692,
+          -0.5385
+        ],
+        "n": 52,
+        "net": -34,
+        "net_share": -0.6538
+      },
+      "router_v3_cutoffs_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-01-es-AR",
+          "v8n-v8i-01-es-MX",
+          "v8n-v8i-01-pt-BR",
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-es-MX",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-04-pt-BR",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-06-es-CO",
+          "v8n-v8i-06-pt-BR",
+          "v8n-v8i-07-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-08-pt-BR",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-10-es-MX",
+          "v8n-v8i-11-es-AR",
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-12-es-MX",
+          "v8n-v8i-12-pt-BR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.7692,
+          -0.5385
+        ],
+        "n": 52,
+        "net": -34,
+        "net_share": -0.6538
+      },
+      "router_v3_cutoffs_vs_router_v3": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-01-es-AR",
+          "v8n-v8i-01-es-MX",
+          "v8n-v8i-01-pt-BR",
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-es-MX",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-04-pt-BR",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-06-es-CO",
+          "v8n-v8i-06-pt-BR",
+          "v8n-v8i-07-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-08-pt-BR",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-10-es-MX",
+          "v8n-v8i-11-es-AR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-12-es-MX",
+          "v8n-v8i-12-pt-BR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.7115,
+          -0.4808
+        ],
+        "n": 52,
+        "net": -31,
+        "net_share": -0.5962
+      },
+      "router_v3_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-01-es-AR",
+          "v8n-v8i-01-es-MX",
+          "v8n-v8i-01-pt-BR",
+          "v8n-v8i-02-es-MX",
+          "v8n-v8i-03-es-AR",
+          "v8n-v8i-03-es-MX",
+          "v8n-v8i-03-pt-BR",
+          "v8n-v8i-04-es-AR",
+          "v8n-v8i-04-es-CO",
+          "v8n-v8i-04-pt-BR",
+          "v8n-v8i-05-es-AR",
+          "v8n-v8i-05-pt-BR",
+          "v8n-v8i-06-es-AR",
+          "v8n-v8i-06-es-CO",
+          "v8n-v8i-06-pt-BR",
+          "v8n-v8i-07-es-AR",
+          "v8n-v8i-07-pt-BR",
+          "v8n-v8i-08-es-AR",
+          "v8n-v8i-08-es-CO",
+          "v8n-v8i-08-pt-BR",
+          "v8n-v8i-09-es-AR",
+          "v8n-v8i-09-es-CO",
+          "v8n-v8i-09-es-MX",
+          "v8n-v8i-09-pt-BR",
+          "v8n-v8i-10-es-AR",
+          "v8n-v8i-10-es-MX",
+          "v8n-v8i-11-es-AR",
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR",
+          "v8n-v8i-12-es-AR",
+          "v8n-v8i-12-es-MX",
+          "v8n-v8i-12-pt-BR",
+          "v8n-v8i-13-es-AR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.7692,
+          -0.5385
+        ],
+        "n": 52,
+        "net": -34,
+        "net_share": -0.6538
+      },
+      "router_v3_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1731,
+          0.0
+        ],
+        "n": 52,
+        "net": -3,
+        "net_share": -0.0577
+      },
+      "router_v3_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1731,
+          0.0
+        ],
+        "n": 52,
+        "net": -3,
+        "net_share": -0.0577
+      },
+      "router_v3_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1731,
+          0.0
+        ],
+        "n": 52,
+        "net": -3,
+        "net_share": -0.0577
+      },
+      "router_v3_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8n-v8i-11-es-CO",
+          "v8n-v8i-11-es-MX",
+          "v8n-v8i-11-pt-BR"
+        ],
+        "fixed": [],
+        "interval_95": [
+          -0.1731,
+          0.0
+        ],
+        "n": 52,
+        "net": -3,
+        "net_share": -0.0577
+      },
+      "trained_baseline_vs_baseline": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 52,
+        "net": 0,
+        "net_share": 0.0
+      }
+    }
+  },
+  "notes": [
+    "Team-written simulation cases, never dataset rows (decision 007).",
+    "Held-out v8 and top-up sets sealed by hash before measuring and measured once (decision 018).",
+    "Six candidates of the 018 amendment: baseline, trained baseline, v2, v2 with cut-offs, v3, v3 with cut-offs.",
+    "The high-risk subset is recorded three times. The cut-off variants reuse the recordings of their prompt."
+  ],
+  "paired": {
+    "router_v2_cutoffs_vs_baseline": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-pt-BR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-30-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR",
+        "v8i-31-es-AR",
+        "v8i-31-es-CO",
+        "v8i-31-es-MX",
+        "v8i-31-pt-BR",
+        "v8i-32-es-AR",
+        "v8i-32-es-CO",
+        "v8i-32-es-MX",
+        "v8i-32-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR",
+        "v8i-47-es-AR",
+        "v8i-47-es-CO",
+        "v8i-47-es-MX",
+        "v8i-47-pt-BR",
+        "v8m-06-pt-BR",
+        "v8m-10-es-AR",
+        "v8m-10-es-CO",
+        "v8m-10-es-MX"
+      ],
+      "interval_95": [
+        0.0812,
+        0.2305
+      ],
+      "n": 308,
+      "net": 46,
+      "net_share": 0.1494
+    },
+    "router_v2_cutoffs_vs_router_v2": {
+      "above_zero": false,
+      "broken": [],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-pt-BR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX"
+      ],
+      "interval_95": [
+        0.0,
+        0.0584
+      ],
+      "n": 308,
+      "net": 7,
+      "net_share": 0.0227
+    },
+    "router_v2_cutoffs_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX"
+      ],
+      "fixed": [
+        "v8i-41-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR"
+      ],
+      "interval_95": [
+        -0.1266,
+        0.0
+      ],
+      "n": 308,
+      "net": -19,
+      "net_share": -0.0617
+    },
+    "router_v2_vs_baseline": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "v8i-30-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR",
+        "v8i-31-es-AR",
+        "v8i-31-es-CO",
+        "v8i-31-es-MX",
+        "v8i-31-pt-BR",
+        "v8i-32-es-AR",
+        "v8i-32-es-CO",
+        "v8i-32-es-MX",
+        "v8i-32-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR",
+        "v8i-47-es-AR",
+        "v8i-47-es-CO",
+        "v8i-47-es-MX",
+        "v8i-47-pt-BR",
+        "v8m-06-pt-BR",
+        "v8m-10-es-AR",
+        "v8m-10-es-CO",
+        "v8m-10-es-MX"
+      ],
+      "interval_95": [
+        0.0617,
+        0.2045
+      ],
+      "n": 308,
+      "net": 39,
+      "net_share": 0.1266
+    },
+    "router_v2_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX"
+      ],
+      "fixed": [
+        "v8i-41-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR"
+      ],
+      "interval_95": [
+        -0.1591,
+        -0.013
+      ],
+      "n": 308,
+      "net": -26,
+      "net_share": -0.0844
+    },
+    "router_v3_cutoffs_vs_baseline": {
+      "above_zero": false,
+      "broken": [
+        "v8i-01-es-AR",
+        "v8i-01-es-CO",
+        "v8i-01-es-MX",
+        "v8i-01-pt-BR",
+        "v8i-02-es-AR",
+        "v8i-03-es-MX",
+        "v8i-04-pt-BR",
+        "v8i-06-es-CO",
+        "v8i-06-es-MX",
+        "v8i-06-pt-BR",
+        "v8i-07-es-AR",
+        "v8i-08-pt-BR",
+        "v8i-10-es-CO",
+        "v8i-10-es-MX",
+        "v8i-10-pt-BR",
+        "v8i-11-es-AR",
+        "v8i-11-es-CO",
+        "v8i-11-es-MX",
+        "v8i-11-pt-BR",
+        "v8i-12-es-MX",
+        "v8i-12-pt-BR",
+        "v8i-15-es-AR",
+        "v8i-15-es-CO",
+        "v8i-15-es-MX",
+        "v8i-15-pt-BR",
+        "v8i-16-pt-BR",
+        "v8i-17-es-AR",
+        "v8i-17-es-CO",
+        "v8i-17-es-MX",
+        "v8i-18-es-AR",
+        "v8i-18-pt-BR",
+        "v8i-19-pt-BR",
+        "v8i-20-es-AR",
+        "v8i-20-pt-BR",
+        "v8i-21-es-AR",
+        "v8i-21-es-CO",
+        "v8i-21-es-MX",
+        "v8i-21-pt-BR",
+        "v8i-38-es-AR",
+        "v8i-38-es-CO",
+        "v8i-38-es-MX",
+        "v8i-38-pt-BR",
+        "v8i-40-es-AR",
+        "v8i-40-es-CO",
+        "v8i-40-es-MX",
+        "v8i-40-pt-BR",
+        "v8m-01-es-CO",
+        "v8m-02-es-CO",
+        "v8m-02-es-MX",
+        "v8m-02-pt-BR",
+        "v8m-03-es-AR",
+        "v8m-03-es-CO",
+        "v8m-03-es-MX",
+        "v8m-03-pt-BR",
+        "v8m-04-es-AR",
+        "v8m-04-es-CO",
+        "v8m-04-es-MX",
+        "v8m-04-pt-BR",
+        "v8m-05-es-AR",
+        "v8m-05-es-CO",
+        "v8m-05-es-MX",
+        "v8m-05-pt-BR",
+        "v8m-06-es-AR",
+        "v8m-07-pt-BR",
+        "v8m-08-es-AR",
+        "v8m-08-es-CO",
+        "v8m-09-pt-BR",
+        "v8m-10-pt-BR",
+        "v8m-11-es-MX",
+        "v8m-11-pt-BR",
+        "v8m-13-pt-BR",
+        "v8m-14-es-CO",
+        "v8m-14-es-MX",
+        "v8m-14-pt-BR",
+        "v8m-15-es-CO",
+        "v8m-15-es-MX",
+        "v8m-15-pt-BR",
+        "v8m-16-es-AR",
+        "v8m-16-es-CO",
+        "v8m-16-pt-BR",
+        "v8m-17-es-AR",
+        "v8m-17-es-CO",
+        "v8m-17-es-MX",
+        "v8m-17-pt-BR",
+        "v8m-19-es-MX",
+        "v8m-19-pt-BR",
+        "v8m-20-es-CO",
+        "v8m-20-pt-BR",
+        "v8m-21-es-AR",
+        "v8m-21-es-CO",
+        "v8m-21-es-MX",
+        "v8m-21-pt-BR",
+        "v8m-22-es-AR",
+        "v8m-22-es-CO",
+        "v8m-22-es-MX",
+        "v8m-22-pt-BR",
+        "v8m-23-es-AR",
+        "v8m-23-es-CO",
+        "v8m-23-es-MX",
+        "v8m-23-pt-BR",
+        "v8m-24-es-AR",
+        "v8m-24-es-CO",
+        "v8m-24-es-MX",
+        "v8m-24-pt-BR"
+      ],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-30-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR",
+        "v8i-31-es-AR",
+        "v8i-31-es-CO",
+        "v8i-31-es-MX",
+        "v8i-31-pt-BR",
+        "v8i-32-es-AR",
+        "v8i-32-es-CO",
+        "v8i-32-es-MX",
+        "v8i-32-pt-BR",
+        "v8i-44-pt-BR",
+        "v8i-47-es-AR",
+        "v8i-47-es-CO",
+        "v8i-47-es-MX",
+        "v8i-47-pt-BR",
+        "v8m-06-pt-BR",
+        "v8m-10-es-AR",
+        "v8m-10-es-CO"
+      ],
+      "interval_95": [
+        -0.3182,
+        -0.0422
+      ],
+      "n": 308,
+      "net": -56,
+      "net_share": -0.1818
+    },
+    "router_v3_cutoffs_vs_router_v2": {
+      "above_zero": false,
+      "broken": [
+        "v8i-01-es-AR",
+        "v8i-01-es-CO",
+        "v8i-01-es-MX",
+        "v8i-01-pt-BR",
+        "v8i-02-es-AR",
+        "v8i-03-es-MX",
+        "v8i-04-pt-BR",
+        "v8i-06-es-CO",
+        "v8i-06-es-MX",
+        "v8i-06-pt-BR",
+        "v8i-07-es-AR",
+        "v8i-08-pt-BR",
+        "v8i-10-es-CO",
+        "v8i-10-es-MX",
+        "v8i-10-pt-BR",
+        "v8i-11-es-AR",
+        "v8i-11-es-CO",
+        "v8i-11-es-MX",
+        "v8i-11-pt-BR",
+        "v8i-12-es-MX",
+        "v8i-12-pt-BR",
+        "v8i-15-es-AR",
+        "v8i-15-es-CO",
+        "v8i-15-es-MX",
+        "v8i-15-pt-BR",
+        "v8i-16-pt-BR",
+        "v8i-17-es-AR",
+        "v8i-17-es-CO",
+        "v8i-17-es-MX",
+        "v8i-18-es-AR",
+        "v8i-18-pt-BR",
+        "v8i-19-pt-BR",
+        "v8i-20-es-AR",
+        "v8i-20-pt-BR",
+        "v8i-21-es-AR",
+        "v8i-21-es-CO",
+        "v8i-21-es-MX",
+        "v8i-21-pt-BR",
+        "v8i-38-es-AR",
+        "v8i-38-es-CO",
+        "v8i-38-es-MX",
+        "v8i-38-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-40-es-AR",
+        "v8i-40-es-CO",
+        "v8i-40-es-MX",
+        "v8i-40-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8m-01-es-CO",
+        "v8m-02-es-CO",
+        "v8m-02-es-MX",
+        "v8m-02-pt-BR",
+        "v8m-03-es-AR",
+        "v8m-03-es-CO",
+        "v8m-03-es-MX",
+        "v8m-03-pt-BR",
+        "v8m-04-es-AR",
+        "v8m-04-es-CO",
+        "v8m-04-es-MX",
+        "v8m-04-pt-BR",
+        "v8m-05-es-AR",
+        "v8m-05-es-CO",
+        "v8m-05-es-MX",
+        "v8m-05-pt-BR",
+        "v8m-06-es-AR",
+        "v8m-07-pt-BR",
+        "v8m-08-es-AR",
+        "v8m-08-es-CO",
+        "v8m-09-pt-BR",
+        "v8m-10-es-MX",
+        "v8m-10-pt-BR",
+        "v8m-11-es-MX",
+        "v8m-11-pt-BR",
+        "v8m-13-pt-BR",
+        "v8m-14-es-CO",
+        "v8m-14-es-MX",
+        "v8m-14-pt-BR",
+        "v8m-15-es-CO",
+        "v8m-15-es-MX",
+        "v8m-15-pt-BR",
+        "v8m-16-es-AR",
+        "v8m-16-es-CO",
+        "v8m-16-pt-BR",
+        "v8m-17-es-AR",
+        "v8m-17-es-CO",
+        "v8m-17-es-MX",
+        "v8m-17-pt-BR",
+        "v8m-19-es-MX",
+        "v8m-19-pt-BR",
+        "v8m-20-es-CO",
+        "v8m-20-pt-BR",
+        "v8m-21-es-AR",
+        "v8m-21-es-CO",
+        "v8m-21-es-MX",
+        "v8m-21-pt-BR",
+        "v8m-22-es-AR",
+        "v8m-22-es-CO",
+        "v8m-22-es-MX",
+        "v8m-22-pt-BR",
+        "v8m-23-es-AR",
+        "v8m-23-es-CO",
+        "v8m-23-es-MX",
+        "v8m-23-pt-BR",
+        "v8m-24-es-AR",
+        "v8m-24-es-CO",
+        "v8m-24-es-MX",
+        "v8m-24-pt-BR"
+      ],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR"
+      ],
+      "interval_95": [
+        -0.4318,
+        -0.1818
+      ],
+      "n": 308,
+      "net": -95,
+      "net_share": -0.3084
+    },
+    "router_v3_cutoffs_vs_router_v2_cutoffs": {
+      "above_zero": false,
+      "broken": [
+        "v8i-01-es-AR",
+        "v8i-01-es-CO",
+        "v8i-01-es-MX",
+        "v8i-01-pt-BR",
+        "v8i-02-es-AR",
+        "v8i-03-es-MX",
+        "v8i-04-pt-BR",
+        "v8i-06-es-CO",
+        "v8i-06-es-MX",
+        "v8i-06-pt-BR",
+        "v8i-07-es-AR",
+        "v8i-08-pt-BR",
+        "v8i-10-es-CO",
+        "v8i-10-es-MX",
+        "v8i-10-pt-BR",
+        "v8i-11-es-AR",
+        "v8i-11-es-CO",
+        "v8i-11-es-MX",
+        "v8i-11-pt-BR",
+        "v8i-12-es-MX",
+        "v8i-12-pt-BR",
+        "v8i-15-es-AR",
+        "v8i-15-es-CO",
+        "v8i-15-es-MX",
+        "v8i-15-pt-BR",
+        "v8i-16-pt-BR",
+        "v8i-17-es-AR",
+        "v8i-17-es-CO",
+        "v8i-17-es-MX",
+        "v8i-18-es-AR",
+        "v8i-18-pt-BR",
+        "v8i-19-pt-BR",
+        "v8i-20-es-AR",
+        "v8i-20-pt-BR",
+        "v8i-21-es-AR",
+        "v8i-21-es-CO",
+        "v8i-21-es-MX",
+        "v8i-21-pt-BR",
+        "v8i-38-es-AR",
+        "v8i-38-es-CO",
+        "v8i-38-es-MX",
+        "v8i-38-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-40-es-AR",
+        "v8i-40-es-CO",
+        "v8i-40-es-MX",
+        "v8i-40-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8m-01-es-CO",
+        "v8m-02-es-CO",
+        "v8m-02-es-MX",
+        "v8m-02-pt-BR",
+        "v8m-03-es-AR",
+        "v8m-03-es-CO",
+        "v8m-03-es-MX",
+        "v8m-03-pt-BR",
+        "v8m-04-es-AR",
+        "v8m-04-es-CO",
+        "v8m-04-es-MX",
+        "v8m-04-pt-BR",
+        "v8m-05-es-AR",
+        "v8m-05-es-CO",
+        "v8m-05-es-MX",
+        "v8m-05-pt-BR",
+        "v8m-06-es-AR",
+        "v8m-07-pt-BR",
+        "v8m-08-es-AR",
+        "v8m-08-es-CO",
+        "v8m-09-pt-BR",
+        "v8m-10-es-MX",
+        "v8m-10-pt-BR",
+        "v8m-11-es-MX",
+        "v8m-11-pt-BR",
+        "v8m-13-pt-BR",
+        "v8m-14-es-CO",
+        "v8m-14-es-MX",
+        "v8m-14-pt-BR",
+        "v8m-15-es-CO",
+        "v8m-15-es-MX",
+        "v8m-15-pt-BR",
+        "v8m-16-es-AR",
+        "v8m-16-es-CO",
+        "v8m-16-pt-BR",
+        "v8m-17-es-AR",
+        "v8m-17-es-CO",
+        "v8m-17-es-MX",
+        "v8m-17-pt-BR",
+        "v8m-19-es-MX",
+        "v8m-19-pt-BR",
+        "v8m-20-es-CO",
+        "v8m-20-pt-BR",
+        "v8m-21-es-AR",
+        "v8m-21-es-CO",
+        "v8m-21-es-MX",
+        "v8m-21-pt-BR",
+        "v8m-22-es-AR",
+        "v8m-22-es-CO",
+        "v8m-22-es-MX",
+        "v8m-22-pt-BR",
+        "v8m-23-es-AR",
+        "v8m-23-es-CO",
+        "v8m-23-es-MX",
+        "v8m-23-pt-BR",
+        "v8m-24-es-AR",
+        "v8m-24-es-CO",
+        "v8m-24-es-MX",
+        "v8m-24-pt-BR"
+      ],
+      "fixed": [
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR"
+      ],
+      "interval_95": [
+        -0.4448,
+        -0.2175
+      ],
+      "n": 308,
+      "net": -102,
+      "net_share": -0.3312
+    },
+    "router_v3_cutoffs_vs_router_v3": {
+      "above_zero": false,
+      "broken": [
+        "v8i-01-es-AR",
+        "v8i-01-es-CO",
+        "v8i-01-es-MX",
+        "v8i-01-pt-BR",
+        "v8i-02-es-AR",
+        "v8i-03-es-MX",
+        "v8i-04-pt-BR",
+        "v8i-06-es-CO",
+        "v8i-06-es-MX",
+        "v8i-06-pt-BR",
+        "v8i-07-es-AR",
+        "v8i-08-pt-BR",
+        "v8i-10-es-CO",
+        "v8i-10-es-MX",
+        "v8i-10-pt-BR",
+        "v8i-11-es-AR",
+        "v8i-11-es-CO",
+        "v8i-11-es-MX",
+        "v8i-11-pt-BR",
+        "v8i-12-es-MX",
+        "v8i-12-pt-BR",
+        "v8i-15-es-AR",
+        "v8i-15-es-CO",
+        "v8i-15-es-MX",
+        "v8i-15-pt-BR",
+        "v8i-16-pt-BR",
+        "v8i-17-es-AR",
+        "v8i-17-es-CO",
+        "v8i-17-es-MX",
+        "v8i-18-es-AR",
+        "v8i-18-pt-BR",
+        "v8i-19-pt-BR",
+        "v8i-20-es-AR",
+        "v8i-20-pt-BR",
+        "v8i-21-es-AR",
+        "v8i-21-es-CO",
+        "v8i-21-es-MX",
+        "v8i-21-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-33-pt-BR",
+        "v8i-34-es-AR",
+        "v8i-34-es-CO",
+        "v8i-34-es-MX",
+        "v8i-34-pt-BR",
+        "v8i-35-es-AR",
+        "v8i-35-es-CO",
+        "v8i-35-es-MX",
+        "v8i-35-pt-BR",
+        "v8i-36-es-AR",
+        "v8i-36-es-CO",
+        "v8i-36-es-MX",
+        "v8i-36-pt-BR",
+        "v8i-37-es-AR",
+        "v8i-37-es-CO",
+        "v8i-37-es-MX",
+        "v8i-37-pt-BR",
+        "v8i-38-es-AR",
+        "v8i-38-es-CO",
+        "v8i-38-es-MX",
+        "v8i-38-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-40-es-AR",
+        "v8i-40-es-CO",
+        "v8i-40-es-MX",
+        "v8i-40-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-53-es-AR",
+        "v8i-53-es-CO",
+        "v8i-53-es-MX",
+        "v8i-53-pt-BR",
+        "v8m-01-es-CO",
+        "v8m-02-es-CO",
+        "v8m-02-es-MX",
+        "v8m-02-pt-BR",
+        "v8m-03-es-AR",
+        "v8m-03-es-CO",
+        "v8m-03-es-MX",
+        "v8m-03-pt-BR",
+        "v8m-04-es-AR",
+        "v8m-04-es-CO",
+        "v8m-04-es-MX",
+        "v8m-04-pt-BR",
+        "v8m-05-es-AR",
+        "v8m-05-es-CO",
+        "v8m-05-es-MX",
+        "v8m-05-pt-BR",
+        "v8m-06-es-AR",
+        "v8m-07-pt-BR",
+        "v8m-08-es-AR",
+        "v8m-08-es-CO",
+        "v8m-09-pt-BR",
+        "v8m-10-es-MX",
+        "v8m-10-pt-BR",
+        "v8m-11-es-MX",
+        "v8m-11-pt-BR",
+        "v8m-13-pt-BR",
+        "v8m-14-es-CO",
+        "v8m-14-es-MX",
+        "v8m-14-pt-BR",
+        "v8m-15-es-CO",
+        "v8m-15-es-MX",
+        "v8m-15-pt-BR",
+        "v8m-16-es-AR",
+        "v8m-16-es-CO",
+        "v8m-16-pt-BR",
+        "v8m-17-es-AR",
+        "v8m-17-es-CO",
+        "v8m-17-es-MX",
+        "v8m-17-pt-BR",
+        "v8m-19-es-MX",
+        "v8m-19-pt-BR",
+        "v8m-20-es-CO",
+        "v8m-20-pt-BR",
+        "v8m-21-es-AR",
+        "v8m-21-es-CO",
+        "v8m-21-es-MX",
+        "v8m-21-pt-BR",
+        "v8m-22-es-AR",
+        "v8m-22-es-CO",
+        "v8m-22-es-MX",
+        "v8m-22-pt-BR",
+        "v8m-23-es-AR",
+        "v8m-23-es-CO",
+        "v8m-23-es-MX",
+        "v8m-23-pt-BR",
+        "v8m-24-es-AR",
+        "v8m-24-es-CO",
+        "v8m-24-es-MX",
+        "v8m-24-pt-BR"
+      ],
+      "fixed": [
+        "v8i-09-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR"
+      ],
+      "interval_95": [
+        -0.5617,
+        -0.3669
+      ],
+      "n": 308,
+      "net": -143,
+      "net_share": -0.4643
+    },
+    "router_v3_cutoffs_vs_trained_baseline": {
+      "above_zero": false,
+      "broken": [
+        "v8i-01-es-AR",
+        "v8i-01-es-CO",
+        "v8i-01-es-MX",
+        "v8i-01-pt-BR",
+        "v8i-02-es-AR",
+        "v8i-03-es-MX",
+        "v8i-04-pt-BR",
+        "v8i-06-es-CO",
+        "v8i-06-es-MX",
+        "v8i-06-pt-BR",
+        "v8i-07-es-AR",
+        "v8i-08-pt-BR",
+        "v8i-10-es-CO",
+        "v8i-10-es-MX",
+        "v8i-10-pt-BR",
+        "v8i-11-es-AR",
+        "v8i-11-es-CO",
+        "v8i-11-es-MX",
+        "v8i-11-pt-BR",
+        "v8i-12-es-MX",
+        "v8i-12-pt-BR",
+        "v8i-15-es-AR",
+        "v8i-15-es-CO",
+        "v8i-15-es-MX",
+        "v8i-15-pt-BR",
+        "v8i-16-pt-BR",
+        "v8i-17-es-AR",
+        "v8i-17-es-CO",
+        "v8i-17-es-MX",
+        "v8i-18-es-AR",
+        "v8i-18-pt-BR",
+        "v8i-19-pt-BR",
+        "v8i-20-es-AR",
+        "v8i-20-pt-BR",
+        "v8i-21-es-AR",
+        "v8i-21-es-CO",
+        "v8i-21-es-MX",
+        "v8i-21-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-38-es-AR",
+        "v8i-38-es-CO",
+        "v8i-38-es-MX",
+        "v8i-38-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-40-es-AR",
+        "v8i-40-es-CO",
+        "v8i-40-es-MX",
+        "v8i-40-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8m-01-es-CO",
+        "v8m-02-es-CO",
+        "v8m-02-es-MX",
+        "v8m-02-pt-BR",
+        "v8m-03-es-AR",
+        "v8m-03-es-CO",
+        "v8m-03-es-MX",
+        "v8m-03-pt-BR",
+        "v8m-04-es-AR",
+        "v8m-04-es-CO",
+        "v8m-04-es-MX",
+        "v8m-04-pt-BR",
+        "v8m-05-es-AR",
+        "v8m-05-es-CO",
+        "v8m-05-es-MX",
+        "v8m-05-pt-BR",
+        "v8m-06-es-AR",
+        "v8m-07-pt-BR",
+        "v8m-08-es-AR",
+        "v8m-08-es-CO",
+        "v8m-09-pt-BR",
+        "v8m-10-es-MX",
+        "v8m-10-pt-BR",
+        "v8m-11-es-MX",
+        "v8m-11-pt-BR",
+        "v8m-13-pt-BR",
+        "v8m-14-es-CO",
+        "v8m-14-es-MX",
+        "v8m-14-pt-BR",
+        "v8m-15-es-CO",
+        "v8m-15-es-MX",
+        "v8m-15-pt-BR",
+        "v8m-16-es-AR",
+        "v8m-16-es-CO",
+        "v8m-16-pt-BR",
+        "v8m-17-es-AR",
+        "v8m-17-es-CO",
+        "v8m-17-es-MX",
+        "v8m-17-pt-BR",
+        "v8m-19-es-MX",
+        "v8m-19-pt-BR",
+        "v8m-20-es-CO",
+        "v8m-20-pt-BR",
+        "v8m-21-es-AR",
+        "v8m-21-es-CO",
+        "v8m-21-es-MX",
+        "v8m-21-pt-BR",
+        "v8m-22-es-AR",
+        "v8m-22-es-CO",
+        "v8m-22-es-MX",
+        "v8m-22-pt-BR",
+        "v8m-23-es-AR",
+        "v8m-23-es-CO",
+        "v8m-23-es-MX",
+        "v8m-23-pt-BR",
+        "v8m-24-es-AR",
+        "v8m-24-es-CO",
+        "v8m-24-es-MX",
+        "v8m-24-pt-BR"
+      ],
+      "fixed": [
+        "v8i-44-pt-BR"
+      ],
+      "interval_95": [
+        -0.4805,
+        -0.3019
+      ],
+      "n": 308,
+      "net": -121,
+      "net_share": -0.3929
+    },
+    "router_v3_vs_baseline": {
+      "above_zero": true,
+      "broken": [
+        "v8i-09-es-AR"
+      ],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-30-es-AR",
+        "v8i-31-es-AR",
+        "v8i-31-es-CO",
+        "v8i-31-es-MX",
+        "v8i-31-pt-BR",
+        "v8i-32-es-AR",
+        "v8i-32-es-CO",
+        "v8i-32-es-MX",
+        "v8i-32-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-33-pt-BR",
+        "v8i-34-es-AR",
+        "v8i-34-es-CO",
+        "v8i-34-es-MX",
+        "v8i-34-pt-BR",
+        "v8i-35-es-AR",
+        "v8i-35-es-CO",
+        "v8i-35-es-MX",
+        "v8i-35-pt-BR",
+        "v8i-36-es-AR",
+        "v8i-36-es-CO",
+        "v8i-36-es-MX",
+        "v8i-36-pt-BR",
+        "v8i-37-es-AR",
+        "v8i-37-es-CO",
+        "v8i-37-es-MX",
+        "v8i-37-pt-BR",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-41-pt-BR",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR",
+        "v8i-47-es-AR",
+        "v8i-47-es-CO",
+        "v8i-47-es-MX",
+        "v8i-47-pt-BR",
+        "v8i-53-es-AR",
+        "v8i-53-es-CO",
+        "v8i-53-es-MX",
+        "v8i-53-pt-BR",
+        "v8m-06-pt-BR",
+        "v8m-10-es-AR",
+        "v8m-10-es-CO",
+        "v8m-10-es-MX"
+      ],
+      "interval_95": [
+        0.1883,
+        0.3799
+      ],
+      "n": 308,
+      "net": 87,
+      "net_share": 0.2825
+    },
+    "router_v3_vs_router_v2": {
+      "above_zero": true,
+      "broken": [
+        "v8i-09-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR"
+      ],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-33-pt-BR",
+        "v8i-34-es-AR",
+        "v8i-34-es-CO",
+        "v8i-34-es-MX",
+        "v8i-34-pt-BR",
+        "v8i-35-es-AR",
+        "v8i-35-es-CO",
+        "v8i-35-es-MX",
+        "v8i-35-pt-BR",
+        "v8i-36-es-AR",
+        "v8i-36-es-CO",
+        "v8i-36-es-MX",
+        "v8i-36-pt-BR",
+        "v8i-37-es-AR",
+        "v8i-37-es-CO",
+        "v8i-37-es-MX",
+        "v8i-37-pt-BR",
+        "v8i-53-es-AR",
+        "v8i-53-es-CO",
+        "v8i-53-es-MX",
+        "v8i-53-pt-BR"
+      ],
+      "interval_95": [
+        0.0714,
+        0.2435
+      ],
+      "n": 308,
+      "net": 48,
+      "net_share": 0.1558
+    },
+    "router_v3_vs_router_v2_cutoffs": {
+      "above_zero": true,
+      "broken": [
+        "v8i-09-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR"
+      ],
+      "fixed": [
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-33-pt-BR",
+        "v8i-34-es-AR",
+        "v8i-34-es-CO",
+        "v8i-34-es-MX",
+        "v8i-34-pt-BR",
+        "v8i-35-es-AR",
+        "v8i-35-es-CO",
+        "v8i-35-es-MX",
+        "v8i-35-pt-BR",
+        "v8i-36-es-AR",
+        "v8i-36-es-CO",
+        "v8i-36-es-MX",
+        "v8i-36-pt-BR",
+        "v8i-37-es-AR",
+        "v8i-37-es-CO",
+        "v8i-37-es-MX",
+        "v8i-37-pt-BR",
+        "v8i-53-es-AR",
+        "v8i-53-es-CO",
+        "v8i-53-es-MX",
+        "v8i-53-pt-BR"
+      ],
+      "interval_95": [
+        0.0552,
+        0.2143
+      ],
+      "n": 308,
+      "net": 41,
+      "net_share": 0.1331
+    },
+    "router_v3_vs_trained_baseline": {
+      "above_zero": true,
+      "broken": [
+        "v8i-09-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR"
+      ],
+      "fixed": [
+        "v8i-33-pt-BR",
+        "v8i-34-es-AR",
+        "v8i-34-es-CO",
+        "v8i-34-es-MX",
+        "v8i-34-pt-BR",
+        "v8i-35-es-AR",
+        "v8i-35-es-CO",
+        "v8i-35-es-MX",
+        "v8i-35-pt-BR",
+        "v8i-36-es-AR",
+        "v8i-36-es-CO",
+        "v8i-36-es-MX",
+        "v8i-36-pt-BR",
+        "v8i-37-es-AR",
+        "v8i-37-es-CO",
+        "v8i-37-es-MX",
+        "v8i-37-pt-BR",
+        "v8i-41-pt-BR",
+        "v8i-44-es-AR",
+        "v8i-44-es-CO",
+        "v8i-44-es-MX",
+        "v8i-44-pt-BR",
+        "v8i-53-es-AR",
+        "v8i-53-es-CO",
+        "v8i-53-es-MX",
+        "v8i-53-pt-BR"
+      ],
+      "interval_95": [
+        0.0097,
+        0.1364
+      ],
+      "n": 308,
+      "net": 22,
+      "net_share": 0.0714
+    },
+    "trained_baseline_vs_baseline": {
+      "above_zero": true,
+      "broken": [],
+      "fixed": [
+        "v8i-23-es-AR",
+        "v8i-23-es-CO",
+        "v8i-23-es-MX",
+        "v8i-23-pt-BR",
+        "v8i-24-es-AR",
+        "v8i-24-es-CO",
+        "v8i-24-es-MX",
+        "v8i-24-pt-BR",
+        "v8i-25-es-AR",
+        "v8i-25-es-CO",
+        "v8i-25-es-MX",
+        "v8i-25-pt-BR",
+        "v8i-26-es-AR",
+        "v8i-26-es-CO",
+        "v8i-26-es-MX",
+        "v8i-26-pt-BR",
+        "v8i-27-es-AR",
+        "v8i-27-es-CO",
+        "v8i-27-es-MX",
+        "v8i-27-pt-BR",
+        "v8i-28-es-AR",
+        "v8i-28-es-CO",
+        "v8i-28-es-MX",
+        "v8i-28-pt-BR",
+        "v8i-29-es-AR",
+        "v8i-29-es-CO",
+        "v8i-29-es-MX",
+        "v8i-29-pt-BR",
+        "v8i-30-es-AR",
+        "v8i-30-es-CO",
+        "v8i-30-es-MX",
+        "v8i-30-pt-BR",
+        "v8i-31-es-AR",
+        "v8i-31-es-CO",
+        "v8i-31-es-MX",
+        "v8i-31-pt-BR",
+        "v8i-32-es-AR",
+        "v8i-32-es-CO",
+        "v8i-32-es-MX",
+        "v8i-32-pt-BR",
+        "v8i-33-es-AR",
+        "v8i-33-es-CO",
+        "v8i-33-es-MX",
+        "v8i-39-es-AR",
+        "v8i-39-es-CO",
+        "v8i-39-es-MX",
+        "v8i-39-pt-BR",
+        "v8i-41-es-AR",
+        "v8i-41-es-CO",
+        "v8i-41-es-MX",
+        "v8i-42-es-AR",
+        "v8i-42-es-CO",
+        "v8i-42-es-MX",
+        "v8i-43-es-AR",
+        "v8i-43-es-CO",
+        "v8i-43-es-MX",
+        "v8i-43-pt-BR",
+        "v8i-47-es-AR",
+        "v8i-47-es-CO",
+        "v8i-47-es-MX",
+        "v8i-47-pt-BR",
+        "v8m-06-pt-BR",
+        "v8m-10-es-AR",
+        "v8m-10-es-CO",
+        "v8m-10-es-MX"
+      ],
+      "interval_95": [
+        0.1266,
+        0.3019
+      ],
+      "n": 308,
+      "net": 65,
+      "net_share": 0.211
+    }
+  },
+  "prices": "Fireworks model library, 2026-10-01 (decision 016)",
+  "run_id": "2024Q4-eval-v8",
+  "seals": {
+    "v8": {
+      "attacks": 84,
+      "author": "five isolated subagent sessions: intent draft, multi-turn author, attack author, intent top-up author; reviewed by a fifth isolated session; no human review (decision 018 provenance pattern)",
+      "bases": 77,
+      "by_intent": {
+        "charge": 184,
+        "missing": 40,
+        "out_of_scope": 28,
+        "person": 28,
+        "status": 28
+      },
+      "by_variant": {
+        "es-AR": 77,
+        "es-CO": 77,
+        "es-MX": 77,
+        "pt-BR": 77
+      },
+      "files": [
+        "attacks.jsonl",
+        "intent.jsonl",
+        "multiturn.jsonl",
+        "noisy.jsonl"
+      ],
+      "hash": "3b4a472bb8071a24205129ef5c8b75783ed439be313b5f91ec6782a8f2adf645",
+      "n": 444,
+      "noisy": 52,
+      "sealed_on": "2026-10-05"
+    },
+    "v8b": {
+      "attacks": 0,
+      "author": "isolated subagent top-up author plus isolated review session; no human review (eval-v8 task 2.6-2.7)",
+      "bases": 23,
+      "by_intent": {
+        "charge": 12,
+        "missing": 4,
+        "out_of_scope": 24,
+        "person": 24,
+        "status": 28
+      },
+      "by_variant": {
+        "es-AR": 23,
+        "es-CO": 23,
+        "es-MX": 23,
+        "pt-BR": 23
+      },
+      "files": [
+        "topup.jsonl"
+      ],
+      "hash": "ebdd937e5480014d7881d9c6e99cce79066ebe1273a5ed5fe55d518fe43ef19b",
+      "n": 92,
+      "noisy": 0,
+      "sealed_on": "2026-10-05"
+    }
+  },
+  "spend": {
+    "cap_usd": 2.0,
+    "capped": false,
+    "n": 946,
+    "spent_usd": 0.388858
+  },
+  "topup": {
+    "candidates": {
+      "baseline": {
+        "breakdown_overall": {
+          "accuracy": 0.3478,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.1739,
+            0.5217
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 0.3478,
+          "confusion": {
+            "charge": {
+              "charge": 12,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "missing": {
+              "charge": 4,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "out_of_scope": {
+              "charge": 16,
+              "missing": 0,
+              "out_of_scope": 4,
+              "person": 4,
+              "status": 0
+            },
+            "person": {
+              "charge": 8,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 16,
+              "status": 0
+            },
+            "status": {
+              "charge": 28,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.3,
+              "n": 12,
+              "precision": 0.1765,
+              "recall": 1.0,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.0,
+              "n": 4,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 0.2857,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 0.1667,
+              "support": 24
+            },
+            "person": {
+              "f1": 0.7273,
+              "n": 24,
+              "precision": 0.8,
+              "recall": 0.6667,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.0,
+              "n": 28,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 28
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 0.006,
+          "n": 92,
+          "p50": 0.01,
+          "p95": 0.01
+        },
+        "n": 92,
+        "prompt_version": "v1",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.3478,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.3478,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.3478,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.3478,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 23
+        }
+      },
+      "router_v2": {
+        "breakdown_overall": {
+          "accuracy": 0.6522,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.4783,
+            0.8261
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.01235
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 0.6522,
+          "confusion": {
+            "charge": {
+              "charge": 8,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 24,
+              "person": 0,
+              "status": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 24,
+              "status": 0
+            },
+            "status": {
+              "charge": 4,
+              "missing": 4,
+              "out_of_scope": 20,
+              "person": 0,
+              "status": 0
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.6667,
+              "n": 12,
+              "precision": 0.6667,
+              "recall": 0.6667,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.5,
+              "n": 4,
+              "precision": 0.3333,
+              "recall": 1.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 0.7059,
+              "n": 24,
+              "precision": 0.5455,
+              "recall": 1.0,
+              "support": 24
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.0,
+              "n": 28,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 28
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 1675.9111,
+          "n": 92,
+          "p50": 1488.67,
+          "p95": 2695.53
+        },
+        "n": 92,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 4,
+          "n": 4,
+          "precision": 1.0,
+          "returned": 4
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 24,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 23
+        }
+      },
+      "router_v2_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 0.6522,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.4783,
+            0.8261
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0001,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.01235
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [
+          "dv-b01-es-MX",
+          "dv-b03-pt-BR",
+          "dv-b10-pt-BR",
+          "dv-b14-es-CO",
+          "dv-b17-pt-BR",
+          "dv-b20-es-MX",
+          "dv-b24-es-CO",
+          "dv-b27-es-AR"
+        ],
+        "intent": {
+          "accuracy": 0.6522,
+          "confusion": {
+            "charge": {
+              "charge": 8,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 24,
+              "person": 0,
+              "status": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 24,
+              "status": 0
+            },
+            "status": {
+              "charge": 1,
+              "missing": 11,
+              "out_of_scope": 16,
+              "person": 0,
+              "status": 0
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.7619,
+              "n": 12,
+              "precision": 0.8889,
+              "recall": 0.6667,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.3478,
+              "n": 4,
+              "precision": 0.2105,
+              "recall": 1.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 0.75,
+              "n": 24,
+              "precision": 0.6,
+              "recall": 1.0,
+              "support": 24
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.0,
+              "n": 28,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 28
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 1675.9098,
+          "n": 92,
+          "p50": 1488.65,
+          "p95": 2695.53
+        },
+        "n": 92,
+        "prompt_version": "v2",
+        "slots": {
+          "correct": 4,
+          "n": 4,
+          "precision": 1.0,
+          "returned": 4
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 24,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.6522,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 23
+        }
+      },
+      "router_v3": {
+        "breakdown_overall": {
+          "accuracy": 0.7717,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.5978,
+            0.913
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0005,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.045476
+        },
+        "drafts": {
+          "cases": [],
+          "n": 44,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 44
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.7717,
+          "confusion": {
+            "charge": {
+              "charge": 8,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0,
+              "unavailable": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0,
+              "unavailable": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 24,
+              "person": 0,
+              "status": 0,
+              "unavailable": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 23,
+              "status": 0,
+              "unavailable": 1
+            },
+            "status": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 12,
+              "unavailable": 16
+            },
+            "unavailable": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0,
+              "unavailable": 0
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.8,
+              "n": 12,
+              "precision": 1.0,
+              "recall": 0.6667,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.6667,
+              "n": 4,
+              "precision": 0.5,
+              "recall": 1.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 1.0,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 24
+            },
+            "person": {
+              "f1": 0.9787,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 0.9583,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.6,
+              "n": 28,
+              "precision": 1.0,
+              "recall": 0.4286,
+              "support": 28
+            },
+            "unavailable": {
+              "f1": 0.0,
+              "n": 0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 5497.6833,
+          "n": 92,
+          "p50": 4627.94,
+          "p95": 12544.26
+        },
+        "n": 92,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 22,
+          "n": 24,
+          "precision": 0.9167,
+          "returned": 24
+        },
+        "stability": {
+          "agreement": 0.9861,
+          "n": 24,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 44,
+          "rate": "0/44"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.7826,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.7826,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.7391,
+              "lost_bases": [
+                "v8t-10"
+              ],
+              "n": 23,
+              "net_loss": 1,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.7826,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            }
+          },
+          "n": 23
+        }
+      },
+      "router_v3_cutoffs": {
+        "breakdown_overall": {
+          "accuracy": 0.3804,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.1957,
+            0.587
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0006,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.055934
+        },
+        "drafts": {
+          "cases": [],
+          "n": 60,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 60
+        },
+        "example_ids": [
+          "v3-greet-es-MX",
+          "v3-greet-es-CO",
+          "v3-greet-es-AR",
+          "v3-greet-pt-BR",
+          "v3-thanks-es-MX",
+          "v3-thanks-es-CO",
+          "v3-thanks-es-AR",
+          "v3-thanks-pt-BR",
+          "v3-identity-es-MX",
+          "v3-identity-es-CO",
+          "v3-identity-es-AR",
+          "v3-identity-pt-BR",
+          "v3-unclear-es-MX",
+          "v3-unclear-es-CO",
+          "v3-unclear-es-AR",
+          "v3-unclear-pt-BR",
+          "v3-status-es-MX",
+          "v3-status-es-CO",
+          "v3-status-es-AR",
+          "v3-status-pt-BR",
+          "v3-loan-es-MX",
+          "v3-loan-es-CO",
+          "v3-loan-es-AR",
+          "v3-loan-pt-BR",
+          "v3-balance-es-MX",
+          "v3-balance-es-CO",
+          "v3-balance-es-AR",
+          "v3-balance-pt-BR",
+          "v3-amount-es-MX",
+          "v3-amount-es-CO",
+          "v3-amount-es-AR",
+          "v3-amount-pt-BR"
+        ],
+        "intent": {
+          "accuracy": 0.3804,
+          "confusion": {
+            "charge": {
+              "charge": 0,
+              "missing": 12,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "out_of_scope": {
+              "charge": 0,
+              "missing": 20,
+              "out_of_scope": 4,
+              "person": 0,
+              "status": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 0,
+              "person": 24,
+              "status": 0
+            },
+            "status": {
+              "charge": 0,
+              "missing": 25,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 3
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.0,
+              "n": 12,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.1231,
+              "n": 4,
+              "precision": 0.0656,
+              "recall": 1.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 0.2857,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 0.1667,
+              "support": 24
+            },
+            "person": {
+              "f1": 1.0,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.1935,
+              "n": 28,
+              "precision": 1.0,
+              "recall": 0.1071,
+              "support": 28
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 3583.0613,
+          "n": 92,
+          "p50": 3142.25,
+          "p95": 6124.1
+        },
+        "n": 92,
+        "prompt_version": "v3",
+        "slots": {
+          "correct": 22,
+          "n": 24,
+          "precision": 0.9167,
+          "returned": 24
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 24,
+          "recorded_repetitions": 3,
+          "runs": 3
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 60,
+          "rate": "0/60"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.3913,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.3913,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.3913,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.3478,
+              "lost_bases": [
+                "v8t-15"
+              ],
+              "n": 23,
+              "net_loss": 1,
+              "won_bases": []
+            }
+          },
+          "n": 23
+        }
+      },
+      "trained_baseline": {
+        "breakdown_overall": {
+          "accuracy": 0.5978,
+          "bases": 23,
+          "clusters": 23,
+          "descriptive": true,
+          "interval_95": [
+            0.4022,
+            0.7826
+          ],
+          "n": 92
+        },
+        "cost_usd": {
+          "mean": 0.0,
+          "n": 92,
+          "p50": 0.0,
+          "p95": 0.0,
+          "total": 0.0
+        },
+        "drafts": {
+          "cases": [],
+          "n": 0,
+          "rate": 0.0,
+          "rejected": 0,
+          "returned": 0
+        },
+        "example_ids": [],
+        "intent": {
+          "accuracy": 0.5978,
+          "confusion": {
+            "charge": {
+              "charge": 11,
+              "missing": 1,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "missing": {
+              "charge": 0,
+              "missing": 4,
+              "out_of_scope": 0,
+              "person": 0,
+              "status": 0
+            },
+            "out_of_scope": {
+              "charge": 4,
+              "missing": 3,
+              "out_of_scope": 17,
+              "person": 0,
+              "status": 0
+            },
+            "person": {
+              "charge": 0,
+              "missing": 0,
+              "out_of_scope": 1,
+              "person": 23,
+              "status": 0
+            },
+            "status": {
+              "charge": 15,
+              "missing": 4,
+              "out_of_scope": 9,
+              "person": 0,
+              "status": 0
+            }
+          },
+          "n": 92,
+          "per_class": {
+            "charge": {
+              "f1": 0.5238,
+              "n": 12,
+              "precision": 0.3667,
+              "recall": 0.9167,
+              "support": 12
+            },
+            "missing": {
+              "f1": 0.5,
+              "n": 4,
+              "precision": 0.3333,
+              "recall": 1.0,
+              "support": 4
+            },
+            "out_of_scope": {
+              "f1": 0.6667,
+              "n": 24,
+              "precision": 0.6296,
+              "recall": 0.7083,
+              "support": 24
+            },
+            "person": {
+              "f1": 0.9787,
+              "n": 24,
+              "precision": 1.0,
+              "recall": 0.9583,
+              "support": 24
+            },
+            "status": {
+              "f1": 0.0,
+              "n": 28,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 28
+            }
+          }
+        },
+        "json_failures": {
+          "count": 0,
+          "n": 92
+        },
+        "latency_ms": {
+          "mean": 0.1154,
+          "n": 92,
+          "p50": 0.11,
+          "p95": 0.15
+        },
+        "n": 92,
+        "prompt_version": "tfidf-lr",
+        "slots": {
+          "correct": 0,
+          "n": 0,
+          "precision": "not defined",
+          "returned": 0
+        },
+        "stability": {
+          "agreement": 1.0,
+          "n": 0,
+          "recorded_repetitions": 0,
+          "runs": 0
+        },
+        "subtype": {
+          "accuracy": "not defined",
+          "correct": 0,
+          "n": 0
+        },
+        "unsafe_wording": {
+          "cases": [],
+          "count": 0,
+          "n": 0,
+          "rate": "0/0"
+        },
+        "variant_losses": {
+          "best": "es-AR",
+          "by_variant": {
+            "es-AR": {
+              "accuracy": 0.6087,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-CO": {
+              "accuracy": 0.6087,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "es-MX": {
+              "accuracy": 0.6087,
+              "lost_bases": [],
+              "n": 23,
+              "net_loss": 0,
+              "won_bases": []
+            },
+            "pt-BR": {
+              "accuracy": 0.5652,
+              "lost_bases": [
+                "v8t-11",
+                "v8t-19"
+              ],
+              "n": 23,
+              "net_loss": 1,
+              "won_bases": [
+                "v8t-05"
+              ]
+            }
+          },
+          "n": 23
+        }
+      }
+    },
+    "n": 92,
+    "paired": {
+      "router_v2_cutoffs_vs_baseline": {
+        "above_zero": true,
+        "broken": [
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX",
+          "v8t-19-pt-BR"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-02-es-AR",
+          "v8t-02-es-CO",
+          "v8t-02-es-MX",
+          "v8t-02-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-09-es-AR",
+          "v8t-09-es-CO",
+          "v8t-09-es-MX",
+          "v8t-09-pt-BR",
+          "v8t-11-es-AR",
+          "v8t-11-es-CO",
+          "v8t-11-es-MX",
+          "v8t-11-pt-BR",
+          "v8t-20-es-AR",
+          "v8t-20-es-CO",
+          "v8t-20-es-MX",
+          "v8t-20-pt-BR"
+        ],
+        "interval_95": [
+          0.087,
+          0.5217
+        ],
+        "n": 92,
+        "net": 28,
+        "net_share": 0.3043
+      },
+      "router_v2_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [],
+        "fixed": [],
+        "interval_95": [
+          0.0,
+          0.0
+        ],
+        "n": 92,
+        "net": 0,
+        "net_share": 0.0
+      },
+      "router_v2_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-11-pt-BR"
+        ],
+        "interval_95": [
+          -0.0543,
+          0.1957
+        ],
+        "n": 92,
+        "net": 5,
+        "net_share": 0.0543
+      },
+      "router_v2_vs_baseline": {
+        "above_zero": true,
+        "broken": [
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX",
+          "v8t-19-pt-BR"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-02-es-AR",
+          "v8t-02-es-CO",
+          "v8t-02-es-MX",
+          "v8t-02-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-09-es-AR",
+          "v8t-09-es-CO",
+          "v8t-09-es-MX",
+          "v8t-09-pt-BR",
+          "v8t-11-es-AR",
+          "v8t-11-es-CO",
+          "v8t-11-es-MX",
+          "v8t-11-pt-BR",
+          "v8t-20-es-AR",
+          "v8t-20-es-CO",
+          "v8t-20-es-MX",
+          "v8t-20-pt-BR"
+        ],
+        "interval_95": [
+          0.087,
+          0.5217
+        ],
+        "n": 92,
+        "net": 28,
+        "net_share": 0.3043
+      },
+      "router_v2_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-11-pt-BR"
+        ],
+        "interval_95": [
+          -0.0543,
+          0.1957
+        ],
+        "n": 92,
+        "net": 5,
+        "net_share": 0.0543
+      },
+      "router_v3_cutoffs_vs_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8t-03-es-AR",
+          "v8t-03-es-CO",
+          "v8t-03-es-MX",
+          "v8t-03-pt-BR",
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX",
+          "v8t-19-pt-BR",
+          "v8t-22-es-AR",
+          "v8t-22-es-CO",
+          "v8t-22-es-MX",
+          "v8t-22-pt-BR",
+          "v8t-23-es-AR",
+          "v8t-23-es-CO",
+          "v8t-23-es-MX",
+          "v8t-23-pt-BR"
+        ],
+        "fixed": [
+          "v8t-02-es-AR",
+          "v8t-02-es-CO",
+          "v8t-02-es-MX",
+          "v8t-02-pt-BR",
+          "v8t-09-es-AR",
+          "v8t-09-es-CO",
+          "v8t-09-es-MX",
+          "v8t-09-pt-BR",
+          "v8t-11-es-AR",
+          "v8t-11-es-CO",
+          "v8t-11-es-MX",
+          "v8t-11-pt-BR",
+          "v8t-15-es-AR",
+          "v8t-15-es-CO",
+          "v8t-15-es-MX",
+          "v8t-20-es-AR",
+          "v8t-20-es-CO",
+          "v8t-20-es-MX",
+          "v8t-20-pt-BR"
+        ],
+        "interval_95": [
+          -0.2174,
+          0.2826
+        ],
+        "n": 92,
+        "net": 3,
+        "net_share": 0.0326
+      },
+      "router_v3_cutoffs_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-03-es-AR",
+          "v8t-03-es-CO",
+          "v8t-03-es-MX",
+          "v8t-03-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-22-es-AR",
+          "v8t-22-es-CO",
+          "v8t-22-es-MX",
+          "v8t-22-pt-BR",
+          "v8t-23-es-AR",
+          "v8t-23-es-CO",
+          "v8t-23-es-MX",
+          "v8t-23-pt-BR"
+        ],
+        "fixed": [
+          "v8t-15-es-AR",
+          "v8t-15-es-CO",
+          "v8t-15-es-MX"
+        ],
+        "interval_95": [
+          -0.4783,
+          -0.0652
+        ],
+        "n": 92,
+        "net": -25,
+        "net_share": -0.2717
+      },
+      "router_v3_cutoffs_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-03-es-AR",
+          "v8t-03-es-CO",
+          "v8t-03-es-MX",
+          "v8t-03-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-22-es-AR",
+          "v8t-22-es-CO",
+          "v8t-22-es-MX",
+          "v8t-22-pt-BR",
+          "v8t-23-es-AR",
+          "v8t-23-es-CO",
+          "v8t-23-es-MX",
+          "v8t-23-pt-BR"
+        ],
+        "fixed": [
+          "v8t-15-es-AR",
+          "v8t-15-es-CO",
+          "v8t-15-es-MX"
+        ],
+        "interval_95": [
+          -0.4783,
+          -0.0652
+        ],
+        "n": 92,
+        "net": -25,
+        "net_share": -0.2717
+      },
+      "router_v3_cutoffs_vs_router_v3": {
+        "above_zero": false,
+        "broken": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-03-es-AR",
+          "v8t-03-es-CO",
+          "v8t-03-es-MX",
+          "v8t-03-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-18-es-AR",
+          "v8t-18-es-CO",
+          "v8t-18-es-MX",
+          "v8t-18-pt-BR",
+          "v8t-21-es-AR",
+          "v8t-21-es-CO",
+          "v8t-21-es-MX",
+          "v8t-21-pt-BR",
+          "v8t-22-es-AR",
+          "v8t-22-es-CO",
+          "v8t-22-es-MX",
+          "v8t-22-pt-BR",
+          "v8t-23-es-AR",
+          "v8t-23-es-CO",
+          "v8t-23-es-MX",
+          "v8t-23-pt-BR",
+          "v8t-24-es-AR",
+          "v8t-24-es-CO",
+          "v8t-24-es-MX",
+          "v8t-24-pt-BR"
+        ],
+        "fixed": [
+          "v8t-10-es-MX",
+          "v8t-15-es-AR",
+          "v8t-15-es-CO",
+          "v8t-15-es-MX"
+        ],
+        "interval_95": [
+          -0.6087,
+          -0.1522
+        ],
+        "n": 92,
+        "net": -36,
+        "net_share": -0.3913
+      },
+      "router_v3_cutoffs_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8t-03-es-AR",
+          "v8t-03-es-CO",
+          "v8t-03-es-MX",
+          "v8t-03-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX",
+          "v8t-22-es-AR",
+          "v8t-22-es-CO",
+          "v8t-22-es-MX",
+          "v8t-22-pt-BR",
+          "v8t-23-es-AR",
+          "v8t-23-es-CO",
+          "v8t-23-es-MX",
+          "v8t-23-pt-BR"
+        ],
+        "fixed": [
+          "v8t-11-pt-BR",
+          "v8t-15-es-AR",
+          "v8t-15-es-CO",
+          "v8t-15-es-MX"
+        ],
+        "interval_95": [
+          -0.413,
+          -0.0326
+        ],
+        "n": 92,
+        "net": -20,
+        "net_share": -0.2174
+      },
+      "router_v3_vs_baseline": {
+        "above_zero": true,
+        "broken": [
+          "v8t-10-es-MX",
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX",
+          "v8t-19-pt-BR"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-02-es-AR",
+          "v8t-02-es-CO",
+          "v8t-02-es-MX",
+          "v8t-02-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-09-es-AR",
+          "v8t-09-es-CO",
+          "v8t-09-es-MX",
+          "v8t-09-pt-BR",
+          "v8t-11-es-AR",
+          "v8t-11-es-CO",
+          "v8t-11-es-MX",
+          "v8t-11-pt-BR",
+          "v8t-18-es-AR",
+          "v8t-18-es-CO",
+          "v8t-18-es-MX",
+          "v8t-18-pt-BR",
+          "v8t-20-es-AR",
+          "v8t-20-es-CO",
+          "v8t-20-es-MX",
+          "v8t-20-pt-BR",
+          "v8t-21-es-AR",
+          "v8t-21-es-CO",
+          "v8t-21-es-MX",
+          "v8t-21-pt-BR",
+          "v8t-24-es-AR",
+          "v8t-24-es-CO",
+          "v8t-24-es-MX",
+          "v8t-24-pt-BR"
+        ],
+        "interval_95": [
+          0.163,
+          0.6522
+        ],
+        "n": 92,
+        "net": 39,
+        "net_share": 0.4239
+      },
+      "router_v3_vs_router_v2": {
+        "above_zero": false,
+        "broken": [
+          "v8t-10-es-MX"
+        ],
+        "fixed": [
+          "v8t-18-es-AR",
+          "v8t-18-es-CO",
+          "v8t-18-es-MX",
+          "v8t-18-pt-BR",
+          "v8t-21-es-AR",
+          "v8t-21-es-CO",
+          "v8t-21-es-MX",
+          "v8t-21-pt-BR",
+          "v8t-24-es-AR",
+          "v8t-24-es-CO",
+          "v8t-24-es-MX",
+          "v8t-24-pt-BR"
+        ],
+        "interval_95": [
+          0.0,
+          0.2609
+        ],
+        "n": 92,
+        "net": 11,
+        "net_share": 0.1196
+      },
+      "router_v3_vs_router_v2_cutoffs": {
+        "above_zero": false,
+        "broken": [
+          "v8t-10-es-MX"
+        ],
+        "fixed": [
+          "v8t-18-es-AR",
+          "v8t-18-es-CO",
+          "v8t-18-es-MX",
+          "v8t-18-pt-BR",
+          "v8t-21-es-AR",
+          "v8t-21-es-CO",
+          "v8t-21-es-MX",
+          "v8t-21-pt-BR",
+          "v8t-24-es-AR",
+          "v8t-24-es-CO",
+          "v8t-24-es-MX",
+          "v8t-24-pt-BR"
+        ],
+        "interval_95": [
+          0.0,
+          0.2609
+        ],
+        "n": 92,
+        "net": 11,
+        "net_share": 0.1196
+      },
+      "router_v3_vs_trained_baseline": {
+        "above_zero": false,
+        "broken": [
+          "v8t-10-es-MX",
+          "v8t-19-es-AR",
+          "v8t-19-es-CO",
+          "v8t-19-es-MX"
+        ],
+        "fixed": [
+          "v8t-01-es-AR",
+          "v8t-01-es-CO",
+          "v8t-01-es-MX",
+          "v8t-01-pt-BR",
+          "v8t-05-es-AR",
+          "v8t-05-es-CO",
+          "v8t-05-es-MX",
+          "v8t-11-pt-BR",
+          "v8t-18-es-AR",
+          "v8t-18-es-CO",
+          "v8t-18-es-MX",
+          "v8t-18-pt-BR",
+          "v8t-21-es-AR",
+          "v8t-21-es-CO",
+          "v8t-21-es-MX",
+          "v8t-21-pt-BR",
+          "v8t-24-es-AR",
+          "v8t-24-es-CO",
+          "v8t-24-es-MX",
+          "v8t-24-pt-BR"
+        ],
+        "interval_95": [
+          0.0,
+          0.3587
+        ],
+        "n": 92,
+        "net": 16,
+        "net_share": 0.1739
+      },
+      "trained_baseline_vs_baseline": {
+        "above_zero": true,
+        "broken": [
+          "v8t-19-pt-BR"
+        ],
+        "fixed": [
+          "v8t-02-es-AR",
+          "v8t-02-es-CO",
+          "v8t-02-es-MX",
+          "v8t-02-pt-BR",
+          "v8t-04-es-AR",
+          "v8t-04-es-CO",
+          "v8t-04-es-MX",
+          "v8t-04-pt-BR",
+          "v8t-05-pt-BR",
+          "v8t-06-es-AR",
+          "v8t-06-es-CO",
+          "v8t-06-es-MX",
+          "v8t-06-pt-BR",
+          "v8t-09-es-AR",
+          "v8t-09-es-CO",
+          "v8t-09-es-MX",
+          "v8t-09-pt-BR",
+          "v8t-11-es-AR",
+          "v8t-11-es-CO",
+          "v8t-11-es-MX",
+          "v8t-20-es-AR",
+          "v8t-20-es-CO",
+          "v8t-20-es-MX",
+          "v8t-20-pt-BR"
+        ],
+        "interval_95": [
+          0.0761,
+          0.4348
+        ],
+        "n": 92,
+        "net": 23,
+        "net_share": 0.25
+      }
+    }
+  }
+}
