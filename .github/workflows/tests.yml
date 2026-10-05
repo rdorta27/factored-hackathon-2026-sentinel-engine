@@ -32,7 +32,7 @@ jobs:
           cache-dependency-path: sentinel-ai-core/pyproject.toml
 
       - name: Install
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,eval]"
 
       - name: Test
         run: python -m pytest -q

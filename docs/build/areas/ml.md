@@ -62,6 +62,7 @@ For this reason the cases are **team-written text in es-419 and pt-BR**, declare
 - **Isolated author.** The author of the held-out set did not read the prompt, the examples or the development cases.
 - **Examples from development only.** `build_examples` refuses an example from validation or held-out.
 - **Time split for dataset labels.** The cut is 2025-07-01. The leak check is in `evidence/evaluation/method.md`.
+- **Trained baseline.** It trains on development only and tunes on validation only. Training stops with an error that names any held-out case. The validation scores describe only. The claim comes from the single sealed measurement. If the trained baseline ties or beats the router there, the report says so.
 - **Intervals.** A cluster bootstrap over bases gives the intervals. An interval wider than ±10 points is "descriptive" and decides nothing.
 
 ## Evidence
@@ -75,4 +76,5 @@ For this reason the cases are **team-written text in es-419 and pt-BR**, declare
 | Confidence cut-offs | Done, off by default | [`2024Q4-calibration-v1`](../../../evidence/evaluation-runs/2024Q4-calibration-v1/summary.json) |
 | Charge selector against the rules, with exact labels | Done, off by default | [`charge-ranker/test-v1`](../../../evidence/charge-ranker/test-v1/summary.json), [025](../decisions/025-charge-selector.md), [rationale](../../rationale/charge-selector.md) |
 | Greetings and small talk | Open | [router v3 plan](../../../team/router-v3-plan.md) |
-| A trained baseline (TF-IDF and logistic regression) | Open | Planned. It gives a stronger comparison than keywords. |
+| A trained baseline (TF-IDF and logistic regression) | Trained and frozen. Not yet measured on the sealed set | [`2024Q4-train-v1`](../../../evidence/evaluation-runs/2024Q4-train-v1/summary.json). The `eval-v8` measurement compares it with the router. |
+| Precision, recall and F1 per intent, with intervals | Done in the runner | `per_intent` in each version of a run summary (`eval/per_intent.py`) |
