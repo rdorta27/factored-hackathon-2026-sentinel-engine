@@ -13,7 +13,9 @@ link runs: [decision 019](../../docs/build/decisions/019-azure-container-apps.md
   - `SENTINEL_LLM_API_KEY`, `SENTINEL_LLM_BASE_URL` and the three `SENTINEL_LLM_*_MODEL` values. With the base URL and the key set, the app serves router_v2; without them it serves the keyword baseline. Values for router_v2: [016](../../docs/build/decisions/016-router-models.md#served-configuration-added-2026-10-02).
   - `SENTINEL_LLM_PROMPT_VERSION=v2`.
   - `SENTINEL_LLM_TIMEOUT_S=6` and `SENTINEL_LLM_MAX_RETRIES=1` keep a failing model under about 12 s per turn before the baseline answers.
-  - `SENTINEL_SESSION_SALT` is optional; a random one is generated per run when it is empty.
+  - `SENTINEL_SESSION_SALT` is required. Set it in the environment or in `.env`.
+    The deploy stops with an error when it is missing and never generates one,
+    so `session_ref` stays continuous across redeploys.
 
 ## Run it
 
@@ -52,6 +54,46 @@ receive one shared set of logins and passwords in the submission email.
    `SENTINEL_DEMO_PERSONAS=0`. The app reads the file and the one-click entry
    answers 404. `SENTINEL_DEMO_AUTH=1` (Dockerfile) still loads the advisor
    role, so the advisor login keeps its password.
+
+## End-to-end check
+
+`scripts/e2e_check.py` runs the three demo cases in es-419 and pt-BR, the
+manual test replay and the phone layout at 390 px. On a loopback URL it starts
+a local app with a clean SQLite file and the Gold mock; on the link it uses the
+running service. The judge logins come from `SENTINEL_E2E_CREDENTIALS_FILE`.
+
+Order on the link:
+
+1. `--access-check` first: it makes one failed attempt for each login, so it
+   must run before the cases and before any wrong password.
+2. Then the cases and the phone layout.
+3. Then `reset-state.sh`, so the link holds no state from the tests.
+
+A second run of the cases on a dirty state can fail, because the charge of the
+normal case is already in review.
+
+```bash
+SENTINEL_E2E_CREDENTIALS_FILE=deploy/judge-users/passwords.csv \
+  python3 scripts/e2e_check.py --base-url https://<host> --access-check
+SENTINEL_E2E_CREDENTIALS_FILE=deploy/judge-users/passwords.csv \
+  python3 scripts/e2e_check.py --base-url https://<host>
+./deploy/azure/reset-state.sh
+```
+
+## Reset the state
+
+The share keeps the SQLite file and `turns.jsonl` across a redeploy, so the
+tests on the link leave sessions, disputes and tickets behind. Remove them:
+
+```bash
+./deploy/azure/reset-state.sh --dry-run   # print the commands and stop
+./deploy/azure/reset-state.sh             # scale down, delete, scale up
+```
+
+The script scales the app to zero replicas, deletes `sentinel.db` and its
+journal files and `turns.jsonl` from the share, scales the app back to one
+replica, and waits for `/api/v1/health` to answer 200. The users file stays on
+the share. Run it after the checks on the link, before the judges open it.
 
 ## What it does
 
