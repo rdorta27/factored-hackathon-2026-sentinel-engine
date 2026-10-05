@@ -1,8 +1,10 @@
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from datetime import date
 from time import time
 
 from app.ai.port import UnderstandKind, UnderstandResult
+from app.db.session import make_engine
 from app.orchestrator.step import CONFIRM_TTL_S, Ports, step
 from app.orchestrator.types import (
     Candidate,
@@ -13,7 +15,10 @@ from app.orchestrator.types import (
     TextInput,
     TransactionStatus,
 )
+from app.state.cases import CaseTools, InMemoryCaseRepository, SqliteCaseRepository
 from app.tools.fake import InMemoryTools
+from app.tools.gold import MockGoldStore
+from app.tools.ports import ToolStatus
 
 
 class ScriptModel:
@@ -115,3 +120,29 @@ def test_fresh_confirmation_still_opens() -> None:
     result = step(CandidateIdInput("c1"), state, ports)
     assert result.kind is OutcomeKind.CASE_NUMBER
     assert tools.open_calls == 1
+
+
+def _parallel_opens_same_case(tools: CaseTools) -> None:
+    key = "s1:c1:open_dispute"
+
+    def confirm(n: int) -> str | None:
+        opened = tools.open_dispute("c1", f"token-{n}", "Cargo duplicado", "", key)
+        assert opened.status is ToolStatus.OK
+        assert opened.record is not None
+        return opened.record.dispute_id
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        dispute_ids = list(pool.map(confirm, range(8)))
+    assert len(set(dispute_ids)) == 1, "parallel confirmations share one case"
+    assert len(tools.disputes()) == 1
+
+
+def test_parallel_confirmations_open_one_case_in_memory() -> None:
+    tools = CaseTools(InMemoryCaseRepository(), "CUST-0001", MockGoldStore(as_of="2024-12-01"))
+    _parallel_opens_same_case(tools)
+
+
+def test_parallel_confirmations_open_one_case_in_sqlite(tmp_path) -> None:  # type: ignore[no-untyped-def]
+    repo = SqliteCaseRepository(make_engine(tmp_path / "cases.db"))
+    tools = CaseTools(repo, "CUST-0001", MockGoldStore(as_of="2024-12-01"))
+    _parallel_opens_same_case(tools)
