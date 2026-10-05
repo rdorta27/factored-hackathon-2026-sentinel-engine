@@ -73,3 +73,12 @@ def test_both_locales_and_amounts_in_words_are_present() -> None:
 
 def test_no_description_is_empty() -> None:
     assert all(item.text.strip() for item in _build(_customers(300)))
+
+
+def test_the_split_summary_reports_no_shared_customer_and_no_leaked_family() -> None:
+    from eval.build_charge_splits import summarize
+
+    rows = _customers(400)
+    summary = summarize(_build(rows), rows)
+    assert summary["checks"] == {"customers_in_two_splits": 0, "test_only_families_outside_test": 0}
+    assert "customer_id" not in str(summary) and "CLI-" not in str(summary)

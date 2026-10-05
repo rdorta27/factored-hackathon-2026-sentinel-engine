@@ -339,3 +339,19 @@ def digest_of(examples: list[Example]) -> str:
     """A hash of the examples, in canonical order. It proves that a rebuild gives the same set."""
     body = "\n".join(json.dumps(asdict(item), sort_keys=True, ensure_ascii=False) for item in examples)
     return hashlib.sha256(body.encode()).hexdigest()
+
+
+CUSTOMERS_PER_SPLIT = {"train": 3000, "validation": 1500, "test": 3000}
+EXAMPLES_PER_CUSTOMER = {"train": 2, "validation": 2, "test": 2}
+
+
+def build_dataset(db_path: Path) -> tuple[list[Example], dict[str, list[Row]]]:
+    """The frozen dataset of run data-v1: examples and the rows of their customers."""
+    customers = sample_customers(eligible_customers(db_path), CUSTOMERS_PER_SPLIT)
+    rows = load_rows(db_path, [item for ids in customers.values() for item in ids])
+    return build_examples(rows, EXAMPLES_PER_CUSTOMER), rows
+
+
+def pool_of(example: Example, rows: dict[str, list[Row]]) -> list[Row]:
+    """The charges that `lookup_transactions` would list on the day of the example."""
+    return [row for row in rows[example.customer_id] if row.date <= example.today]

@@ -15,7 +15,7 @@ Areas: [ml](../../../docs/build/areas/ml.md). Decisions: [007](../../../docs/bui
 ## 2. Data
 
 - [x] 2.1 Write the example generator for es-419 and pt-BR, with the phrasing families, fixed seed and no rows in git. Check the pt-BR templates by back-translation, as in 017. Evidence: `eval/charge_examples.py` and a test of the families.
-- [ ] 2.2 Build and freeze the splits: counts, hashes, seed and families, with no rows. Evidence: `evidence/charge-ranker/data-v1/summary.json`.
+- [x] 2.2 Build and freeze the splits: counts, hashes, seed and families, with no rows. Evidence: `evidence/charge-ranker/data-v1/summary.json`.
 
 ## 3. Model
 
