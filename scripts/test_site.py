@@ -218,3 +218,91 @@ def test_deck_in_the_browser_and_pdf():
 def test_markdown_number_marks_match_the_evidence():
     assert sn.sync_markdown(json.loads(sn.OUT.read_text())["numbers"], check=True) == []
     assert "<!--n:" in (sn.ROOT / "docs/build/video-script.md").read_text()
+
+
+# --- all diagrams (task 4.6) ---
+
+import build_cases as bc  # noqa: E402
+import build_evidence as be  # noqa: E402
+
+DIAGRAMS = ["architecture", "cases", "evidence"]
+
+
+def test_cases_and_evidence_files_are_current():
+    for mod in (bc, be):
+        for path, text in mod.outputs().items():
+            assert path.read_text() == text, f"{path.name} is stale: run scripts/{mod.__name__}.py"
+
+
+def test_evidence_text_holds_no_typed_number():
+    # Prose is free of digits. Every digit on a bar comes from numbers.json.
+    for s in json.loads(sn.OUT.read_text())["series"]:
+        assert not re.search(r"\d", s["about"]), s["id"]
+        assert s["type"] in {"Test suite", "Simulation", "Synthetic", "Projection"}
+        for row in s["rows"]:
+            assert row["field"] and row["n_field"], (s["id"], row["label"])
+    html = (SITE / "diagrams" / "evidence.html").read_text()
+    assert "<script" in html and html.count("<script") == 1
+
+
+def test_cases_page_uses_the_real_demo_lines_and_package_fields():
+    html = (SITE / "diagrams" / "cases.html").read_text()
+    replay = (sn.ROOT / "sentinel-ai-core/eval/demo/replay.md").read_text()
+    for c in bc.CASES:
+        assert c["line"] in replay, f"demo line of {c['id']} is not in replay.md"
+    schema = (sn.ROOT / "sentinel-ai-core/app/schemas/chat.py").read_text()
+    package = schema.split("class HandoffPackage")[1].split("class Handoff(")[0]
+    for name, _ in bc.PACKAGE:
+        for field in name.split(", "):
+            assert f"{field}:" in package, f"{field} is not a HandoffPackage field"
+    assert 'id="package"' in html
+
+
+def test_every_diagram_in_the_browser():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+        for name in DIAGRAMS:
+            url = (SITE / "diagrams" / f"{name}.html").as_uri()
+            for width in (1280, 390):
+                page = browser.new_page(viewport={"width": width, "height": 800})
+                errors, requests = [], []
+                page.on("pageerror", lambda e: errors.append(str(e)))
+                page.on("request", lambda r: requests.append(r.url))
+                page.goto(url)
+                assert not errors, (name, errors)
+                assert all(u.startswith("file:") for u in requests), (name, requests)
+                assert not page.evaluate("document.documentElement.scrollWidth > innerWidth"), (name, width)
+                page.close()
+            # Keyboard: every tab or node is reachable and works with the keys.
+            page = browser.new_page(viewport={"width": 1280, "height": 800})
+            page.goto(url)
+            if name == "architecture":
+                page.focus("#n-gold")
+                page.keyboard.press("Enter")
+                assert page.inner_text(".detail.on h3") == "Gold store"
+            else:
+                tabs = page.locator("[role=tab]")
+                assert tabs.count() >= 3
+                tabs.nth(0).focus()
+                page.keyboard.press("ArrowRight")
+                assert page.locator("[role=tab][aria-selected=true]").get_attribute("data-tab") == tabs.nth(1).get_attribute("data-tab")
+            # Without JS the content is still on the page.
+            nojs = browser.new_context(java_script_enabled=False).new_page()
+            nojs.goto(url)
+            assert len(nojs.inner_text("main")) > 400, name
+            page.close()
+        browser.close()
+
+
+def test_home_page_links_every_diagram_and_the_slides():
+    home = (SITE / "index.html").read_text()
+    for target in ("diagrams/architecture.html", "diagrams/cases.html", "diagrams/evidence.html", "slides/deck.html"):
+        assert f'href="{target}"' in home, target
+        assert (SITE / target).exists()
+    assert 'property="og:image"' in home and (SITE / "preview.png").exists()
+    assert 'id="limits"' in home and "submission email" in home

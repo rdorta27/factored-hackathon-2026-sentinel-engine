@@ -6,6 +6,11 @@
 <title>Sentinel Engine</title>
 <meta name="description" content="Sentinel is the trust layer for bank customer-service AI. It turns an unrecognized charge into a verified case, or a well-informed advisor, in Spanish and Portuguese.">
 <meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sentinel Engine: the AI converses. The rules decide.">
+<meta property="og:description" content="A trust layer for bank customer-service AI. It turns an unrecognized charge into a verified case, or a well-informed advisor.">
+<meta property="og:image" content="https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/preview.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -20,6 +25,7 @@
     <nav aria-label="Main">
       <a href="#how">How it works</a>
       <a href="#proof">Results</a>
+      <a href="#explore">Explore</a>
       <a href="#demo">Demo</a>
       <a href="slides/deck.html">Slides</a>
       <a class="cta" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">View on GitHub</a>
@@ -58,6 +64,16 @@
         <div class="card"><span class="step">3</span><h3>Decide</h3><p>The policy engine, in code, allows, refuses or hands off.</p></div>
         <div class="card"><span class="step">4</span><h3>Verify</h3><p>The code checks that the case exists before it says so.</p></div>
         <div class="card"><span class="step">5</span><h3>Hand off</h3><p>For fraud or a high amount, an advisor gets the verified facts.</p></div>
+      </div>
+    </section>
+
+    <section id="explore" aria-labelledby="explore-h">
+      <h2 id="explore-h">See how it works</h2>
+      <div class="grid">
+        <a class="card" href="diagrams/architecture.html"><span class="eyebrow">Architecture</span><p>Every part, marked real or mock. Switch to production to see what replaces each mock.</p></a>
+        <a class="card" href="diagrams/cases.html"><span class="eyebrow">Three cases</span><p>Normal, ambiguous and a person is needed, on one decision map.</p></a>
+        <a class="card" href="diagrams/evidence.html"><span class="eyebrow">Evidence</span><p>Every bar with its denominator, its type and its summary field.</p></a>
+        <a class="card" href="slides/deck.html"><span class="eyebrow">Slides</span><p>Six slides: why, what, how, proof, your brand, limits and roadmap.</p></a>
       </div>
     </section>
 
@@ -113,9 +129,36 @@
         <div class="card"><span class="eyebrow">High amount</span><p>The system does not act alone. It hands off with the verified facts.</p></div>
         <div class="card"><span class="eyebrow">Not me</span><p>The system does not decide on fraud. It hands off to an advisor.</p></div>
       </div>
+      <p class="note"><strong>Try it.</strong> Open the live demo and pick one of the four cases. The test credentials are in the submission email. This site holds none. Use the demo lines of the <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/sentinel-ai-core/eval/demo/replay.md">demo replay</a>.</p>
       <div class="row">
         <a class="btn" href="https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io">Open the live demo</a>
         <a class="btn alt" href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine">Repository</a>
+      </div>
+    </section>
+    <section id="limits" aria-labelledby="limits-h">
+      <h2 id="limits-h">Limits and roadmap</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>Limits</h3>
+          <ul>
+            <li><b>Data:</b> synthetic, in Spanish only, for three countries. The Portuguese cases are model-written.</li>
+            <li><b>Ceiling:</b> the policy lets <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span> simulated cases resolve (<span data-num-type="ceil_resolvable">Simulation</span>). The system resolves all of them and no other.</li>
+            <li><b>Mocks:</b> the Gold store, login and session, the advisor, the case store and the policy values. Each keeps the production contract. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">Mocks</a>.</li>
+            <li><b>Numbers:</b> none is a production measurement.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Roadmap: not built</h3>
+          <ul>
+            <li><b>Customer 360:</b> the balance has no usable as-of date.</li>
+            <li><b>Charge investigation:</b> it needs real bank data.</li>
+            <li><b>Feedback dataset:</b> the outcomes of advisor handoffs.</li>
+            <li><b>Spending assistant:</b> it needs balances and history.</li>
+            <li><b>Policy retrieval:</b> it needs the policy documents of the bank.</li>
+            <li><b>Handoff routing:</b> by language and specialty.</li>
+          </ul>
+          <p class="note">Each item has its evidence in the <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/README.md#roadmap">README roadmap</a>.</p>
+        </div>
       </div>
     </section>
   </main>

@@ -75,6 +75,92 @@ METRICS: dict[str, tuple] = {
 }
 
 
+# Series for the evidence explorer. Each row reads one field of a frozen run.
+# kind: rate (0..1 with n), count (value of denominator) or scale (value with unit).
+SERIES: list[dict] = [
+    {
+        "id": "intent", "title": "Intent accuracy", "type": "Simulation", "run": EVAL, "kind": "rate",
+        "about": "The intent router against the keyword baseline on the same sealed held-out turns. The cases are team-written, not production traffic.",
+        "rows": [
+            ("Keyword baseline", "component.versions.baseline.breakdown.overall.accuracy", "component.versions.baseline.breakdown.overall.n"),
+            ("LLM router, first version", "component.versions.router_v1.breakdown.overall.accuracy", "component.versions.router_v1.breakdown.overall.n"),
+            ("LLM router, final version", "component.versions.router_v2.breakdown.overall.accuracy", "component.versions.router_v2.breakdown.overall.n"),
+        ],
+    },
+    {
+        "id": "resolution", "title": "Resolution ceiling", "type": "Simulation", "run": GAP, "kind": "count",
+        "about": "The policy sets a ceiling on how many simulated cases may resolve. Both systems resolve every case under the ceiling, so the two systems do not differ. The set cannot separate the two systems on resolution.",
+        "rows": [
+            ("Cases the policy lets resolve", "ceiling.router_v2.resolvable", "ceiling.router_v2.n"),
+            ("Resolved by the baseline", "ceiling.baseline.resolved", "ceiling.baseline.n"),
+            ("Resolved by the LLM router", "ceiling.router_v2.resolved", "ceiling.router_v2.n"),
+        ],
+    },
+    {
+        "id": "attacks", "title": "Attacks", "type": "Test suite", "run": ADV, "kind": "count",
+        "about": "Each bar shows the attacks that production code stops. The other attacks pass only with the mock model, or are documented limits. No attack has an unsafe outcome.",
+        "rows": [
+            ("Prompt injection", "categories.A_prompt_injection.blocked_verified", "categories.A_prompt_injection.attempted"),
+            ("Unauthorized access", "categories.B_unauthorized_access.blocked_verified", "categories.B_unauthorized_access.attempted"),
+            ("Session", "categories.C_session.blocked_verified", "categories.C_session.attempted"),
+            ("Tool failures", "categories.D_tool_failures.blocked_verified", "categories.D_tool_failures.attempted"),
+            ("Multilingual ambiguity", "categories.E_multilingual_ambiguity.blocked_verified", "categories.E_multilingual_ambiguity.attempted"),
+            ("Decision disclosure", "categories.F_decision_disclosure.blocked_verified", "categories.F_decision_disclosure.attempted"),
+            ("All attacks", "totals.blocked_verified", "totals.attempted"),
+        ],
+        "extra": [("Unsafe outcomes, all attacks", "totals.unsafe_outcome_rate")],
+    },
+    {
+        "id": "latency", "title": "Latency", "type": "Simulation", "run": EVAL, "kind": "scale", "unit": "ms",
+        "mode": "Live model calls on simulation cases",
+        "about": "Time of one routed turn with the LLM router, in milliseconds. The calls are live. The cases are team-written.",
+        "rows": [
+            ("Median (p50)", "component.versions.router_v2.latency_ms.p50", "component.versions.router_v2.latency_ms.n"),
+            ("Slow turn (p95)", "component.versions.router_v2.latency_ms.p95", "component.versions.router_v2.latency_ms.n"),
+        ],
+    },
+    {
+        "id": "replay", "title": "Latency of a replay", "type": "Simulation", "run": RES, "kind": "scale", "unit": "ms",
+        "mode": "Replay of recorded model answers, no live call",
+        "about": "The resolution run replays recorded answers. It measures the code, not the model. Do not compare it with the live latency.",
+        "rows": [
+            ("Median (p50)", "system.router_v2.latency_ms.p50", "system.router_v2.latency_ms.n"),
+            ("Slow turn (p95)", "system.router_v2.latency_ms.p95", "system.router_v2.latency_ms.n"),
+        ],
+    },
+    {
+        "id": "cost", "title": "Cost", "type": "Simulation", "run": EVAL, "kind": "scale", "unit": "USD",
+        "mode": "Live model calls on simulation cases",
+        "about": "Total price of the live calls of each router on the same turns. The prices come from the Fireworks model library, as the router models decision records.",
+        "rows": [
+            ("LLM router, first version", "component.versions.router_v1.cost_usd.total", "component.versions.router_v1.cost_usd.n"),
+            ("LLM router, final version", "component.versions.router_v2.cost_usd.total", "component.versions.router_v2.cost_usd.n"),
+        ],
+    },
+]
+
+
+def build_series(runs_cache: dict, evidence: Path) -> list[dict]:
+    out = []
+    for sdef in SERIES:
+        run = sdef["run"]
+        if run not in runs_cache:
+            runs_cache[run] = json.loads((evidence / run / "summary.json").read_text())
+        data = runs_cache[run]
+        rows = []
+        for label, vpath, dpath in sdef["rows"]:
+            rows.append({"label": label, "value": dig(data, vpath), "n": dig(data, dpath), "field": vpath, "n_field": dpath})
+        entry = {k: sdef[k] for k in ("id", "title", "type", "kind", "about") if k in sdef}
+        entry.update({"source": f"evidence/{run}/summary.json", "rows": rows})
+        for k in ("unit", "mode"):
+            if k in sdef:
+                entry[k] = sdef[k]
+        if "extra" in sdef:
+            entry["extra"] = [{"label": lb, "value": dig(data, pth), "field": pth} for lb, pth in sdef["extra"]]
+        out.append(entry)
+    return out
+
+
 def dig(obj, path: str):
     for part in path.split("."):
         obj = obj[part]
@@ -115,6 +201,7 @@ def build(evidence: Path = EVIDENCE) -> dict:
     return {
         "note": "Generated by scripts/site_numbers.py from frozen summary.json runs. Do not edit.",
         "numbers": numbers,
+        "series": build_series(runs, evidence),
     }
 
 

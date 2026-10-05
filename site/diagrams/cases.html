@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo cases · Sentinel Engine</title>
+<meta name="description" content="The three demo cases on one decision map: normal, ambiguous and a person is needed. Select a case to light its route.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="diagram.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="../"><img src="../favicon.svg" width="34" height="34" alt="">Sentinel</a>
+    <nav aria-label="Main"><a href="../">Home</a><a href="architecture.html">Architecture</a><a href="evidence.html">Evidence</a></nav>
+  </header>
+  <main id="main">
+    <h1>Three cases, one decision map</h1>
+    <p class="lead">The same steps run each time. The code decides where the turn goes. Select a case to light its route.</p>
+    <div class="switch" role="tablist" aria-label="Demo cases"><button type="button" role="tab" class="seg on" id="t-normal" data-tab="normal" aria-selected="true" aria-controls="c-normal">Normal</button><button type="button" role="tab" class="seg" id="t-ambiguous" data-tab="ambiguous" aria-selected="false" aria-controls="c-ambiguous">Ambiguous</button><button type="button" role="tab" class="seg" id="t-person" data-tab="person" aria-selected="false" aria-controls="c-person">A person is needed</button></div>
+    <div class="scroller" tabindex="0" aria-label="Decision map, scrolls sideways on a narrow screen">
+<svg xmlns="http://www.w3.org/2000/svg" class="arch" id="map" viewBox="0 0 1110 400" role="group" aria-label="Decision map of the three demo cases">
+<style>
+svg.arch{--bg:#faf8f5;--t:#1c1830;--mu:#4a4460;--card:#fff;--line:#cfc8de;--real:#1b6a49;--real-bg:#e5f4ec;--mock:#8a4a0b;--mock-bg:#fdeedd;--prod:#3a1fb8;--prod-bg:#f1edff;--model:#e23e78;--code:#4f2fe0}
+@media (prefers-color-scheme:dark){svg.arch{--bg:#14112a;--t:#f1eefb;--mu:#b9b3d0;--card:#1e1a38;--line:#4a4378;--real:#7fd9ae;--real-bg:#173a2c;--mock:#f3b46e;--mock-bg:#3d2a10;--prod:#c4b8ff;--prod-bg:#2a2350;--model:#ff7aa6;--code:#8e78ff}}
+svg.arch .bg{fill:var(--bg)}
+svg.arch text{font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;fill:var(--t)}
+svg.arch .box{fill:var(--card);stroke:var(--line);stroke-width:1.5}
+svg.arch .node.real .box{stroke:var(--real)}
+svg.arch .node.mock .box{stroke:var(--mock);stroke-dasharray:6 3}
+svg.arch .node.prod .box{stroke:var(--prod);stroke-dasharray:none}
+svg.arch .node.changed .box{stroke-width:3}
+svg.arch .node{cursor:pointer}
+svg.arch .node:focus{outline:none}
+svg.arch .node:focus-visible .box,svg.arch .node.sel .box{stroke:var(--model);stroke-width:3.5}
+svg.arch .t1{font-size:15px;font-weight:700}
+svg.arch .t2{font-size:12px;font-weight:700}
+svg.arch .real .t2{fill:var(--real)}
+svg.arch .mock .t2{fill:var(--mock)}
+svg.arch .prod .t2{fill:var(--prod)}
+svg.arch .t3{font-size:12px;fill:var(--mu)}
+svg.arch .chip.model{fill:var(--model)}
+svg.arch .chip.code{fill:var(--code)}
+svg.arch .chip.person{fill:var(--mock)}
+svg.arch .chipt{font-size:11px;font-weight:700;fill:#fff}
+svg.arch .edge{stroke:var(--mu);stroke-width:1.6;fill:none}
+svg.arch .edge.dashed{stroke-dasharray:5 4}
+svg.arch .arrow{fill:var(--mu)}
+svg.arch .elabel{font-size:11px;fill:var(--mu)}
+svg.arch .lg{font-size:12px;fill:var(--mu)}
+svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
+svg.arch .node,svg.arch .edge,svg.arch .arrow{transition:opacity .2s}
+svg.arch.focus .node:not(.lit),svg.arch.focus .edge:not(.lit),svg.arch.focus .arrow:not(.lit){opacity:.25}
+svg.arch .node.lit .box{stroke:var(--model);stroke-width:3}
+svg.arch .edge.lit{stroke:var(--model);stroke-width:3}
+svg.arch .arrow.lit{fill:var(--model)}
+svg.arch .node{cursor:default}
+@media (prefers-reduced-motion:reduce){svg.arch .node,svg.arch .edge,svg.arch .arrow{transition:none}}
+</style>
+<rect class="bg" width="100%" height="100%" rx="12"/>
+<line class="edge" data-e="msg>mask" x1="150.0" y1="200.0" x2="159.0" y2="200.0"/>
+<polygon class="arrow" data-e="msg>mask" points="168.0,200.0 159.0,204.5 159.0,195.5"/>
+<line class="edge" data-e="mask>router" x1="308.0" y1="200.0" x2="317.0" y2="200.0"/>
+<polygon class="arrow" data-e="mask>router" points="326.0,200.0 317.0,204.5 317.0,195.5"/>
+<line class="edge" data-e="router>lookup" x1="466.0" y1="200.0" x2="475.0" y2="200.0"/>
+<polygon class="arrow" data-e="router>lookup" points="484.0,200.0 475.0,204.5 475.0,195.5"/>
+<line class="edge" data-e="lookup>policy" x1="624.0" y1="200.0" x2="633.0" y2="200.0"/>
+<polygon class="arrow" data-e="lookup>policy" points="642.0,200.0 633.0,204.5 633.0,195.5"/>
+<line class="edge" data-e="policy>confirm" x1="751.5" y1="165.0" x2="823.8" y2="101.0"/>
+<polygon class="arrow" data-e="policy>confirm" points="830.5,95.0 826.7,104.3 820.8,97.6"/>
+<line class="edge" data-e="policy>ask" x1="782.0" y1="200.0" x2="791.0" y2="200.0"/>
+<polygon class="arrow" data-e="policy>ask" points="800.0,200.0 791.0,204.5 791.0,195.5"/>
+<line class="edge" data-e="policy>handoff" x1="751.5" y1="235.0" x2="823.8" y2="299.0"/>
+<polygon class="arrow" data-e="policy>handoff" points="830.5,305.0 820.8,302.4 826.7,295.7"/>
+<line class="edge" data-e="confirm>case" x1="940.0" y1="60.0" x2="949.0" y2="60.0"/>
+<polygon class="arrow" data-e="confirm>case" points="958.0,60.0 949.0,64.5 949.0,55.5"/>
+<line class="edge" data-e="ask>wait" x1="940.0" y1="200.0" x2="949.0" y2="200.0"/>
+<polygon class="arrow" data-e="ask>wait" points="958.0,200.0 949.0,204.5 949.0,195.5"/>
+<line class="edge" data-e="handoff>advisor" x1="940.0" y1="340.0" x2="949.0" y2="340.0"/>
+<polygon class="arrow" data-e="handoff>advisor" points="958.0,340.0 949.0,344.5 949.0,335.5"/>
+<g class="node real" data-node="msg" transform="translate(15,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Message</text>
+<text class="t3" x="10" y="46">Starts the turn</text>
+</g>
+<g class="node real" data-node="mask" transform="translate(173,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Masking</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="router" transform="translate(331,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Intent router</text>
+<text class="t3" x="10" y="46">Model labels</text>
+<circle class="chip model" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">M</text>
+</g>
+<g class="node real" data-node="lookup" transform="translate(489,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Charge lookup</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="policy" transform="translate(647,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Policy engine</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="confirm" transform="translate(805,30)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Confirm box</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="case" transform="translate(963,30)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Case opened</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="ask" transform="translate(805,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Which charge?</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="wait" transform="translate(963,170)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Nothing opens</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node real" data-node="handoff" transform="translate(805,310)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Handoff</text>
+<text class="t3" x="10" y="46">Code decides</text>
+<circle class="chip code" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">C</text>
+</g>
+<g class="node mock" data-node="advisor" transform="translate(963,310)">
+<rect class="box" width="130" height="60" rx="12"/>
+<text class="t1" x="10" y="26" style="font-size:13px">Advisor view</text>
+<text class="t3" x="10" y="46">Person decides</text>
+<circle class="chip person" cx="115" cy="15" r="9"/>
+<text class="chipt" x="115" y="19" text-anchor="middle">P</text>
+</g>
+</svg>
+    </div>
+    <section id="detail" aria-live="polite" aria-label="Case details">
+<article class="detail case" id="c-normal" data-case="normal" role="tabpanel" aria-labelledby="t-normal"><h3>Normal case</h3><p>A México account with one matching charge: Cafe Central, 320 MXN.</p><blockquote lang="es">&ldquo;Vi en mi estado de cuenta un cargo de 320 pesos mexicanos de Cafe Central del 12 de junio y no lo reconozco.&rdquo;<small>es-MX line, shown in es-419</small></blockquote><ol><li><b>Masking.</b> The code masks personal identifiers in the text before any model call.</li><li><b>Intent router.</b> The model labels the intent as a charge inquiry. It decides nothing else.</li><li><b>Charge lookup.</b> The code reads the charges of the session account and finds one match.</li><li><b>Policy engine.</b> The code checks the dispute window, the status and the amount. The policy allows the dispute.</li><li><b>Confirm box.</b> The customer confirms the charge. The system opens nothing before that.</li><li><b>Case opened.</b> The code opens the case, reads it back and shows the case number.</li></ol><p><b>Result.</b> A verified case. The system says that the case exists only after it reads it back.</p></article>
+<article class="detail case" id="c-ambiguous" data-case="ambiguous" role="tabpanel" aria-labelledby="t-ambiguous"><h3>Ambiguous case</h3><p>A Colombia account with several charges that could match.</p><blockquote lang="pt-BR">&ldquo;não reconheço uma cobrança&rdquo;<small>pt-BR, then: não reconheço, pode revisar?</small></blockquote><ol><li><b>Masking.</b> The code masks personal identifiers in the text.</li><li><b>Intent router.</b> The model labels the intent as a charge inquiry.</li><li><b>Charge lookup.</b> The code finds more than one candidate charge.</li><li><b>Policy engine.</b> The text does not name one charge. The code does not guess.</li><li><b>Which charge?.</b> The page shows the candidate charges as chips. The customer picks one.</li><li><b>Nothing opens.</b> No dispute opens and no case exists until the customer picks and confirms.</li></ol><p><b>Result.</b> A question, not an action. Nothing opens on the second unclear message either.</p></article>
+<article class="detail case" id="c-person" data-case="person" role="tabpanel" aria-labelledby="t-person"><h3>A person is needed</h3><p>An Argentina account. The customer asks for an advisor.</p><blockquote lang="pt-BR">&ldquo;Quiero hablar con un asesor.&rdquo;<small>es line. In pt-BR: quero falar com um atendente</small></blockquote><ol><li><b>Masking.</b> The code masks personal identifiers in the text.</li><li><b>Intent router.</b> The model labels the intent as a request for a person.</li><li><b>Policy engine.</b> The first request offers help. A second request files a handoff. The code decides, not the model.</li><li><b>Handoff.</b> The code builds the package for the advisor from its own records.</li><li><b>Advisor view.</b> The advisor reads the package in a read-only view, with the trace of each step.</li></ol><p><b>Result.</b> A handoff with the verified facts, so the customer does not repeat the story.</p><div class="pkg" id="package"><h3>The handoff package</h3><p>This is the shape of what the advisor receives. It holds no customer identifier and no raw transcript. The values come from the conversation, so this page shows the fields only.</p><dl><dt><code>request</code></dt><dd>The intent that the system understood. A code, not the customer&#x27;s words.</dd><dt><code>summary</code></dt><dd>A fixed summary of the conversation, built from the turns.</dd><dt><code>conversation</code></dt><dd>Each turn as codes and references. No raw transcript.</dd><dt><code>verified_facts</code></dt><dd>The charge facts that the code read from the data.</dd><dt><code>actions_taken</code></dt><dd>Every step the system tried, with its turn and outcome. Failed steps too.</dd><dt><code>evidence</code></dt><dd>References that support the facts.</dd><dt><code>open_questions</code></dt><dd>What the advisor still needs to ask.</dd><dt><code>language, country, phase</code></dt><dd>Where the case is and in which language.</dd></dl><p class="note">Source: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/sentinel-ai-core/app/schemas/chat.py">HandoffPackage</a> and <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">the advisor mock</a>.</p></div></article>
+    </section>
+    <p class="note">The lines are the demo lines of the <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/sentinel-ai-core/eval/demo/replay.md">demo replay</a>. The data behind the demo is synthetic and the Gold store is a labelled mock. See <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/what-is-real.md">what is real</a>.</p>
+  </main>
+</div>
+<script type="application/json" id="routes">{"normal": ["msg", "mask", "router", "lookup", "policy", "confirm", "case"], "ambiguous": ["msg", "mask", "router", "lookup", "policy", "ask", "wait"], "person": ["msg", "mask", "router", "lookup", "policy", "handoff", "advisor"]}</script>
+<script src="cases.js"></script>
+</body>
+</html>

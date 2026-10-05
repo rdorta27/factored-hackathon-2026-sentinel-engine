@@ -89,9 +89,10 @@ def svg_edges(data) -> str:
         ax, ay = x2 - 9 * math.cos(ang), y2 - 9 * math.sin(ang)
         px, py = -math.sin(ang) * 4.5, math.cos(ang) * 4.5
         cls = "edge dashed" if e.get("dashed") else "edge"
-        out.append(f'<line class="{cls}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{ax:.1f}" y2="{ay:.1f}"/>')
+        key = f'{e["from"]}>{e["to"]}'
+        out.append(f'<line class="{cls}" data-e="{key}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{ax:.1f}" y2="{ay:.1f}"/>')
         out.append(
-            f'<polygon class="arrow" points="{x2:.1f},{y2:.1f} {ax + px:.1f},{ay + py:.1f} {ax - px:.1f},{ay - py:.1f}"/>'
+            f'<polygon class="arrow" data-e="{key}" points="{x2:.1f},{y2:.1f} {ax + px:.1f},{ay + py:.1f} {ax - px:.1f},{ay - py:.1f}"/>'
         )
         if e.get("label"):
             lx, ly = (x1 + x2) / 2, (y1 + y2) / 2
@@ -285,6 +286,32 @@ CSS = """main { display: flex; flex-direction: column; gap: 18px; padding-bottom
 @media (max-width: 520px) { .detail dl { grid-template-columns: 1fr; } }
 .js .detail { display: none; }
 .js .detail.on { display: flex; }
+
+blockquote { margin: 0; padding: 12px 16px; border-left: 4px solid var(--brand); background: var(--bg); border-radius: 8px; font-size: 18px; }
+blockquote small { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; }
+.detail ol { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 6px; }
+.detail dd { margin: 0 0 6px; }
+.detail dl { grid-template-columns: max-content 1fr; }
+[role="tab"]:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.pkg { border: 1px dashed var(--line); border-radius: 12px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.pkg h3 { font-size: 20px; }
+.pkg p { margin: 0; }
+.pkg dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
+.pkg dd { margin: 0; }
+@media (max-width: 520px) { .pkg dl { grid-template-columns: 1fr; } }
+.bars { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.bars li { display: grid; grid-template-columns: minmax(150px, 220px) 1fr; gap: 6px 16px; align-items: center; }
+.bars .lab { font-weight: 600; }
+.bars .track { height: 22px; border-radius: 11px; background: var(--tint); overflow: hidden; }
+.bars .fill { display: block; height: 100%; background: var(--brand); border-radius: 11px; min-width: 2px; }
+.bars .val { grid-column: 2; font-size: 15px; color: var(--muted); }
+.bars .val strong { color: var(--ink); font-size: 17px; }
+.series { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+.series h2 { font-size: 26px; }
+.series p { margin: 0; }
+.js .series { display: none; }
+.js .series.on { display: flex; }
+@media (max-width: 520px) { .bars li { grid-template-columns: 1fr; } .bars .val { grid-column: 1; } }
 .pick-hint { display: none; }
 .js .pick-hint { display: block; }
 .js .pick-hint.off { display: none; }
