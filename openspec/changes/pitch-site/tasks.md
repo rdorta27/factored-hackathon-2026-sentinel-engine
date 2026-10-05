@@ -24,7 +24,7 @@ The site is updated again after the release (`docs-followups-2`, group 7).
 
 ## 1. Product
 
-- [ ] 1.1 Write `docs/product.md`: user, problem with demand data, difference, proof and tagline. Evidence: the page, with every claim linked to the evidence index.
+- [x] 1.1 Write `docs/product.md`: user, problem with demand data, difference, proof and tagline. Evidence: `docs/product.md`, every claim linked to its `summary.json` field. `scripts/test_site.py` checks its four problem numbers against the evidence.
 
 ## 2. Site
 

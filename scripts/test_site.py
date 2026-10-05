@@ -78,3 +78,17 @@ def test_page_details():
     assert 'name="description"' in home and 'rel="icon"' in home
     assert (SITE / "404.html").exists() and (SITE / "favicon.svg").exists()
     assert "prefers-color-scheme: dark" in (SITE / "style.css").read_text()
+
+
+def test_product_page_numbers_match_the_evidence():
+    page = (sn.ROOT / "docs" / "product.md").read_text()
+    flows = json.loads((sn.EVIDENCE / "flows/2024Q4-v3/summary.json").read_text())
+    problem = json.loads((sn.EVIDENCE / "problem/dev-v1/summary.json").read_text())
+    expected = [
+        f"{flows['accounts']['reason_transaccional']:,} of {flows['accounts']['n_calls']:,} calls",
+        f"{flows['disputes']['unrecognized_claim']} of {flows['disputes']['n']:,}",
+        f"{problem['hours']['transaction_dispute']['hours_per_month']}",
+        f"{problem['reasons']['Queja']['share_pct']}%",
+    ]
+    for text in expected:
+        assert text in page, f"docs/product.md does not show {text!r}"
