@@ -39,6 +39,27 @@ Cite the fields of [`charge-ranker/test-v1`](../../evidence/charge-ranker/test-v
 
 The serving rule asks for no more wrong automatic picks than the rules. The selector fails it. The switch `SENTINEL_CHARGE_RANKER` stays off.
 
+## Why the messages are team-generated
+
+The dataset has no real customer message that links to a charge. We checked the local Gold file on 2026-10-04. This is a one-time query, not a frozen run.
+
+| Table | Rows | Distinct texts |
+|---|---|---|
+| `silver_complaints.description` | 67,095 | 5 |
+| `silver_satisfaction_surveys.comments` | 212,759 | 14 |
+| `silver_call_center_interactions.contact_reason` | 686,296 | 6 |
+
+- The texts are labels written as sentences. For example: "Queja relacionada con transactions".
+- The transcripts are templates. See [`dataset.md`](../understand/dataset.md) and [007](../build/decisions/007-learned-component.md).
+- `origin_interaction_id` is empty in every complaint. No table links a complaint or a call to a `transaction_id`.
+- A label needs the charge that the customer meant. The dataset has none. We write the text from a known transaction, so the label is exact.
+
+To repeat the check, run `SELECT count(DISTINCT description) FROM silver_complaints` and the same for the other columns, on `sentinel-data-engine/data/gold_bank.duckdb`.
+
+## What production adds
+
+Each confirmation in the confirm box links a real message to a charge. Production can collect these pairs as labels. First run the selector in shadow mode: it computes its pick and the service does not use it. Compare it with the charge that the customer confirms.
+
 ## What to say on the slide
 
 "We built a second learned part with exact labels. It ranks the right charge first more often than our rules. It also picks a wrong charge alone sometimes, so we keep it off. Safety decides, not accuracy."

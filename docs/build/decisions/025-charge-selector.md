@@ -95,3 +95,4 @@ The run records the hash of the model file, the seed, the family list and the th
 - The serving rule fails. The switch `SENTINEL_CHARGE_RANKER` stays off. The demo and `eval-v8` use the rules.
 - We did not change the threshold or the rule after the measurement.
 - The selector is the second learned part of the project, as an experiment with frozen evidence.
+- *Checked 10/4:* the local Gold file has no real customer message that links to a charge. The texts have 5 to 14 distinct values. No table links a complaint or a call to a `transaction_id`. See [the rationale](../../rationale/charge-selector.md#why-the-messages-are-team-generated).
