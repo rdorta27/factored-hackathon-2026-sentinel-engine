@@ -32,6 +32,10 @@ no login by customer number alone. Do not send `customer_id` in the body.
 Customers land on the chat; the advisor lands on the escalated tickets
 (`GET /api/v1/handoffs`, role `advisor` only).
 
+The fixture users exist only in the labelled mock. A local run reads the real
+Gold file when it exists, so these logins have no charges. Set
+`SENTINEL_GOLD_SOURCE=mock` for the demo.
+
 ## Demo entry (evaluators only)
 
 With `SENTINEL_DEMO_AUTH=1` the login page offers four one-click personas
