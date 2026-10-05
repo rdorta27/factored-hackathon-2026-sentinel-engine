@@ -49,7 +49,7 @@ CASES = [
         "id": "normal", "tab": "Normal", "title": "Normal case",
         "setup": "A México account with one matching charge: Cafe Central, 320 MXN.",
         "line": "Vi en mi estado de cuenta un cargo de 320 pesos mexicanos de Cafe Central del 12 de junio y no lo reconozco.",
-        "lang": "es-MX line, shown in es-419",
+        "lang": "es-MX line, shown in es-LA",
         "route": ["msg", "mask", "router", "lookup", "policy", "confirm", "case"],
         "steps": [
             ("Masking", "The code masks personal identifiers in the text before any model call."),

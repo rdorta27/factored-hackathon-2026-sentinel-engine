@@ -184,7 +184,8 @@ def page() -> str:
 """
 
 
-CSS = """.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; counter-reset: s; }
+CSS = """.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: row; flex-wrap: wrap; gap: 8px; counter-reset: s; }
+@media (max-width: 520px) { .steps li { flex: 1 1 calc(50% - 8px); } .steps .chipbtn { width: 100%; padding: 0 10px; font-size: 14px; } }
 .steps .chipbtn { display: inline-flex; align-items: center; gap: 8px; }
 .steps .n { width: 24px; height: 24px; border-radius: 12px; background: var(--tint); color: var(--brand-ink); display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
 .steps .on { border-color: var(--brand); background: var(--tint); }
