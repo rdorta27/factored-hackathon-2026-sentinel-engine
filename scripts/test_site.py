@@ -126,7 +126,7 @@ def test_architecture_nodes_are_keyboard_operable():
     assert html.count('role="button" aria-label=') == len(ba.load()["nodes"])
     assert html.count('tabindex="0"') >= len(ba.load()["nodes"])
     # No library, no external request: one local script.
-    assert html.count("<script") == 1 and 'src="architecture.js"' in html
+    assert html.count("<script") == 2 and 'src="architecture.js"' in html and 'src="../lang.js"' in html
 
 
 def test_every_mock_names_its_production_replacement():
@@ -243,7 +243,7 @@ def test_evidence_text_holds_no_typed_number():
         for row in s["rows"]:
             assert row["field"] and row["n_field"], (s["id"], row["label"])
     html = (SITE / "diagrams" / "evidence.html").read_text()
-    assert "<script" in html and html.count("<script") == 1
+    assert html.count("<script") == 2 and 'src="evidence.js"' in html and 'src="../lang.js"' in html
 
 
 def test_cases_page_uses_the_real_demo_lines_and_package_fields():
@@ -417,7 +417,7 @@ def test_language_links_and_alternates_resolve():
             html = here.read_text()
             for target in re.findall(r'data-lang="[^"]+" href="([^"]+)"', html):
                 assert (here.parent / target).resolve().exists(), (lang, page, target)
-            for target in re.findall(r'rel="alternate" hreflang="[^"]+" href="([^"]+)"', html):
+            for target in re.findall(r'rel="alternate" hreflang="[^"]+" data-lang="[^"]+" href="([^"]+)"', html):
                 assert (here.parent / target).resolve().exists(), (lang, page, target)
             # Every relative asset and page link resolves.
             for target in re.findall(r'(?:href|src)="((?!https?:|mailto:|#|//)[^"#]+)', html):
@@ -469,3 +469,68 @@ def test_all_languages_in_the_browser():
             assert f"/{other}/diagrams/turn.html" in p.url, (lang, p.url)
             p.close()
         browser.close()
+
+
+def test_browser_language_is_the_default_and_the_choice_is_kept():
+    pytest = __import__("pytest")
+    sync = pytest.importorskip("playwright.sync_api")
+    chromium = next((p for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome") if Path(p).exists()), None)
+    if not chromium:
+        pytest.skip("no Chromium found")
+    home = (SITE / "index.html").as_uri()
+    with sync.sync_playwright() as pw:
+        browser = pw.chromium.launch(executable_path=chromium, args=["--no-sandbox"])
+
+        def open_home(locale: str):
+            ctx = browser.new_context(locale=locale)
+            page = ctx.new_page()
+            page.goto(home)
+            return ctx, page
+
+        for locale, expected in (("es-MX", "/es-la/index.html"), ("es-CO", "/es-la/index.html"), ("pt-BR", "/pt-br/index.html"), ("en-US", "/site/index.html"), ("fr-FR", "/site/index.html")):
+            ctx, page = open_home(locale)
+            assert page.url.endswith(expected), (locale, page.url)
+            ctx.close()
+        # A Spanish page that someone opens directly stays in Spanish.
+        ctx = browser.new_context(locale="en-US")
+        page = ctx.new_page()
+        page.goto((SITE / "es-la" / "index.html").as_uri())
+        assert page.url.endswith("/es-la/index.html")
+        # The visitor changes the language. The choice stays for the next visit.
+        page.click('.lang a[data-lang="pt-br"]')
+        assert page.url.endswith("/pt-br/index.html")
+        page.goto(home)
+        assert page.url.endswith("/pt-br/index.html"), page.url
+        page.click('.lang a[data-lang="en"]')
+        assert page.url.endswith("/site/index.html")
+        page.goto(home)
+        assert page.url.endswith("/site/index.html"), "English was chosen: no redirect"
+        ctx.close()
+        # An English browser that chose Spanish earlier keeps Spanish. A Spanish browser that chose English keeps English.
+        ctx = browser.new_context(locale="es-MX")
+        page = ctx.new_page()
+        page.goto(home)
+        assert page.url.endswith("/es-la/index.html")
+        page.click('.lang a[data-lang="en"]')
+        page.goto(home)
+        assert page.url.endswith("/site/index.html")
+        ctx.close()
+        browser.close()
+
+
+def test_no_text_leaves_its_box_in_any_language():
+    pytest = __import__("pytest")
+    pytest.importorskip("playwright.sync_api")
+    if not any(Path(p).exists() for p in ("/usr/bin/chromium", "/usr/bin/chromium-browser", "/usr/bin/google-chrome")):
+        pytest.skip("no Chromium found")
+    import audit_overflow as ao
+    findings = ao.audit()
+    assert not findings, "\n".join(findings[:10])
+
+
+def test_screenshots_are_on_the_home_page():
+    home = (SITE / "index.html").read_text()
+    shots = re.findall(r'<img src="(screenshots/[^"]+)"[^>]*alt="([^"]+)"', home)
+    assert len(shots) == 4
+    for src, alt in shots:
+        assert (SITE / src).exists() and len(alt) > 20, src

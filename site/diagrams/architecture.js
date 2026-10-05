@@ -10,6 +10,27 @@
   var note = document.getElementById("view-note");
   var notes = { demo: note.dataset.noteDemo, prod: note.dataset.noteProd };
 
+  function fit(svg) {
+    // Squeeze a label that is wider than its node. English never needs it; Spanish and Portuguese may.
+    svg.querySelectorAll("g.node").forEach(function (g) {
+      var box = g.querySelector("rect.box");
+      if (!box) { return; }
+      var w = box.getBBox().width, chip = g.querySelector("circle.chip");
+      var chipLeft = chip ? parseFloat(chip.getAttribute("cx")) - parseFloat(chip.getAttribute("r")) : w;
+      g.querySelectorAll("text").forEach(function (t) {
+        if (t.classList.contains("chipt")) { return; }
+        t.removeAttribute("textLength");
+        t.removeAttribute("lengthAdjust");
+        var x = parseFloat(t.getAttribute("x")) || 0;
+        var avail = (t.classList.contains("t1") ? chipLeft - 4 : w - 8) - x;
+        if (t.getComputedTextLength() > avail) {
+          t.setAttribute("textLength", avail.toFixed(1));
+          t.setAttribute("lengthAdjust", "spacingAndGlyphs");
+        }
+      });
+    });
+  }
+
   function select(id, focus) {
     nodes.forEach(function (n) { n.classList.toggle("sel", n.dataset.node === id); });
     picks.forEach(function (b) { b.setAttribute("aria-pressed", b.dataset.pick === id ? "true" : "false"); });
@@ -34,6 +55,7 @@
       n.querySelectorAll("text[data-demo]").forEach(function (t) { t.textContent = t.dataset[key]; });
     });
     note.textContent = notes[name];
+    fit(svg);
   }
 
   nodes.forEach(function (n) {
@@ -47,4 +69,5 @@
 
   var start = location.hash.slice(1);
   if (start && document.getElementById("d-" + start)) { select(start, false); }
+  fit(svg);
 })();

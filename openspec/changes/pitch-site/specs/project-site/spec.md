@@ -43,12 +43,17 @@ The site SHALL NOT hold a password, a key, a bucket name, an account id or a dat
 
 ### Requirement: The site is available in three languages with one navigation
 
-The site SHALL be available in English, Spanish (es-LA) and Portuguese (pt-BR). Every page SHALL show the same navigation and a language switch that opens the same page in the other language. Each translated number SHALL equal the number of the English page. Traces to REQ-0051 (P0, In progress) and REQ-0012 (P0, Done).
+The site SHALL be available in English, Spanish (es-419) and Portuguese (pt-BR). Every page SHALL show the same navigation and a language switch that opens the same page in the other language. Each translated number SHALL equal the number of the English page. Traces to REQ-0051 (P0, In progress) and REQ-0012 (P0, Done).
 
 #### Scenario: Language switch
 
 - **WHEN** a visitor selects another language on a page
 - **THEN** the same page opens in that language, with the same navigation
+
+#### Scenario: Browser language
+
+- **WHEN** a visitor with no saved choice opens the English home page and the browser language is Spanish or Portuguese
+- **THEN** the page opens in that language, and the switch can change it
 
 #### Scenario: A text with no translation
 

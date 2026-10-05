@@ -9,7 +9,7 @@
 <link rel="icon" href="../../favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="../../style.css">
 <link rel="stylesheet" href="../../diagrams/diagram.css">
-<!--site:alt--><link rel="alternate" hreflang="en" href="../../diagrams/architecture.html"><link rel="alternate" hreflang="es" href="architecture.html"><link rel="alternate" hreflang="pt-BR" href="../../pt-br/diagrams/architecture.html"><!--/site:alt-->
+<!--site:alt--><link rel="alternate" hreflang="en" data-lang="en" href="../../diagrams/architecture.html"><link rel="alternate" hreflang="es" data-lang="es-la" href="architecture.html"><link rel="alternate" hreflang="pt-BR" data-lang="pt-br" href="../../pt-br/diagrams/architecture.html"><script src="../../lang.js"></script><!--/site:alt-->
 </head>
 <body>
 <a class="skip" href="#main">Saltar al contenido</a>
@@ -93,7 +93,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Página del cliente</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
-<text class="t3" x="14" y="65" data-demo="Chat de una página, mismo proceso" data-prod="Marca del banco, mismo código">Chat de una página, mismo proceso</text>
+<text class="t3" x="14" y="65" data-demo="Chat único, mismo proceso" data-prod="Marca del banco, mismo código">Chat único, mismo proceso</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
@@ -101,29 +101,29 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Acceso y sesión</text>
 <text class="t2" x="14" y="48" data-demo="Mock" data-prod="Producción">Mock</text>
-<text class="t3" x="14" y="65" data-demo="Usuarios de prueba, acceso de prueba fijo" data-prod="Proveedor de identidad del banco">Usuarios de prueba, acceso de prueba fijo</text>
+<text class="t3" x="14" y="65" data-demo="Usuarios y acceso de prueba" data-prod="Proveedor de identidad">Usuarios y acceso de prueba</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
-<g class="node real" transform="translate(290,50)" id="n-mask" data-node="mask" data-status="real" tabindex="0" role="button" aria-label="Enmascaramiento de datos. Real. El código decide.">
+<g class="node real" transform="translate(290,50)" id="n-mask" data-node="mask" data-status="real" tabindex="0" role="button" aria-label="Enmascaramiento. Real. El código decide.">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Enmascaramiento de datos</text>
+<text class="t1" x="14" y="27">Enmascaramiento</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
-<text class="t3" x="14" y="65" data-demo="app/privacy, código de producción" data-prod="El mismo código">app/privacy, código de producción</text>
+<text class="t3" x="14" y="65" data-demo="app/privacy, código real" data-prod="El mismo código">app/privacy, código real</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
-<g class="node real" transform="translate(290,160)" id="n-router" data-node="router" data-status="real" tabindex="0" role="button" aria-label="Orquestador + enrutador. Real. El modelo etiqueta.">
+<g class="node real" transform="translate(290,160)" id="n-router" data-node="router" data-status="real" tabindex="0" role="button" aria-label="Orquestador + router. Real. El modelo etiqueta.">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Orquestador + enrutador</text>
+<text class="t1" x="14" y="27">Orquestador + router</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
-<text class="t3" x="14" y="65" data-demo="GLM 5.3 Flash, Fireworks AI" data-prod="Mismos pesos, Azure o Databricks">GLM 5.3 Flash, Fireworks AI</text>
+<text class="t3" x="14" y="65" data-demo="GLM 5.3 Flash, Fireworks AI" data-prod="Mismos pesos, Azure/Databricks">GLM 5.3 Flash, Fireworks AI</text>
 <circle class="chip model" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">M</text>
 </g>
-<g class="node real" transform="translate(290,390)" id="n-logs" data-node="logs" data-status="real" tabindex="0" role="button" aria-label="Registros de turnos y logs. Real. El código decide.">
+<g class="node real" transform="translate(290,390)" id="n-logs" data-node="logs" data-status="real" tabindex="0" role="button" aria-label="Registros y logs. Real. El código decide.">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Registros de turnos y logs</text>
+<text class="t1" x="14" y="27">Registros y logs</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
 <text class="t3" x="14" y="65" data-demo="Líneas JSON hacia Log Analytics" data-prod="Los mismos registros">Líneas JSON hacia Log Analytics</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
@@ -133,21 +133,21 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Motor de políticas</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
-<text class="t3" x="14" y="65" data-demo="Código. Los valores de las reglas son mock" data-prod="Política aprobada por el banco">Código. Los valores de las reglas son mock</text>
+<text class="t3" x="14" y="65" data-demo="Código. Reglas: valores mock" data-prod="Política aprobada por el banco">Código. Reglas: valores mock</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
-<g class="node real" transform="translate(550,160)" id="n-confirm" data-node="confirm" data-status="real" tabindex="0" role="button" aria-label="Confirmación + relectura. Real. El código decide.">
+<g class="node real" transform="translate(550,160)" id="n-confirm" data-node="confirm" data-status="real" tabindex="0" role="button" aria-label="Confirmar + releer. Real. El código decide.">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Confirmación + relectura</text>
+<text class="t1" x="14" y="27">Confirmar + releer</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
 <text class="t3" x="14" y="65" data-demo="Código. El cliente confirma" data-prod="El mismo código">Código. El cliente confirma</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
-<g class="node real" transform="translate(550,270)" id="n-tools" data-node="tools" data-status="real" tabindex="0" role="button" aria-label="Herramientas ligadas a la sesión. Real. El código decide.">
+<g class="node real" transform="translate(550,270)" id="n-tools" data-node="tools" data-status="real" tabindex="0" role="button" aria-label="Herramientas de sesión. Real. El código decide.">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Herramientas ligadas a la sesión</text>
+<text class="t1" x="14" y="27" textLength="164.0" lengthAdjust="spacingAndGlyphs">Herramientas de sesión</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Producción">Real</text>
 <text class="t3" x="14" y="65" data-demo="Cuatro herramientas, una sesión" data-prod="El mismo código">Cuatro herramientas, una sesión</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
@@ -157,7 +157,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Vista del asesor</text>
 <text class="t2" x="14" y="48" data-demo="Mock" data-prod="Producción">Mock</text>
-<text class="t3" x="14" y="65" data-demo="Asesor de demostración, solo lectura" data-prod="Asesor humano y CRM del banco">Asesor de demostración, solo lectura</text>
+<text class="t3" x="14" y="65" data-demo="Asesor demo, solo lectura" data-prod="Asesor humano y CRM del banco">Asesor demo, solo lectura</text>
 <circle class="chip person" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">P</text>
 </g>
@@ -205,12 +205,12 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
     <ul class="picks">
 <li><button type="button" class="chipbtn" data-pick="page">Página del cliente</button></li>
 <li><button type="button" class="chipbtn" data-pick="session">Acceso y sesión</button></li>
-<li><button type="button" class="chipbtn" data-pick="mask">Enmascaramiento de datos</button></li>
-<li><button type="button" class="chipbtn" data-pick="router">Orquestador + enrutador</button></li>
-<li><button type="button" class="chipbtn" data-pick="logs">Registros de turnos y logs</button></li>
+<li><button type="button" class="chipbtn" data-pick="mask">Enmascaramiento</button></li>
+<li><button type="button" class="chipbtn" data-pick="router">Orquestador + router</button></li>
+<li><button type="button" class="chipbtn" data-pick="logs">Registros y logs</button></li>
 <li><button type="button" class="chipbtn" data-pick="policy">Motor de políticas</button></li>
-<li><button type="button" class="chipbtn" data-pick="confirm">Confirmación + relectura</button></li>
-<li><button type="button" class="chipbtn" data-pick="tools">Herramientas ligadas a la sesión</button></li>
+<li><button type="button" class="chipbtn" data-pick="confirm">Confirmar + releer</button></li>
+<li><button type="button" class="chipbtn" data-pick="tools">Herramientas de sesión</button></li>
 <li><button type="button" class="chipbtn" data-pick="advisor">Vista del asesor</button></li>
 <li><button type="button" class="chipbtn" data-pick="cases">Almacén de casos</button></li>
 <li><button type="button" class="chipbtn" data-pick="gold">Almacén Gold</button></li>
@@ -234,14 +234,14 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <p>Evidencia: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">docs/architecture/mocks.md</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-ai-core/app/session">sentinel-ai-core/app/session</a></p>
 </article>
 <article class="detail" id="d-mask" data-for="mask">
-<h3>Enmascaramiento de datos</h3>
+<h3>Enmascaramiento</h3>
 <p class="chips"><span class="tag test">Real</span> <span class="tag data">El código decide</span></p>
 <p>Enmascara los identificadores personales del texto del cliente antes de cualquier llamada al modelo.</p>
 <dl><dt>En la demo</dt><dd>El código de producción en app/privacy.</dd><dt>En producción</dt><dd>El mismo código.</dd></dl>
 <p>Evidencia: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/004-pii-lifecycle.md">docs/build/decisions/004-pii-lifecycle.md</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-ai-core/app/privacy">sentinel-ai-core/app/privacy</a></p>
 </article>
 <article class="detail" id="d-router" data-for="router">
-<h3>Orquestador + enrutador</h3>
+<h3>Orquestador + router</h3>
 <p class="chips"><span class="tag test">Real</span> <span class="tag data">El modelo etiqueta</span></p>
 <p>Un LLM con instrucciones etiqueta la intención. No decide nada más. Una línea base de palabras clave responde el turno cuando el modelo falla.</p>
 <dl><dt>En la demo</dt><dd>GLM 5.3 Flash en Fireworks AI con llamadas reales. La línea base de palabras clave es el respaldo de cada turno.</dd><dt>En producción</dt><dd>Los mismos pesos en Azure AI Foundry o Databricks.</dd></dl>
@@ -250,7 +250,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <p>Evidencia: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/016-router-models.md">docs/build/decisions/016-router-models.md</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/evaluation-runs/2024Q4-eval-v7/summary.json">evidence/evaluation-runs/2024Q4-eval-v7/summary.json</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-ai-core/app/ai">sentinel-ai-core/app/ai</a></p>
 </article>
 <article class="detail" id="d-logs" data-for="logs">
-<h3>Registros de turnos y logs</h3>
+<h3>Registros y logs</h3>
 <p class="chips"><span class="tag test">Real</span> <span class="tag data">El código decide</span></p>
 <p>Escribe un registro por cada turno, encadenado para que se note cualquier cambio.</p>
 <dl><dt>En la demo</dt><dd>Líneas JSON hacia Log Analytics en el enlace público.</dd><dt>En producción</dt><dd>Los mismos registros.</dd></dl>
@@ -266,14 +266,14 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <p>Evidencia: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/021-dispute-policy-sources.md">docs/build/decisions/021-dispute-policy-sources.md</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/evidence/adversarial/20261005T014816Z/summary.json">evidence/adversarial/20261005T014816Z/summary.json</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-ai-core/app/policy">sentinel-ai-core/app/policy</a></p>
 </article>
 <article class="detail" id="d-confirm" data-for="confirm">
-<h3>Confirmación + relectura</h3>
+<h3>Confirmar + releer</h3>
 <p class="chips"><span class="tag test">Real</span> <span class="tag data">El código decide</span></p>
 <p>Pide al cliente que confirme el cargo. Tras la acción, vuelve a leer el caso del almacén y lo dice solo cuando el caso existe.</p>
 <dl><dt>En la demo</dt><dd>El código de producción.</dd><dt>En producción</dt><dd>El mismo código.</dd></dl>
 <p>Evidencia: <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/specification.md">docs/architecture/specification.md</a> · <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/tree/main/sentinel-ai-core/app/orchestrator">sentinel-ai-core/app/orchestrator</a></p>
 </article>
 <article class="detail" id="d-tools" data-for="tools">
-<h3>Herramientas ligadas a la sesión</h3>
+<h3>Herramientas de sesión</h3>
 <p class="chips"><span class="tag test">Real</span> <span class="tag data">El código decide</span></p>
 <p>Lee cargos y abre una disputa solo para la cuenta de la sesión. Ninguna herramienta recibe un id de cliente del modelo.</p>
 <dl><dt>En la demo</dt><dd>El código de producción. Lee el mock de Gold en el enlace público.</dd><dt>En producción</dt><dd>El mismo código, sobre el Gold real.</dd></dl>

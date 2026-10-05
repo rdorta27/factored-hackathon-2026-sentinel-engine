@@ -49,7 +49,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <text class="elabel" x="922.0" y="148.0">ticket</text>
 <line class="edge dashed" data-e="policy:advisor" x1="765.0" y1="89.0" x2="796.0" y2="89.0"/>
 <polygon class="arrow" data-e="policy:advisor" points="805.0,89.0 796.0,93.5 796.0,84.5"/>
-<text class="elabel" x="785.0" y="83.0" text-anchor="middle">transferência</text>
+<text class="elabel" x="785.0" y="83.0" text-anchor="middle">repasse</text>
 <line class="edge dashed" data-e="session:tools" x1="245.0" y1="309.0" x2="536.0" y2="309.0"/>
 <polygon class="arrow" data-e="session:tools" points="545.0,309.0 536.0,313.5 536.0,304.5"/>
 <text class="elabel" x="395.0" y="303.0" text-anchor="middle">id de sessão</text>
@@ -61,7 +61,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Página do cliente</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
-<text class="t3" x="14" y="65" data-demo="Chat de uma página, mesmo processo" data-prod="Marca do banco, mesmo código">Chat de uma página, mesmo processo</text>
+<text class="t3" x="14" y="65" data-demo="Chat único, mesmo processo" data-prod="Marca do banco, mesmo código">Chat único, mesmo processo</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
@@ -69,31 +69,31 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Login e sessão</text>
 <text class="t2" x="14" y="48" data-demo="Mock" data-prod="Produção">Mock</text>
-<text class="t3" x="14" y="65" data-demo="Usuários de teste, login de teste fixo" data-prod="Provedor de identidade do banco">Usuários de teste, login de teste fixo</text>
+<text class="t3" x="14" y="65" data-demo="Usuários e login de teste" data-prod="Provedor de identidade">Usuários e login de teste</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
 <g class="node real" transform="translate(290,50)">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Mascaramento de dados</text>
+<text class="t1" x="14" y="27">Mascaramento</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
-<text class="t3" x="14" y="65" data-demo="app/privacy, código de produção" data-prod="O mesmo código">app/privacy, código de produção</text>
+<text class="t3" x="14" y="65" data-demo="app/privacy, código real" data-prod="O mesmo código">app/privacy, código real</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
 <g class="node real" transform="translate(290,160)">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Orquestrador + roteador</text>
+<text class="t1" x="14" y="27" textLength="164.0" lengthAdjust="spacingAndGlyphs">Orquestrador + router</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
-<text class="t3" x="14" y="65" data-demo="GLM 5.3 Flash, Fireworks AI" data-prod="Mesmos pesos, Azure ou Databricks">GLM 5.3 Flash, Fireworks AI</text>
+<text class="t3" x="14" y="65" data-demo="GLM 5.3 Flash, Fireworks AI" data-prod="Mesmos pesos, Azure/Databricks">GLM 5.3 Flash, Fireworks AI</text>
 <circle class="chip model" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">M</text>
 </g>
 <g class="node real" transform="translate(290,390)">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Registros de turnos e logs</text>
+<text class="t1" x="14" y="27">Registros e logs</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
-<text class="t3" x="14" y="65" data-demo="Linhas JSON para o Log Analytics" data-prod="Os mesmos registros">Linhas JSON para o Log Analytics</text>
+<text class="t3" x="14" y="65" data-demo="Linhas JSON para o Log Analytics" data-prod="Os mesmos registros" textLength="188.0" lengthAdjust="spacingAndGlyphs">Linhas JSON para o Log Analytics</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
@@ -101,13 +101,13 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Motor de políticas</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
-<text class="t3" x="14" y="65" data-demo="Código. Os valores das regras são mock" data-prod="Política aprovada pelo banco">Código. Os valores das regras são mock</text>
+<text class="t3" x="14" y="65" data-demo="Código. Regras: valores mock" data-prod="Política aprovada pelo banco">Código. Regras: valores mock</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">C</text>
 </g>
 <g class="node real" transform="translate(550,160)">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Confirmação + releitura</text>
+<text class="t1" x="14" y="27">Confirmar + reler</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
 <text class="t3" x="14" y="65" data-demo="Código. O cliente confirma" data-prod="O mesmo código">Código. O cliente confirma</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
@@ -115,7 +115,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 </g>
 <g class="node real" transform="translate(550,270)">
 <rect class="box" width="210" height="78" rx="12"/>
-<text class="t1" x="14" y="27">Ferramentas vinculadas à sessão</text>
+<text class="t1" x="14" y="27" textLength="164.0" lengthAdjust="spacingAndGlyphs">Ferramentas de sessão</text>
 <text class="t2" x="14" y="48" data-demo="Real" data-prod="Produção">Real</text>
 <text class="t3" x="14" y="65" data-demo="Quatro ferramentas, uma sessão" data-prod="O mesmo código">Quatro ferramentas, uma sessão</text>
 <circle class="chip code" cx="192" cy="18" r="10"/>
@@ -125,7 +125,7 @@ svg.arch .swatch{stroke-width:1.5;fill:var(--card)}
 <rect class="box" width="210" height="78" rx="12"/>
 <text class="t1" x="14" y="27">Visão do atendente</text>
 <text class="t2" x="14" y="48" data-demo="Mock" data-prod="Produção">Mock</text>
-<text class="t3" x="14" y="65" data-demo="Atendente de demonstração, somente leitura" data-prod="Atendente humano e CRM do banco">Atendente de demonstração, somente leitura</text>
+<text class="t3" x="14" y="65" data-demo="Atendente demo, só leitura" data-prod="Atendente humano e CRM do banco">Atendente demo, só leitura</text>
 <circle class="chip person" cx="192" cy="18" r="10"/>
 <text class="chipt" x="192" y="22" text-anchor="middle">P</text>
 </g>

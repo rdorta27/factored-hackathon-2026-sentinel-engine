@@ -23,22 +23,22 @@ import localize  # noqa: E402
 
 DIR = ba.DIR
 REPO = ba.load()["repo"]
-W, H = 1110, 400
-NW, NH = 130, 60
+W, H = 1260, 400
+NW, NH = 150, 60
 
 # id: (title, decider, x, y)
 NODES = {
     "msg": ("Message", None, 15, 170),
-    "mask": ("Masking", "code", 173, 170),
-    "router": ("Intent router", "model", 331, 170),
-    "lookup": ("Charge lookup", "code", 489, 170),
-    "policy": ("Policy engine", "code", 647, 170),
-    "confirm": ("Confirm box", "code", 805, 30),
-    "case": ("Case opened", "code", 963, 30),
-    "ask": ("Which charge?", "code", 805, 170),
-    "wait": ("Nothing opens", "code", 963, 170),
-    "handoff": ("Handoff", "code", 805, 310),
-    "advisor": ("Advisor view", "person", 963, 310),
+    "mask": ("Masking", "code", 195, 170),
+    "router": ("Intent router", "model", 375, 170),
+    "lookup": ("Charge lookup", "code", 555, 170),
+    "policy": ("Policy engine", "code", 735, 170),
+    "confirm": ("Confirm box", "code", 915, 30),
+    "case": ("Case opened", "code", 1095, 30),
+    "ask": ("Which charge?", "code", 915, 170),
+    "wait": ("Nothing opens", "code", 1095, 170),
+    "handoff": ("Handoff", "code", 915, 310),
+    "advisor": ("Advisor view", "person", 1095, 310),
 }
 EDGES = [
     ("msg", "mask"), ("mask", "router"), ("router", "lookup"), ("lookup", "policy"),
@@ -209,6 +209,7 @@ def page() -> str:
 
 JS = """(function () {
   document.documentElement.classList.add("js");
+@@FIT@@
   var routes = JSON.parse(document.getElementById("routes").textContent);
   var svg = document.getElementById("map");
   var tabs = Array.prototype.slice.call(document.querySelectorAll("[data-tab]"));
@@ -241,10 +242,14 @@ JS = """(function () {
   });
   var start = location.hash.slice(1);
   show(routes[start] ? start : tabs[0].dataset.tab);
+  fit(svg);
 })();
 """
 
 
+
+
+JS = JS.replace("@@FIT@@", ba.FIT_JS)
 
 
 def outputs() -> dict[Path, str]:

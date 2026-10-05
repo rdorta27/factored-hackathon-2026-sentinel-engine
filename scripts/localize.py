@@ -246,6 +246,46 @@ class Translator:
                         n.kids[i] = ("r", res)
 
 
+# --- fit of labels in SVG nodes ---------------------------------------------
+
+def descendants(n: Node):
+    for k in n.kids:
+        if isinstance(k, Node):
+            yield k
+            yield from descendants(k)
+
+
+def fit_svg(root: Node) -> None:
+    """Squeeze a node label that the translation made wider than its node.
+
+    The width is an estimate. On an interactive page, the script of the page
+    measures again and replaces it. English never needs this.
+    """
+    import html as htmllib
+
+    for g in descendants(root):
+        if g.tag != "g" or "node" not in (g.attr("class") or "").split():
+            continue
+        kids = list(descendants(g))
+        box = next((k for k in kids if k.tag == "rect" and "box" in (k.attr("class") or "").split()), None)
+        if box is None or not box.attr("width"):
+            continue
+        w = float(box.attr("width"))
+        chip = next((k for k in kids if k.tag == "circle" and "chip" in (k.attr("class") or "").split()), None)
+        chip_left = float(chip.attr("cx")) - float(chip.attr("r")) if chip else w
+        for t in kids:
+            cls = (t.attr("class") or "").split()
+            if t.tag != "text" or not {"t1", "t2", "t3"} & set(cls):
+                continue
+            text = htmllib.unescape(re.sub(r"<[^>]+>", "", "".join(k.html() if isinstance(k, Node) else k[1] for k in t.kids)))
+            m = re.search(r"font-size:\s*([\d.]+)px", t.attr("style") or "")
+            size = float(m.group(1)) if m else (15.0 if "t1" in cls else 12.0)
+            bold = "t1" in cls or "t2" in cls
+            avail = (chip_left - 4 if "t1" in cls else w - 8) - float(t.attr("x") or 0)
+            if len(text) * size * (0.53 if bold else 0.50) > avail and "textLength=" not in t.start:
+                t.start = t.start[:-1] + f' textLength="{avail:.1f}" lengthAdjust="spacingAndGlyphs">'
+
+
 # --- pages ------------------------------------------------------------------
 
 def sources() -> list[str]:
@@ -296,9 +336,9 @@ def finalize(html: str, page: str, lang: str, mirrored: set[str]) -> str:
     html = re.sub(r'(<html lang=")[^"]*(")', lambda m: m.group(1) + dict((d, h) for d, _l, _n, h in chrome.LANGS)[lang] + m.group(2), html, count=1)
     if "</head>" in html:
         alts = "".join(
-            f'<link rel="alternate" hreflang="{h}" href="{posixpath.relpath(page if d == "en" else f"{d}/{page}", out_dir)}">'
+            f'<link rel="alternate" hreflang="{h}" data-lang="{d}" href="{posixpath.relpath(page if d == "en" else f"{d}/{page}", out_dir)}">'
             for d, _l, _n, h in chrome.LANGS
-        )
+        ) + f'<script src="{posixpath.relpath("lang.js", out_dir)}"></script>'
         html = ALT_BLOCK.sub("", html)
         html = html.replace("</head>", f"<!--site:alt-->{alts}<!--/site:alt-->\n</head>", 1)
     return html
@@ -328,6 +368,7 @@ def build(write: bool = True) -> tuple[dict[Path, str], dict[str, Translator]]:
         for d in chrome.LANG_DIRS:
             root = parse(base)
             tr[d].walk(root)
+            fit_svg(root)
             text = root.html()
             if page.endswith(".html"):
                 text = finalize(text, page, d, mirrored)
