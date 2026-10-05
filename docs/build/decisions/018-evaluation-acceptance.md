@@ -168,6 +168,15 @@ Slot match on development mixes labelled and unlabelled cases (old cases carry n
 - The two rows without confidence go to the per-turn baseline fallback.
 - The cut-offs stay off and the choice rule stays unchanged. This note records the diagnosis only. It changes no gate.
 
+**Human check (added 2026-10-05).** A team member who did not write the cases checked 20 sealed labels against the case text. The record is `sentinel-ai-core/eval/review/human-check-v1.md`. Agreement: 20 of 20.
+
+The limits of the check:
+
+- It covers 20 of the 405 sealed cases.
+- The reviewer is not a native speaker of every variant.
+- It is not an LLM judge, so REQ-0023 stays not applicable.
+- The reviewer noted that the phrase `no reconozco` is understandable, but it is not the most common wording in Colombia. The Spanish cases repeat one phrasing across the three countries. A country-adapted wording needs a new sealed block under a new hash. The team does not edit a sealed case.
+
 **Development baselines (added 2026-10-05, from task 1.1, before the seal).** From [`2024Q4-dev-v8-v2`](../../../evidence/evaluation-runs/2024Q4-dev-v8-v2/summary.json) (198 development cases, fresh live calls, cap USD 1, spend USD 0.025202 over 190 calls). GLM 5.3 Flash on both routes, reasoning effort low, 400-token cap. Field paths are under `router_v2` unless stated.
 
 | Metric | Baseline | Router v2 |

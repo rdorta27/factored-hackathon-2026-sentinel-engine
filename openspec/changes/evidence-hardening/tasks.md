@@ -22,21 +22,17 @@ Depends on `eval-v8` (task 1.4 reports, task 3.1 rehearsal). Starts from `origin
 - [x] 2.1 Add a live timing mode to the resolution runner. It records p50 and p95 per call and per conversation, and cost per attempted case and per resolution. Use the existing spend cap. Evidence: `eval/runner.py`, tests with a fake transport.
 - [x] 2.2 Label every latency and cost number as replay or live in the summary and in the report. Evidence: `eval/report.py`, a test.
 - [x] 2.3 Rehearse the live mode on development data. Cap USD 1. Evidence: a development run and a note of its cost.
-- [ ] 2.4 (`post-freeze`) Run the live mode once on the frozen build. Freeze it as `evidence/evaluation-runs/2024Q4-resolution-live-v1/`. Evidence: the run folder and the `/health` `bundle_hash`.
 
 ## 3. Evidence strength
 
 - [x] 3.1 Add `bases` next to `n` in each summary and in the report. Evidence: `eval/metrics.py`, `eval/report.py`, tests.
 - [x] 3.2 Resample the intervals by base in `eval/intervals.py`. Evidence: code and a test with a known interval.
-- [ ] 3.3 A person checks 20 sealed labels against the case text. The reviewer is a team member who did not write the case. Record the agreement. Evidence: `eval/review/human-check-v1.md`.
-- [ ] 3.4 Update decision 018 with the human check and its limits. Evidence: the decision file.
-- [ ] 3.5 (`post-freeze`) Repeat the final measurement three times on the main block. Report the range for kind accuracy and for safe resolution. Evidence: the repeat block in the final summary.
+- [x] 3.3 A person checks 20 sealed labels against the case text. The reviewer is a team member who did not write the case. Record the agreement. Evidence: `eval/review/human-check-v1.md`.
+- [x] 3.4 Update decision 018 with the human check and its limits. Evidence: the decision file.
 
 ## 4. Failures as results
 
 - [x] 4.1 Write `docs/rationale/negative-results.md`: the charge selector (7 wrong automatic picks against 0 for the rules, switch off, decision 025), the confidence cut-offs of prompt v3 (see tasks 4.4 and 4.5), and any other rejected component. Link it from `docs/rationale/README.md`. Evidence: the page and the link.
-- [ ] 4.2 Run the 3 attack cases that pass on the stand-in model against the real router model. Write a new adversarial run with `SENTINEL_WRITE_EVIDENCE=1`. Evidence: `evidence/adversarial/<run-id>/summary.json`.
-- [ ] 4.3 Add the known limitation of the attack suite (category B), the three cases, the two model outputs without confidence in `calibration-v3` (one empty, one cut JSON; the per-turn baseline fallback covers them) and the two-decimal rounding of `t_act` (see task 4.4) to the limits page and to the README `## Limitations`. Evidence: the page and the README.
 
 - [x] 4.4 Save the cut-off diagnosis as a replay-only script, `eval/cutoff_diagnosis.py`. It reads the committed recordings of `calibration-v3` and `rehearsal-v8` and makes no live call. It reports: the validation rows with and without confidence; the lowest threshold that meets the rule (0.99998456 before rounding, 1.0 after `round(t_act, 2)`); and the kind accuracy of v3 with `t_act` 1.0, with the unrounded threshold and without cut-offs. Freeze the aggregates as `evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json`. Add the run to `evidence/README.md` (Simulation, replay). Do not change `calibration-v3`. Evidence: the script, a test and the run folder.
 - [x] 4.5 Add a dated note to decision 018, after the v3 cut-off sentence: the `t_act` of 1.0 is the two-decimal rounding of 0.99998; the confidence of v3 is saturated near 1; a cut-off near 1 removes correct answers and not errors; cut-offs stay off and the rule stays unchanged. Cite the fields of the run of task 4.4. Evidence: the decision file.
@@ -44,10 +40,23 @@ Depends on `eval-v8` (task 1.4 reports, task 3.1 rehearsal). Starts from `origin
 ## 5. Mocks in the documentation
 
 - [x] 5.1 Review `docs/architecture/mocks.md` against the code: the mock list, the `gold_source` field and the three `passes_on_mock` cases. Fix any difference. Evidence: the page and a note of the checks.
-- [ ] 5.2 Add the mocks and their limits to the slide on limits and to the README `## Limitations`. Link the page. Evidence: the README and the slide source in `site/slides/`.
-- [ ] 5.3 Update the page after task 4.2: the three attack cases now run on the real model. Evidence: the page and the new adversarial run.
+- [x] 5.2 Add the mocks and their limits to the README `## Limitations`. Link the page. The slide on limits moved to `pitch-site` (task 3.2). Evidence: the README.
 
 ## 6. Requirements and team
 
 - [x] 6.1 Update the cards of REQ-0022, REQ-0055, REQ-0021, REQ-0013 and REQ-0023 with the new evidence. Change a status only when its evidence exists. Evidence: `docs/requirements/`.
 - [x] 6.2 Update the open work in `team/tasks.md` and the decision table in `team/pending-decisions.md`. Evidence: the two files.
+
+## Moved to `post-freeze`
+
+These tasks need the frozen build or a live run on the real model. They now live in the `post-freeze` change. This plan closes when tasks 3.3 and 3.4 (the human check) are done.
+
+| Old task | New task in `post-freeze` | What |
+|---|---|---|
+| 2.4 | 2.5 | Live latency and cost run on the frozen build |
+| 3.5 | 2.6 | Three repeats of the final measurement |
+| 4.2 | 3.4 | The three attack cases that pass on the stand-in model, run on the real router model |
+| 4.3 | 3.5 | The limits page and the README `## Limitations`, with the attack cases, the two outputs without confidence and the `t_act` rounding |
+| 5.3 | 3.5 | The update of `docs/architecture/mocks.md` after the attack run |
+| 5.2 (slide part) | `pitch-site` 3.2 | The slide on limits and the mocks |
+
