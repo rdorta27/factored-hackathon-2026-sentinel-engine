@@ -159,7 +159,7 @@ The same as the target: a prompted LLM intent router, compared with the keyword 
 |---|---|
 | Platform | Local Linux; public link on Azure Container Apps ([012](../build/decisions/012-public-deployment.md), [019](../build/decisions/019-azure-container-apps.md)); the model spend is capped at the provider |
 | Backend | Python and FastAPI, one process |
-| Frontend | One page served by the same process (customer chat and read-only advisor view), styled with the `branding/` files |
+| Frontend | One page served by the same process (customer chat and read-only advisor view), styled with the `branding/` files. The bank name and accent come from `SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT`. The product in the header (type and last four digits) is team-generated demo data in the Gold mock; the real Gold shows no product. The steps panel replays the finished record of the turn |
 | Data pipeline | The same `sentinel_data` package on DuckDB |
 | Gold serving | DuckDB view, or the labelled mock |
 | Case store | SQLite |

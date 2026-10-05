@@ -194,6 +194,25 @@ on the mock.
 - **Status:** fixed. Files: `docs/build/screenshots/ui-product/*.png`
   (16 images); evidence for REQ-0038.
 
+### MT-10 · Bank interface review G1 (2026-10-04, bank-ui, Rubén)
+
+- **Input:** the bank interface in demo mode on desktop and on a phone, the four
+  persona journeys, and a second bank brand
+  (`SENTINEL_BRAND_NAME` and `SENTINEL_BRAND_ACCENT`).
+- **Observed:** five rounds of changes. The Sentinel mark was too small. The
+  language buttons were cut on a phone and had no chosen state. The flags were
+  too large with an old stylesheet. The steps of the last message appeared at
+  once. The quick chips looked like old claims. The thread kept the old
+  language after a language change. The page had no text that says what to do.
+  The browser mixed an old script with a new page.
+- **Expected:** a flag button with a clear chosen state; steps that run one at
+  a time; a welcome text and a help line; a "Mis reclamos" panel; a thread that
+  follows the language; no mix of versions.
+- **Capability:** bank interface (change `bank-ui`, task 3.0).
+- **Status:** fixed. The steps replay a finished record with a pause of one
+  second each: this is staging, not a measure of time. Open: the wording of
+  the system answers belongs to `flow-fixes` and `chat-start`.
+
 <!-- felix-replay:start -->
 ## Felix replay (automated)
 

@@ -20,13 +20,33 @@ class GoldRow:
     fraud_score: float | None = None
 
 
+@dataclass(frozen=True)
+class ProductInfo:
+    """The masked product of a session: type and last four digits, nothing else."""
+
+    kind: str  # "debit_card" | "credit_card"
+    last4: str
+
+
 class GoldTransactions(Protocol):
     def get(self, reference: str, customer_id: str) -> GoldRow | None: ...
 
     def list_for_customer(self, customer_id: str) -> list[GoldRow]: ...
 
 
+# Team-generated demo products. They are not dataset values. A Gold source that
+# has no product data returns nothing, and the header then shows no product.
+_DEMO_PRODUCTS = {
+    "CUST-0001": ProductInfo("debit_card", "4821"),
+    "CUST-0002": ProductInfo("credit_card", "7305"),
+    "CUST-0003": ProductInfo("debit_card", "1196"),
+}
+
+
 class MockGoldStore:
+    def product_for(self, customer_id: str) -> ProductInfo | None:
+        return _DEMO_PRODUCTS.get(customer_id)
+
     def __init__(self, as_of: str) -> None:
         rows = [
             GoldRow("TXN-1001", "CUST-0001", "1000.00", "MXN", "ACME Store", "2026-06-10", "Approved", as_of),

@@ -16,10 +16,15 @@
   --app-verified: var(--success, var(--ok));
 }
 
+/* An author rule such as `display: flex` must not show an element the page hid. */
+[hidden] {
+  display: none !important;
+}
+
 /* --- Shell ------------------------------------------------------------ */
 
 .app {
-  max-width: 1100px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 24px 20px 40px;
 }
@@ -54,6 +59,72 @@ main {
   display: block;
 }
 
+/* --- Entry: promise, test cases, password form ------------------------- */
+
+.entry {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  padding-top: 16px;
+}
+
+.entry-hero {
+  max-width: 48rem;
+}
+
+.promise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.promise-list li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.persona-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 44px;
+  padding: 18px;
+  border-radius: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.persona-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+}
+
+#password-login {
+  max-width: 26rem;
+}
+
+#password-login summary {
+  cursor: pointer;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
 /* --- Login ------------------------------------------------------------ */
 
 .login-card {
@@ -82,11 +153,11 @@ main {
   cursor: pointer;
 }
 
-/* --- Chat: desktop two columns, mobile single column ------------------ */
+/* --- Chat: three columns on a wide screen, one column and drawers below --- */
 
 .chat-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem);
+  grid-template-columns: minmax(16rem, 20.5rem) minmax(0, 1fr) minmax(16rem, 20.5rem);
   gap: 24px;
   align-items: start;
 }
@@ -111,26 +182,188 @@ main {
   text-align: left;
 }
 
+.tx-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tx-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.steps-side {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-dot {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.demo-chip {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.session-context {
+  margin: 0;
+}
+
+.drawer-close {
+  display: none;
+  width: 100%;
+  margin: 0 0 12px;
+}
+
+.drawer-buttons {
+  display: none;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.drawer-buttons .theme-toggle {
+  flex: 1;
+  margin-left: 0;
+}
+
+.theme-toggle,
+.candidate,
+.chat-input button,
+.chat-confirm button,
+.confirm-button {
+  min-height: 44px;
+}
+
+.chat-input input {
+  min-height: 52px;
+  min-width: 0;
+}
+
 .full-width {
   width: 100%;
   margin-top: 12px;
 }
 
-@media (max-width: 1000px) {
+#locale-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.topbar-controls {
+  justify-content: flex-end;
+}
+
+.topbar-controls .theme-toggle {
+  margin-left: 0;
+}
+
+.chat-header {
+  flex-wrap: wrap;
+  row-gap: 8px;
+}
+
+@media (max-width: 1100px) {
+  .app {
+    padding: 16px 12px 32px;
+  }
   .chat-grid {
     grid-template-columns: minmax(0, 1fr);
   }
-  .chat-panel {
-    order: -1;
+  .drawer-buttons {
+    display: flex;
   }
-  .tx-list {
-    flex-direction: row;
-    overflow-x: auto;
-    padding-bottom: 4px;
+  /* The side panels leave the page and open from the buttons. */
+  .side-panel {
+    display: none;
   }
-  .tx-list .candidate {
-    width: auto;
-    white-space: nowrap;
+  .side-panel.drawer-open .drawer-close {
+    display: block;
+  }
+  .side-panel.drawer-open {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    width: min(22rem, 92vw);
+    overflow-y: auto;
+    padding: 20px 16px;
+  }
+  .chat-header {
+    flex-wrap: wrap;
+  }
+}
+
+/* --- Cards in the thread: handoff and "why I decided this" -------------- */
+
+.handoff-card,
+.why-card {
+  align-self: flex-start;
+  max-width: 100%;
+}
+
+.handoff-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 20px;
+}
+
+.card-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -237,4 +470,113 @@ main {
    declared once, referenced, never re-declared per component. */
 .case-number strong {
   font-family: var(--font-mono);
+}
+
+@media (max-width: 700px) {
+  #locale-group {
+    flex-wrap: nowrap;
+    width: 100%;
+    justify-content: space-between;
+  }
+  #locale-group .theme-toggle {
+    flex: 1;
+  }
+  .topbar-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .chat-confirm {
+    flex-direction: column;
+  }
+  .msg {
+    max-width: 100%;
+  }
+}
+
+.handoff-card > .chat-sub {
+  margin: 12px 0 0;
+}
+
+@media (max-width: 700px) {
+  .login-form input,
+  #password-login summary {
+    min-height: 44px;
+  }
+  #password-login summary {
+    display: flex;
+    align-items: center;
+  }
+}
+
+/* --- Language selector: buttons on a wide screen, one select on a phone --- */
+
+.case-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+.chat-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 12px;
+}
+
+@media (max-width: 700px) {
+  .topbar-controls .locale-current {
+    display: block;
+    flex: 1 0 100%;
+    margin: 0;
+  }
+  .locale-button {
+    min-width: 44px;
+    padding: 6px 8px;
+  }
+}
+
+/* Language buttons: a flag and a name; the chosen one is plain to see. */
+.locale-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-width: 48px;
+  padding: 6px 10px;
+}
+
+.flag {
+  width: 24px;
+  height: 16px;
+  flex: none;
+  border-radius: 2px;
+}
+
+.locale-current {
+  display: none;
+}
+
+.step-dot {
+  position: relative;
+}
+
+/* The language flags close the header on the right and never move: the text
+   buttons sit to their left, so a longer label pushes only the buttons. */
+.topbar-controls {
+  flex-wrap: nowrap;
+}
+
+@media (max-width: 700px) {
+  .topbar-controls {
+    flex-wrap: wrap;
+  }
+  #locale-group {
+    order: -2;
+  }
+  .topbar-controls .locale-current {
+    order: -1;
+  }
 }
