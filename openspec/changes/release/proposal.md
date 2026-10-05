@@ -14,10 +14,10 @@ The organizers said that good GitHub practice earns easy points: feature branche
 
 - **A changelog** `CHANGELOG.md`, in plain English, with one entry per merged pull request and one section per milestone.
 - **A "How we work" page** `CONTRIBUTING.md`: the branch and pull request flow, the commit rules, the plan flow (OpenSpec) and the evidence rules. It copies the rules of `AGENTS.md` for a human reader and links to them.
-- **A tag plan.** Two tags: `v0.9-demo` when the code of the demo is merged, and `v1.0-submission` after the final deploy. The commands and the release notes are written. The owner runs them, because they need a push.
-- **A submission checklist** in `docs/build/delivery.md`: the repository name, the deployed link, the slides as a PDF, the video, the email address, the Pages setting, the secret scan, and a green test run.
-- **A freeze procedure:** the list of what must be merged, the order of the last checks (`scripts/e2e_check.py`, the test suites and the secret scan) and the rule that nobody changes code after the final check.
-- **A last review of the README:** the links work, the numbers cite their fields, and the limits section is current.
+- **A tag plan.** Two tags: `v0.9-demo` when the code of the demo is merged, and `v1.0-submission` after the final deploy. The release notes and the commands need the final numbers, so `post-freeze` writes them (task 5.3). The owner runs them, because they need a push.
+- **A submission checklist** in `docs/build/delivery.md`: the repository name, the deployed link, the slides as a PDF, the video, the email address, the site link, the Pages setting, the secret scan, a green test run, and the credentials block of the email (template from `judge-access`, with no real password).
+- **A freeze procedure (it must exist before gate G3):** the list of what must be merged, the order of the last checks (`scripts/e2e_check.py`, the test suites and the secret scan) and the rule that nobody changes code after the final check.
+- **The last README review** and the last changelog entries moved to `post-freeze`. The final pass over all the documents is `docs-followups-2`.
 
 ## Capabilities
 

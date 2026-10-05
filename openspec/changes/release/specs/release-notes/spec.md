@@ -22,3 +22,12 @@ The repository SHALL hold a `CHANGELOG.md` with one entry per merged pull reques
 
 - **WHEN** a row has no proof
 - **THEN** the checklist does not mark it as done
+
+### Requirement: The freeze procedure exists before the gate
+
+`docs/build/delivery.md` SHALL hold the freeze procedure before gate G3: what must be merged, the order of the last checks (`scripts/e2e_check.py`, `scripts/e2e_check.py --access-check`, the test suites and the secret scan) and the rule that nobody changes code after the last check. Traces to REQ-0035 (P0, Done) and REQ-0052 (P0, In progress).
+
+#### Scenario: Gate G3
+
+- **WHEN** the owner confirms the freeze
+- **THEN** the procedure is already in `docs/build/delivery.md`
