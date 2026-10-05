@@ -28,8 +28,8 @@ Runs before gate G3. Starts from `origin/main`. Do not rename an id, a `data-tes
 
 ## 4. Checks
 
-- [ ] 4.1 Run the UI tests, the demo tests and the contract tests: `tests/test_ui.py`, `tests/test_demo_prompts.py`, `tests/test_demo_pt_br.py`, `tests/test_contract.py` and the full suite. Evidence: the pass count in the commit body.
-- [ ] 4.2 Run `scripts/capture_ui_product.py` and check the phone layout at 390 px. Replace the screens in the docs that show the entry page and the chat. Evidence: the new screens and the commit body.
+- [x] 4.1 Run the UI tests, the demo tests and the contract tests: `tests/test_ui.py`, `tests/test_demo_prompts.py`, `tests/test_demo_pt_br.py`, `tests/test_contract.py` and the full suite. Evidence: the pass count in the commit body.
+- [x] 4.2 Run `scripts/capture_ui_product.py` and check the phone layout at 390 px. Replace the screens in the docs that show the entry page and the chat. Evidence: the new screens and the commit body.
 
 ## 5. Requirements and team
 
