@@ -34,6 +34,44 @@ The system has two layers and a human in the loop:
 
 The submission runs the same code with documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user and a synthetic policy. The [mocks](docs/architecture/mocks.md) page explains each mock and why the public link keeps the Gold mock. The [what is real](docs/architecture/what-is-real.md) page lists each mock, each data source and the type of each number.
 
+## Demo and production
+
+The same code runs in the demo and in production. These parts differ:
+
+| Part | Demo (this repository and the public link) | Production |
+|---|---|---|
+| Gold data | A labelled mock store, or the PII-free DuckDB view of the pipeline when you run it locally with the data file | Gold on Azure Databricks |
+| Identity | Test users with a password. The public link has no passwordless entry. The credentials come in the submission email | The identity provider of the bank |
+| Advisor | A demo advisor user with a read-only view | A human advisor. Tickets go to the CRM of the bank through a queue |
+| Case store | SQLite | PostgreSQL |
+| Dispute policy | Team-written files marked `synthetic: true` | The policy that the bank approves |
+| Opening a dispute | The case store records the case. No bank system receives it | The dispute system of the bank |
+
+The [mocks](docs/architecture/mocks.md) page explains each mock and its limit. The [what is real](docs/architecture/what-is-real.md) page labels each part.
+
+**Which Gold does a local run use?** `SENTINEL_GOLD_SOURCE` has three values:
+
+- `mock`: the labelled mock store. The test users `CUST-0001`, `CUST-0002` and `CUST-0003` exist only here.
+- `duckdb`: the real Gold file. Its customers have other ids (`CLI-…`).
+- `auto` (the default): `duckdb` when the data file is present, `mock` otherwise.
+
+If the data file is on your machine and you keep `auto`, a test user finds no charges. The page shows an empty list of recent charges, and the chat can only offer an advisor. For the demo, set `SENTINEL_GOLD_SOURCE=mock`. `GET /api/v1/health` shows the active source in `gold_source`.
+
+## What the assistant resolves
+
+The assistant handles the **intake and triage** of a transaction dispute. It does not decide the outcome of the dispute and it does not move money.
+
+| Step | What the code does |
+|---|---|
+| Understand | Labels the intent. Masks personal data before the model call |
+| Find | Looks up the charges of the logged-in customer in Gold and narrows them with the words of the customer |
+| Decide | The policy engine checks the status of the charge, the dispute window, a prior dispute, the fraud rule and the amount rule |
+| Confirm | Shows the charge in a confirm box. The assistant never opens a dispute without the confirmation of the customer |
+| Act and verify | Opens the case once (idempotent) and reads it back before it says that the case exists |
+| Hand off | Files a ticket for an advisor with the request, the verified facts, the actions, the evidence and the open questions |
+
+The system files a handoff ticket on its own when a rule asks for it: the customer insists on a person, says that the charge is not theirs, a fraud or high-amount rule fires, required fields are missing, or the third question has no answer. The advisor view is read-only. The decision on the dispute belongs to the bank. A **safe automated resolution** in the metrics means that an eligible case ends in a verified case with no person. A correct handoff or refusal does not count as resolved. It counts under escalation quality.
+
 ## Headline results
 
 All numbers are **simulation** on team-written cases, not production measurements ([what is real](docs/architecture/what-is-real.md#numbers)). Each row cites a field of a frozen `summary.json`.
@@ -69,13 +107,20 @@ Without a model, the service uses the keyword baseline. To use the measured rout
 
 To publish to Azure, read [`deploy/azure/README.md`](deploy/azure/README.md).
 
-Open `http://localhost:8000/ui` and log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for local runs and tests. The public link uses the credentials of the submission email.
+Open `http://localhost:8000/ui`. For the demo, start the service with the labelled mock store (see [Demo and production](#demo-and-production)):
+
+```bash
+cd sentinel-ai-core
+SENTINEL_GOLD_SOURCE=mock SENTINEL_REFERENCE_DATE=2026-06-17 uvicorn app.main:app
+```
+
+Log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for local runs and tests. The public link uses the credentials of the submission email.
 
 To see the advisor side, start the service with the demo roles. Log in as `ADV-0001` (password `Advisor-001`) after a customer asks for a person two times:
 
 ```bash
 cd sentinel-ai-core
-SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
+SENTINEL_GOLD_SOURCE=mock SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
 ```
 
 The state is in `sentinel-ai-core/var/sentinel.db` (gitignored). Delete it for a clean demo.
@@ -126,6 +171,7 @@ The [requirements](docs/requirements/requirements.md#status-by-priority) page gi
 What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-capacity.md) gives the capacity limits.
 
 - **Mocks:** the submission runs documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user, a synthetic policy, a stand-in model in the test suite, and a labelled Gold mock on the public link. Each mock keeps the production contract, so production replaces a backend, not code. The [mocks](docs/architecture/mocks.md) page gives the reason, the limit and the production backend of each one.
+- **Charge not yet in Gold:** a charge that has not reached Gold is treated as not found. The assistant names what it searched and shows the charges that it can verify. After repeated questions with no match it files a handoff. It does **not** open a case marked as pending verification, which the [conversation rules](docs/build/conversation.md#when-data-is-not-up-to-date) describe as the target behavior. The Gold of the pipeline hides the charges dated after the reference date (`as_of`). The labelled mock does not.
 - **Data:** synthetic and in Spanish only. Accounts are only in México, Colombia and Argentina, and Mexican accounts are only in USD. The data cannot support a charge investigation: the balance has no usable as-of date, complaints cannot be tied to a charge, blocked products have no transactions, and no customer signal adds to `fraud_score` ([investigation data support](docs/rationale/investigation-data-support.md)). A `fraud_score` above 30 is always fraud, which is an artefact of the data generator. Real Gold runs locally only. The public link uses the labelled mock.
 - **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not the rule of a bank. One 90-day window serves the three countries. The sources disagree: Argentina counts 30 days from the receipt of the statement, and we found no fixed window for Colombia. The engine cannot express a different window start per country, provisional credit or a response time ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer states that the rule is a demonstration policy.
 - **Languages:** the Portuguese (`pt-BR`) cases are model-written. No native speaker reviewed them, and the variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). A second model back-translated the three demo lines. A Colombian teammate accepted the es-CO lines. A model, not a speaker, checked the Mexican and Argentine lines. The dataset transcripts are two Spanish templates, not customer language ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)).
