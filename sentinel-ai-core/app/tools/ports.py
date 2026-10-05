@@ -1,3 +1,12 @@
+"""Tool ports: the action-executor boundary of the loop.
+
+Every tool behind these ports runs synchronously in the request threadpool
+(the routes are sync ``def``; see ``app/db/session.py``). Async code must
+never call a tool directly: it enters through ``asyncio.to_thread``, as the
+Gold readers in ``app/services/gold_service.py`` do. ``tests/test_event_loop.py``
+fails if a new async function blocks on one of these calls.
+"""
+
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Protocol
