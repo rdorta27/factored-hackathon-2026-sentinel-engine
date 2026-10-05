@@ -16,7 +16,9 @@ last_reviewed: 2026-10-04
 6. **Calibration and threshold.** Calibrate the scores on train only. Set the picking threshold on validation only, so that the share of wrong automatic picks is 1% or less.
 7. **No gaps in the story.** Many charges have no merchant name (77% in the development zone). The report splits results by "the charge has a merchant name" and by language.
 8. **Lock by hash.** The run stores the hash of the model file, the seed, the family list and the threshold. A test fails if the evaluation module imports the training module.
-9. **Where the model file lives.** In the run folder, with weights only.
+9. **One seam.** The selector plugs in behind `narrow(...)` of `chat-start`. It changes no line of `step.py`.
+10. **Serving is decided before the freeze.** `eval-v8` measures the served configuration. The switch can turn on only before the code freeze; after it, the selector stays off, so v8 describes what the demo serves.
+11. **Where the model file lives.** In the run folder, with weights only.
 
 ## Risks / Trade-offs
 
