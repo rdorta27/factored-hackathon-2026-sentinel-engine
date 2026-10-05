@@ -14,26 +14,26 @@ Starts after `post-freeze` and `release` are merged. Merge `origin/main` first. 
 
 ## 1. Public link and architecture pages
 
-- [ ] 1.1 Update `docs/rationale/public-link.md` and the consequences of decision 019: the live revision and its date, the model and prompt version served, the `bundle_hash` of `GET /api/v1/health`, and the state on the share. Evidence: the two files and the health output in `docs/build/delivery.md`.
-- [ ] 1.2 Update `docs/architecture/what-is-real.md` and `docs/architecture/mocks.md`: the model that the link serves, the attack cases that now run on the real model, the new runs, and the login rule of `judge-access` (no passwordless entry, credentials in the submission email). Evidence: the two files.
-- [ ] 1.3 Check the README: the live link, the deployment line, the `## Limitations` and `## Roadmap` sections, and the demo credentials note. Evidence: the diff.
+- [x] 1.1 Update `docs/rationale/public-link.md` and the consequences of decision 019: the live revision and its date, the model and prompt version served, the `bundle_hash` of `GET /api/v1/health`, and the state on the share. Evidence: the two files and the health output in `docs/build/delivery.md`.
+- [x] 1.2 Update `docs/architecture/what-is-real.md` and `docs/architecture/mocks.md`: the model that the link serves, the attack cases that now run on the real model, the new runs, and the login rule of `judge-access` (no passwordless entry, credentials in the submission email). Evidence: the two files.
+- [x] 1.3 Check the README: the live link, the deployment line, the `## Limitations` and `## Roadmap` sections, and the demo credentials note. Evidence: the diff.
 
 ## 2. Numbers and evidence
 
-- [ ] 2.1 Regenerate the metrics report if a run changed. Check that each number in the README, the metrics report and `site/` cites a field of a `summary.json`. Evidence: the numbers test of the site and a search for hand-copied values.
-- [ ] 2.2 Check `evidence/README.md`: each run has its status (current or superseded), its data type and its requirements. Include the final measurement, the robustness runs, the live latency run, the resolution gap run and the cut-off diagnosis. Evidence: the file.
+- [x] 2.1 Regenerate the metrics report if a run changed. Check that each number in the README, the metrics report and `site/` cites a field of a `summary.json`. Evidence: the numbers test of the site and a search for hand-copied values.
+- [x] 2.2 Check `evidence/README.md`: each run has its status (current or superseded), its data type and its requirements. Include the final measurement, the robustness runs, the live latency run, the resolution gap run and the cut-off diagnosis. Evidence: the file.
 
 ## 3. Requirements
 
-- [ ] 3.1 Change the status of a requirement only where its evidence exists now: REQ-0013, REQ-0022, REQ-0030, REQ-0035, REQ-0036, REQ-0051, REQ-0052 and REQ-0055. REQ-0037 (the video) changes in the `video` change. Evidence: `docs/requirements/`.
-- [ ] 3.2 Update the status counts and the hand-written chains in `docs/requirements/requirements.md`. Remove each "Planned by" line whose work is done. Evidence: the file.
+- [x] 3.1 Change the status of a requirement only where its evidence exists now: REQ-0013, REQ-0022, REQ-0030, REQ-0035, REQ-0036, REQ-0051, REQ-0052 and REQ-0055. REQ-0037 (the video) changes in the `video` change. Evidence: `docs/requirements/`.
+- [x] 3.2 Update the status counts and the hand-written chains in `docs/requirements/requirements.md`. Remove each "Planned by" line whose work is done. Evidence: the file.
 
 ## 4. Plans and team
 
-- [ ] 4.1 Run `openspec validate --all`. Fix each error in a document. Evidence: the output in the commit body.
+- [x] 4.1 Run `openspec validate --all`. Fix each error in a document. Evidence: the output in the commit body.
 - [ ] 4.2 Archive the finished plans, in this order: `eval-v8`, `evidence-hardening`, `demo-clarity`, `judge-access`, `live-ops`, `pitch-site`, `release`, `post-freeze` and, last, this change. Sync the specs. Do not archive the `video` change: it runs later. Evidence: `openspec/changes/archive/`.
 - [ ] 4.3 Update `team/tasks.md` (the status of each task), `team/plan.md` (the schedule and the decisions) and `team/pending-decisions.md` (close each open row). Evidence: the three files.
-- [ ] 4.4 Run `scripts/check_spec_citations.py` and fix each citation that differs from `requirements.md`. Evidence: the script prints no difference.
+- [x] 4.4 Run `scripts/check_spec_citations.py` and fix each citation that differs from `requirements.md`. Evidence: the script prints no difference.
 
 ## 5. Full review of `docs/` and `team/`
 

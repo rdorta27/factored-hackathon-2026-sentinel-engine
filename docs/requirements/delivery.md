@@ -59,7 +59,7 @@ Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.
 
 Give an honest list of what the prototype lacks before real use: capacity, data, languages, deployment and remaining risks.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28)
 
@@ -71,8 +71,8 @@ Give an honest list of what the prototype lacks before real use: capacity, data,
 - The [sizing](../sizing-capacity.md) (REQ-0053).
 - The [what is real](../architecture/what-is-real.md) page.
 - The [investigation data support](../rationale/investigation-data-support.md) page.
-
-Missing also: a roadmap section in the README. It must list each item that the team did not build, with the evidence for why.
+- The README section [roadmap](../../README.md#roadmap). It lists each item that the team did not build, with the evidence for why.
+- Slide 6 of the [presentation](../../site/slides/deck.html): the limits, the mocks and the roadmap.
 
 Missing: the same limits on the slides.
 
@@ -137,20 +137,20 @@ ContainerAppConsoleLogs_CL
 
 Write a short slide deck that describes the tool. It is part of the mandatory submission.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
 **Depends on:** [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056). The slides present the metrics and the trade-offs.
 
-**Evidence:** Missing: the slides. [Script](../build/delivery.md#presentation).
+**Evidence:** Proven by: the six slides in [`site/slides/deck.html`](../../site/slides/deck.html), in English, `es-419` and `pt-BR`. Each number comes from `site/numbers.json` and the numbers test checks it. `python3 scripts/export_slides.py` builds the three PDFs of six pages each. See [delivery](../build/delivery.md#presentation).
 
 <a id="req-0037"></a>
 ### REQ-0037 · Video pitch
 
 Make a short, mandatory video (3 minutes at most). It shows the working solution and explains the core architecture decisions.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 

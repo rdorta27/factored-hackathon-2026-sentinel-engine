@@ -1,7 +1,7 @@
 ---
 language: en
 style: ASD-STE100
-last_reviewed: 2026-10-04
+last_reviewed: 2026-10-05
 ---
 
 # What is real and what is not
@@ -56,10 +56,11 @@ The [demo architecture](demo-architecture.md#mocked-components) shows the mocks 
 
 | Number | Status | Source |
 |---|---|---|
-| Router accuracy against the baseline | **Simulation** | [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) |
-| Safe automated resolution | **Simulation** on the **Mock** store | [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) |
-| Unsafe outcomes on attacks | **Simulation** and test suite | [`adversarial/20261002T222323Z`](../../evidence/adversarial/20261002T222323Z/summary.json), attack block of `eval-v7` |
-| Model latency and cost per case | **Real** model calls on **Simulation** cases | `eval-v7`, `resolution-v2` |
+| Router accuracy against the baseline | **Simulation** | [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The sealed [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json) run set the verdict: the link serves `router_v2` |
+| Safe automated resolution | **Simulation** on the **Mock** store | [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) and the ceiling run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) |
+| Unsafe outcomes on attacks | **Test suite** | [`adversarial/20261005T014816Z`](../../evidence/adversarial/20261005T014816Z/summary.json). The three cases that pass only on the mock model also run on the real model in [`adversarial/20261005T204313Z`](../../evidence/adversarial/20261005T204313Z/summary.json) |
+| Model latency and cost per case | **Real** model calls on **Simulation** cases | `eval-v7`, `resolution-v2`, [`resolution-live-v1`](../../evidence/evaluation-runs/2024Q4-resolution-live-v1/summary.json) |
+| Behavior under faults and under load | **Simulation** (injected faults, recorded model answers) | [`robustness/20261005T210525Z`](../../evidence/robustness/20261005T210525Z/summary.json), [`robustness/20261005T211031Z`](../../evidence/robustness/20261005T211031Z/summary.json) |
 | Monitoring by country | **Simulation** (replayed workload) | [`monitoring/2024Q4-resolution-v2-replay`](../../evidence/monitoring/2024Q4-resolution-v2-replay/summary.json) |
 | Contact demand and call aggregates | **Synthetic** dataset | [`flows/2024Q4-v3`](../../evidence/flows/2024Q4-v3/README.md), [`roi/2023-2026-callcenter-v1`](../../evidence/roi/2023-2026-callcenter-v1/report.md) |
 | ROI and savings | **Projection** | [roi](../build/roi.md). The advisor-hour cost is assumed. |

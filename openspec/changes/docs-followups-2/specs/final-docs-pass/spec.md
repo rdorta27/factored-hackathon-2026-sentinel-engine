@@ -2,7 +2,7 @@
 
 ### Requirement: The documents match the submitted build
 
-The documents SHALL name the model, the prompt version and the `bundle_hash` that the public link serves. Each number in the README, the metrics report and the site SHALL cite a field of a frozen `summary.json`. Traces to REQ-0030 (P0, In progress) and REQ-0013 (P0, In progress).
+The documents SHALL name the model, the prompt version and the `bundle_hash` that the public link serves. Each number in the README, the metrics report and the site SHALL cite a field of a frozen `summary.json`. Traces to REQ-0030 (P0, Done) and REQ-0013 (P0, In progress).
 
 #### Scenario: Served build
 
@@ -48,7 +48,7 @@ Each page under `docs/` and `team/` that the review rewrites SHALL carry the ASD
 
 ### Requirement: The public site matches the release
 
-The public site SHALL show the numbers of the final `summary.json` files, the release tag and the link to the video. The page SHALL hold no password, key, bucket name or dataset row. Traces to REQ-0036 (P0, Pending) and REQ-0037 (P0, Pending).
+The public site SHALL show the numbers of the final `summary.json` files, the release tag and the link to the video. The page SHALL hold no password, key, bucket name or dataset row. Traces to REQ-0036 (P0, Done) and REQ-0037 (P0, Pending).
 
 #### Scenario: Numbers
 
@@ -62,7 +62,7 @@ The public site SHALL show the numbers of the final `summary.json` files, the re
 
 ### Requirement: The pitch matches the evidence
 
-Each claim in the slides, the video script, the product page and the site SHALL cite a frozen `summary.json` field or a page of the repository. A simulation or a projection SHALL be labelled as such. The pitch SHALL hold no password. Traces to REQ-0036 (P0, Pending) and REQ-0037 (P0, Pending).
+Each claim in the slides, the video script, the product page and the site SHALL cite a frozen `summary.json` field or a page of the repository. A simulation or a projection SHALL be labelled as such. The pitch SHALL hold no password. Traces to REQ-0036 (P0, Done) and REQ-0037 (P0, Pending).
 
 #### Scenario: A claim without proof
 
