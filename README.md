@@ -137,6 +137,19 @@ What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-ca
 - **Capacity:** no load test of `/api/v1/chat` exists. The requests per second of one replica are not measured.
 - **Monitoring and ROI:** country monitoring uses a replayed, simulated workload ([evidence](evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)). No field log exists. The ROI is a break-even projection with an assumed advisor cost, not a measured saving ([roi](docs/build/roi.md)).
 
+## Roadmap
+
+What the team did not build, and why. Each row cites its evidence (REQ-0030, REQ-0056). None of these is in the submission.
+
+| Item | What it would do | Why we did not build it | Evidence |
+|---|---|---|---|
+| Customer 360 | Show balances and account history next to a charge | The balance has no usable as-of date. A complaint cannot be tied to a charge. | [`customer-360/dev-v1`](evidence/customer-360/dev-v1/summary.json): `balance.safe_to_show`, `balance.asof_usable`, `complaints.charge_linkable` |
+| Investigation of a charge | Say that a charge is unusual for this customer | No customer signal predicts fraud in the synthetic data. It needs real bank data. | [`customer-360/dev-signals-v1`](evidence/customer-360/dev-signals-v1/summary.json): `investigation.has_signal`; [investigation data support](docs/rationale/investigation-data-support.md) |
+| Feedback dataset | Keep the outcome that an advisor gives to each handoff, to train a model later | The dataset cannot train a dispute model. The system has no live traffic yet. | [`flows/2024Q4-v3`](evidence/flows/2024Q4-v3/summary.json): `disputes.cnr_learnable`, `disputes.esc_learnable` |
+| Spending assistant | Answer questions about the spending of the customer | It needs balances and history. The data does not support them. | [`customer-360/dev-v1`](evidence/customer-360/dev-v1/summary.json): `balance.safe_to_show` |
+| Policy retrieval | Read the dispute policy from the documents of the bank | The policy stays in code. The sources disagree and we have no bank document. | [policy sources](docs/rationale/policy-sources.md); the plan for the measure is in [metrics](docs/build/metrics.md) |
+| Handoff routing | Send a handoff to an advisor with the right language and specialty | Not started. The demo has one advisor view. | [REQ-0046](docs/requirements/frontend-backend.md#req-0046) |
+
 ## Reading guide
 
 1. **[The challenge](docs/overview.md):** what we must build, how the judges score it and what we submit.
