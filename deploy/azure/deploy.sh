@@ -14,6 +14,12 @@ set -euo pipefail
 # a second replica would not. Set min replicas back to 0 after the awards
 # (see docs/rationale/public-link.md). The storage account key is read at
 # deploy time and is never written into the repository.
+#
+# Judge access: the app reads the users file at SENTINEL_USERS_PATH on the
+# share and SENTINEL_DEMO_PERSONAS=0 turns the one-click entry off. Copy the
+# file with deploy/azure/upload-users.sh after you run
+# scripts/make_judge_users.py. SENTINEL_DEMO_AUTH=1 (Dockerfile) still loads
+# the advisor role, so the advisor login keeps its password.
 
 REPO_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 
@@ -123,6 +129,9 @@ env_vars=(
 	SENTINEL_DB_PATH="$MOUNT_PATH/sentinel.db"
 	SENTINEL_SQLITE_JOURNAL=DELETE
 	SENTINEL_LOG_STDOUT=1
+	# Judge credentials: hashes on the share, no one-click entry on the link.
+	SENTINEL_USERS_PATH="$MOUNT_PATH/users.json"
+	SENTINEL_DEMO_PERSONAS=0
 )
 secrets=("session-salt=$salt")
 llm_key="$(env_value SENTINEL_LLM_API_KEY)"

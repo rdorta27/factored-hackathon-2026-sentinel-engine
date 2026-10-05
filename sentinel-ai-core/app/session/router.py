@@ -138,6 +138,18 @@ def _demo_enabled() -> bool:
     return os.environ.get("SENTINEL_DEMO_AUTH", "0") == "1"
 
 
+def _personas_enabled() -> bool:
+    """One-click personas. ``SENTINEL_DEMO_PERSONAS`` overrides the demo flag.
+
+    Unset follows ``SENTINEL_DEMO_AUTH``, so local runs and tests do not change.
+    The public link sets it to ``0`` and keeps the advisor role.
+    """
+    flag = os.environ.get("SENTINEL_DEMO_PERSONAS")
+    if flag is None:
+        return _demo_enabled()
+    return flag == "1"
+
+
 def _demo_cookie(response: JSONResponse, session: Session) -> None:
     response.set_cookie(
         SESSION_COOKIE,
@@ -152,8 +164,8 @@ def _demo_cookie(response: JSONResponse, session: Session) -> None:
 
 @router.get("/demo")
 def demo_personas() -> JSONResponse:
-    """List the demo personas. 404 unless ``SENTINEL_DEMO_AUTH=1``."""
-    if not _demo_enabled():
+    """List the demo personas. 404 unless the persona flag is on."""
+    if not _personas_enabled():
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not found"})
     return JSONResponse(
         status_code=status.HTTP_200_OK,
@@ -168,7 +180,7 @@ def demo_personas() -> JSONResponse:
 @router.post("/demo/{persona}")
 def demo_login(persona: str, request: Request) -> JSONResponse:
     """Sign in as a demo persona with one click: no password, customers only."""
-    if not _demo_enabled():
+    if not _personas_enabled():
         return JSONResponse(status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Not found"})
     spec = _PERSONAS.get(persona)
     if spec is None:

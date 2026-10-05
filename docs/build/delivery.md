@@ -69,6 +69,35 @@ The static site is in `site/`. It holds plain HTML and CSS, with no build step. 
 | Owner action | Open Settings, Pages. Set Source to GitHub Actions. Run the `pages` workflow once |
 | Status | Site and workflow written. The first green run waits for the owner action |
 
+## Submission email
+
+The owner sends this email with the submission. Fill in each placeholder. Do
+not put a password in the slides or the video.
+
+- **Repository:** `<repository URL>`
+- **Live link:** `<link>`
+- **Slides:** `<slides URL or file>`
+- **Video:** `<video URL>`
+
+### Credentials
+
+All judges use the same set. The cases share state between judges.
+
+| Login | Role | Country | Password |
+|---|---|---|---|
+| `CUST-0001` | customer | MX | `<password>` |
+| `CUST-0002` | customer | CO | `<password>` |
+| `CUST-0003` | customer | AR | `<password>` |
+| `ADV-0001` | advisor | MX | `<password>` |
+
+- The plain passwords are in `deploy/judge-users/passwords.csv` on the owner's
+  machine. Git ignores the file. The users file on the link holds salted hashes
+  only.
+- Lockout rule: after 5 failed logins for one login id or one address, the
+  login answers HTTP 429. The lock lasts 15 minutes.
+- The public link has no one-click entry. The documented fixture passwords do
+  not work on the link.
+
 ## Pending
 
 - [x] Maximum video length: 3 minutes (confirmed 9/28)
