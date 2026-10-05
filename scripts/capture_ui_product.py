@@ -74,11 +74,15 @@ def wait_health(base: str = BASE, timeout: float = 30.0) -> None:
 def open_case(page) -> None:
     """Wait for the reply to the first chip. A confirm box means the case can open; the
     ambiguous persona gets a question instead, and the screen shows that."""
+    # The steps run one second each and the answer follows the last step.
     page.wait_for_selector('[data-testid="steps-panel"] li', state="attached")
-    page.wait_for_timeout(300)
+    page.wait_for_selector('#steps-side[aria-busy="false"]', state="attached", timeout=20000)
+    page.wait_for_timeout(600)
     if page.locator(".chat-confirm button").count():
         page.click(".chat-confirm button")
-        page.wait_for_selector('[data-case-state="in_review"]', state="attached")
+        page.wait_for_selector('[data-case-state="in_review"]', state="attached", timeout=20000)
+        page.wait_for_selector('#steps-side[aria-busy="false"]', state="attached", timeout=20000)
+        page.wait_for_timeout(600)
 
 
 def capture(locale: str, persona: str, size: str) -> None:
@@ -93,7 +97,7 @@ def capture(locale: str, persona: str, size: str) -> None:
         page = context.new_page()
 
         def shot(name: str) -> None:
-            page.screenshot(path=str(OUT / f"{name}-{locale}-{size}.png"), full_page=True)
+            page.screenshot(path=str(OUT / f"{name}-{locale}-{size}.png"), full_page=True, animations="disabled")
 
         page.goto(f"{BASE}/ui/", wait_until="networkidle")
         page.click(f'[data-locale="{locale}"]')
@@ -110,9 +114,10 @@ def capture(locale: str, persona: str, size: str) -> None:
         # Escalate so the advisor has a ticket and the thread shows the handoff card.
         person = page.locator("#demo-prompts .candidate").last
         person.click()
-        page.wait_for_timeout(200)
+        page.wait_for_selector('#steps-side[aria-busy="false"]', state="attached", timeout=20000)
+        page.wait_for_timeout(1500)
         person.click()
-        page.wait_for_selector('[data-testid="handoff-card"]', timeout=5000)
+        page.wait_for_selector('[data-testid="handoff-card"]', timeout=20000)
         shot("chat-handoff")
         page.click("#logout")
         page.wait_for_selector("#view-login:not([hidden])")
@@ -145,7 +150,7 @@ def capture_brand(size: str) -> None:
         page.wait_for_selector("#demo-prompts:not([hidden])")
         page.click("#demo-prompts .candidate")
         open_case(page)
-        page.screenshot(path=str(OUT / f"chat-brand-es-MX-{size}.png"), full_page=True)
+        page.screenshot(path=str(OUT / f"chat-brand-es-MX-{size}.png"), full_page=True, animations="disabled")
         browser.close()
 
 

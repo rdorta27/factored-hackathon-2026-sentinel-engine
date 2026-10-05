@@ -23,8 +23,8 @@ Areas: [ai](../../../docs/build/areas/ai.md). Decisions: [006](../../../docs/bui
 
 ## 3. Review
 
-- [ ] 3.0 Human review G1 of the look and the four persona journeys; apply the changes. Evidence: notes in `team/chat-manual-tests.md`.
+- [x] 3.0 Human review G1 of the look and the four persona journeys; apply the changes. Evidence: notes in `team/chat-manual-tests.md`.
 
 ## 4. Evidence
 
-- [ ] 4.1 Regenerate the screenshots and update REQ-0038 evidence and the demo architecture. Evidence: `docs/build/screenshots/ui-product/`, `docs/requirements/frontend-backend.md`.
+- [x] 4.1 Regenerate the screenshots and update REQ-0038 evidence and the demo architecture. Evidence: `docs/build/screenshots/ui-product/`, `docs/requirements/frontend-backend.md`.
