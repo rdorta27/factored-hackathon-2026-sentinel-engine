@@ -32,9 +32,9 @@ The presentation has six slides in English. They are static HTML pages: [`site/s
 |---|---|---|
 | 1 | Why: the problem and its data | [problem and demand](../rationale/problem-and-demand.md), [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) |
 | 2 | What: the product and the four demo cases | [product](../product.md), [demo replay](../../sentinel-ai-core/eval/demo/replay.md) |
-| 3 | How: "The AI converses. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
+| 3 | How: "The AI talks. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
 | 4 | Proof: results and 0 unsafe outcomes | [evidence index](../../evidence/README.md), [metrics](metrics.md) |
-| 5 | Your brand: the white label | [branding](../../sentinel-ai-core/app/branding.py) |
+| 5 | For the bank: the case file of the advisor, the controls that a risk team can audit, the white label and the model cost per resolution | [handoff package](../architecture/specification.md), [branding](../../sentinel-ai-core/app/branding.py), [`resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) |
 | 6 | Limits and roadmap, with the mocks | [mocks](../architecture/mocks.md), [README roadmap](../../README.md#roadmap) |
 
 Build the PDFs before the submission:

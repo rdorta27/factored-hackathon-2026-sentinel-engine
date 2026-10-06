@@ -151,7 +151,7 @@ The same as the [System Architecture](system-architecture.md#walkthrough-of-a-ca
 
 ## Learned component
 
-The same as the target: a prompted LLM intent router, compared with the keyword baseline on the same sealed held-out conversations. The demo serves `router_v2` (GLM 5.3 Flash, prompt v2) from the environment, with the keyword baseline as the fallback. This is the configuration that `2024Q4-eval-v7` measured ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)). Models wrote the evaluation conversations in `es-419` and `pt-BR`. They have the label "simulation".
+The same as the target: a prompted LLM intent router, compared with the keyword baseline on the same sealed held-out conversations. The demo serves `router_v2` (GLM 5.3 Flash, prompt v2) from the environment, with the keyword baseline as the fallback. This is the configuration that `2024Q4-eval-v7` and the sealed `2024Q4-eval-v8` measured ([016](../build/decisions/016-router-models.md), [018](../build/decisions/018-evaluation-acceptance.md)). Models wrote the evaluation conversations in `es-419` and `pt-BR`. They have the label "simulation".
 
 ## Stack and deployment
 

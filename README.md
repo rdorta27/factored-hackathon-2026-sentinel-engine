@@ -8,6 +8,10 @@ last_reviewed: 2026-10-05
 
 Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**
 
+**The AI talks. The rules decide.** A customer says "I do not recognize this charge". Sentinel answers with a verified case in one conversation, or it gives an advisor a complete case file. It speaks Spanish and Portuguese. It acts only when the policy allows it, and it never invents a fact.
+
+**Pitch:** [project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) · [slides](site/slides/deck.html) · [video script](docs/build/video-script.md) · [product](docs/product.md)
+
 Sentinel Engine is a customer-service assistant for transaction disputes at a bank in México, Colombia and Argentina. It is a prototype. The [requirements coverage](#requirements-coverage) below gives the status of each requirement.
 
 **Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. It runs on Azure Container Apps with labelled mock data and `router_v2` (a prompted GLM 5.3 Flash, prompt `v2`). The keyword baseline answers a turn when the model fails. One replica runs until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). The live revision is from 2026-10-05. Its `/health` `bundle_hash` is `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement. It keeps its state on an Azure Files share. The judge credentials come in the submission email.

@@ -203,7 +203,7 @@ We measure the system offline on held-out, labelled conversations, with the same
 | Unsafe outcomes | Unauthorized disclosure or action, or materially wrong outcome, with count and denominator |
 | Operating efficiency | p50/p95 end-to-end latency; cost per attempted case and per safe resolution ("not defined" when there are none) |
 
-Each metric has a breakdown per language and country, with n. The intent accuracy per variant is in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The system outcomes per variant and country are in [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (`system.<version>.by_variant`, `by_country`). The results are frozen in `evidence/` ([index](../../evidence/README.md)) and have the label "offline simulation", never "production improvement".
+Each metric has a breakdown per language and country, with n. The intent accuracy per variant is in [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json) (`candidates.<version>.variant_losses.by_variant`). The system outcomes per variant and country are in [`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) (`system.<version>.by_variant`, `by_country`). The results are frozen in `evidence/` ([index](../../evidence/README.md)) and have the label "offline simulation", never "production improvement".
 
 ## Data retention
 
