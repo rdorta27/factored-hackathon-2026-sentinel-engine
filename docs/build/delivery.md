@@ -51,7 +51,7 @@ The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides
 
 ## Video pitch
 
-The video is mandatory. It lasts **3 minutes at most**. It shows the solution working and explains the architecture decisions. The [video script](video-script.md) has the full script (Why → What → How) and the shot list.
+The video is mandatory. It lasts **3 minutes at most**. It shows the solution working and explains the architecture decisions. The [video script](../../video/script.md) has the full script (Why → What → How) and the shot list.
 
 1. The problem, in one sentence and with one data point.
 2. Demo of the **normal case** (es-419). Type the es-MX line from [replay](../../sentinel-ai-core/eval/demo/replay.md).
@@ -83,7 +83,7 @@ The owner sends this email with the submission. Fill in each placeholder. Do not
 - **Repository:** `<repository URL>`
 - **Live link:** `<link>`
 - **Slides:** `<slides URL or file>`
-- **Video:** `<video URL>`
+- **Video:** https://youtu.be/0bjonPPvhEA
 
 ### Credentials
 
@@ -108,13 +108,13 @@ Each row has one owner and one proof. A row stays pending until its proof exists
 |---|---|---|---|
 | Repository | Rubén | The public repository and its [README](../../README.md) | Done |
 | Deployed link | Rubén | The `GET /api/v1/health` response of the 2026-10-05 redeploy, with `bundle_hash` `2efe5962…` | Done |
-| Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run | Pending |
+| Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run. The site answers 200 at https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/ | Done |
 | Slides PDF | Rubén | `python3 scripts/export_slides.py` writes `site/slides/sentinel-slides.pdf` | Pending |
-| Video | Rubén | The video, 3 minutes at most. The `video` change owns this row | Pending |
+| Video | Rubén | The video at https://youtu.be/0bjonPPvhEA, 3 minutes at most, in English with the voice of the owner. The `video` change owns this row | Done |
 | Tags and release | Rubén | The `git tag` and `gh release create` commands in [release notes](#release-notes). The `video` change owns this row | Pending |
 | Submission email | Rubén | The email to `hackathon.admin@factored.ai`, with the [credentials block](#credentials). The `video` change owns this row | Pending |
 | Credentials block | Rubén | The [credentials](#credentials) table, with no real password | Done |
-| GitHub Pages | Rubén | Settings, Pages, Source is GitHub Actions | Pending |
+| GitHub Pages | Rubén | Settings, Pages, Source is GitHub Actions. Active and deployed on 2026-10-05 | Done |
 | Secret scan | Rubén | The `scan` job in CI | Done |
 | Green tests | Rubén | `python3 -m pytest -q` from `sentinel-ai-core/` | Done |
 
