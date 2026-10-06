@@ -45,9 +45,9 @@ This section lists each open task, ordered by what the submission needs first. E
 | 11 | Final README update: results and limitations | REQ-0030 | Unassigned | — | — | Done: the README states the sealed v8 results, the limitations, the roadmap and the served build |
 | 12 | Start the video script | REQ-0037 | Unassigned | — | Video | Done: the [video script](../video/script.md) matches the final build. The recording is task 16 |
 | 13 | Outline the presentation: structure and sources of the 4 to 6 slides, no results yet | REQ-0036 | Unassigned | — | Validation Fri | Done: six slides in `site/slides/deck.html` |
-| 14 | Validate the presentation outline with the group | REQ-0036 | Unassigned | — | Slides | Pending |
+| 14 | Validate the presentation outline with the group | REQ-0036 | Unassigned | — | Slides | Done: the group validated the outline. The final six slides are in `site/slides/deck.html`, in the three languages |
 | 15 | Review and complete the presentation with the frozen results | REQ-0036, REQ-0056 | Unassigned | — | Submission | Done: the slides use the numbers of `site/numbers.json` and the build line of the frozen build. The three PDFs have six pages each |
-| 16 | Record and edit the video (3 minutes at most) | REQ-0037 | Unassigned | — | Submission | Pending |
+| 16 | Record and edit the video (3 minutes at most) | REQ-0037 | Unassigned | — | Submission | Done: the video is published at https://youtu.be/0bjonPPvhEA. It uses the voice of the owner, in English. The [script](../video/script.md) and the 11 mockups match the final build |
 | 17 | Pre-submission language check: README, slides, video script, `docs/`, `team/` | REQ-0051 | Unassigned | — | Submission | Done: the pages under `docs/` and `team/` carry the ASD-STE100 header, and the review rewrote them. The slides, the video script and the README match the final build. The style report is `scripts/check_docs.py`. The pass is archived on 10/5 |
 | 18 | Submission, with an internal deadline well before Mon 11:59 pm (UTC-5) | — | Unassigned | — | — | Pending |
 | 19 | Critical fixes only after the freeze | — | Unassigned | — | — | Pending |

@@ -14,8 +14,8 @@ This page covers what the evaluators receive: the repository, the deployed link,
 | [REQ-0030](#req-0030) | Declare what is missing | P0 | all | [REQ-0013](#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
 | [REQ-0034](#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0035](#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](#req-0034) | Done |
-| [REQ-0036](#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
-| [REQ-0037](#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035) | Pending |
+| [REQ-0036](#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Done |
+| [REQ-0037](#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035) | Done |
 | [REQ-0051](#req-0051) | Everything in English | P0 | all | [REQ-0036](#req-0036), [REQ-0037](#req-0037) | In progress |
 | [REQ-0052](#req-0052) | Path to production | P0 | ai, all | [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050) | In progress |
 
@@ -156,7 +156,7 @@ Make a short, mandatory video (3 minutes at most). It shows the working solution
 
 **Depends on:** [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](#req-0035). The video shows the three demo cases on the deployed tool.
 
-**Evidence:** Missing: the video. [Script](../build/delivery.md#video-pitch).
+**Evidence:** Proven by: the published video at https://youtu.be/0bjonPPvhEA. It lasts 3 minutes at most and uses the voice of the owner, in English. The [script](../../video/script.md) matches the final build and the shot list. See [delivery](../build/delivery.md#video-pitch).
 
 <a id="req-0051"></a>
 ### REQ-0051 · Everything in English
@@ -176,7 +176,7 @@ Write the README, the slides, the video script, `docs/` and `team/` in English. 
 - The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
 - The new pages [`CHANGELOG.md`](../../CHANGELOG.md) and [`CONTRIBUTING.md`](../../CONTRIBUTING.md) are in English, in ASD-STE100.
 
-Missing: the video ([REQ-0037](#req-0037)). The slides, the video script and the [pre-submission check](../build/delivery.md#language) are done.
+The video is published ([REQ-0037](#req-0037)). The slides, the video script and the [pre-submission check](../build/delivery.md#language) are done.
 
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production
