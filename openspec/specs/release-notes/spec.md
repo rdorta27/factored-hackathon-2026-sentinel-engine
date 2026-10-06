@@ -21,7 +21,7 @@ The repository SHALL hold a `CHANGELOG.md` with one entry per merged pull reques
 
 ### Requirement: The submission has a checklist with proofs
 
-`docs/build/delivery.md` SHALL hold a table of the submission items (repository, deployed link, slides, video, email, Pages, secret scan, tests). Each row SHALL have an owner and a proof. Traces to REQ-0035 (P0, Done), REQ-0036 (P0, Done) and REQ-0037 (P0, Pending).
+`docs/build/delivery.md` SHALL hold a table of the submission items (repository, deployed link, slides, video, email, Pages, secret scan, tests). Each row SHALL have an owner and a proof. Traces to REQ-0035 (P0, Done), REQ-0036 (P0, Done) and REQ-0037 (P0, Done).
 
 #### Scenario: An item has no proof
 
