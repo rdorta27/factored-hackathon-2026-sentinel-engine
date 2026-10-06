@@ -38,9 +38,17 @@ The organizers ask for your own voice, in English. Do not use an AI voice. The p
 
 ### Numbers
 
-The numbers come from `site/numbers.json`. Run `python3 scripts/site_numbers.py` to refresh them on this page. Each number has a type. A simulation is not a production measurement. Put the type on screen next to the number.
+The voice-over says each number in words. This table links each spoken number to its value in `site/numbers.json`. Run `python3 scripts/site_numbers.py` to refresh the values. If a value changes, change the words and mockups 2 and 10 too.
 
-Mockups 2 and 10 hold the same numbers as fixed text. If `scripts/site_numbers.py` changes a number, change it in the mockup too.
+| Shot | You say | Value | Type on screen |
+|---|---|---|---|
+| 2 | "seventy-nine thousand" | <!--n~:problem_dispute_calls-->79,000+<!--/n--> | Synthetic |
+| 10 | "forty-two" | <!--n:adv_attempted-->42<!--/n--> | Test suite |
+| 10 | "zero" | <!--n:adv_rate-->0/42<!--/n--> | Test suite |
+| 10 | "almost eighty-two percent" | <!--n:intent_router-->81.8%<!--/n--> | Simulation |
+| 10 | "about sixty-nine percent" | <!--n:intent_baseline-->69.2%<!--/n--> | Simulation |
+
+A simulation is not a production measurement. Put the type on screen next to the number.
 
 ## Timing
 
@@ -63,19 +71,19 @@ Each **Mockup** link opens an animated HTML page at 1920×1080. The animation pl
 
 Mockups of Sentinel copy the look and the texts of the real app. "Other app" mockups show a fictitious bank, Banco Nimbus, with a different look. The data is demo data.
 
-| # | Time | Voice-over | Shot | Mockup | Evidence |
-|---|---|---|---|---|---|
-| 1 | 0:00 to 0:08 | "It's late. / You open your bank app. / And there it is: / a charge you don't recognize." | **Other app.** A fictitious bank app. The Cafe Central charge slides in, turns red, and the camera zooms in. | [01-charge.html](mockups/01-charge.html) |  |
-| 2 | 0:08 to 0:23 | "So you ask for help. / The chatbot makes something up. / Or an advisor makes you tell the whole story again. / In our bank data, that's <!--n~:problem_dispute_calls-->79,000+<!--/n--> calls about disputed charges." | **Other app.** Split screen: a chatbot that invents a refund and a case number, then an advisor with a blank form. Both blur, and a counter rolls up. Label: "Synthetic dataset". | [02-problem.html](mockups/02-problem.html) | [`problem/dev-v1`](../evidence/problem/dev-v1/summary.json) |
-| 3 | 0:23 to 0:30 | "Meet Sentinel. / One conversation. / One verified case. / Or an advisor who already knows the story." | **Launch card.** The Sentinel mark, the name, the three promises and the tagline. | [03-meet.html](mockups/03-meet.html) |  |
-| 4 | 0:30 to 0:52 | "You write in Spanish. / Sentinel finds the charge / and asks: is this the one? / You say yes. / It opens the dispute, / checks that the case really exists, / and only then gives you the number." | **Sentinel, normal case (es-MX).** The message types in. The steps light up. The confirm box appears, the button is tapped, and the verified receipt appears. | [04-normal.html](mockups/04-normal.html) | [`replay.md`](../sentinel-ai-core/eval/demo/replay.md), case 1 |
-| 5 | 0:52 to 1:06 | "Several charges that look alike? / Sentinel doesn't guess. / It asks which one. / Oh, and this customer writes in Portuguese. / No problem." | **Sentinel, ambiguous case (pt-BR).** The question and the candidate charges appear. A note says that no case is open. | [05-ambiguous.html](mockups/05-ambiguous.html) | [`replay.md`](../sentinel-ai-core/eval/demo/replay.md), case 2 |
-| 6 | 1:06 to 1:24 | "A big amount? / Sentinel knows when to stop. / It hands the case to an advisor / with the facts already checked, / the rule that applied, / and the one question still open." | **Sentinel, high amount.** The chat hands off. The advisor view opens, and the case file builds line by line. | [06-handoff.html](mockups/06-handoff.html) | [`gold.py`](../sentinel-ai-core/app/tools/gold.py), `TXN-1101` |
-| 7 | 1:24 to 1:32 | "So how does it work? / The AI talks. / The rules decide." | **Architecture.** Eight blocks pop in. One is the model. The others are code and a person. | [07-architecture.html](mockups/07-architecture.html) | [Architecture](../docs/architecture/README.md) |
-| 8 | 1:32 to 1:50 | "Personal data is hidden / before the model reads a word. / The policy engine, in code, / says yes, no, or "call a human". / And every fact comes from the bank's records. / Never from the model's imagination." | **Three controls.** A name and a card turn into `[NAME]` and `[CARD]`. The rules check and "Allow" lights up. The case is opened, then read back. | [08-controls.html](mockups/08-controls.html) | [Architecture](../docs/architecture/README.md) |
-| 9 | 1:50 to 1:58 | "Then we tried to break it. / Prompt injections. / Broken tools. / Tricky questions in two languages." | **Attacks.** Attack messages in English, Spanish and Portuguese hit the Sentinel shield and bounce off. | [09-attacks.html](mockups/09-attacks.html) | [`adversarial`](../evidence/adversarial/20261005T014816Z/summary.json) |
-| 10 | 1:58 to 2:20 | "<!--n:adv_attempted-->42<!--/n--> attacks. / <!--n:adv_rate-->0/42<!--/n--> unsafe outcomes. / On turns it had never seen, / it understands <!--n:intent_router-->81.8%<!--/n-->, / against <!--n:intent_baseline-->69.2%<!--/n--> for plain keywords. / One prompt scored even higher... / but it was less safe. / So we left it out." | **Proof.** The two attack numbers land with "Test suite". The bars grow with "Simulation". The v3 bar gets a "Not shipped" stamp. | [10-proof.html](mockups/10-proof.html) | [`eval-v8`](../evidence/evaluation-runs/2024Q4-eval-v8/summary.json), [`adversarial`](../evidence/adversarial/20261005T014816Z/summary.json) |
-| 11 | 2:20 to 2:30 | "Synthetic data. / Real controls. / Your brand on top, / our trust layer underneath. / Sentinel Engine." | **Close.** The same chat in three fictitious bank brands, then the end card: the mark, **Sentinel Engine**, the tagline and the site. | [11-close.html](mockups/11-close.html) | [What is real](../docs/architecture/what-is-real.md) |
+| # | Time | Voice-over | Shot | Mockup |
+|---|---|---|---|---|
+| 1 | 0:00 to 0:08 | "It's late. / You open your bank app. / And there it is: / a charge you don't know." | **Other app.** A fictitious bank app. The Cafe Central charge slides in, turns red, and the camera zooms in. | [01-charge.html](mockups/01-charge.html) |
+| 2 | 0:08 to 0:23 | "So you ask for help. / The chatbot makes something up. / Or an agent asks you to start again. / In our bank data, / that's seventy-nine thousand calls / about charges like this." | **Other app.** Split screen: a chatbot that invents a refund and a case number, then an advisor with a blank form. Both blur, and a counter rolls up. Label: "Synthetic dataset". | [02-problem.html](mockups/02-problem.html) |
+| 3 | 0:23 to 0:30 | "Meet Sentinel. / One chat. / One verified case. / Or an advisor who already knows the story." | **Launch card.** The Sentinel mark, the name, the three promises and the tagline. | [03-meet.html](mockups/03-meet.html) |
+| 4 | 0:30 to 0:52 | "You write in Spanish. / Sentinel finds the charge / and asks: is this the one? / You say yes. / It opens the case, / checks that it's really there, / and only then gives you the number." | **Sentinel, normal case (es-MX).** The message types in. The steps light up. The confirm box appears, the button is tapped, and the verified receipt appears. | [04-normal.html](mockups/04-normal.html) |
+| 5 | 0:52 to 1:06 | "Lots of charges that look alike? / Sentinel doesn't guess. / It asks which one. / Oh, and this customer writes in Portuguese. / No problem." | **Sentinel, ambiguous case (pt-BR).** The question and the candidate charges appear. A note says that no case is open. | [05-ambiguous.html](mockups/05-ambiguous.html) |
+| 6 | 1:06 to 1:24 | "A big amount? / Sentinel knows when to stop. / It sends the case to an agent, / with the facts already checked, / the rule that applied, / and the one question left." | **Sentinel, high amount.** The chat hands off. The advisor view opens, and the case file builds line by line. | [06-handoff.html](mockups/06-handoff.html) |
+| 7 | 1:24 to 1:32 | "So how does it work? / The AI talks. / The rules decide." | **Architecture.** Eight blocks pop in. One is the model. The others are code and a person. | [07-architecture.html](mockups/07-architecture.html) |
+| 8 | 1:32 to 1:50 | "First, we hide personal data / before the model sees a word. / Then the rules, in plain code, / say yes, no, or "call a human". / Every fact comes from the bank. / Never from the model's imagination." | **Three controls.** A name and a card turn into `[NAME]` and `[CARD]`. The rules check and "Allow" lights up. The case is opened, then read back. | [08-controls.html](mockups/08-controls.html) |
+| 9 | 1:50 to 1:58 | "Then we tried to break it. / Tricks. / Broken tools. / Hard questions in two languages." | **Attacks.** Attack messages in English, Spanish and Portuguese hit the Sentinel shield and bounce off. | [09-attacks.html](mockups/09-attacks.html) |
+| 10 | 1:58 to 2:20 | "Forty-two attacks. / Zero unsafe outcomes. / On chats it had never seen, / it gets almost eighty-two percent right. / Simple keywords get about sixty-nine. / One newer version scored even higher... / but it was less safe. / So we left it out." | **Proof.** The two attack numbers land with "Test suite". The bars grow with "Simulation". The v3 bar gets a "Not shipped" stamp. | [10-proof.html](mockups/10-proof.html) |
+| 11 | 2:20 to 2:30 | "Test data. / Real controls. / Your brand on top. / Our trust layer underneath. / Sentinel Engine." | **Close.** The same chat in three fictitious bank brands, then the end card: the mark, **Sentinel Engine**, the tagline and the site. | [11-close.html](mockups/11-close.html) |
 
 ## Rules for the recording
 
