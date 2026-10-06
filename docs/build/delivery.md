@@ -51,7 +51,7 @@ The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides
 
 ## Video pitch
 
-The video is mandatory. It lasts **3 minutes at most**. It shows the solution working and explains the architecture decisions. The [video script](video-script.md) has the full script (Why → What → How) and the shot list.
+The video is mandatory. It lasts **3 minutes at most**. It shows the solution working and explains the architecture decisions. The [video script](../../video/script.md) has the full script (Why → What → How) and the shot list.
 
 1. The problem, in one sentence and with one data point.
 2. Demo of the **normal case** (es-419). Type the es-MX line from [replay](../../sentinel-ai-core/eval/demo/replay.md).

@@ -6,64 +6,33 @@ last_reviewed: 2026-10-05
 
 # Sentinel Engine
 
-Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**
+**The AI talks. The rules decide.**
 
-**The AI talks. The rules decide.** A customer says "I do not recognize this charge". Sentinel answers with a verified case in one conversation, or it gives an advisor a complete case file. It speaks Spanish and Portuguese. It acts only when the policy allows it, and it never invents a fact.
+A bank customer says "I do not recognize this charge". Sentinel finds the charge, checks the policy, opens a verified dispute in one conversation, or gives an advisor a complete case file. It speaks Spanish and Portuguese. It acts only when the policy allows it. It never invents a fact.
 
-**Pitch:** [project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) · [slides](site/slides/deck.html) · [video script](docs/build/video-script.md) · [product](docs/product.md)
+Factored AI & Data Hackathon 2026 · Transaction disputes for a bank in México, Colombia and Argentina · Prototype
 
-Sentinel Engine is a customer-service assistant for transaction disputes at a bank in México, Colombia and Argentina. It is a prototype. The [requirements coverage](#requirements-coverage) below gives the status of each requirement.
-
-**Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. It runs on Azure Container Apps with labelled mock data and `router_v2` (a prompted GLM 5.3 Flash, prompt `v2`). The keyword baseline answers a turn when the model fails. One replica runs until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). The live revision is from 2026-10-05. Its `/health` `bundle_hash` is `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement. It keeps its state on an Azure Files share. The judge credentials come in the submission email.
-
-**Start here:** [what is real and what is not](docs/architecture/what-is-real.md) · [evidence index](evidence/README.md) · [rationale](docs/rationale/README.md) · [metrics report](docs/build/metrics-report.md)
-
-## What we are building
-
-An assistant, not only a chatbot. It understands the customer and answers only with verified data. It opens a dispute when the customer does not recognize a charge. It confirms that the dispute exists. It hands the case to a person when necessary. It works in **Spanish and Portuguese**.
-
-The guiding principle: **AI understands; code executes and verifies.** The loop is the one that the hackathon asks for: Understand → Decide → Act → Verify → Escalate. Policy, confirmations and the session are in code. The model never sees the customer identifiers.
-
-The system has two layers and a human in the loop:
-
-- **Data:** a Delta Lakehouse. S3 raw data → Bronze → Silver → Gold. DuckDB runs it locally and Azure Databricks runs it in production. Both use the same `sentinel_data` package.
-- **Service:** one FastAPI process with the page, the orchestrator, the policy engine and four session-bound tools. It has one API under `/api/v1`: `auth`, `transactions`, `chat`, `disputes` (two steps), `handoffs` (advisor) and `health`.
-  - Sessions, conversation state, disputes and handoff tickets are in SQLite. A restart keeps them.
-  - Gold comes from the PII-free view in the DuckDB file of the pipeline when the file is present. Otherwise it comes from the labelled mock.
-  - Fraud and high-amount handoffs use synthetic thresholds per account country and currency. A bank replaces them in configuration.
-  - Code masks personal identifiers in the customer text before any model call.
-  - The service uses `router_v2`, a prompted LLM that only labels the intent, when a model is configured. It uses the keyword baseline otherwise and on any model failure. Both are behind one model port.
-  - Before the model call, code refuses a request to reveal the prompt and records injection attempts. Code narrows the list of charges with the words of the customer. A "why?" gets its answer from the stored policy decision.
-- **Human in the loop:** each handoff becomes a ticket with the reason, a summary of the conversation, the verified facts and every action that the system tried. The advisor reads it in a read-only view of the same page, with the trace of each step.
-
-The submission runs the same code with documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user and a synthetic policy. The [mocks](docs/architecture/mocks.md) page explains each mock and why the public link keeps the Gold mock. The [what is real](docs/architecture/what-is-real.md) page lists each mock, each data source and the type of each number.
-
-## Demo and production
-
-The same code runs in the demo and in production. These parts differ:
-
-| Part | Demo (this repository and the public link) | Production |
+| Try it | Read it | Check it |
 |---|---|---|
-| Gold data | A labelled mock store, or the PII-free DuckDB view of the pipeline when you run it locally with the data file | Gold on Azure Databricks |
-| Identity | Test users with a password. The public link has no passwordless entry. The credentials come in the submission email | The identity provider of the bank |
-| Advisor | A demo advisor user with a read-only view | A human advisor. Tickets go to the CRM of the bank through a queue |
-| Case store | SQLite | PostgreSQL |
-| Dispute policy | Team-written files marked `synthetic: true` | The policy that the bank approves |
-| Opening a dispute | The case store records the case. No bank system receives it | The dispute system of the bank |
+| [Live demo](https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io) (credentials in the submission email) | [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) · [Slides](site/slides/deck.html) · [Product](docs/product.md) | [What is real](docs/architecture/what-is-real.md) · [Evidence index](evidence/README.md) · [Metrics report](docs/build/metrics-report.md) |
 
-The [mocks](docs/architecture/mocks.md) page explains each mock and its limit. The [what is real](docs/architecture/what-is-real.md) page labels each part.
+![The customer chat in Spanish (es-MX): the customer names a charge, confirms it, and gets a verified dispute. The left panel shows each step. The right panel shows the claims and the recent charges.](docs/build/screenshots/ui-product/chat-es-MX-desktop.png)
 
-**Which Gold does a local run use?** `SENTINEL_GOLD_SOURCE` has three values:
+## Contents
 
-- `mock`: the labelled mock store. The test users `CUST-0001`, `CUST-0002` and `CUST-0003` exist only here.
-- `duckdb`: the real Gold file. Its customers have other ids (`CLI-…`).
-- `auto` (the default): `duckdb` when the data file is present, `mock` otherwise.
+1. [What Sentinel does](#what-sentinel-does)
+2. [How it works](#how-it-works)
+3. [Headline results](#headline-results)
+4. [Where to find everything](#where-to-find-everything)
+5. [Run it locally](#run-it-locally)
+6. [Demo and production](#demo-and-production)
+7. [Limitations](#limitations)
+8. [Roadmap](#roadmap)
+9. [Team and rules](#team-and-rules)
 
-If the data file is on your machine and you keep `auto`, a test user finds no charges. The page shows an empty list of recent charges, and the chat can only offer an advisor. For the demo, set `SENTINEL_GOLD_SOURCE=mock`. `GET /api/v1/health` shows the active source in `gold_source`.
+## What Sentinel does
 
-## What the assistant resolves
-
-The assistant handles the **intake and triage** of a transaction dispute. It does not decide the outcome of the dispute and it does not move money.
+Sentinel is an assistant, not only a chatbot. It handles the **intake and triage** of a transaction dispute. It does not decide the outcome of the dispute, and it does not move money.
 
 | Step | What the code does |
 |---|---|
@@ -74,7 +43,40 @@ The assistant handles the **intake and triage** of a transaction dispute. It doe
 | Act and verify | Opens the case once (idempotent) and reads it back before it says that the case exists |
 | Hand off | Files a ticket for an advisor with the request, the verified facts, the actions, the evidence and the open questions |
 
-The system files a handoff ticket on its own when a rule asks for it: the customer insists on a person, says that the charge is not theirs, a fraud or high-amount rule fires, required fields are missing, or the third question has no answer. The advisor view is read-only. The decision on the dispute belongs to the bank. A **safe automated resolution** in the metrics means that an eligible case ends in a verified case with no person. A correct handoff or refusal does not count as resolved. It counts under escalation quality.
+The system files a handoff ticket on its own when a rule asks for it:
+
+- The customer insists on a person.
+- The customer says that the charge is not theirs.
+- A fraud rule or a high-amount rule fires.
+- Required fields are missing.
+- The third question has no answer.
+
+The advisor reads the ticket in a read-only view of the same page, with the trace of each step. The decision on the dispute belongs to the bank.
+
+## How it works
+
+The guiding principle: **AI understands; code executes and verifies.** The loop is the one that the hackathon asks for: Understand → Decide → Act → Verify → Escalate. Policy, confirmations and the session are in code. The model never sees the customer identifiers.
+
+![Architecture of Sentinel, demo view. The model labels the intent. The code masks, decides, acts and verifies. Each part is marked real or mock.](site/diagrams/architecture-light.svg)
+
+| Layer | What it is |
+|---|---|
+| **Data** | A Delta Lakehouse: S3 raw data → Bronze → Silver → Gold. DuckDB runs it locally. The Azure Databricks mode is implemented and not deployed. Both use the same `sentinel_data` package. |
+| **Service** | One FastAPI process with the page, the orchestrator, the policy engine and four session-bound tools. One API under `/api/v1`: `auth`, `transactions`, `chat`, `disputes` (two steps), `handoffs` (advisor) and `health`. |
+| **Router** | `router_v2`, a prompted GLM 5.3 Flash that only labels the intent. The keyword baseline answers a turn when the model fails. Both are behind one model port. |
+| **State** | Sessions, conversation state, disputes and handoff tickets are in SQLite. A restart keeps them. |
+| **Human in the loop** | Each handoff becomes a ticket with the reason, a summary, the verified facts and every action that the system tried. |
+
+Safety in code, before and around the model call:
+
+- Code masks personal identifiers in the customer text.
+- Code refuses a request to reveal the prompt and records injection attempts.
+- Fraud and high-amount handoffs use synthetic thresholds per account country and currency. A bank replaces them in configuration.
+- A "why?" gets its answer from the stored policy decision, not from the model.
+
+The [architecture](docs/architecture/README.md) pages give the target system, the demo with its mocks, and the specification.
+
+**Live link.** The demo runs on Azure Container Apps with one replica until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). It uses labelled mock data and `router_v2` (prompt `v2`), and it keeps its state on an Azure Files share. The live revision is from 2026-10-05. Its `/health` `bundle_hash` is `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement.
 
 ## Headline results
 
@@ -89,106 +91,141 @@ All numbers are **simulation** on team-written cases, not production measurement
 | Cost per successful resolution (USD) | 0 | 0.000561 | `system.<version>.cost_usd.per_resolution` |
 | Unsafe outcomes, adversarial suite | 0/42 | | [adversarial](evidence/adversarial/20261005T014816Z/summary.json): `totals.unsafe_outcome_rate` |
 
-The single v8 measurement ran six candidates on two sealed sets. The verdict serves `router_v2`: `router_v3` has the higher kind accuracy (0.974) but fails the zero-unsafe-wording gate (4/93) and the subtype gate (0.8971 against 0.95). Decision [018](docs/build/decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05) gives the gates and the failed rules.
+A **safe automated resolution** means that an eligible case ends in a verified case with no person. A correct handoff or refusal does not count as resolved. It counts under escalation quality.
+
+The single v8 measurement ran six candidates on two sealed sets. The verdict serves `router_v2`. `router_v3` has the higher kind accuracy (0.974), but it fails the zero-unsafe-wording gate (4/93) and the subtype gate (0.8971 against 0.95). Decision [018](docs/build/decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05) gives the gates and the failed rules.
 
 The [metrics report](docs/build/metrics-report.md) gives the intervals, the breakdown by language and country, and the limits.
 
-## Quickstart
+## Where to find everything
 
-Install and run the service (Python 3.12 or newer, from the repository root):
+### Start with a question
+
+| You want to know | Go to |
+|---|---|
+| What the challenge asks and how the judges score it | [The challenge](docs/overview.md) |
+| What the product does for a bank | [Product](docs/product.md) · [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) |
+| Which parts are real and which are mocks | [What is real](docs/architecture/what-is-real.md) · [Mocks](docs/architecture/mocks.md) |
+| Why we chose transaction disputes | [Flow selection](docs/build/flows/03-flow-selection.md) |
+| Why each main choice, with its evidence | [Rationale](docs/rationale/README.md) · [Decisions](docs/build/decisions/) |
+| How we measured the model and the system | [Metrics report](docs/build/metrics-report.md) · [Model card](docs/build/model-card.md) · [Evidence index](evidence/README.md) |
+| Which requirements are done | [Requirements](docs/requirements/requirements.md#status-by-priority) |
+| How the assistant talks | [Conversation rules](docs/build/conversation.md) · [Glossary](docs/glossary/) |
+| How safe it is | [Security](docs/build/security.md) · [Attack coverage](docs/rationale/attack-coverage.md) |
+| What it costs | [Cost](docs/build/cost.md) · [ROI](docs/build/roi.md) (projection) · [Sizing](docs/sizing-capacity.md) |
+| What the data holds | [Dataset](docs/data/dataset.md) · [Data dictionary](docs/data/reference/) · [Inventory](docs/data_inventory.md) |
+
+The [documentation index](docs/README.md) gives the full reading order.
+
+### Repository map
+
+| Path | What it holds |
+|---|---|
+| **Product code** | |
+| [`sentinel-ai-core/`](sentinel-ai-core/README.md) | The service: FastAPI, the orchestrator, the policy engine, the tools, the chat page and the advisor view (`app/`). The evaluation harness with the development cases, the sealed held-out set and the resolution set (`eval/`). The tests, with the adversarial suite (`tests/`). |
+| [`sentinel-data-engine/`](sentinel-data-engine/README.md) | The medallion pipeline (S3 → Bronze → Silver → Gold) on Delta Lake. 13 LATAM Bank tables, about 19 M records. |
+| [`deploy/azure/`](deploy/azure/README.md) | The Azure Container Apps deployment script, the judge users and the log queries |
+| **Proof** | |
+| [`evidence/`](evidence/README.md) | Frozen, reproducible runs. Each run has its scripts and a `summary.json`. The index gives the status and the data type of each run. |
+| [`docs/build/metrics-report.md`](docs/build/metrics-report.md) | The full measurement, with intervals and limits |
+| **Documentation** | |
+| [`docs/architecture/`](docs/architecture/README.md) | System architecture, demo architecture, specification, mocks and what is real |
+| [`docs/rationale/`](docs/rationale/README.md) | Why each choice, with an evidence table and the slide sentence |
+| [`docs/build/`](docs/build/) | Conversation rules, decisions, metrics, security, cost and delivery |
+| [`docs/requirements/`](docs/requirements/requirements.md) | Every requirement, with its status, sources and evidence |
+| [`docs/data/`](docs/data/), [`docs/glossary/`](docs/glossary/) | The dataset, the official data dictionary and the locale vocabulary |
+| **Pitch** | |
+| [`site/`](site/) | The project site on GitHub Pages, in English, Spanish and Portuguese. The slides (`site/slides/`) and the diagrams (`site/diagrams/`). |
+| [`branding/`](branding/BRANDING.md) | The brand tokens, the fonts and the chat styles |
+| [`video/`](video/script.md) | The video script: the voice-over, the shot list and the mock page for each shot |
+| **Tooling** | |
+| [`scripts/`](scripts/) | Repository scripts: site numbers, diagrams, link checks, slide export and load runs |
+| [`openspec/`](openspec/) | OpenSpec specs and the archive of each change |
+| [`.github/workflows/`](.github/workflows/tests.yml) | CI: both test suites, the Markdown links and the requirement status that the specs cite |
+| [`team/`](team/) | Plan, tasks and pending decisions |
+
+## Run it locally
+
+You need Python 3.12 or newer.
+
+**1. Start the demo** with the labelled mock store:
 
 ```bash
 cd sentinel-ai-core
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
-uvicorn app.main:app
+SENTINEL_GOLD_SOURCE=mock SENTINEL_REFERENCE_DATE=2026-06-17 uvicorn app.main:app
 ```
 
-Without a model, the service uses the keyword baseline. To use the measured router:
+Open `http://localhost:8000/ui`. Log in as `CUST-0001`, `CUST-0002` or `CUST-0003`, with the password `Testpass-001`. These credentials are false and only for local runs and tests. The public link uses the credentials of the submission email.
+
+**2. See the advisor side.** Start the service with the demo roles:
+
+```bash
+SENTINEL_GOLD_SOURCE=mock SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
+```
+
+Ask for a person two times as a customer. Then log in as `ADV-0001` with the password `Advisor-001`.
+
+**3. Use the measured router.** Without a model, the service uses the keyword baseline.
 
 1. Copy `.env.example` to `.env`.
 2. Fill in the `SENTINEL_LLM_*` values ([`.env.example`](.env.example), [secrets guide](sentinel-ai-core/README.md)).
 3. Load the file: `set -a; source ../.env; set +a`.
 4. Start `uvicorn` again. `GET /api/v1/health` shows the active model.
 
-To publish to Azure, read [`deploy/azure/README.md`](deploy/azure/README.md).
-
-Open `http://localhost:8000/ui`. For the demo, start the service with the labelled mock store (see [Demo and production](#demo-and-production)):
+**4. Run the tests.** They need no model keys and no cloud credentials, and they write no evidence:
 
 ```bash
-cd sentinel-ai-core
-SENTINEL_GOLD_SOURCE=mock SENTINEL_REFERENCE_DATE=2026-06-17 uvicorn app.main:app
+cd sentinel-ai-core && SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
+cd ../sentinel-data-engine && pip install -e ".[dev]" && python3 -m pytest -q
 ```
 
-Log in with a test customer: `CUST-0001`, `CUST-0002` or `CUST-0003`, password `Testpass-001`. These credentials are false and for local runs and tests. The public link uses the credentials of the submission email.
+Useful details:
 
-To see the advisor side, start the service with the demo roles. Log in as `ADV-0001` (password `Advisor-001`) after a customer asks for a person two times:
-
-```bash
-cd sentinel-ai-core
-SENTINEL_GOLD_SOURCE=mock SENTINEL_DEMO_AUTH=1 uvicorn app.main:app
-```
-
-The state is in `sentinel-ai-core/var/sentinel.db` (gitignored). Delete it for a clean demo.
-
-To see the structured turn log during a chat (from the repository root):
-
-```bash
-tail -f sentinel-ai-core/var/turns.jsonl
-```
-
-Run the checks of the workflow. They need no model keys, no cloud credentials and write no evidence:
-
-```bash
-cd sentinel-ai-core
-pip install -e ".[dev]"
-SENTINEL_WRITE_EVIDENCE=0 python3 -m pytest -q
-
-cd ../sentinel-data-engine
-pip install -e ".[dev]"
-python3 -m pytest -q
-```
-
-[`.github/workflows/tests.yml`](.github/workflows/tests.yml) runs both suites on each push and pull request. It also checks the relative links of the Markdown files and the requirement status that the specs cite.
-
-To replay a frozen evaluation run offline, read the [evidence index](evidence/README.md#evaluation-runs). On 2026-10-05, `2024Q4-resolution-v1`, `2024Q4-resolution-v2` and `2024Q4-train-v1` matched their frozen summaries. `2024Q4-eval-v7`, `2024Q4-eval-v8` and both calibration runs differ from them. The system block of `2024Q4-eval-v7` does not reproduce, for the reason in the [metrics report](docs/build/metrics-report.md#9-reproduction). The `eval-v8` difference is only in `router_v3` and `router_v3_cutoffs`: 30 transient `unavailable` calls that a later pass recorded ([018](docs/build/decisions/018-evaluation-acceptance.md#the-verify-limitation)). The cause of the calibration differences is not yet confirmed. The index gives the result for each run.
-
-The data pipeline is in [`sentinel-data-engine/`](sentinel-data-engine/README.md). Sync the raw tables from the organizer bucket into `data/raw/` with the credentials in its `.env`. Then build `data/gold_bank.duckdb` with one command (both gitignored; see its quickstart). The [inventory](docs/data_inventory.md) lists the data sources.
-
-## Requirements coverage
-
-| Priority | Total | Done | In progress | Pending | Done % |
-|---|---|---|---|---|---|
-| P0 | 41 | 36 | 3 | 1 | 88% |
-| P1 | 12 | 11 | 0 | 1 | 92% |
-| P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 48 | 3 | 5 | 84% |
-
-| Status | Requirements |
+| Topic | Detail |
 |---|---|
-| **Done** | **Conversation and safety:** REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person · REQ-0048 decision order. **Demo:** REQ-0009 normal case · REQ-0010 ambiguous case · REQ-0011 human case · REQ-0012 Spanish and Portuguese · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. **ML:** REQ-0016 learned component against baseline ([eval-v8](evidence/evaluation-runs/2024Q4-eval-v8/summary.json)) · REQ-0017 valid labels, sealed and measured once · REQ-0019 experiment tracking · REQ-0020 same held-out set. **Metrics and analysis:** REQ-0014 flow analysis · REQ-0022 metrics with n · REQ-0024 breakdown by variant and country · REQ-0050 country monitoring · REQ-0053 sizing · REQ-0055 outcome metrics ([resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)) · REQ-0057 ROI as a projection. **Operations:** REQ-0021 failure tests ([adversarial](evidence/adversarial/20261005T014816Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0028 reproducible setup · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0047 no personal data to the model · REQ-0049 country as configuration. **Data:** REQ-0015 pipeline with contracts · REQ-0018 incremental processing · REQ-0031 sources labelled by origin · REQ-0054 no external data. **Delivery:** REQ-0030 declared limits and roadmap · REQ-0034 clean repository · REQ-0035 live link · REQ-0036 slides |
-| **In progress** | REQ-0013 the 20-label human check · REQ-0051 language check · REQ-0052 path to production (alerts by country) · REQ-0056 trade-offs in the presentation |
-| **Pending** | REQ-0037 video · optional: REQ-0023 LLM judge (not used), REQ-0044 local terms, REQ-0045 app-error context, REQ-0046 handoff routing |
+| State | `sentinel-ai-core/var/sentinel.db` (gitignored). Delete it for a clean demo. |
+| Turn log | `tail -f sentinel-ai-core/var/turns.jsonl` shows the structured log of each turn. |
+| Gold source | `SENTINEL_GOLD_SOURCE` is `mock`, `duckdb` or `auto` (the default). `auto` uses the real Gold file when it is present. The test users exist only in `mock`. `GET /api/v1/health` shows the source in `gold_source`. |
+| Data pipeline | Sync the raw tables into `data/raw/`, then build `data/gold_bank.duckdb`. See the [pipeline quickstart](sentinel-data-engine/README.md). Both folders are gitignored. |
+| Replay a run | The [evidence index](evidence/README.md#evaluation-runs) tells how to replay each frozen run offline, and which runs match their frozen summary. |
+| Deploy | [`deploy/azure/README.md`](deploy/azure/README.md) |
 
-The [requirements](docs/requirements/requirements.md#status-by-priority) page gives the status per requirement and per type, with the evidence of each one.
+## Demo and production
+
+The same code runs in the demo and in production. Each mock keeps the production contract, so production replaces a backend, not code.
+
+| Part | Demo (this repository and the public link) | Production |
+|---|---|---|
+| Gold data | A labelled mock store, or the PII-free DuckDB view of the pipeline when you run it locally with the data file | Gold on Azure Databricks |
+| Identity | Test users with a password. The public link has no passwordless entry. The credentials come in the submission email | The identity provider of the bank |
+| Advisor | A demo advisor user with a read-only view | A human advisor. Tickets go to the CRM of the bank through a queue |
+| Case store | SQLite | PostgreSQL |
+| Dispute policy | Team-written files marked `synthetic: true` | The policy that the bank approves |
+| Opening a dispute | The case store records the case. No bank system receives it | The dispute system of the bank |
+
+The [mocks](docs/architecture/mocks.md) page gives the reason, the limit and the production backend of each mock.
 
 ## Limitations
 
-What the prototype does not do (REQ-0013, REQ-0030). The [sizing](docs/sizing-capacity.md) gives the capacity limits.
+What the prototype does not do (REQ-0013, REQ-0030). Each row links to the detail.
 
-- **Mocks:** the submission runs documented mocks: a test session, SQLite instead of PostgreSQL, a demo advisor user, a synthetic policy, a stand-in model in the test suite, and a labelled Gold mock on the public link. Each mock keeps the production contract, so production replaces a backend, not code. The [mocks](docs/architecture/mocks.md) page gives the reason, the limit and the production backend of each one.
-- **Charge not yet in Gold:** a charge that has not reached Gold is treated as not found. The assistant names what it searched and shows the charges that it can verify. After repeated questions with no match it files a handoff. It does **not** open a case marked as pending verification, which the [conversation rules](docs/build/conversation.md#when-data-is-not-up-to-date) describe as the target behavior. The Gold of the pipeline hides the charges dated after the reference date (`as_of`). The labelled mock does not.
-- **Data:** synthetic and in Spanish only. Accounts are only in México, Colombia and Argentina, and Mexican accounts are only in USD. The data cannot support a charge investigation: the balance has no usable as-of date, complaints cannot be tied to a charge, blocked products have no transactions, and no customer signal adds to `fraud_score` ([investigation data support](docs/rationale/investigation-data-support.md)). A `fraud_score` above 30 is always fraud, which is an artefact of the data generator. Real Gold runs locally only. The public link uses the labelled mock.
-- **Policy:** the dispute window is a declared demonstration policy (`synthetic: true`), not the rule of a bank. One 90-day window serves the three countries. The sources disagree: Argentina counts 30 days from the receipt of the statement, and we found no fixed window for Colombia. The engine cannot express a different window start per country, provisional credit or a response time ([021](docs/build/decisions/021-dispute-policy-sources.md)). The "why?" answer states that the rule is a demonstration policy.
-- **Languages:** the Portuguese (`pt-BR`) cases are model-written. No native speaker reviewed them, and the variants are not strictly equivalent ([018](docs/build/decisions/018-evaluation-acceptance.md)). A second model back-translated the three demo lines. A Colombian teammate accepted the es-CO lines. A model, not a speaker, checked the Mexican and Argentine lines. The dataset transcripts are two Spanish templates, not customer language ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)).
-- **Site translations:** the Spanish and Portuguese copies of the pitch site and the slides (`site/es-419/`, `site/pt-br/`) are model-written translations of the English pages. No native speaker reviewed them. English is the reference.
-- **Model:** the measured router is more accurate than the keyword baseline on the sealed set ([eval-v8](evidence/evaluation-runs/2024Q4-eval-v8/summary.json), [metrics report](docs/build/metrics-report.md)). The served prompt is `v2`; `v3` has the higher kind accuracy but fails the unsafe-wording and subtype gates ([018](docs/build/decisions/018-evaluation-acceptance.md#result-v8-added-2026-10-05)). A turn that falls back to the baseline has the accuracy of the baseline, and the turn log marks it. The model classifies a greeting alone as out of scope; the sealed set has no such case. The chat answers it with an offer and hands off on the third such turn in a row. The confidence cut-offs ([calibration-v1](evidence/evaluation-runs/2024Q4-calibration-v1/summary.json)) are descriptive (validation n = 26) and off by default. The raw cut-off of prompt `v3` is 0.99998456; the two-decimal rounding makes it 1.0, and a cut-off near 1 removes correct answers and not errors ([cutoff diagnosis](evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json)). Two validation rows have no confidence (one empty output, one cut JSON); the per-turn baseline fallback covers them. The learned charge selector ([test-v1](evidence/charge-ranker/test-v1/summary.json), [025](docs/build/decisions/025-charge-selector.md)) stays off in the demo, because it fails the serving rule.
-- **State:** SQLite and one replica. Login-attempt and write-rate counters are per process. PostgreSQL is the path to more than one instance.
-- **Privacy:** code masks free customer text by pattern before the model call. It does not detect personal data outside those patterns.
-- **Safety evidence:** 42 attacks with `0/42` unsafe outcomes ([adversarial run](evidence/adversarial/20261005T014816Z/summary.json)). Three injection attempts pass only because the stand-in model is the keyword baseline; they now also run against the real router model, and all 3 pass ([real-model run](evidence/adversarial/20261005T204313Z/summary.json)). Category B (unauthorized access) documents one known limitation, B4: a replayed bearer cookie is accepted. The attack block of `eval-v8` tests attacks against the live model. Zero unsafe outcomes on a small set does not prove zero risk.
-- **Resolution:** a simulation over the mock store only. [`2024Q4-resolution-v2`](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) resolves the same eligible cases for the baseline and `router_v2`, with no unsafe outcome and no missed handoff. It is not a field resolution rate: the set uses only the charges in the mock store, and it has no pending charge ([022](docs/build/decisions/022-resolution-acceptance.md)).
-- **Capacity:** the load run measures `/api/v1/chat` on one replica with recorded answers: about 5 requests a second at 0.5 vCPU and 1 GiB, and 17.51 on the host ([load run](evidence/robustness/20261005T211031Z/summary.json), [capacity and latency](docs/rationale/capacity-and-latency.md)). The live part is small. A laptop or a local container is not the cloud replica.
-- **Monitoring and ROI:** country monitoring uses a replayed, simulated workload ([evidence](evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)). No field log exists. The ROI is a break-even projection with an assumed advisor cost, not a measured saving ([roi](docs/build/roi.md)).
+| Area | Limitation |
+|---|---|
+| **Mocks** | A test session, SQLite, a demo advisor user, a synthetic policy, a stand-in model in the test suite, and a labelled Gold mock on the public link ([mocks](docs/architecture/mocks.md)). |
+| **Charge not yet in Gold** | The assistant treats it as not found. It names what it searched and, after repeated questions, files a handoff. It does **not** open a case marked as pending verification, the target behavior in the [conversation rules](docs/build/conversation.md#when-data-is-not-up-to-date). |
+| **Data** | Synthetic and in Spanish only. The data cannot support a charge investigation. A `fraud_score` above 30 is always fraud, an artefact of the generator ([investigation data support](docs/rationale/investigation-data-support.md)). Real Gold runs locally only. |
+| **Policy** | One 90-day window for the three countries, marked `synthetic: true`. The sources disagree per country. The engine cannot express a different window start, provisional credit or a response time ([021](docs/build/decisions/021-dispute-policy-sources.md)). |
+| **Languages** | A model wrote the Portuguese (`pt-BR`) cases. No native speaker reviewed them. A Colombian teammate accepted the es-CO lines. A model checked the Mexican and Argentine lines ([018](docs/build/decisions/018-evaluation-acceptance.md)). The dataset transcripts are two Spanish templates ([evidence](evidence/transcript-chats/20261002T144836Z/summary.json)). |
+| **Site translations** | A model wrote the Spanish and Portuguese copies of the site and the slides. English is the reference. |
+| **Model** | A turn that falls back to the baseline has the accuracy of the baseline. The confidence cut-offs are descriptive (validation n = 26) and off by default ([calibration-v1](evidence/evaluation-runs/2024Q4-calibration-v1/summary.json), [cutoff diagnosis](evidence/evaluation-runs/2024Q4-cutoff-diagnosis-v1/summary.json)). The learned charge selector stays off, because it fails the serving rule ([025](docs/build/decisions/025-charge-selector.md)). |
+| **State** | SQLite and one replica. Login and write-rate counters are per process. PostgreSQL is the path to more than one instance. |
+| **Privacy** | Code masks free text by pattern. It does not detect personal data outside those patterns. |
+| **Safety evidence** | `0/42` unsafe outcomes ([adversarial run](evidence/adversarial/20261005T014816Z/summary.json)). The three injection attempts also pass against the real router model ([real-model run](evidence/adversarial/20261005T204313Z/summary.json)). Known limitation B4: the service accepts a replayed bearer cookie. Zero unsafe outcomes on a small set does not prove zero risk. |
+| **Resolution** | A simulation over the mock store only, with no pending charge. It is not a field resolution rate ([022](docs/build/decisions/022-resolution-acceptance.md)). |
+| **Capacity** | About 5 requests a second on one replica at 0.5 vCPU and 1 GiB, with recorded answers ([load run](evidence/robustness/20261005T211031Z/summary.json), [capacity and latency](docs/rationale/capacity-and-latency.md)). |
+| **Monitoring and ROI** | Country monitoring uses a replayed, simulated workload ([evidence](evidence/monitoring/2024Q4-resolution-v2-replay/summary.json)). The ROI is a break-even projection, not a measured saving ([roi](docs/build/roi.md)). |
 
 ## Roadmap
 
@@ -203,42 +240,15 @@ What the team did not build, and why. Each row cites its evidence (REQ-0030, REQ
 | Policy retrieval | Read the dispute policy from the documents of the bank | The policy stays in code. The sources disagree and we have no bank document. | [policy sources](docs/rationale/policy-sources.md); the plan for the measure is in [metrics](docs/build/metrics.md) |
 | Handoff routing | Send a handoff to an advisor with the right language and specialty | Not started. The demo has one advisor view. | [REQ-0046](docs/requirements/frontend-backend.md#req-0046) |
 
-## Reading guide
-
-1. **[The challenge](docs/overview.md):** what we must build, how the judges score it and what we submit.
-2. **[Architecture](docs/architecture/README.md):** the target system, the demo with its mocks, and the specification.
-3. **[What is real](docs/architecture/what-is-real.md):** real, mock, synthetic, team-generated, simulation or projection, for each part.
-4. **[Flow selection](docs/build/flows/03-flow-selection.md):** why transaction disputes, with data and reproducible measurements.
-5. **[Rationale](docs/rationale/README.md):** why each main choice, with its evidence and the slide sentence.
-6. **[Evidence](evidence/README.md):** every frozen run, its status and its data type.
-
-The [documentation index](docs/README.md) covers everything else.
-
-## Repository map
-
-| Path | What it holds |
-|---|---|
-| [`sentinel-data-engine/`](sentinel-data-engine/README.md) | Medallion pipeline (S3 → Bronze → Silver → Gold) on Delta Lake. DuckDB locally. The Databricks mode is implemented and not deployed. 13 LATAM Bank tables, about 19 M records. |
-| [`sentinel-ai-core/`](sentinel-ai-core/) | The service: FastAPI with one API under `/api/v1`, the policy engine, the orchestrator and the chat UI. State in SQLite. A DuckDB Gold adapter with a fallback to the labelled mock. The served `router_v2` with a baseline fallback. The evaluation harness (`eval/`): development cases, the sealed held-out set and the multi-turn resolution set. Owners are in [team/plan.md](team/plan.md#folders). |
-| [`docs/`](docs/README.md) | Architecture, the challenge and the data, requirements, rationale, design rules, decisions and delivery |
-| [`evidence/`](evidence/README.md) | Frozen, reproducible runs. The index gives the status and data type of each run. |
-| [`deploy/azure/`](deploy/azure/README.md) | The deployment script and its notes |
-| [`scripts/`](scripts/) | Repository scripts, for example the generator of the flow measurements page |
-| [`team/`](team/) | Plan, tasks and pending decisions |
-
-## Team workflow
-
-Planning is in [`team/`](team/), apart from the project documentation:
-
-- **[Pending decisions](team/pending-decisions.md):** what is still open and when the team must decide it.
-- **[Tasks](team/tasks.md):** who does what, and when.
-- **[Plan](team/plan.md):** schedule, decisions, working method and mocks.
-
-## Rules
+## Team and rules
 
 - **No secrets and no data in the repository.** The repository is public. Credentials go in `.env` (gitignored). Teammates share them by direct message.
-- **English, in ASD-STE100.** Code and documents are in English, written in simplified technical English. The assistant answers in Spanish and Portuguese.
+- **English, in ASD-STE100.** Code and documents are in English, in simplified technical English. The assistant answers in Spanish and Portuguese.
+- **Label what is real.** Each number is real, mock, synthetic, team-generated, simulation or projection. A simulation is never shown as a production measurement.
 
-## For agents
-
-[`AGENTS.md`](AGENTS.md) explains the layout, the language rule and what must never go into a commit.
+| For | Read |
+|---|---|
+| A person who contributes | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| An AI agent | [`AGENTS.md`](AGENTS.md) |
+| The plan, the tasks and the open decisions | [`team/plan.md`](team/plan.md), [`team/tasks.md`](team/tasks.md), [`team/pending-decisions.md`](team/pending-decisions.md) |
+| The change history | [`CHANGELOG.md`](CHANGELOG.md) |
