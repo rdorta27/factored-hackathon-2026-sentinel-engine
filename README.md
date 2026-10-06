@@ -6,15 +6,19 @@ last_reviewed: 2026-10-05
 
 # Sentinel Engine
 
+| 🎯 Pitch | 💬 Live demo | 📊 Presentation | 🎬 Video |
+|---|---|---|---|
+| [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) | [Demo on Azure](https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io) | [Slides](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/slides/deck.html) | <!-- video-url -->Link at submission<!-- /video-url --> |
+
+The demo credentials come in the submission email.
+
 **The AI talks. The rules decide.**
 
 A bank customer says "I do not recognize this charge". Sentinel finds the charge, checks the policy, opens a verified dispute in one conversation, or gives an advisor a complete case file. It speaks Spanish and Portuguese. It acts only when the policy allows it. It never invents a fact.
 
 Factored AI & Data Hackathon 2026 · Transaction disputes for a bank in México, Colombia and Argentina · Prototype
 
-| Try it | Read it | Check it |
-|---|---|---|
-| [Live demo](https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io) (credentials in the submission email) | [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) · [Slides](site/slides/deck.html) · [Product](docs/product.md) | [What is real](docs/architecture/what-is-real.md) · [Evidence index](evidence/README.md) · [Metrics report](docs/build/metrics-report.md) |
+Read more: [Product](docs/product.md) · [What is real](docs/architecture/what-is-real.md) · [Evidence index](evidence/README.md) · [Metrics report](docs/build/metrics-report.md)
 
 ![The customer chat in Spanish (es-MX): the customer names a charge, confirms it, and gets a verified dispute. The left panel shows each step. The right panel shows the claims and the recent charges.](docs/build/screenshots/ui-product/chat-es-MX-desktop.png)
 
