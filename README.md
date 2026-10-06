@@ -8,7 +8,7 @@ last_reviewed: 2026-10-05
 
 | 🎯 Pitch | 💬 Live demo | 📊 Presentation | 🎬 Video |
 |---|---|---|---|
-| [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) | [Demo on Azure](https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io) | [Slides](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/slides/deck.html) | <!-- video-url -->Link at submission<!-- /video-url --> |
+| [Project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) | [Demo on Azure](https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io) | [Slides](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/slides/deck.html) | <!-- video-url -->[Watch on YouTube](https://youtu.be/0bjonPPvhEA)<!-- /video-url --> |
 
 The demo credentials come in the submission email.
 

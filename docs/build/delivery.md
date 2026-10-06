@@ -83,7 +83,7 @@ The owner sends this email with the submission. Fill in each placeholder. Do not
 - **Repository:** `<repository URL>`
 - **Live link:** `<link>`
 - **Slides:** `<slides URL or file>`
-- **Video:** `<video URL>`
+- **Video:** https://youtu.be/0bjonPPvhEA
 
 ### Credentials
 
