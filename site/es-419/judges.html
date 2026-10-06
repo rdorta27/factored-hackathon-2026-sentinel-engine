@@ -112,12 +112,12 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
         </div>
       </div>
       <h3>Resultados por idioma</h3>
-      <p class="note"><span data-num-type="lang_es_ar">Simulación</span>. Exactitud de intención del enrutador LLM en los casos reservados. Cada variante tiene una muestra pequeña. El rango de 95% es amplio, así que no leas una diferencia entre variantes como una disparidad. Mira el <a href="diagrams/evidence.html#language">explorador de evidencia</a> para ver el rango de cada variante.</p>
+      <p class="note"><span data-num-type="lang_es_ar">Simulación</span>. Exactitud de intención del router LLM en los casos sellados de prueba. Cada variante tiene los mismos casos, escritos en esa variante. El router obtiene lo mismo en cada variante. Ver el <a href="diagrams/evidence.html#language">explorador de evidencia</a>.</p>
       <div class="langs">
-        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">98.6%</span><p>en <span data-num-den="lang_es_ar">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">97.1%</span><p>en <span data-num-den="lang_es_co">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">98.6%</span><p>en <span data-num-den="lang_es_mx">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">98.6%</span><p>en <span data-num-den="lang_pt_br">70</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">81.8%</span><p>en <span data-num-den="lang_es_ar">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">81.8%</span><p>en <span data-num-den="lang_es_co">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">81.8%</span><p>en <span data-num-den="lang_es_mx">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">81.8%</span><p>en <span data-num-den="lang_pt_br">77</span> casos</p></div>
       </div>
       <p class="note">Los casos en portugués los escribió un modelo. Ningún hablante nativo los revisó. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/018-evaluation-acceptance.md">Decisión 018</a>.</p>
     </section>
@@ -127,7 +127,7 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
       <details><summary>¿Está en producción?</summary><p>No. Es un prototipo. Ejecuta el código que ejecutaría producción, con mocks documentados. Ningún número de este sitio es una medición de producción.</p></details>
       <details><summary>¿Qué es un mock?</summary><p>Un sustituto con el mismo contrato que la pieza de producción. Producción reemplaza el backend y conserva el código. La <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">página de mocks</a> lista cada uno con su límite. El <a href="diagrams/architecture.html">diagrama de arquitectura</a> los marca.</p></details>
       <details><summary>¿Por qué el techo de resolución es <span data-num="ceil_resolvable">16</span> de <span data-num-den="ceil_resolvable">56</span>?</summary><p>La política deja resolver solo esos casos simulados. Los demás casos deben terminar en un traspaso o en una pregunta. Tanto la línea base como el enrutador LLM resuelven todos los casos bajo el techo. El conjunto no puede distinguirlos en resolución.</p></details>
-      <details><summary>Entonces, ¿qué aporta el enrutador LLM?</summary><p>Etiqueta mejor la intención: <span data-num="intent_router">98.2%</span> frente a <span data-num="intent_baseline">53.9%</span> de la línea base de palabras clave en <span data-num-den="intent_router">280</span> turnos reservados. Es una simulación con casos escritos por el equipo.</p></details>
+      <details><summary>Entonces, ¿qué aporta el enrutador LLM?</summary><p>Etiqueta mejor la intención: <span data-num="intent_router">81.8%</span> frente a <span data-num="intent_baseline">69.2%</span> de la línea base de palabras clave en <span data-num-den="intent_router">308</span> turnos reservados. Es una simulación con casos escritos por el equipo.</p></details>
       <details><summary>¿Decide el modelo?</summary><p>No. El modelo etiqueta la intención. El código enmascara, busca, decide, actúa y vuelve a leer el caso.</p></details>
     </section>
   </main>

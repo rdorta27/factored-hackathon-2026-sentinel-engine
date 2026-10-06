@@ -87,7 +87,7 @@ def is_opaque(n: Node) -> bool:
     if n.tag in {"code", "br"} or (n.attr("lang") is not None and n.tag != "html"):
         return True
     cls = n.attr("class") or ""
-    if "src" in cls.split() or any(n.attr(a) is not None for a in ("data-num", "data-num-type", "data-num-den")):
+    if "src" in cls.split() or any(n.attr(a) is not None for a in ("data-num", "data-num-round", "data-num-type", "data-num-den")):
         return True
     if n.tag == "a" and n.kids:
         inner = re.sub(r"<[^>]+>", "", n.html()[len(n.start):-len(n.end) or None]).strip()
@@ -106,7 +106,7 @@ def skipped(n: Node) -> bool:
         or (n.attr("lang") is not None and n.tag != "html")
         or n.attr("data-t") == "skip"
         or "src" in cls
-        or any(n.attr(a) is not None for a in ("data-num", "data-num-type", "data-num-den"))
+        or any(n.attr(a) is not None for a in ("data-num", "data-num-round", "data-num-type", "data-num-den"))
     )
 
 

@@ -112,12 +112,12 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
         </div>
       </div>
       <h3>Results by language</h3>
-      <p class="note"><span data-num-type="lang_es_ar">Simulation</span>. Intent accuracy of the LLM router on the held-out cases. Each variant has a small sample. The 95% range is wide, so do not read a gap between variants as a disparity. See the <a href="diagrams/evidence.html#language">evidence explorer</a> for the range of each variant.</p>
+      <p class="note"><span data-num-type="lang_es_ar">Simulation</span>. Intent accuracy of the LLM router on the sealed held-out cases. Each variant holds the same cases, written in that variant. The router scores the same in each variant. See the <a href="diagrams/evidence.html#language">evidence explorer</a>.</p>
       <div class="langs">
-        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">98.6%</span><p>on <span data-num-den="lang_es_ar">70</span> cases</p></div>
-        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">97.1%</span><p>on <span data-num-den="lang_es_co">70</span> cases</p></div>
-        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">98.6%</span><p>on <span data-num-den="lang_es_mx">70</span> cases</p></div>
-        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">98.6%</span><p>on <span data-num-den="lang_pt_br">70</span> cases</p></div>
+        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">81.8%</span><p>on <span data-num-den="lang_es_ar">77</span> cases</p></div>
+        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">81.8%</span><p>on <span data-num-den="lang_es_co">77</span> cases</p></div>
+        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">81.8%</span><p>on <span data-num-den="lang_es_mx">77</span> cases</p></div>
+        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">81.8%</span><p>on <span data-num-den="lang_pt_br">77</span> cases</p></div>
       </div>
       <p class="note">The Portuguese cases are model-written. No native speaker reviewed them. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/018-evaluation-acceptance.md">Decision 018</a>.</p>
     </section>
@@ -127,7 +127,7 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
       <details><summary>Is it in production?</summary><p>No. It is a prototype. It runs the code that production would run, with documented mocks. No number on this site is a production measurement.</p></details>
       <details><summary>What is a mock?</summary><p>A stand-in with the same contract as the production part. Production replaces the backend and keeps the code. The <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">mocks page</a> lists each one with its limit. The <a href="diagrams/architecture.html">architecture diagram</a> marks them.</p></details>
       <details><summary>Why is the resolution ceiling <span data-num="ceil_resolvable">16</span> of <span data-num-den="ceil_resolvable">56</span>?</summary><p>The policy lets only those simulated cases resolve. The other cases must end in a handoff or a question. Both the baseline and the LLM router resolve every case under the ceiling. The set cannot tell them apart on resolution.</p></details>
-      <details><summary>Then what does the LLM router add?</summary><p>It labels the intent better: <span data-num="intent_router">98.2%</span> against <span data-num="intent_baseline">53.9%</span> for the keyword baseline on <span data-num-den="intent_router">280</span> held-out turns. That is a simulation on team-written cases.</p></details>
+      <details><summary>Then what does the LLM router add?</summary><p>It labels the intent better: <span data-num="intent_router">81.8%</span> against <span data-num="intent_baseline">69.2%</span> for the keyword baseline on <span data-num-den="intent_router">308</span> held-out turns. That is a simulation on team-written cases.</p></details>
       <details><summary>Does the model decide?</summary><p>No. The model labels the intent. Code masks, looks up, decides, acts and reads the case back.</p></details>
     </section>
   </main>

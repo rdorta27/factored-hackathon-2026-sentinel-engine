@@ -7,7 +7,7 @@
 <meta name="description" content="Sentinel is the trust layer for bank customer-service AI. It turns an unrecognized charge into a verified case, or a well-informed advisor, in Spanish and Portuguese.">
 <meta name="color-scheme" content="light dark">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Sentinel Engine: the AI converses. The rules decide.">
+<meta property="og:title" content="Sentinel Engine: the AI talks. The rules decide.">
 <meta property="og:description" content="A trust layer for bank customer-service AI. It turns an unrecognized charge into a verified case, or a well-informed advisor.">
 <meta property="og:image" content="https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/preview.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,8 +27,8 @@
   <main id="main">
     <div class="hero">
       <div>
-        <h1>The AI converses. <span>The rules decide.</span></h1>
-        <p class="lead">Sentinel handles "I do not recognize this charge" in Spanish and Portuguese. It acts only when the policy allows it. It never invents a fact.</p>
+        <h1>The AI talks. <span>The rules decide.</span></h1>
+        <p class="lead">The customer says "I do not recognize this charge". Sentinel answers with a verified case in one conversation, or hands an advisor a complete case file. In Spanish and Portuguese. It acts only when the policy allows it, and it never invents a fact.</p>
         <div class="row">
           <a class="btn" href="#demo">Try the demo</a>
           <a class="btn alt" href="diagrams/architecture.html">Explore the architecture</a>
@@ -76,7 +76,7 @@
         <a class="card" href="diagrams/cases.html"><span class="eyebrow">Three cases</span><p>Normal, ambiguous and a person is needed, on one decision map.</p></a>
         <a class="card" href="diagrams/evidence.html"><span class="eyebrow">Evidence</span><p>Every bar with its denominator, its type and its summary field.</p></a>
         <a class="card" href="judges.html"><span class="eyebrow">For judges</span><p>Path to production, how to reproduce a run, responsible AI and short answers.</p></a>
-        <a class="card" href="slides/deck.html"><span class="eyebrow">Slides</span><p>Six slides: why, what, how, proof, your brand, limits and roadmap.</p></a>
+        <a class="card" href="slides/deck.html"><span class="eyebrow">Slides</span><p>Six slides: why, what, how, proof, for the bank, limits and roadmap.</p></a>
       </div>
     </section>
 
@@ -104,9 +104,9 @@
         </div>
         <div class="card">
           <span class="tag" data-num-type="intent_router">Simulation</span>
-          <span class="big" data-num="intent_router">98.2%</span>
-          <p>intent accuracy of the LLM router on <span data-num-den="intent_router">280</span> held-out turns. The keyword baseline scores <span data-num="intent_baseline">53.9%</span>.</p>
-          <span class="src">evaluation-runs/2024Q4-eval-v7 · breakdown.overall.accuracy</span>
+          <span class="big" data-num="intent_router">81.8%</span>
+          <p>of <span data-num-den="intent_router">308</span> sealed test turns understood correctly by the LLM router. The keyword baseline scores <span data-num="intent_baseline">69.2%</span>. A newer prompt scored higher but failed the safety gate, so we did not ship it.</p>
+          <span class="src">evaluation-runs/2024Q4-eval-v8 · candidates.router_v2.intent.accuracy</span>
         </div>
         <div class="card">
           <span class="tag" data-num-type="ceil_resolved">Simulation</span>
@@ -116,8 +116,8 @@
         </div>
         <div class="card">
           <span class="tag data" data-num-type="problem_dispute_calls">Synthetic</span>
-          <span class="big" data-num="problem_dispute_calls">79,191</span>
-          <p>dispute calls in the development window, of <span data-num-den="problem_dispute_calls">464,791</span>. They use <span data-num="problem_dispute_hours">390.8</span> agent hours a month. Only <span data-num="problem_dispute_resolved">43.6%</span> end resolved.</p>
+          <span class="big" data-num-round="problem_dispute_calls">79,000+</span>
+          <p>calls about a disputed charge, out of <span data-num-round="problem_calls">464,000+</span> calls in the development window. They use <span data-num-round="problem_dispute_hours">390+</span> agent hours a month. Only <span data-num="problem_dispute_resolved">43.6%</span> end resolved.</p>
           <span class="src">problem/dev-v1 · demand, hours, reasons</span>
         </div>
       </div>
