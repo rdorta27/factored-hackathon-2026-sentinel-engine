@@ -34,7 +34,7 @@ Source: [`2024Q4-select-v2`](../../evidence/evaluation-runs/2024Q4-select-v2/sum
 | GLM-5.3 | Passes (a) and (c), fails (b) on the strong route | `candidates.<model>.breakdown` |
 | **GLM 5.3 Flash** | Passes (a), (b) and (c) on both routes | `candidates.<model>.json_failures`, `pt_loss` |
 
-GLM 5.3 Flash alone was more accurate than every cheap-and-strong pair on these cases. A larger model on the strong route did not help. The held-out result of this choice is in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) and the [metrics report](../build/metrics-report.md).
+GLM 5.3 Flash alone was more accurate than every cheap-and-strong pair on these cases. A larger model on the strong route did not help. The held-out result of this choice is in [`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json). The final sealed measurement is [`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json). The [metrics report](../build/metrics-report.md) gives both.
 
 The amendment listed fewer strong candidates than the original rule. Under the original rule, GLM 5.3 Flash passes on the strong route. The owner chose this reading, and decision 016 states the conflict.
 

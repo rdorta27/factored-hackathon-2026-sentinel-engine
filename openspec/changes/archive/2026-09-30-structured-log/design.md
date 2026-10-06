@@ -2,7 +2,7 @@
 
 ## Context
 
-`trace_id` already exists per request (`main.py` middleware, `secrets.token_hex(8)`) and reaches `routers/chat.py` via `request.state`. `AuditLogger` (`app/session/audit.py`) logs only auth events with cleartext `customer_id` and IP. `Ports` (`app/orchestrator/step.py`) carries `session_ref` (today a raw token prefix also used in the idempotency key), `tools`, `model`, `country`, `today`. `ModelPort` reports no tokens or cost, so fakes emit constants. No `app/observability/` package exists; `.gitignore` covers `.local/` but not `var/`.
+`trace_id` already exists per request (`main.py` middleware, `secrets.token_hex(8)`) and reaches `routers/chat.py` via `request.state`. `AuditLogger` (`app/session/audit.py`) logs only auth events with cleartext `customer_id` and IP. `Ports` (`app/orchestrator/step.py`) carries `session_ref` (today a raw token prefix also used in the idempotency key), `tools`, `model`, `country`, `today`. `ModelPort` reports no tokens or cost, so fakes emit constants. No `app/observability/` package exists; `.gitignore` does not cover `var/`.
 
 ## Goals / Non-Goals
 

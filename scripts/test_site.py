@@ -176,8 +176,8 @@ def test_deck_has_six_slides_with_the_right_order():
     html = DECK.read_text()
     assert html.count('<section class="slide"') == 6
     labels = re.findall(r'<section class="slide" id="s\d" aria-label="([^"]+)"', html)
-    assert labels == ["Why", "What", "How", "Proof", "Your brand", "Limits and roadmap"]
-    assert "The AI converses." in html and "The rules decide." in html
+    assert labels == ["Why", "What", "How", "Proof", "For the bank", "Limits and roadmap"]
+    assert "The AI talks." in html and "The rules decide." in html
     assert "architecture-light.svg" in html
 
 
@@ -437,10 +437,10 @@ def test_demo_lines_stay_in_their_own_language():
 def test_portuguese_numbers_use_a_decimal_comma():
     pt = lang_path("pt-br", "index.html").read_text()
     en = lang_path("en", "index.html").read_text()
-    assert ">98,2%<" in pt and ">98.2%<" in en
-    assert ">79.191<" in pt and ">79,191<" in en
+    assert ">81,8%<" in pt and ">81.8%<" in en
+    assert ">79.000+<" in pt and ">79,000+<" in en
     es = lang_path("es-419", "index.html").read_text()
-    assert ">98.2%<" in es and ">Simulación<" in es and ">Simulação<" in pt
+    assert ">81.8%<" in es and ">Simulación<" in es and ">Simulação<" in pt
 
 
 def test_all_languages_in_the_browser():

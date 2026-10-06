@@ -37,7 +37,7 @@ The site is updated again after the release (`docs-followups-2`, group 7).
 ## 3. Pitch
 
 - [x] 3.1 Add the `## Roadmap` section to the README. Evidence: `README.md#roadmap` (six items, each with its why and a `summary.json` field or a page), `check_links.py` clean.
-- [x] 3.2 Build the six slides as static HTML in `site/slides/` (1280×720, English), from the local copy of the canvas in `.local/final-push/design/`, and export them to PDF with a headless browser. The slide on limits also names the mocks and their limits, from [mocks](../../../docs/architecture/mocks.md) (moved from `evidence-hardening` 5.2). Evidence: `site/slides/` and the PDF listed in `docs/build/delivery.md`. Slide 3 ("how") shows `site/diagrams/architecture.svg` as its main picture, with the line "The AI converses. The rules decide." under it.
+- [x] 3.2 Build the six slides as static HTML in `site/slides/` (1280×720, English), from the local copy of the canvas kept outside the repository, and export them to PDF with a headless browser. The slide on limits also names the mocks and their limits, from [mocks](../../../docs/architecture/mocks.md) (moved from `evidence-hardening` 5.2). Evidence: `site/slides/` and the PDF listed in `docs/build/delivery.md`. Slide 3 ("how") shows `site/diagrams/architecture.svg` as its main picture, with the line "The AI converses. The rules decide." under it.
 - [x] 3.3 Write the video script, Why → What → How, with the shot list. Evidence: `docs/build/delivery.md`. The "how" part of the script walks through `site/diagrams/architecture.svg`: the shot list names each part and the point where the code decides.
 
 ## 4. Interactive diagrams

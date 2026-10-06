@@ -59,10 +59,10 @@ Counted from the *Status* column of the tables below. Update it when a status ch
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 34 | 5 | 2 | 83% |
+| P0 | 41 | 36 | 3 | 1 | 88% |
 | P1 | 12 | 11 | 0 | 1 | 92% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 46 | 5 | 6 | 81% |
+| **Total** | **57** | 48 | 3 | 5 | 84% |
 
 ## Status by type
 
@@ -72,8 +72,8 @@ Counted from the *Status* column of the tables below. Update it when a status ch
 | [Non-functional](non-functional.md) | 13 | 12 | 1 | 0 | 92% |
 | [Data and ML](data-ml.md) | 10 | 9 | 0 | 1 | 90% |
 | [Analytics](analytics.md) | 7 | 7 | 0 | 0 | 100% |
-| [Delivery](delivery.md) | 8 | 2 | 4 | 2 | 25% |
-| **Total** | **57** | 46 | 5 | 6 | 81% |
+| [Delivery](delivery.md) | 8 | 4 | 3 | 1 | 50% |
+| **Total** | **57** | 48 | 3 | 5 | 84% |
 
 ## Frontend and backend
 
@@ -159,10 +159,10 @@ What the evaluators receive: repository, deployed link, slides, video, limitatio
 | ID | Requirement | P | Area | Depends on | Status |
 |---|---|---|---|---|---|
 | [REQ-0013](delivery.md#req-0013) | Report data and language limits | P0 | analysis | [REQ-0012](frontend-backend.md#req-0012), [REQ-0024](analytics.md#req-0024) | In progress |
-| [REQ-0030](delivery.md#req-0030) | Declare what is missing | P0 | all | [REQ-0013](delivery.md#req-0013), [REQ-0053](analytics.md#req-0053) | In progress |
+| [REQ-0030](delivery.md#req-0030) | Declare what is missing | P0 | all | [REQ-0013](delivery.md#req-0013), [REQ-0053](analytics.md#req-0053) | Done |
 | [REQ-0034](delivery.md#req-0034) | Clean public repository | P0 | all | [REQ-0031](data-ml.md#req-0031) | Done |
 | [REQ-0035](delivery.md#req-0035) | Deployed tool link | P0 | ai | [REQ-0027](non-functional.md#req-0027), [REQ-0034](delivery.md#req-0034) | Done |
-| [REQ-0036](delivery.md#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Pending |
+| [REQ-0036](delivery.md#req-0036) | Presentation, 4 to 6 slides | P0 | all | [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056) | Done |
 | [REQ-0037](delivery.md#req-0037) | Video pitch | P0 | all | [REQ-0009](frontend-backend.md#req-0009), [REQ-0010](frontend-backend.md#req-0010), [REQ-0011](frontend-backend.md#req-0011), [REQ-0035](delivery.md#req-0035) | Pending |
 | [REQ-0051](delivery.md#req-0051) | Everything in English | P0 | all | [REQ-0036](delivery.md#req-0036), [REQ-0037](delivery.md#req-0037) | In progress |
 | [REQ-0052](delivery.md#req-0052) | Path to production | P0 | ai, all | [REQ-0025](non-functional.md#req-0025), [REQ-0050](analytics.md#req-0050) | In progress |
@@ -175,9 +175,9 @@ Chains that still block P0 work (status on 2026-10-05):
 
 - **Data and learned component:** closed. REQ-0015, REQ-0016, REQ-0017, REQ-0019 and REQ-0020 are done.
 - **Deployment and video:** REQ-0035 (Done) → REQ-0037 (Pending) → REQ-0051 (In progress). The final redeploy comes before the video.
-- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 (Pending) → REQ-0051.
-- **Evidence hardening:** REQ-0022 and REQ-0055 (Done) → [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md) → REQ-0036 (Pending). The slides cite its gap analysis, its live latency and its limits.
-- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (In progress). The limits must go on the slides, and the README needs a roadmap section.
+- **Slides:** REQ-0055 (Done) → REQ-0056 (In progress) → REQ-0036 (Done) → REQ-0051.
+- **Evidence hardening:** REQ-0022 and REQ-0055 (Done) → [`evidence-hardening`](../../openspec/changes/archive/2026-10-05-evidence-hardening/tasks.md) → REQ-0036 (Done). The slides cite its gap analysis and its limits.
+- **Limitations:** REQ-0024 (Done) → REQ-0013 (In progress) → REQ-0030 (Done). The limits are on slide 6 and the README has a roadmap section. REQ-0013 waits for the 20-label human check.
 - **Path to production:** REQ-0052 (In progress) needs alerts by country (REQ-0050).
 
 We write the statuses in these chains by hand. Update them when a requirement changes status.

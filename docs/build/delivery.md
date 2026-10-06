@@ -1,34 +1,40 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Delivery
 
-Monday 10/5, 11:59 pm (UTC-5); the video lasts 3 minutes at most. We work and deliver in **English**. The full list of deliverables is in the [overview](../overview.md#deliverables).
+The submission is due on Monday 10/5, 11:59 pm (UTC-5). The video lasts 3 minutes at most. We work and deliver in **English**. The [overview](../overview.md#deliverables) has the full list of deliverables.
 
 ## Language
 
-Everything, working material included, is written in **English from the first draft**. There is no translation pass at the end: the README, the presentation, and the video script are drafted in English from the start. `docs/` and `team/` are translated. Registered as [REQ-0051](../requirements/requirements.md).
+We write everything in **English from the first draft**, working material included. There is no translation pass at the end. The README, the presentation and the video script start in English. `docs/` and `team/` are in English. This rule is [REQ-0051](../requirements/requirements.md).
 
 | Piece | Language | Status | Reviewed by | Frozen |
 |---|---|---|---|---|
 | Repo `README.md` (the delivery link) | English | Done | Rubén | Kept in English |
 | GitHub repo title and description | English | Done | Rubén | Kept in English |
-| Presentation (4 to 6 slides) | Born in English | Pending | Rubén; group validates the outline Fri 10/2 | Outline Thu 10/1; reviewed Friday to Monday with the results; frozen Mon 10/5 |
-| Video script | Born in English | Pending | Rubén | Script from Thu 10/1; frozen Mon 10/5 (internal deadline) |
+| Presentation (4 to 6 slides) | Born in English | Done | Rubén | Final numbers and build line on 2026-10-05 |
+| Video script | Born in English | Done | Rubén | Final build on 2026-10-05. The recording is pending |
 | Demos: es-419 and pt-BR cases | Spanish and Portuguese | — | — | What the system says |
-| `docs/` and `team/` | English | — | — | Translated (decision 19 closed) |
-| ASD-STE100 header on each Markdown page | English | In progress | Rubén | 76 of 221 pages on 2026-10-05, counted with the command in [AGENTS.md](../../AGENTS.md#asd-ste100) |
+| `docs/` and `team/` | English | Done | Rubén | Written in English (decision 19 closed) |
+| ASD-STE100 header on each Markdown page | English | In progress | Rubén | The command in [AGENTS.md](../../AGENTS.md#asd-ste100) counts the pages |
 
-We update it at each review, not at the end. Statuses: Pending, In progress, Done.
+We update the table at each review, not at the end. The statuses are Pending, In progress and Done.
 
 ## Presentation
 
-Six slides, in English, as static HTML pages: [`site/slides/deck.html`](../../site/slides/deck.html) (1280×720). Open the page in a browser. The arrow keys move between slides and `f` opens full screen. Each number comes from `site/numbers.json` with its type.
+The presentation has six slides in English. They are static HTML pages: [`site/slides/deck.html`](../../site/slides/deck.html) (1280×720). Open the page in a browser. The arrow keys move between slides. The `f` key opens full screen. Each number comes from `site/numbers.json` with its type.
 
 | # | Slide | Source |
 |---|---|---|
 | 1 | Why: the problem and its data | [problem and demand](../rationale/problem-and-demand.md), [`problem/dev-v1`](../../evidence/problem/dev-v1/summary.json) |
 | 2 | What: the product and the four demo cases | [product](../product.md), [demo replay](../../sentinel-ai-core/eval/demo/replay.md) |
-| 3 | How: "The AI converses. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
+| 3 | How: "The AI talks. The rules decide." with the architecture drawing | [architecture](../architecture/README.md), [`architecture.json`](../../site/diagrams/architecture.json) |
 | 4 | Proof: results and 0 unsafe outcomes | [evidence index](../../evidence/README.md), [metrics](metrics.md) |
-| 5 | Your brand: the white label | [branding](../../sentinel-ai-core/app/branding.py) |
+| 5 | For the bank: the case file of the advisor, the controls that a risk team can audit, the white label and the model cost per resolution | [handoff package](../architecture/specification.md), [branding](../../sentinel-ai-core/app/branding.py), [`resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) |
 | 6 | Limits and roadmap, with the mocks | [mocks](../architecture/mocks.md), [README roadmap](../../README.md#roadmap) |
 
 Build the PDFs before the submission:
@@ -37,43 +43,42 @@ Build the PDFs before the submission:
 python3 scripts/export_slides.py
 ```
 
-The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides.es-419.pdf` and `sentinel-slides.pt-br.pdf`. Git ignores them. Each holds one page for each slide. Submit the English PDF.
+The command writes `site/slides/sentinel-slides.pdf` (English), `sentinel-slides.es-419.pdf` and `sentinel-slides.pt-br.pdf`. Git ignores them. Each PDF has one page for each slide. Submit the English PDF.
 
-- The why behind each choice, with the sentence for each slide, is in [rationale](../rationale/README.md).
+- The [rationale](../rationale/README.md) gives the reason for each choice, with a sentence for each slide.
 - Each figure shows its denominator and its type: test suite, simulation or synthetic.
-- We include failures and limitations. Hiding them counts against us.
+- We include the failures and the limitations. Hiding them counts against us.
 
 ## Video pitch
 
-Mandatory, **3 minutes at most**. It shows the solution working and explains the architecture decisions. The full script, Why → What → How, with the shot list, is in [video script](video-script.md).
+The video is mandatory. It lasts **3 minutes at most**. It shows the solution working and explains the architecture decisions. The [video script](video-script.md) has the full script (Why → What → How) and the shot list.
 
 1. The problem, in one sentence and with one data point.
-2. Demo of the **normal case** (es-419; type the es-MX line in [replay](../../sentinel-ai-core/eval/demo/replay.md)).
-3. Demo of the **ambiguous case** (pt-BR; same sheet).
-4. Demo of the **human case**, showing the JSON handoff.
+2. Demo of the **normal case** (es-419). Type the es-MX line from [replay](../../sentinel-ai-core/eval/demo/replay.md).
+3. Demo of the **ambiguous case** (pt-BR). Use the same sheet.
+4. Demo of the **human case**. Show the JSON handoff.
 5. A prompt injection attempt that fails.
-6. Key architecture decisions (from [decisions](decisions/)).
-7. Top results and limitations.
+6. The key architecture decisions (from [decisions](decisions/)).
+7. The top results and the limitations.
 
 ## Project site
 
-The site and the slides are in English, Spanish (Latin America, `es-419`) and Portuguese (`pt-BR`). English is the source and the submission language ([language](#language)). The other two languages are translations for readers. `python3 scripts/localize.py` builds them from the English pages. `site/i18n/` holds the dictionaries. The ASD-STE100 rule applies to the English text only.
+The site and the slides exist in English, Spanish (Latin America, `es-419`) and Portuguese (`pt-BR`). English is the source and the submission language ([language](#language)). The other two languages are translations for readers. `python3 scripts/localize.py` builds them from the English pages. `site/i18n/` holds the dictionaries. The ASD-STE100 rule applies to the English text only.
 
-The static site is in `site/`. It holds plain HTML and CSS, with no build step. The workflow [`pages.yml`](../../.github/workflows/pages.yml) publishes it to GitHub Pages on each push to `main` that changes `site/`.
+The static site is in `site/`. It has plain HTML and CSS and no build step. The workflow [`pages.yml`](../../.github/workflows/pages.yml) publishes it to GitHub Pages on each push to `main` that changes `site/`.
 
 | Item | Detail |
 |---|---|
 | Numbers | `python3 scripts/site_numbers.py` writes `site/numbers.json` and the number slots of each page from the frozen `summary.json` runs |
 | Check | `python3 scripts/site_numbers.py --check` and `python3 -m pytest scripts/test_site.py -q` fail when a number differs from the evidence |
-| Rebuild the copies | After any change to the English text or to `site/numbers.json`, run `python3 scripts/site_numbers.py`, then `python3 scripts/localize.py`, then `python3 scripts/export_slides.py`. Run `python3 scripts/localize.py --check` to see if a copy is stale |
-| Link for the judges | Use `https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en`. It opens English whatever the language of the browser, and the browser keeps the choice. Without `?lang`, the first visit follows the browser language |
+| Rebuild the copies | After a change to the English text or to `site/numbers.json`, run `python3 scripts/site_numbers.py`, then `python3 scripts/localize.py`, then `python3 scripts/export_slides.py`. Run `python3 scripts/localize.py --check` to find a stale copy |
+| Link for the judges | Use `https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en`. It opens in English for each browser language. The browser keeps the choice. Without `?lang`, the first visit follows the browser language |
 | Owner action | Open Settings, Pages. Set Source to GitHub Actions. Run the `pages` workflow once |
-| Status | Site and workflow written. The first green run waits for the owner action |
+| Status | We wrote the site and the workflow. The first green run waits for the owner action |
 
 ## Submission email
 
-The owner sends this email with the submission. Fill in each placeholder. Do
-not put a password in the slides or the video.
+The owner sends this email with the submission. Fill in each placeholder. Do not put a password in the slides or in the video.
 
 - **Repository:** `<repository URL>`
 - **Live link:** `<link>`
@@ -91,19 +96,13 @@ All judges use the same set. The cases share state between judges.
 | `CUST-0003` | customer | AR | `<password>` |
 | `ADV-0001` | advisor | MX | `<password>` |
 
-- The plain passwords are in `deploy/judge-users/passwords.csv` on the owner's
-  machine. Git ignores the file. The users file on the link holds salted hashes
-  only.
-- Lockout rule: after 10 failed logins for one login id or one address, the
-  login answers HTTP 429. The lock lasts 15 minutes. The entry page shows a
-  clear "access is blocked" message on HTTP 429, not the wrong-credentials
-  message.
-- The public link has no one-click entry. The documented fixture passwords do
-  not work on the link.
+- The plain passwords are in `deploy/judge-users/passwords.csv` on the machine of the owner. Git ignores the file. The users file on the link holds salted hashes only.
+- Lockout rule: after 10 failed logins for one login id or one address, the login answers HTTP 429. The lock lasts 15 minutes. On HTTP 429, the entry page shows an "access is blocked" message. It does not show the wrong-credentials message.
+- The public link has no one-click entry. The documented fixture passwords do not work on the link.
 
 ## Submission checklist
 
-Each row has one owner and one proof. A row stays pending until its proof exists. The checklist is [REQ-0034](../requirements/delivery.md#req-0034), [REQ-0035](../requirements/delivery.md#req-0035), [REQ-0036](../requirements/delivery.md#req-0036), [REQ-0037](../requirements/delivery.md#req-0037) and [REQ-0051](../requirements/delivery.md#req-0051).
+Each row has one owner and one proof. A row stays pending until its proof exists. The checklist covers [REQ-0034](../requirements/delivery.md#req-0034), [REQ-0035](../requirements/delivery.md#req-0035), [REQ-0036](../requirements/delivery.md#req-0036), [REQ-0037](../requirements/delivery.md#req-0037) and [REQ-0051](../requirements/delivery.md#req-0051).
 
 | Item | Owner | Proof | Status |
 |---|---|---|---|
@@ -111,8 +110,9 @@ Each row has one owner and one proof. A row stays pending until its proof exists
 | Deployed link | Rubén | The `GET /api/v1/health` response of the 2026-10-05 redeploy, with `bundle_hash` `2efe5962…` | Done |
 | Project site | Rubén | The [Pages workflow](../../.github/workflows/pages.yml) and a green `pages` run | Pending |
 | Slides PDF | Rubén | `python3 scripts/export_slides.py` writes `site/slides/sentinel-slides.pdf` | Pending |
-| Video | Rubén | The video, 3 minutes at most | Pending |
-| Submission email | Rubén | The email to `hackathon.admin@factored.ai`, with the [credentials block](#credentials) | Pending |
+| Video | Rubén | The video, 3 minutes at most. The `video` change owns this row | Pending |
+| Tags and release | Rubén | The `git tag` and `gh release create` commands in [release notes](#release-notes). The `video` change owns this row | Pending |
+| Submission email | Rubén | The email to `hackathon.admin@factored.ai`, with the [credentials block](#credentials). The `video` change owns this row | Pending |
 | Credentials block | Rubén | The [credentials](#credentials) table, with no real password | Done |
 | GitHub Pages | Rubén | Settings, Pages, Source is GitHub Actions | Pending |
 | Secret scan | Rubén | The `scan` job in CI | Done |
@@ -120,11 +120,11 @@ Each row has one owner and one proof. A row stays pending until its proof exists
 
 ## Freeze procedure
 
-This procedure comes before gate G3. `post-freeze` task 1.1 reads it. The code freeze starts when all the code plans are merged. After the last check, nobody changes the code, the prompt, the policy, the cut-offs or the templates.
+This procedure comes before gate G3. `post-freeze` task 1.1 reads it. The code freeze starts when the team merges all the code plans. After the last check, nobody changes the code, the prompt, the policy, the cut-offs or the templates.
 
-Merge before the freeze:
+Merge these items before the freeze:
 
-- Every code plan, `bank-ui` included.
+- Each code plan, `bank-ui` included.
 - The switch decisions: `SENTINEL_LLM_PROMPT_VERSION`, `SENTINEL_LLM_CUTOFFS` and `SENTINEL_CHARGE_RANKER`.
 
 Run the last checks in this order:
@@ -156,28 +156,28 @@ Owner inputs:
 |---|---|
 | (a) Freeze confirmation | Yes, the code is frozen |
 | (b) Spend allowed for live model calls | USD 1 |
-| (c) OK for `az` and the redeploy, and the subscription | Yes; `Azure subscription 1` (`dd53bd4a-c46b-453e-8b07-352facf6d5ad`) |
+| (c) OK for `az` and the redeploy, and the subscription | Yes. The owner named the subscription. This page does not repeat its id |
 | (d) Judge sheet and users file | `deploy/judge-users/passwords.csv` and `deploy/judge-users/users.json` (generated, gitignored) |
 
-No password is in this record.
+This record holds no password and no account id.
 
 ## Release notes
 
-Two milestones. The owner runs the tag and release commands after the final redeploy. No one pushes in the worktree.
+There are two milestones. The owner runs the tag and release commands after the final redeploy. Nobody pushes from the worktree.
 
 ### v0.9-demo - 2026-10-05
 
-The demo code is merged and frozen. The link serves `router_v2` with prompt `v2` and the labelled Gold mock.
+The team merged and froze the demo code. The link serves `router_v2` with prompt `v2` and the labelled Gold mock.
 
-- Sealed v8 measurement: 444 cases in the main set and 92 in the top-up set (`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`, `seals.v8` and `seals.v8b`). The verdict serves `router_v2`; prompt `v3` fails the zero-unsafe-wording gate and the subtype gate (decision 018, Result v8).
+- Sealed v8 measurement: 444 cases in the main set and 92 in the top-up set (`evidence/evaluation-runs/2024Q4-eval-v8/summary.json`, `seals.v8` and `seals.v8b`). The verdict serves `router_v2`. Prompt `v3` fails the zero-unsafe-wording gate and the subtype gate (decision 018, Result v8).
 - Router against the baseline: the paired difference is above zero (`paired.router_v2_vs_baseline`).
 - Attacks: 0 unsafe outcomes of 42 (`evidence/adversarial/20261005T014816Z/summary.json`, `totals.unsafe_outcome_rate`). The three mock-only attacks pass on the real model (`evidence/adversarial/20261005T204313Z/summary.json`).
-- Live latency on the frozen build: p50 and p95 per call are `timing.per_call.p50` and `timing.per_call.p95` of `evidence/evaluation-runs/2024Q4-resolution-live-v1/summary.json`.
-- `bundle_hash` of the deployed link: `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement.
+- Live latency on the frozen build: `timing.per_call.p50` and `timing.per_call.p95` of `evidence/evaluation-runs/2024Q4-resolution-live-v1/summary.json` give the p50 and p95 for each call.
+- `bundle_hash` of the deployed link: `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`. It is the hash of the sealed v8 measurement.
 
 ### v1.0-submission - after the video
 
-The delivered state: the frozen code, the repository, the public link, the site, the slides PDF and the video.
+This milestone is the delivered state: the frozen code, the repository, the public link, the site, the slides PDF and the video.
 
 The owner runs these commands on `main`, after this branch merges and the video is published:
 
@@ -203,7 +203,7 @@ This record closes `post-freeze` task 6.1. The `docs-followups-2` change reads i
 | Final measurement run | `evidence/evaluation-runs/2024Q4-eval-v8` |
 | Live latency run | `evidence/evaluation-runs/2024Q4-resolution-live-v1` |
 | Adversarial run on the real model | `evidence/adversarial/20261005T204313Z` |
-| Robustness runs | None. Tasks 3.1 to 3.3 of this plan did not run. |
+| Robustness runs | `evidence/robustness/20261005T210525Z` (fault injection) and `evidence/robustness/20261005T211031Z` (load) |
 | Date of the final redeploy | 2026-10-05 |
 
 ## Pending

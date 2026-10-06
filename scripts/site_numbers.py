@@ -21,14 +21,15 @@ EVIDENCE = ROOT / "evidence"
 OUT = ROOT / "site" / "numbers.json"
 
 ADV = "adversarial/20261005T014816Z"
-EVAL = "evaluation-runs/2024Q4-eval-v7"
+ADV_REAL = "adversarial/20261005T204313Z"
+EVAL = "evaluation-runs/2024Q4-eval-v8"
 RES = "evaluation-runs/2024Q4-resolution-v2"
 PROBLEM = "problem/dev-v1"
 GAP = "evaluation-runs/2024Q4-resolution-gap-v1"
 CUT = "evaluation-runs/2024Q4-cutoff-diagnosis-v1"
 
 # id -> (run, field path, format, type label, denominator path or None, text)
-# Formats: int, pct (0..1 to percent), pct_raw (already percent), str, float2.
+# Formats: int, pct (0..1 to percent), pct_raw (already percent), str, float1, usd4.
 METRICS: dict[str, tuple] = {
     "adv_attempted": (ADV, "totals.attempted", "int", "Test suite", None,
                       "attacks tried"),
@@ -38,15 +39,17 @@ METRICS: dict[str, tuple] = {
                     "totals.attempted", "blocked by production code"),
     "adv_mock": (ADV, "totals.passes_on_mock", "int", "Test suite",
                  "totals.attempted", "safe only with the mock model"),
-    "intent_baseline": (EVAL, "component.versions.baseline.breakdown.overall.accuracy",
+    "adv_real": (ADV_REAL, "totals.unsafe_outcome_rate", "str", "Test suite", None,
+                 "mock-only attacks with an unsafe outcome on the real model"),
+    "intent_baseline": (EVAL, "candidates.baseline.intent.accuracy",
                         "pct", "Simulation",
-                        "component.versions.baseline.breakdown.overall.n",
+                        "candidates.baseline.intent.n",
                         "intent accuracy of the keyword baseline"),
-    "intent_router": (EVAL, "component.versions.router_v2.breakdown.overall.accuracy",
+    "intent_router": (EVAL, "candidates.router_v2.intent.accuracy",
                       "pct", "Simulation",
-                      "component.versions.router_v2.breakdown.overall.n",
+                      "candidates.router_v2.intent.n",
                       "intent accuracy of the LLM router"),
-    "intent_n": (EVAL, "component.n", "int", "Simulation", None,
+    "intent_n": (EVAL, "candidates.router_v2.intent.n", "int", "Simulation", None,
                  "held-out turns in the intent test"),
     "res_resolved": (RES, "system.router_v2.safe_resolution.resolved", "int",
                      "Simulation", "system.router_v2.safe_resolution.n",
@@ -62,10 +65,16 @@ METRICS: dict[str, tuple] = {
                         "ceiling.router_v2.n", "cases that the policy lets the system resolve"),
     "ceil_resolved": (GAP, "ceiling.router_v2.resolved", "int", "Simulation",
                       "ceiling.router_v2.resolvable", "of the resolvable cases resolved"),
-    "lang_es_ar": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-AR.n", "intent accuracy on es-AR"),
-    "lang_es_co": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-CO.n", "intent accuracy on es-CO"),
-    "lang_es_mx": (EVAL, "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.es-MX.n", "intent accuracy on es-MX"),
-    "lang_pt_br": (EVAL, "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy", "pct", "Simulation", "component.versions.router_v2.breakdown.by_variant.pt-BR.n", "intent accuracy on pt-BR"),
+    "lang_es_ar": (EVAL, "candidates.router_v2.variant_losses.by_variant.es-AR.accuracy", "pct", "Simulation", "candidates.router_v2.variant_losses.by_variant.es-AR.n", "intent accuracy on es-AR"),
+    "lang_es_co": (EVAL, "candidates.router_v2.variant_losses.by_variant.es-CO.accuracy", "pct", "Simulation", "candidates.router_v2.variant_losses.by_variant.es-CO.n", "intent accuracy on es-CO"),
+    "lang_es_mx": (EVAL, "candidates.router_v2.variant_losses.by_variant.es-MX.accuracy", "pct", "Simulation", "candidates.router_v2.variant_losses.by_variant.es-MX.n", "intent accuracy on es-MX"),
+    "lang_pt_br": (EVAL, "candidates.router_v2.variant_losses.by_variant.pt-BR.accuracy", "pct", "Simulation", "candidates.router_v2.variant_losses.by_variant.pt-BR.n", "intent accuracy on pt-BR"),
+    "cost_per_resolution": (RES, "system.router_v2.cost_usd.per_resolution", "usd4",
+                            "Simulation", None, "model cost per safe resolution"),
+    "intent_v3": (EVAL, "candidates.router_v3.intent.accuracy", "pct", "Simulation",
+                  "candidates.router_v3.intent.n", "intent accuracy of prompt v3, not served"),
+    "v3_unsafe": (EVAL, "candidates.router_v3.unsafe_wording.count", "int", "Simulation",
+                  "candidates.router_v3.unsafe_wording.n", "unsafe drafts of prompt v3"),
     "problem_calls": (PROBLEM, "totals.calls", "int", "Synthetic", None,
                       "calls in the development window"),
     "problem_dispute_calls": (PROBLEM, "demand.transaction_dispute.calls", "int",
@@ -87,19 +96,19 @@ SERIES: list[dict] = [
         "id": "intent", "title": "Intent accuracy", "type": "Simulation", "run": EVAL, "kind": "rate",
         "about": "The intent router against the keyword baseline on the same sealed held-out turns. The cases are team-written, not production traffic.",
         "rows": [
-            ("Keyword baseline", "component.versions.baseline.breakdown.overall.accuracy", "component.versions.baseline.breakdown.overall.n", "component.versions.baseline.breakdown.overall.interval_95"),
-            ("LLM router, first version", "component.versions.router_v1.breakdown.overall.accuracy", "component.versions.router_v1.breakdown.overall.n", "component.versions.router_v1.breakdown.overall.interval_95"),
-            ("LLM router, final version", "component.versions.router_v2.breakdown.overall.accuracy", "component.versions.router_v2.breakdown.overall.n", "component.versions.router_v2.breakdown.overall.interval_95"),
+            ("Keyword baseline", "candidates.baseline.breakdown_overall.accuracy", "candidates.baseline.breakdown_overall.n", "candidates.baseline.breakdown_overall.interval_95"),
+            ("LLM router, final version", "candidates.router_v2.breakdown_overall.accuracy", "candidates.router_v2.breakdown_overall.n", "candidates.router_v2.breakdown_overall.interval_95"),
+            ("Prompt v3, not served: it failed the safety gate", "candidates.router_v3.breakdown_overall.accuracy", "candidates.router_v3.breakdown_overall.n", "candidates.router_v3.breakdown_overall.interval_95"),
         ],
     },
     {
         "id": "language", "title": "By language", "type": "Simulation", "run": EVAL, "kind": "rate",
-        "about": "Intent accuracy of the final LLM router for each variant. Each variant has a small sample, so the confidence range is wide. Read the range before you compare two variants. The Portuguese cases are model-written and no native speaker reviewed them.",
+        "about": "Intent accuracy of the final LLM router for each variant. Each variant holds the same cases, written in that variant. The Portuguese cases are model-written and no native speaker reviewed them.",
         "rows": [
-            ("es-AR", "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy", "component.versions.router_v2.breakdown.by_variant.es-AR.n", "component.versions.router_v2.breakdown.by_variant.es-AR.interval_95"),
-            ("es-CO", "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy", "component.versions.router_v2.breakdown.by_variant.es-CO.n", "component.versions.router_v2.breakdown.by_variant.es-CO.interval_95"),
-            ("es-MX", "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy", "component.versions.router_v2.breakdown.by_variant.es-MX.n", "component.versions.router_v2.breakdown.by_variant.es-MX.interval_95"),
-            ("pt-BR", "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy", "component.versions.router_v2.breakdown.by_variant.pt-BR.n", "component.versions.router_v2.breakdown.by_variant.pt-BR.interval_95"),
+            ("es-AR", "candidates.router_v2.variant_losses.by_variant.es-AR.accuracy", "candidates.router_v2.variant_losses.by_variant.es-AR.n"),
+            ("es-CO", "candidates.router_v2.variant_losses.by_variant.es-CO.accuracy", "candidates.router_v2.variant_losses.by_variant.es-CO.n"),
+            ("es-MX", "candidates.router_v2.variant_losses.by_variant.es-MX.accuracy", "candidates.router_v2.variant_losses.by_variant.es-MX.n"),
+            ("pt-BR", "candidates.router_v2.variant_losses.by_variant.pt-BR.accuracy", "candidates.router_v2.variant_losses.by_variant.pt-BR.n"),
         ],
     },
     {
@@ -139,8 +148,8 @@ SERIES: list[dict] = [
         "mode": "Live model calls on simulation cases",
         "about": "Time of one routed turn with the LLM router, in milliseconds. The calls are live. The cases are team-written.",
         "rows": [
-            ("Median (p50)", "component.versions.router_v2.latency_ms.p50", "component.versions.router_v2.latency_ms.n"),
-            ("Slow turn (p95)", "component.versions.router_v2.latency_ms.p95", "component.versions.router_v2.latency_ms.n"),
+            ("Median (p50)", "candidates.router_v2.latency_ms.p50", "candidates.router_v2.latency_ms.n"),
+            ("Slow turn (p95)", "candidates.router_v2.latency_ms.p95", "candidates.router_v2.latency_ms.n"),
         ],
     },
     {
@@ -157,8 +166,7 @@ SERIES: list[dict] = [
         "mode": "Live model calls on simulation cases",
         "about": "Total price of the live calls of each router on the same turns. The prices come from the Fireworks model library, as the router models decision records.",
         "rows": [
-            ("LLM router, first version", "component.versions.router_v1.cost_usd.total", "component.versions.router_v1.cost_usd.n"),
-            ("LLM router, final version", "component.versions.router_v2.cost_usd.total", "component.versions.router_v2.cost_usd.n"),
+            ("LLM router, final version", "candidates.router_v2.cost_usd.total", "candidates.router_v2.cost_usd.n"),
         ],
     },
 ]
@@ -204,7 +212,19 @@ def fmt(value, kind: str) -> str:
         return f"{value:.1f}%"
     if kind == "float1":
         return f"{value:,.1f}"
+    if kind == "usd4":
+        return f"USD {value:.4f}"
     return str(value)
+
+
+def rounded(entry: dict) -> str:
+    """A reading form for a large count: 79,191 becomes 79,000+ and 390.8 becomes 390+."""
+    value = entry["value"]
+    if isinstance(value, (int, float)) and value >= 1000:
+        return f"{int(value) // 1000 * 1000:,}+"
+    if isinstance(value, (int, float)) and value >= 100:
+        return f"{int(value) // 10 * 10:,}+"
+    return entry["text"]
 
 
 def build(evidence: Path = EVIDENCE) -> dict:
@@ -237,16 +257,18 @@ def render(data: dict) -> str:
     return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
 
 
-# <span data-num="id">, data-num-type="id" and data-num-den="id" hold no
-# nested tags. The script writes their text from numbers.json.
+# <span data-num="id">, data-num-round="id", data-num-type="id" and
+# data-num-den="id" hold no nested tags. The script writes their text from
+# numbers.json. data-num-round shows a large count in a reading form (79,000+).
 SLOT = re.compile(
-    r'(<(\w+)[^>]*?\bdata-(num|num-type|num-den)="(\w+)"[^>]*>)(.*?)(</\2>)',
+    r'(<(\w+)[^>]*?\bdata-(num|num-round|num-type|num-den)="(\w+)"[^>]*>)(.*?)(</\2>)',
     re.S,
 )
 
 
 # Markdown pages use <!--n:key-->text<!--/n--> (invisible when rendered).
-MD_SLOT = re.compile(r"(<!--n:(\w+)-->)(.*?)(<!--/n-->)", re.S)
+# <!--n~:key--> writes the reading form of a large count (79,000+).
+MD_SLOT = re.compile(r"(<!--n(~?):(\w+)-->)(.*?)(<!--/n-->)", re.S)
 MD_FILES = [ROOT / "docs" / "build" / "video-script.md"]
 
 
@@ -256,7 +278,10 @@ def sync_markdown(numbers: dict, check: bool = False) -> list[Path]:
         if not page.exists():
             continue
         old = page.read_text()
-        new = MD_SLOT.sub(lambda m: m.group(1) + numbers[m.group(2)]["text"] + m.group(4), old)
+        new = MD_SLOT.sub(
+            lambda m: m.group(1) + (rounded(numbers[m.group(3)]) if m.group(2) else numbers[m.group(3)]["text"]) + m.group(5),
+            old,
+        )
         if new != old:
             changed.append(page)
             if not check:
@@ -279,6 +304,8 @@ def slot_text(numbers: dict, kind: str, key: str, lang: str = "en") -> str:
     entry = numbers[key]
     if kind == "num":
         return loc(entry["text"], lang)
+    if kind == "num-round":
+        return loc(rounded(entry), lang)
     if kind == "num-type":
         return TYPE_NAMES.get(lang, {}).get(entry["type"], entry["type"])
     return loc(f"{int(entry['denominator']):,}", lang)

@@ -52,14 +52,14 @@ State openly what the data cannot support. The dataset is synthetic and in Spani
 
 Missing: the limits on the slides. They include the limits that [018](../build/decisions/018-evaluation-acceptance.md) fixes. The cases are model-written and model-reviewed. No human or native speaker reviewed them. The variants are not strictly equivalent.
 
-Added by [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md): the [negative results](../rationale/negative-results.md) page records each rejected component and the rule that decided it; the [mocks](../architecture/mocks.md) page records each mock, its limit and its production backend. Remaining: the known limitation of the attack suite (category B, task 4.3), the 20-label human check (task 3.3) and the limits on the slides.
+Added by [`evidence-hardening`](../../openspec/changes/archive/2026-10-05-evidence-hardening/tasks.md): the [negative results](../rationale/negative-results.md) page records each rejected component and the rule that decided it; the [mocks](../architecture/mocks.md) page records each mock, its limit and its production backend. Remaining: the known limitation of the attack suite (category B, task 4.3), the 20-label human check (task 3.3) and the limits on the slides.
 
 <a id="req-0030"></a>
 ### REQ-0030 · Declare what is missing
 
 Give an honest list of what the prototype lacks before real use: capacity, data, languages, deployment and remaining risks.
 
-**Priority:** P0 · **Status:** In progress · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Problem statement: Scope; What your solution should demonstrate 6 · Kickoff p. 15 · Help channel (9/28)
 
@@ -71,8 +71,8 @@ Give an honest list of what the prototype lacks before real use: capacity, data,
 - The [sizing](../sizing-capacity.md) (REQ-0053).
 - The [what is real](../architecture/what-is-real.md) page.
 - The [investigation data support](../rationale/investigation-data-support.md) page.
-
-Missing also: a roadmap section in the README. It must list each item that the team did not build, with the evidence for why.
+- The README section [roadmap](../../README.md#roadmap). It lists each item that the team did not build, with the evidence for why.
+- Slide 6 of the [presentation](../../site/slides/deck.html): the limits, the mocks and the roadmap.
 
 Missing: the same limits on the slides.
 
@@ -137,20 +137,20 @@ ContainerAppConsoleLogs_CL
 
 Write a short slide deck that describes the tool. It is part of the mandatory submission.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
 **Depends on:** [REQ-0055](analytics.md#req-0055), [REQ-0056](non-functional.md#req-0056). The slides present the metrics and the trade-offs.
 
-**Evidence:** Missing: the slides. [Script](../build/delivery.md#presentation).
+**Evidence:** Proven by: the six slides in [`site/slides/deck.html`](../../site/slides/deck.html), in English, `es-419` and `pt-BR`. Each number comes from `site/numbers.json` and the numbers test checks it. `python3 scripts/export_slides.py` builds the three PDFs of six pages each. See [delivery](../build/delivery.md#presentation).
 
 <a id="req-0037"></a>
 ### REQ-0037 · Video pitch
 
 Make a short, mandatory video (3 minutes at most). It shows the working solution and explains the core architecture decisions.
 
-**Priority:** P0 · **Status:** Pending · **Criterion:** Rationale · **Area:** all
+**Priority:** P0 · **Status:** Done · **Criterion:** Rationale · **Area:** all
 
 **Source:** Kickoff p. 18
 
@@ -176,7 +176,7 @@ Write the README, the slides, the video script, `docs/` and `team/` in English. 
 - The team rewrote the deliverable pages in it: the README, `docs/README.md`, `docs/rationale/`, `evidence/README.md` and `docs/architecture/what-is-real.md`.
 - The new pages [`CHANGELOG.md`](../../CHANGELOG.md) and [`CONTRIBUTING.md`](../../CONTRIBUTING.md) are in English, in ASD-STE100.
 
-Missing: the slides, the video script and the [pre-submission check](../build/delivery.md#language).
+Missing: the video ([REQ-0037](#req-0037)). The slides, the video script and the [pre-submission check](../build/delivery.md#language) are done.
 
 <a id="req-0052"></a>
 ### REQ-0052 · Path to production

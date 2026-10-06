@@ -51,7 +51,7 @@ When a last decision exists and the customer's message asks the reason for it, t
 
 ### Requirement: Window and status rules explain their rule and values
 
-For `window.expired`, `status.pending`, `status.reversed`, `status.declined` and `already.disputed` the explanation SHALL state the rule that applied and the verified values it used. For `window.expired` those values SHALL be the window in days read from the country file, the charge date, the last eligible date and the number of days between them and the reference date. When the country file is marked synthetic, the explanation SHALL say that the rule is a demonstration policy of the service and not a bank's rule. No customer text SHALL carry the window as a number written in a locale file. Traces to REQ-0033 (P0, Done) and REQ-0030 (P0, In progress).
+For `window.expired`, `status.pending`, `status.reversed`, `status.declined` and `already.disputed` the explanation SHALL state the rule that applied and the verified values it used. For `window.expired` those values SHALL be the window in days read from the country file, the charge date, the last eligible date and the number of days between them and the reference date. When the country file is marked synthetic, the explanation SHALL say that the rule is a demonstration policy of the service and not a bank's rule. No customer text SHALL carry the window as a number written in a locale file. Traces to REQ-0033 (P0, Done) and REQ-0030 (P0, Done).
 
 #### Scenario: Window explanation uses the file's value
 

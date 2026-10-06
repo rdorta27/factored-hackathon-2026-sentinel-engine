@@ -160,7 +160,7 @@ The gap run [`2024Q4-resolution-gap-v1`](../../evidence/evaluation-runs/2024Q4-r
 - **Both systems resolve all 16 resolvable cases** (`ceiling.<version>.resolved` 16, `achieved_share` 1.0, `gap` 0). The paired difference is 0 because the baseline already reaches the ceiling. No resolvable case is left.
 - **No case differs in outcome or in intent label** (`outcome_differs.count` 0, `intent_differs.count` 0). The stated cause is `ceiling` (`cause`). The set cannot separate the two systems on resolution.
 - The router gain is in intent accuracy on the held-out component set (section 2). It is not a resolution gain on this set.
-- **Limit:** 56 cases come from 14 situations. Four eligible situations appear in four variants each. The set is too narrow to show a resolution difference between the two systems. Task 1.4 of [`evidence-hardening`](../../openspec/changes/evidence-hardening/tasks.md) decides if a router-sensitive block is added under a new hash, or if this note closes the question.
+- **Limit:** 56 cases come from 14 situations. Four eligible situations appear in four variants each. The set is too narrow to show a resolution difference between the two systems. Task 1.4 of [`evidence-hardening`](../../openspec/changes/archive/2026-10-05-evidence-hardening/tasks.md) decides if a router-sensitive block is added under a new hash, or if this note closes the question.
 
 ### Breakdown by variant and country (REQ-0024, simulated)
 

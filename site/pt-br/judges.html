@@ -112,12 +112,12 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
         </div>
       </div>
       <h3>Resultados por idioma</h3>
-      <p class="note"><span data-num-type="lang_es_ar">Simulação</span>. Acurácia de intenção do roteador LLM nos casos reservados. Cada variante tem uma amostra pequena. O intervalo de 95% é amplo, então não leia uma diferença entre variantes como disparidade. Veja o <a href="diagrams/evidence.html#language">explorador de evidências</a> para o intervalo de cada variante.</p>
+      <p class="note"><span data-num-type="lang_es_ar">Simulação</span>. Acurácia de intenção do roteador LLM nos casos selados de teste. Cada variante tem os mesmos casos, escritos nessa variante. O roteador obtém o mesmo resultado em cada variante. Veja o <a href="diagrams/evidence.html#language">explorador de evidências</a>.</p>
       <div class="langs">
-        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">98,6%</span><p>em <span data-num-den="lang_es_ar">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">97,1%</span><p>em <span data-num-den="lang_es_co">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">98,6%</span><p>em <span data-num-den="lang_es_mx">70</span> casos</p></div>
-        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">98,6%</span><p>em <span data-num-den="lang_pt_br">70</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-AR</span><span class="big" data-num="lang_es_ar">81,8%</span><p>em <span data-num-den="lang_es_ar">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-CO</span><span class="big" data-num="lang_es_co">81,8%</span><p>em <span data-num-den="lang_es_co">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">es-MX</span><span class="big" data-num="lang_es_mx">81,8%</span><p>em <span data-num-den="lang_es_mx">77</span> casos</p></div>
+        <div class="card"><span class="eyebrow">pt-BR</span><span class="big" data-num="lang_pt_br">81,8%</span><p>em <span data-num-den="lang_pt_br">77</span> casos</p></div>
       </div>
       <p class="note">Os casos em português foram escritos por um modelo. Nenhum falante nativo os revisou. <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/build/decisions/018-evaluation-acceptance.md">Decisão 018</a>.</p>
     </section>
@@ -127,7 +127,7 @@ python3 -m eval.run verify 2024Q4-train-v1</code></pre>
       <details><summary>Está em produção?</summary><p>Não. É um protótipo. Ele roda o código que a produção rodaria, com mocks documentados. Nenhum número deste site é uma medição de produção.</p></details>
       <details><summary>O que é um mock?</summary><p>Um substituto com o mesmo contrato da peça de produção. A produção troca o backend e mantém o código. A <a href="https://github.com/rdorta27/factored-hackathon-2026-sentinel-engine/blob/main/docs/architecture/mocks.md">página de mocks</a> lista cada um com seu limite. O <a href="diagrams/architecture.html">diagrama de arquitetura</a> os marca.</p></details>
       <details><summary>Por que o teto de resolução é <span data-num="ceil_resolvable">16</span> de <span data-num-den="ceil_resolvable">56</span>?</summary><p>A política permite resolver só esses casos simulados. Os demais casos devem terminar em uma transferência ou em uma pergunta. Tanto a linha de base quanto o roteador LLM resolvem todos os casos abaixo do teto. O conjunto não consegue distingui-los em resolução.</p></details>
-      <details><summary>Então o que o roteador LLM acrescenta?</summary><p>Rotula melhor a intenção: <span data-num="intent_router">98,2%</span> contra <span data-num="intent_baseline">53,9%</span> da linha de base de palavras-chave em <span data-num-den="intent_router">280</span> turnos reservados. É uma simulação com casos escritos pela equipe.</p></details>
+      <details><summary>Então o que o roteador LLM acrescenta?</summary><p>Rotula melhor a intenção: <span data-num="intent_router">81,8%</span> contra <span data-num="intent_baseline">69,2%</span> da linha de base de palavras-chave em <span data-num-den="intent_router">308</span> turnos reservados. É uma simulação com casos escritos pela equipe.</p></details>
       <details><summary>O modelo decide?</summary><p>Não. O modelo rotula a intenção. O código mascara, busca, decide, age e relê o caso.</p></details>
     </section>
   </main>

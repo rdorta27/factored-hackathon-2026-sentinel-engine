@@ -8,6 +8,10 @@ last_reviewed: 2026-10-05
 
 Factored AI & Data Hackathon 2026 · Submission: **Monday, October 5, 11:59 pm (UTC-5)**
 
+**The AI talks. The rules decide.** A customer says "I do not recognize this charge". Sentinel answers with a verified case in one conversation, or it gives an advisor a complete case file. It speaks Spanish and Portuguese. It acts only when the policy allows it, and it never invents a fact.
+
+**Pitch:** [project site](https://rdorta27.github.io/factored-hackathon-2026-sentinel-engine/?lang=en) · [slides](site/slides/deck.html) · [video script](docs/build/video-script.md) · [product](docs/product.md)
+
 Sentinel Engine is a customer-service assistant for transaction disputes at a bank in México, Colombia and Argentina. It is a prototype. The [requirements coverage](#requirements-coverage) below gives the status of each requirement.
 
 **Live demo:** `https://sentinel-engine.ambitiousmoss-1416426d.eastus.azurecontainerapps.io`. It runs on Azure Container Apps with labelled mock data and `router_v2` (a prompted GLM 5.3 Flash, prompt `v2`). The keyword baseline answers a turn when the model fails. One replica runs until the awards ([019](docs/build/decisions/019-azure-container-apps.md)). The live revision is from 2026-10-05. Its `/health` `bundle_hash` is `2efe5962f9a50d0b4fed8e7b91c10a4c7fd212d5229d74a2e58d1024ee96dfd2`, the hash of the sealed v8 measurement. It keeps its state on an Azure Files share. The judge credentials come in the submission email.
@@ -155,16 +159,16 @@ The data pipeline is in [`sentinel-data-engine/`](sentinel-data-engine/README.md
 
 | Priority | Total | Done | In progress | Pending | Done % |
 |---|---|---|---|---|---|
-| P0 | 41 | 34 | 5 | 2 | 83% |
+| P0 | 41 | 36 | 3 | 1 | 88% |
 | P1 | 12 | 11 | 0 | 1 | 92% |
 | P2 | 4 | 1 | 0 | 3 | 25% |
-| **Total** | **57** | 46 | 5 | 6 | 81% |
+| **Total** | **57** | 48 | 3 | 5 | 84% |
 
 | Status | Requirements |
 |---|---|
-| **Done** | **Conversation and safety:** REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person · REQ-0048 decision order. **Demo:** REQ-0009 normal case · REQ-0010 ambiguous case · REQ-0011 human case · REQ-0012 Spanish and Portuguese · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. **ML:** REQ-0016 learned component against baseline ([eval-v8](evidence/evaluation-runs/2024Q4-eval-v8/summary.json)) · REQ-0017 valid labels, sealed and measured once · REQ-0019 experiment tracking · REQ-0020 same held-out set. **Metrics and analysis:** REQ-0014 flow analysis · REQ-0022 metrics with n · REQ-0024 breakdown by variant and country · REQ-0050 country monitoring · REQ-0053 sizing · REQ-0055 outcome metrics ([resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)) · REQ-0057 ROI as a projection. **Operations:** REQ-0021 failure tests ([adversarial](evidence/adversarial/20261005T014816Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0028 reproducible setup · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0047 no personal data to the model · REQ-0049 country as configuration. **Data:** REQ-0015 pipeline with contracts · REQ-0018 incremental processing · REQ-0031 sources labelled by origin · REQ-0054 no external data. **Delivery:** REQ-0034 clean repository · REQ-0035 live link |
-| **In progress** | REQ-0013 and REQ-0030 limits on the slides and a README roadmap · REQ-0051 language check · REQ-0052 path to production (alerts by country) · REQ-0056 trade-offs in the presentation |
-| **Pending** | REQ-0036 slides · REQ-0037 video · optional: REQ-0023 LLM judge (not used), REQ-0044 local terms, REQ-0045 app-error context, REQ-0046 handoff routing |
+| **Done** | **Conversation and safety:** REQ-0001 context · REQ-0002 clarify or abstain · REQ-0003 verified records only · REQ-0004 safe simulated tools · REQ-0005 verified actions · REQ-0006 answer, confirm or escalate · REQ-0007 permissions in code · REQ-0008 structured handoff · REQ-0033 policy decides · REQ-0040 request for a person · REQ-0048 decision order. **Demo:** REQ-0009 normal case · REQ-0010 ambiguous case · REQ-0011 human case · REQ-0012 Spanish and Portuguese · REQ-0038 frontend · REQ-0039 freshness · REQ-0041 original currency · REQ-0042 candidates · REQ-0043 status check. **ML:** REQ-0016 learned component against baseline ([eval-v8](evidence/evaluation-runs/2024Q4-eval-v8/summary.json)) · REQ-0017 valid labels, sealed and measured once · REQ-0019 experiment tracking · REQ-0020 same held-out set. **Metrics and analysis:** REQ-0014 flow analysis · REQ-0022 metrics with n · REQ-0024 breakdown by variant and country · REQ-0050 country monitoring · REQ-0053 sizing · REQ-0055 outcome metrics ([resolution-v2](evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)) · REQ-0057 ROI as a projection. **Operations:** REQ-0021 failure tests ([adversarial](evidence/adversarial/20261005T014816Z/summary.json)) · REQ-0025 observability · REQ-0026 retries and idempotency · REQ-0027 session, isolation, retention · REQ-0028 reproducible setup · REQ-0029 explanations from rules and logs · REQ-0032 documented mocks · REQ-0047 no personal data to the model · REQ-0049 country as configuration. **Data:** REQ-0015 pipeline with contracts · REQ-0018 incremental processing · REQ-0031 sources labelled by origin · REQ-0054 no external data. **Delivery:** REQ-0030 declared limits and roadmap · REQ-0034 clean repository · REQ-0035 live link · REQ-0036 slides |
+| **In progress** | REQ-0013 the 20-label human check · REQ-0051 language check · REQ-0052 path to production (alerts by country) · REQ-0056 trade-offs in the presentation |
+| **Pending** | REQ-0037 video · optional: REQ-0023 LLM judge (not used), REQ-0044 local terms, REQ-0045 app-error context, REQ-0046 handoff routing |
 
 The [requirements](docs/requirements/requirements.md#status-by-priority) page gives the status per requirement and per type, with the evidence of each one.
 

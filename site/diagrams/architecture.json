@@ -27,7 +27,7 @@
      "does": "A prompted LLM labels the intent. It decides nothing else. A keyword baseline answers a turn when the model fails.",
      "runs": "GLM 5.3 Flash on Fireworks AI with live calls. The keyword baseline is the per-turn fallback.",
      "prod": "The same weights on Azure AI Foundry or Databricks.",
-     "evidence": ["docs/build/decisions/016-router-models.md", "evidence/evaluation-runs/2024Q4-eval-v7/summary.json", "sentinel-ai-core/app/ai"],
+     "evidence": ["docs/build/decisions/016-router-models.md", "evidence/evaluation-runs/2024Q4-eval-v8/summary.json", "sentinel-ai-core/app/ai"],
      "metrics": ["intent_router", "intent_baseline"]},
     {"id": "logs", "title": "Turn records and logs", "x": 290, "y": 390, "status": "real", "decides": "code",
      "run_short": "JSON lines to Log Analytics", "prod_short": "The same records",

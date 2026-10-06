@@ -1,66 +1,82 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # The Challenge
 
-**Purpose:** understand the hackathon without reading the PDFs. **Related:** [system](architecture/system-architecture.md), [dataset](data/dataset.md), [requirements](requirements/requirements.md), [glossary](glossary/).
+**Purpose:** understand the hackathon without a read of the PDFs.
+
+**Related:** [system](architecture/system-architecture.md), [dataset](data/dataset.md), [requirements](requirements/requirements.md) and [glossary](glossary/).
 
 > "Build something that works, prove that it works, and know when it should not act. And show us what it would take to make it real."
 
 ## Objective
 
-A **customer-support assistant for a bank** operating in Mexico, Colombia, and Argentina. Not a chatbot: a **system** that understands the customer, queries verified data, executes safe actions, verifies that they happened, and hands the case to a person when appropriate.
+The team builds a **customer-support assistant for a bank** that operates in Mexico, Colombia and Argentina. It is a **system**, not a chatbot. The system does five things:
 
-- **A single flow**, one of: account or payment inquiries, cards, transaction disputes, or credit information and eligibility. Adding more flows does not score points on its own: depth and engineering judgment count. Ours is transaction disputes ([decision 003](build/decisions/003-disputes-flow.md)).
-- It must work in **Spanish and Portuguese**. The data is only in Spanish.
-- **End-to-end working first**; then we optimize.
+- It understands the customer.
+- It queries verified data.
+- It executes safe actions.
+- It verifies that the actions happened.
+- It hands the case to a person when necessary.
+
+Rules from the brief:
+
+- **A single flow.** The options are account or payment inquiries, cards, transaction disputes, or credit information and eligibility. More flows do not score points on their own. Depth and engineering judgment count. Our flow is transaction disputes ([decision 003](build/decisions/003-disputes-flow.md)).
+- The system works in **Spanish and Portuguese**. The data is in Spanish only.
+- **End-to-end first.** Then we optimize.
 
 ## Demo cases
 
 | Case | What the assistant does |
 |---|---|
-| Normal | Resolves it alone, following bank policies |
-| Ambiguous or unsupported | Asks for what is missing or says it cannot help |
-| Requires a person | Escalates with a structured summary for the advisor |
+| Normal | It resolves the case alone and follows the bank policies |
+| Ambiguous or unsupported | It asks for what is missing, or it says that it cannot help |
+| Requires a person | It makes a handoff with a structured summary for the advisor |
 
 ## Golden rules
 
-This is the summary; the detail lives in [system](architecture/system-architecture.md) and [conversation](build/conversation.md).
+This list is a summary. The [system](architecture/system-architecture.md) and [conversation](build/conversation.md) pages give the detail.
 
-1. **AI understands; code executes and verifies.** Permissions live in code, not in the prompt.
-2. **Only verified facts.** If the data is missing or not current, we say so.
-3. **Autonomy depends on risk.** Actions with consequences require confirmation.
-4. **Honesty.** We report failures, limitations, and what is missing for production.
+1. **AI understands. Code executes and verifies.** Permissions are in code, not in the prompt.
+2. **Only verified facts.** If the data is missing or not current, the system says so.
+3. **Autonomy depends on risk.** An action with consequences needs a confirmation.
+4. **Honesty.** We report the failures, the limitations and what production still needs.
 
 ## Evaluation
 
-| Criterion | What they look at |
+| Criterion | What the judges look at |
 |---|---|
-| Rationale and documentation | Why we chose the flow, written decisions, limitations |
-| AI Engineering | Backend, frontend, and deployment |
+| Rationale and documentation | Why we chose the flow, written decisions and limitations |
+| AI Engineering | Backend, frontend and deployment |
 | Data Analytics | Data quality and insights |
-| Data Engineering | Extraction and transformation pipeline |
-| Machine Learning | Selection, evaluation against a baseline, and model tracking |
+| Data Engineering | The extraction and transformation pipeline |
+| Machine Learning | Selection, evaluation against a baseline and model tracking |
 
-Main metrics: **safe automated resolution**, **unsafe outcomes**, and **cost**. Detail in [metrics](build/metrics.md).
+The main metrics are **safe automated resolution**, **unsafe outcomes** and **cost**. The [metrics](build/metrics.md) page has the detail.
 
 ## Deliverables
 
-Deadline: **Monday 10/5, 11:59 pm (UTC-5)**, confirmed by the organizers on 9/28.
+The deadline is **Monday 10/5, 11:59 pm (UTC-5)**. The organizers confirmed it on 9/28.
 
-The challenge is a 10-day sprint: it starts 9/25 and submissions close 10/5.
+The challenge is a sprint of 10 days. It starts on 9/25. The submissions close on 10/5.
 
-We send to hackathon.admin@factored.ai:
+We send these items to hackathon.admin@factored.ai:
 
-1. Public repository `factored-hackathon-2026-[team]`
-2. Link to the deployed tool
-3. 4-to-6-slide presentation
-4. Video of **3 minutes at most**: demo and architecture decisions
+1. The public repository `factored-hackathon-2026-[team]`
+2. The link to the deployed tool
+3. A presentation of 4 to 6 slides
+4. A video of **3 minutes at most**: the demo and the architecture decisions
 
-"Submit your tool no matter what": we deliver on time, with limitations declared.
+The rule is "Submit your tool no matter what". We deliver on time and we declare the limitations.
 
 ## Known risks
 
-- **Portuguese without data:** evaluators will most likely test in Brazilian Portuguese. See [languages](build/conversation.md#languages).
-- **Data with intentional issues:** duplicates, nulls, late arrivals, changing schema. See [dataset](data/dataset.md).
-- **Nobody on the team comes from contact centers:** the [glossary](glossary/) explains the business acronyms.
+- **Portuguese without data.** The evaluators will most likely test in Brazilian Portuguese. See [languages](build/conversation.md#languages).
+- **Data with intentional issues:** duplicates, nulls, late arrivals and a changing schema. See [dataset](data/dataset.md).
+- **Nobody on the team comes from contact centers.** The [glossary](glossary/) explains the business acronyms.
 
 ## Official material
 

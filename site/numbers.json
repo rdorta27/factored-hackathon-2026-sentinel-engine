@@ -37,33 +37,41 @@
       "denominator": 42,
       "denominator_field": "totals.attempted"
     },
+    "adv_real": {
+      "text": "0/3",
+      "value": "0/3",
+      "type": "Test suite",
+      "label": "mock-only attacks with an unsafe outcome on the real model",
+      "source": "evidence/adversarial/20261005T204313Z/summary.json",
+      "field": "totals.unsafe_outcome_rate"
+    },
     "intent_baseline": {
-      "text": "53.9%",
-      "value": 0.5393,
+      "text": "69.2%",
+      "value": 0.6916,
       "type": "Simulation",
       "label": "intent accuracy of the keyword baseline",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.baseline.breakdown.overall.accuracy",
-      "denominator": 280,
-      "denominator_field": "component.versions.baseline.breakdown.overall.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.baseline.intent.accuracy",
+      "denominator": 308,
+      "denominator_field": "candidates.baseline.intent.n"
     },
     "intent_router": {
-      "text": "98.2%",
-      "value": 0.9821,
+      "text": "81.8%",
+      "value": 0.8182,
       "type": "Simulation",
       "label": "intent accuracy of the LLM router",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.router_v2.breakdown.overall.accuracy",
-      "denominator": 280,
-      "denominator_field": "component.versions.router_v2.breakdown.overall.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.intent.accuracy",
+      "denominator": 308,
+      "denominator_field": "candidates.router_v2.intent.n"
     },
     "intent_n": {
-      "text": "280",
-      "value": 280,
+      "text": "308",
+      "value": 308,
       "type": "Simulation",
       "label": "held-out turns in the intent test",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.intent.n"
     },
     "res_resolved": {
       "text": "16",
@@ -122,44 +130,72 @@
       "denominator_field": "ceiling.router_v2.resolvable"
     },
     "lang_es_ar": {
-      "text": "98.6%",
-      "value": 0.9857,
+      "text": "81.8%",
+      "value": 0.8182,
       "type": "Simulation",
       "label": "intent accuracy on es-AR",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy",
-      "denominator": 70,
-      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-AR.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.variant_losses.by_variant.es-AR.accuracy",
+      "denominator": 77,
+      "denominator_field": "candidates.router_v2.variant_losses.by_variant.es-AR.n"
     },
     "lang_es_co": {
-      "text": "97.1%",
-      "value": 0.9714,
+      "text": "81.8%",
+      "value": 0.8182,
       "type": "Simulation",
       "label": "intent accuracy on es-CO",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy",
-      "denominator": 70,
-      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-CO.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.variant_losses.by_variant.es-CO.accuracy",
+      "denominator": 77,
+      "denominator_field": "candidates.router_v2.variant_losses.by_variant.es-CO.n"
     },
     "lang_es_mx": {
-      "text": "98.6%",
-      "value": 0.9857,
+      "text": "81.8%",
+      "value": 0.8182,
       "type": "Simulation",
       "label": "intent accuracy on es-MX",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy",
-      "denominator": 70,
-      "denominator_field": "component.versions.router_v2.breakdown.by_variant.es-MX.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.variant_losses.by_variant.es-MX.accuracy",
+      "denominator": 77,
+      "denominator_field": "candidates.router_v2.variant_losses.by_variant.es-MX.n"
     },
     "lang_pt_br": {
-      "text": "98.6%",
-      "value": 0.9857,
+      "text": "81.8%",
+      "value": 0.8182,
       "type": "Simulation",
       "label": "intent accuracy on pt-BR",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
-      "field": "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy",
-      "denominator": 70,
-      "denominator_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.n"
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v2.variant_losses.by_variant.pt-BR.accuracy",
+      "denominator": 77,
+      "denominator_field": "candidates.router_v2.variant_losses.by_variant.pt-BR.n"
+    },
+    "cost_per_resolution": {
+      "text": "USD 0.0006",
+      "value": 0.000561,
+      "type": "Simulation",
+      "label": "model cost per safe resolution",
+      "source": "evidence/evaluation-runs/2024Q4-resolution-v2/summary.json",
+      "field": "system.router_v2.cost_usd.per_resolution"
+    },
+    "intent_v3": {
+      "text": "97.4%",
+      "value": 0.974,
+      "type": "Simulation",
+      "label": "intent accuracy of prompt v3, not served",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v3.intent.accuracy",
+      "denominator": 308,
+      "denominator_field": "candidates.router_v3.intent.n"
+    },
+    "v3_unsafe": {
+      "text": "4",
+      "value": 4,
+      "type": "Simulation",
+      "label": "unsafe drafts of prompt v3",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
+      "field": "candidates.router_v3.unsafe_wording.count",
+      "denominator": 93,
+      "denominator_field": "candidates.router_v3.unsafe_wording.n"
     },
     "problem_calls": {
       "text": "464,791",
@@ -205,43 +241,43 @@
       "type": "Simulation",
       "kind": "rate",
       "about": "The intent router against the keyword baseline on the same sealed held-out turns. The cases are team-written, not production traffic.",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
       "rows": [
         {
           "label": "Keyword baseline",
-          "value": 0.5393,
-          "n": 280,
-          "field": "component.versions.baseline.breakdown.overall.accuracy",
-          "n_field": "component.versions.baseline.breakdown.overall.n",
+          "value": 0.6916,
+          "n": 308,
+          "field": "candidates.baseline.breakdown_overall.accuracy",
+          "n_field": "candidates.baseline.breakdown_overall.n",
           "ci": [
-            0.425,
-            0.65
+            0.5909,
+            0.7922
           ],
-          "ci_field": "component.versions.baseline.breakdown.overall.interval_95"
-        },
-        {
-          "label": "LLM router, first version",
-          "value": 0.7429,
-          "n": 280,
-          "field": "component.versions.router_v1.breakdown.overall.accuracy",
-          "n_field": "component.versions.router_v1.breakdown.overall.n",
-          "ci": [
-            0.6429,
-            0.8429
-          ],
-          "ci_field": "component.versions.router_v1.breakdown.overall.interval_95"
+          "ci_field": "candidates.baseline.breakdown_overall.interval_95"
         },
         {
           "label": "LLM router, final version",
-          "value": 0.9821,
-          "n": 280,
-          "field": "component.versions.router_v2.breakdown.overall.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.overall.n",
+          "value": 0.8182,
+          "n": 308,
+          "field": "candidates.router_v2.breakdown_overall.accuracy",
+          "n_field": "candidates.router_v2.breakdown_overall.n",
           "ci": [
-            0.95,
+            0.7273,
+            0.9091
+          ],
+          "ci_field": "candidates.router_v2.breakdown_overall.interval_95"
+        },
+        {
+          "label": "Prompt v3, not served: it failed the safety gate",
+          "value": 0.974,
+          "n": 308,
+          "field": "candidates.router_v3.breakdown_overall.accuracy",
+          "n_field": "candidates.router_v3.breakdown_overall.n",
+          "ci": [
+            0.9383,
             1.0
           ],
-          "ci_field": "component.versions.router_v2.breakdown.overall.interval_95"
+          "ci_field": "candidates.router_v3.breakdown_overall.interval_95"
         }
       ]
     },
@@ -250,56 +286,36 @@
       "title": "By language",
       "type": "Simulation",
       "kind": "rate",
-      "about": "Intent accuracy of the final LLM router for each variant. Each variant has a small sample, so the confidence range is wide. Read the range before you compare two variants. The Portuguese cases are model-written and no native speaker reviewed them.",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "about": "Intent accuracy of the final LLM router for each variant. Each variant holds the same cases, written in that variant. The Portuguese cases are model-written and no native speaker reviewed them.",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
       "rows": [
         {
           "label": "es-AR",
-          "value": 0.9857,
-          "n": 70,
-          "field": "component.versions.router_v2.breakdown.by_variant.es-AR.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.by_variant.es-AR.n",
-          "ci": [
-            0.9571,
-            1.0
-          ],
-          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-AR.interval_95"
+          "value": 0.8182,
+          "n": 77,
+          "field": "candidates.router_v2.variant_losses.by_variant.es-AR.accuracy",
+          "n_field": "candidates.router_v2.variant_losses.by_variant.es-AR.n"
         },
         {
           "label": "es-CO",
-          "value": 0.9714,
-          "n": 70,
-          "field": "component.versions.router_v2.breakdown.by_variant.es-CO.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.by_variant.es-CO.n",
-          "ci": [
-            0.9286,
-            1.0
-          ],
-          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-CO.interval_95"
+          "value": 0.8182,
+          "n": 77,
+          "field": "candidates.router_v2.variant_losses.by_variant.es-CO.accuracy",
+          "n_field": "candidates.router_v2.variant_losses.by_variant.es-CO.n"
         },
         {
           "label": "es-MX",
-          "value": 0.9857,
-          "n": 70,
-          "field": "component.versions.router_v2.breakdown.by_variant.es-MX.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.by_variant.es-MX.n",
-          "ci": [
-            0.9571,
-            1.0
-          ],
-          "ci_field": "component.versions.router_v2.breakdown.by_variant.es-MX.interval_95"
+          "value": 0.8182,
+          "n": 77,
+          "field": "candidates.router_v2.variant_losses.by_variant.es-MX.accuracy",
+          "n_field": "candidates.router_v2.variant_losses.by_variant.es-MX.n"
         },
         {
           "label": "pt-BR",
-          "value": 0.9857,
-          "n": 70,
-          "field": "component.versions.router_v2.breakdown.by_variant.pt-BR.accuracy",
-          "n_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.n",
-          "ci": [
-            0.9571,
-            1.0
-          ],
-          "ci_field": "component.versions.router_v2.breakdown.by_variant.pt-BR.interval_95"
+          "value": 0.8182,
+          "n": 77,
+          "field": "candidates.router_v2.variant_losses.by_variant.pt-BR.accuracy",
+          "n_field": "candidates.router_v2.variant_losses.by_variant.pt-BR.n"
         }
       ]
     },
@@ -437,21 +453,21 @@
       "type": "Simulation",
       "kind": "scale",
       "about": "Time of one routed turn with the LLM router, in milliseconds. The calls are live. The cases are team-written.",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
       "rows": [
         {
           "label": "Median (p50)",
-          "value": 1078.96,
-          "n": 280,
-          "field": "component.versions.router_v2.latency_ms.p50",
-          "n_field": "component.versions.router_v2.latency_ms.n"
+          "value": 1474.2,
+          "n": 308,
+          "field": "candidates.router_v2.latency_ms.p50",
+          "n_field": "candidates.router_v2.latency_ms.n"
         },
         {
           "label": "Slow turn (p95)",
-          "value": 4474.88,
-          "n": 280,
-          "field": "component.versions.router_v2.latency_ms.p95",
-          "n_field": "component.versions.router_v2.latency_ms.n"
+          "value": 4317.14,
+          "n": 308,
+          "field": "candidates.router_v2.latency_ms.p95",
+          "n_field": "candidates.router_v2.latency_ms.n"
         }
       ],
       "unit": "ms",
@@ -489,21 +505,14 @@
       "type": "Simulation",
       "kind": "scale",
       "about": "Total price of the live calls of each router on the same turns. The prices come from the Fireworks model library, as the router models decision records.",
-      "source": "evidence/evaluation-runs/2024Q4-eval-v7/summary.json",
+      "source": "evidence/evaluation-runs/2024Q4-eval-v8/summary.json",
       "rows": [
         {
-          "label": "LLM router, first version",
-          "value": 0.012428,
-          "n": 280,
-          "field": "component.versions.router_v1.cost_usd.total",
-          "n_field": "component.versions.router_v1.cost_usd.n"
-        },
-        {
           "label": "LLM router, final version",
-          "value": 0.036353,
-          "n": 280,
-          "field": "component.versions.router_v2.cost_usd.total",
-          "n_field": "component.versions.router_v2.cost_usd.n"
+          "value": 0.04141,
+          "n": 308,
+          "field": "candidates.router_v2.cost_usd.total",
+          "n_field": "candidates.router_v2.cost_usd.n"
         }
       ],
       "unit": "USD",

@@ -8,7 +8,7 @@ last_reviewed: 2026-10-05
 
 Sentinel is the trust layer for bank customer-service AI. It turns "I do not recognize this charge" into a verified case, or into a well-informed advisor. It works in Spanish and Portuguese. It never invents a fact.
 
-**Tagline:** The AI converses. The rules decide.
+**Tagline:** The AI talks. The rules decide.
 
 This page is the product statement. Each claim links to its evidence. [What is real](architecture/what-is-real.md) gives the type of each number.
 
@@ -58,9 +58,12 @@ The loop is Understand → Decide → Act → Verify → Escalate. See the [arch
 |---|---|---|---|
 | No attack gives an unsafe outcome | [`adversarial/20261005T014816Z`](../evidence/adversarial/20261005T014816Z/summary.json) | `totals.unsafe_outcome_rate` | Test suite |
 | Production code blocks most attacks. The mock model alone makes the rest safe, and we say so. | [`adversarial/20261005T014816Z`](../evidence/adversarial/20261005T014816Z/summary.json) | `totals.blocked_verified`, `totals.passes_on_mock` | Test suite |
-| The LLM router labels the intent better than the keyword baseline | [`evaluation-runs/2024Q4-eval-v7`](../evidence/evaluation-runs/2024Q4-eval-v7/summary.json) | `component.versions.<version>.breakdown.overall.accuracy` | Simulation |
+| The LLM router labels the intent better than the keyword baseline | [`evaluation-runs/2024Q4-eval-v8`](../evidence/evaluation-runs/2024Q4-eval-v8/summary.json) | `candidates.<version>.intent.accuracy`, `paired.router_v2_vs_baseline` | Simulation |
+| A more accurate prompt was not shipped, because it failed the safety gate | [`evaluation-runs/2024Q4-eval-v8`](../evidence/evaluation-runs/2024Q4-eval-v8/summary.json), [decision 018](build/decisions/018-evaluation-acceptance.md) | `candidates.router_v3.intent.accuracy`, `candidates.router_v3.unsafe_wording` | Simulation |
 | The system resolves every case that the policy allows, and no other. The rest need a handoff or a question. | [`evaluation-runs/2024Q4-resolution-gap-v1`](../evidence/evaluation-runs/2024Q4-resolution-gap-v1/summary.json) | `ceiling.router_v2.resolvable`, `ceiling.router_v2.resolved` | Simulation |
 | The router gains no resolution over the baseline in this run | [`evaluation-runs/2024Q4-resolution-v2`](../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json) | `paired_resolution.net` | Simulation |
+
+The public link serves `router_v2` (a prompted GLM 5.3 Flash, prompt `v2`). Its `/health` `bundle_hash` is `2efe5962…`, the hash of the sealed v8 measurement ([delivery](build/delivery.md)). The judge credentials come in the submission email.
 
 The [project site](../site/index.html) shows these numbers with their denominators. The [evidence index](../evidence/README.md) lists every run. A simulation is not a production measurement.
 

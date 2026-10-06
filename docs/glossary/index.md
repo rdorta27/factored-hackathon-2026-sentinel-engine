@@ -1,17 +1,23 @@
+---
+language: en
+style: ASD-STE100
+last_reviewed: 2026-10-05
+---
+
 # Glossary
 
-Shared vocabulary for the team, the submission and the system. Canonical language is English (en-US); each locale overlay keeps the local term intact with an English explanation on first use.
+This glossary holds the shared vocabulary for the team, the submission and the system. The canonical language is English (en-US). Each locale page keeps the local term in the original. It gives an English explanation on first use.
 
-**See also:** [overview](../overview.md), [dataset](../data/dataset.md).
+**See also:** [overview](../overview.md) and [dataset](../data/dataset.md).
 
-Two vocabularies:
+There are two vocabularies:
 
-- **Build:** how we assemble the system, used while designing and implementing.
-- **Functional:** what each thing is called in the finished system, in banking language (UI, presentation, business).
+- **Build:** how we assemble the system. We use it to design and implement.
+- **Functional:** what each thing is called in the finished system, in banking language (UI, presentation and business).
 
-The "Official" column shows the hackathon material term, so it can be located in the PDFs.
+The "Official" column shows the term in the hackathon material. Use it to find the term in the PDFs.
 
-**Locales:** `en-US` (canonical), `es-MX`, `es-CO`, `es-AR` and `pt-BR`. Anything shared by the three Spanish locales is tagged `es-419` (Latin American Spanish).
+**Locales:** `en-US` (canonical), `es-MX`, `es-CO`, `es-AR` and `pt-BR`. The tag `es-419` (Latin American Spanish) marks what the three Spanish locales share.
 
 ## Contents
 
@@ -25,4 +31,4 @@ The "Official" column shows the hackathon material term, so it can be located in
 | Argentine terms (DNI, reclamos, BCRA…) | [glossary.es-ar.md](glossary.es-ar.md) |
 | Brazilian Portuguese terms (CPF, Pix, extrato, estorno, Ouvidoria…) | [glossary.pt-br.md](glossary.pt-br.md) |
 
-Metric acronyms (CSAT, NPS, CES, FCR) are the same in every country.
+The metric acronyms (CSAT, NPS, CES and FCR) are the same in each country.

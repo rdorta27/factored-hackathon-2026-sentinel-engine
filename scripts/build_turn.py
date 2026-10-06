@@ -52,7 +52,7 @@ STEPS = [
             ("refuse", "Label out of scope: the system does not act."),
             ("handoff", "Label person: the customer asks for an advisor."),
         ],
-        "evidence": ["docs/build/decisions/016-router-models.md", "evidence/evaluation-runs/2024Q4-eval-v7/summary.json"],
+        "evidence": ["docs/build/decisions/016-router-models.md", "evidence/evaluation-runs/2024Q4-eval-v8/summary.json"],
     },
     {
         "id": "lookup", "title": "Charge lookup", "decides": "code",

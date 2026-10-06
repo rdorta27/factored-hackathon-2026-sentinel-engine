@@ -28,7 +28,7 @@
     <div class="hero">
       <div>
         <h1>La IA conversa. <span>Las reglas deciden.</span></h1>
-        <p class="lead">Sentinel atiende «no reconozco este cargo» en español y portugués. Actúa solo cuando la política lo permite. Nunca inventa un dato.</p>
+        <p class="lead">El cliente dice "No reconozco este cargo". Sentinel responde con un caso verificado en una conversación, o entrega a un asesor un expediente completo. En español y portugués. Actúa solo cuando la política lo permite, y nunca inventa un dato.</p>
         <div class="row">
           <a class="btn" href="#demo">Probar la demo</a> <a class="btn alt" href="diagrams/architecture.html">Explorar la arquitectura</a>
         </div>
@@ -75,7 +75,7 @@
         <a class="card" href="diagrams/cases.html"><span class="eyebrow">Tres casos</span><p>Normal, ambiguo y se necesita una persona, en un solo mapa de decisión.</p></a>
         <a class="card" href="diagrams/evidence.html"><span class="eyebrow">Evidencia</span><p>Cada barra con su denominador, su tipo y su campo del resumen.</p></a>
         <a class="card" href="judges.html"><span class="eyebrow">Para el jurado</span><p>Camino a producción, cómo reproducir una corrida, IA responsable y respuestas breves.</p></a>
-        <a class="card" href="slides/deck.html"><span class="eyebrow">Diapositivas</span><p>Seis diapositivas: por qué, qué, cómo, prueba, tu marca, límites y hoja de ruta.</p></a>
+        <a class="card" href="slides/deck.html"><span class="eyebrow">Diapositivas</span><p>Seis diapositivas: por qué, qué, cómo, prueba, para el banco, límites y hoja de ruta.</p></a>
       </div>
     </section>
 
@@ -103,9 +103,9 @@
         </div>
         <div class="card">
           <span class="tag" data-num-type="intent_router">Simulación</span>
-          <span class="big" data-num="intent_router">98.2%</span>
-          <p>de exactitud de intención del enrutador LLM en <span data-num-den="intent_router">280</span> turnos reservados. La línea base de palabras clave logra <span data-num="intent_baseline">53.9%</span>.</p>
-          <span class="src">evaluation-runs/2024Q4-eval-v7 · breakdown.overall.accuracy</span>
+          <span class="big" data-num="intent_router">81.8%</span>
+          <p>de <span data-num-den="intent_router">308</span> turnos de prueba sellados que el router LLM entiende bien. El baseline de palabras clave obtiene <span data-num="intent_baseline">69.2%</span>. Un prompt más nuevo obtuvo más, pero no pasó el control de seguridad, así que no lo pusimos en servicio.</p>
+          <span class="src">evaluation-runs/2024Q4-eval-v8 · candidates.router_v2.intent.accuracy</span>
         </div>
         <div class="card">
           <span class="tag" data-num-type="ceil_resolved">Simulación</span>
@@ -115,8 +115,8 @@
         </div>
         <div class="card">
           <span class="tag data" data-num-type="problem_dispute_calls">Sintético</span>
-          <span class="big" data-num="problem_dispute_calls">79,191</span>
-          <p>llamadas por disputas en la ventana de desarrollo, de <span data-num-den="problem_dispute_calls">464,791</span>. Usan <span data-num="problem_dispute_hours">390.8</span> horas de agente al mes. Solo <span data-num="problem_dispute_resolved">43.6%</span> terminan resueltas.</p>
+          <span class="big" data-num-round="problem_dispute_calls">79,000+</span>
+          <p>llamadas por un cargo en disputa, de <span data-num-round="problem_calls">464,000+</span> llamadas en la ventana de desarrollo. Usan <span data-num-round="problem_dispute_hours">390+</span> horas de agente al mes. Solo <span data-num="problem_dispute_resolved">43.6%</span> terminan resueltas.</p>
           <span class="src">problem/dev-v1 · demand, hours, reasons</span>
         </div>
       </div>

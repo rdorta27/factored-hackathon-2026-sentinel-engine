@@ -207,7 +207,7 @@ flowchart LR
 
 - **Where it runs:** in Understand, after the masking and after the code checks that refuse prompt extraction and record injection attempts. Deterministic parsers, not the model, narrow the list of charges.
 - **What it decides:** only the label. Policy, eligibility, the confirm box, the read-back and the handoff stay in code. When the model fails, the baseline answers that turn.
-- **How we judge it:** against the keyword baseline on the same sealed held-out set, measured once ([`2024Q4-eval-v7`](../../evidence/evaluation-runs/2024Q4-eval-v7/summary.json): intent accuracy 0.9821 against 0.5393, n = 280, `component.versions.<version>.breakdown.overall`), and end to end on the multi-turn resolution set ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)). The cases are model-written simulation in `es-419` and `pt-BR`, and we say so.
+- **How we judge it:** against the keyword baseline on the same sealed held-out set, measured once on the sealed set ([`2024Q4-eval-v8`](../../evidence/evaluation-runs/2024Q4-eval-v8/summary.json), `candidates.<version>.intent.accuracy` and `paired.router_v2_vs_baseline`), and end to end on the multi-turn resolution set ([`2024Q4-resolution-v2`](../../evidence/evaluation-runs/2024Q4-resolution-v2/summary.json)). The cases are model-written simulation in `es-419` and `pt-BR`, and we say so.
 
 ## Stack and deployment
 
